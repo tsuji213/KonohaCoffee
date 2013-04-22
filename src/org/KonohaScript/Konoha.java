@@ -11,6 +11,7 @@ package org.KonohaScript;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /* konoha util */
@@ -47,7 +48,6 @@ class KMethod {
 	long   uline;
 	KNameSpace LazyCompileNameSpace;
 }
-
 
 class KClass {
 	int    cflag;
@@ -114,28 +114,6 @@ class KSyntax {
 //	khalfword_t precedence_op2;          khalfword_t precedence_op1;
 }
 
-class KToken {
-	int uline;
-	String Text;
-//		kArray  *GroupTokenList;
-//		kNode   *parsedNode;
-	int tokenType;
-	int symbol;
-	KSyntax resolvedSyntaxInfo;
-//	union {
-//		ksymbol_t   tokenType;           // (resolvedSyntaxInfo == NULL)
-////	ksymbol_t   symbol;      // symbol (resolvedSyntaxInfo != NULL)
-//	};
-//	union {
-//		kuhalfword_t   indent;               // indent when kw == TokenType_Indent
-//		kuhalfword_t   openCloseChar;
-//	};
-//	ksymbol_t   symbol;
-//	union {
-//		ktypeattr_t resolvedTypeId;      // typeid if KSymbol_TypePattern
-//		ksymbol_t   ruleNameSymbol;      // pattern rule
-//	};
-}
 
 
 
@@ -267,99 +245,6 @@ class KTypedNode {
 
 /* namespace */
 
-class KNameSpace {
-	KonohaContext konoha;
-	KNameSpace                         ParentNULL;
-	int packageId;
-	int syntaxOption;
-	ArrayList<KNameSpace>              ImportedNameSpaceList;
-//	KDict                              constTable;
-//	kArray                            *metaPatternList;
-//	kObject                           *globalObjectNULL;
-//	kArray                            *methodList_OnList;   // default K_EMPTYARRAY
-//	size_t                             sortedMethodList;
-	// the below references are defined in sugar
-//	void                              *tokenMatrix;
-////	KHashMap                          *syntaxMapNN;
-//	const struct KBuilderAPI          *builderApi;
-//	KKeyValue                         *typeVariableItems;
-//	size_t                             typesize;
-//	struct KGammaLocalData            *genv;
-	
-	KNameSpace(KonohaContext konoha, KNameSpace parent) {
-		this.konoha = konoha;
-		this.ParentNULL = parent;
-	}
-	
-	KFuncStack[] TokenFuncMatrix;
-	KFuncStack[] TokenFuncMatrixCache;
-
-	KFuncStack[] MergeTokenFuncMatrix(int kchar, KFuncStack[] cache) {
-		if(TokenFuncMatrix != null) {
-			if(cache[kchar] == null) {
-				cache[kchar] = TokenFuncMatrix[kchar];
-			}
-			else {
-				cache[kchar] = cache[kchar].Merge(TokenFuncMatrix[kchar]);
-			}
-		}
-		return cache;
-	}
-	
-	KFuncStack GetTokenFunc(int kchar) {
-		if(TokenFuncMatrixCache == null) {
-			TokenFuncMatrixCache = new KFuncStack[KonohaConst.KCHAR_MAX];
-		}
-		if(TokenFuncMatrixCache[kchar] == null) {
-			TokenFuncMatrixCache[kchar] = TokenFuncMatrix[kchar];
-//			for(int i = 0; i < ImportedNameSpaceList.size(); i++) {
-//				TokenFuncMatrixCache = ImportedNameSpaceList.get(i).TokenFuncMatrix.MergeTokenFuncMatrix(kchar, TokenFuncMatrixCache);
-//			}
-		}
-		return TokenFuncMatrixCache[kchar];
-	}
-
-	ArrayList<KToken> Tokenize(String text, long line) {
-		KTokenizer tokenizer = new KTokenizer(this, text, line);
-		return tokenizer.Tokenize();
-	}
-
-	KMacro GetMacro(int symbol) {
-//		KMacro macro = MacroTable.get(symbol);
-//		return macro;
-		return null;
-	}
-
-	void Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		int c = beginIdx;
-		while(c < endIdx) {
-			KToken tk = tokenList.get(c);
-			KMacro m = GetMacro(tk.symbol);
-			if(m != null) {
-				c = m.Prep(this, tokenList, c, endIdx, bufferList);
-			}
-			else {
-				tk.resolvedSyntaxInfo = GetSyntax(tk.symbol);
-				bufferList.add(tk);
-				c = c + 1;
-			}
-		}
-	}
-
-	KSyntax GetSyntax(int symbol) {
-//		KSyntax syntax = SyntaxTable.get(symbol);
-//		return syntax;
-		return null;
-	}
-
-	KNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
-		return null;
-	}
-	
-	KTypedNode Type(KNode node) {
-		return null;
-	}
-}
 
 
 class KKeyIdMap {
@@ -478,78 +363,8 @@ class KonohaContext {
 	}
 }
 
-class KFuncStack {
-	KFuncStack prev;
-	Object callee;
-	Method method;
-
-	KFuncStack(Method method, Object callee, KFuncStack prev) {
-		this.method = method;
-		this.callee = callee;
-		this.prev = prev;
-	}
-	
-	KFuncStack pop() {
-		return this.prev;
-	}
-	
-	KFuncStack Merge(KFuncStack other) {
-		// TODO
-		return null;
-	}
-	
-	int InvokeTokenFunc(String source, int pos, ArrayList<KToken> bufferToken) {
-		return 0;
-	}
-
-}
-
 /* Tokenizer */
 
-class KTokenizer {
-	KNameSpace ns;
-	String     Source;
-	long       currentLine;
-	ArrayList<KToken> SourceTokenList;
-	
-	KTokenizer(KNameSpace ns, String text, long uline) {
-		this.ns = ns;
-		this.Source = text;
-		this.currentLine = uline;
-		this.SourceTokenList = new ArrayList<KToken>();
-	}
-	
-	int TokenizeFirstToken(ArrayList<KToken> tokenList) {
-		return 0;
-	}
-	
-	int AsciiToKonohaChar(int pos) {
-		return 0; //TODO
-	}
-	
-	
-	int DispatchFunc(int kchar, int pos) {
-		KFuncStack fstack = ns.GetTokenFunc(kchar);
-		while(fstack != null) {
-			int next = fstack.InvokeTokenFunc(this.Source, pos, this.SourceTokenList);
-			if(next != -1) return next;
-			fstack = fstack.pop();
-		}
-		return 0; //TODO
-	}
-	
-	ArrayList<KToken> Tokenize() {
-		int kchar, pos = 0;
-		pos = TokenizeFirstToken(this.SourceTokenList);
-		while((kchar = AsciiToKonohaChar(pos)) != 0) {
-			int pos2 = DispatchFunc(kchar, pos);
-			if(!(pos < pos2)) break;
-			pos = pos2; 
-		}
-		return this.SourceTokenList;
-	}
-	
-}
 
 public class Konoha {
 	public static void main(String[] argc) {
