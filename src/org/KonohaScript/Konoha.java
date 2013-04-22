@@ -7,6 +7,554 @@ package org.KonohaScript;
  * @author kiki
  *
  */
-public class Konoha {
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.lang.reflect.Method;
+
+/* konoha util */
+
+interface KonohaConst {
+	final static int KCHAR_MAX = 41;
+}
+
+class KParamType {
+	int typeId;
+	int symbol;
+}
+
+class KParam {
+	int returnTypeId;
+	int paramSize;
+	KParamType[] ParamTypeItems;
+}
+
+class KMethod {
+//	KMethodFunc       invokeKMethodFunc;
+//	union {
+//		struct KVirtualCode     *vcode_start;
+//		struct KVirtualCodeAPI **virtualCodeApi_plus1;
+//	};
+	int    flag;
+	int    packageId;
+	int    typeId;
+	int    mn;
+	int    symbol;
+	KParam param;
+	KParam signature;
+	String Source;
+	long   uline;
+	KNameSpace LazyCompileNameSpace;
+}
+
+
+class KClass {
+	int    cflag;
+	int    packageId;
+	int    packageDomain;
+	int    classId;       
+	KClass BaseClass;
+	KClass SuperClass;
+	int    p0;           
+	int    classSignature;
+//	size_t     cstruct_size;
+//	KClassField         *fieldItems;
+//	kuhalfword_t  fieldsize;     kuhalfword_t fieldAllocSize;
+//	const char               *DBG_NAME;
+	String ShortClassName;
+	int classNameSymbol;
+	int optvalue;
+	ArrayList<KMethod> ClassMethodList;
+	Object DefaultNullValue;
+	KClass  SearchSimilarClassNULL;
+	KClass  SearchSuperMethodClassNULL;
+	
+	KClass(KonohaContext kctx, KPackage p, int classId, String cname) {
+		this.packageId  = p.packageId;
+		this.classId    = classId;
+		this.BaseClass  = this;
+		this.SuperClass = this;
+		this.ShortClassName = cname;
+		this.classNameSymbol = kctx.GetSymbol(cname, true);
+		this.ClassMethodList = new ArrayList<KMethod>();
+	}
+}
+
+class KPackage {
+	int              packageId;
+	String           PackageName;
+	KNameSpace       PackageNameSpace;
+	int              kickoutFileId;
+	
+	KPackage(KonohaContext kctx, int packageId, String name) {
+		this.packageId = packageId;
+		this.PackageName = name;
+		this.PackageNameSpace = new KNameSpace(kctx, kctx.DefaultNameSpace);
+	}
+}
+
+class KMacro {
+	int Prep(KNameSpace ns, ArrayList<KToken> source, int beginIdx, int endIdx, ArrayList<KToken> buffer) {
+		return beginIdx;
+	}
+}
+
+class KSyntax {
+	KNameSpace                       packageNameSpace;
+	int keyword;
+	int flag;
+	ArrayList<Object>                syntaxPatternListNULL;
+	ArrayList<Object>                macroDataNULL;
+//	kFunc                            *TokenFuncNULL;
+//	kFunc                            *ParseFuncNULL;
+//	kFunc                            *TypeFuncNULL;
+//	kFunc                            *ReplaceFuncNULL;
+//	khalfword_t tokenKonohaChar;         khalfword_t macroParamSize;
+//	khalfword_t precedence_op2;          khalfword_t precedence_op1;
+}
+
+class KToken {
+	int uline;
+	String Text;
+//		kArray  *GroupTokenList;
+//		kNode   *parsedNode;
+	int tokenType;
+	int symbol;
+	KSyntax resolvedSyntaxInfo;
+//	union {
+//		ksymbol_t   tokenType;           // (resolvedSyntaxInfo == NULL)
+////	ksymbol_t   symbol;      // symbol (resolvedSyntaxInfo != NULL)
+//	};
+//	union {
+//		kuhalfword_t   indent;               // indent when kw == TokenType_Indent
+//		kuhalfword_t   openCloseChar;
+//	};
+//	ksymbol_t   symbol;
+//	union {
+//		ktypeattr_t resolvedTypeId;      // typeid if KSymbol_TypePattern
+//		ksymbol_t   ruleNameSymbol;      // pattern rule
+//	};
+}
+
+
+
+class KNode {
+	KNode              Parent;
+	KNameSpace         RootNodeNameSpace;
+	KSyntax            Syntax;
+	KToken             KeyOperatorToken;
+	ArrayList<Object>  NodeList;
+
+	HashMap<String, Object> Annotation;
+}
+
+//typedef struct {
+//ktypeattr_t    typeAttr;    ksymbol_t  name;
+//} KGammaStackDecl;
+//
+//#define kNameSpace_TopLevel              (khalfflag_t)(1)
+//#define kNameSpace_IsTopLevel(GMA)       KFlag_Is(khalfflag_t, GMA->genv->flag, kNameSpace_TopLevel)
+//
+//struct KGammaStack {
+//KGammaStackDecl *varItems;
+//size_t varsize;
+//size_t capacity;
+//size_t allocsize;  // set size if not allocated  (by default on stack)
+//} ;
+//
+//struct KGammaLocalData {
+//khalfflag_t  flag;   khalfflag_t cflag;
+//KClass   *thisClass;
+//kMethod  *currentWorkingMethod;
+//struct KGammaStack    localScope;
+//} ;
+
+
+class KTypedNode {
+	int nodeType;
+	int typeId;
+}
+
+//#define kNode_uline(O)   (O)->KeyOperatorToken->uline
+//
+//#define KNewNode(ns)     new_(Node, ns, OnGcStack)
+//
+//#define kNode_IsRootNode(O)       IS_NameSpace(O->RootNodeNameSpace)
+//#define kNode_ns(O)               kNode_GetNameSpace(kctx, O)
+//static inline kNameSpace *kNode_GetNameSpace(KonohaContext *kctx, kNode *node)
+//{
+//kNameSpace *ns = node->StmtNameSpace;
+//while(!IS_NameSpace(ns)) {
+//	if(kNode_IsRootNode(node)) {
+//		ns = node->RootNodeNameSpace;
+//		break;
+//	}
+//	node = node->Parent;
+//	ns = node->StmtNameSpace;
+//}
+//return ns;
+//}
+//
+//#define kNode_GetParent(kctx, node)  ((IS_Node(node->Parent)) ? node->Parent : K_NULLNODE)
+//#define kNode_GetParentNULL(stmt)    ((IS_Node(stmt->Parent)) ? stmt->Parent : NULL)
+//#define kNode_SetParent(kctx, node, parent)   KFieldSet(node, node->Parent, parent)
+//
+//
+//static inline kNode *kNode_Type(kNode *node, knode_t nodeType, ktypeattr_t typeAttr)
+//{
+//if(kNode_node(node) != KNode_Error) {
+//	kNode_setnode(node, nodeType);
+//	node->typeAttr = typeAttr;
+//}
+//return node;
+//}
+//
+//static inline size_t kNode_GetNodeListSize(KonohaContext *kctx, kNode *node)
+//{
+//return (IS_Array(node->NodeList)) ? kArray_size(node->NodeList) : 0;
+//}
+//
+//#define kNode_IsTerm(N)           IS_Token((N)->TermToken)
+//
+//#define kNodeFlag_ObjectConst        kObjectFlag_Local1
+//
+//#define kNodeFlag_OpenBlock          kObjectFlag_Local2  /* KNode_Block */
+//#define kNodeFlag_CatchContinue      kObjectFlag_Local3  /* KNode_Block */
+//#define kNodeFlag_CatchBreak         kObjectFlag_Local4  /* KNode_Block */
+//
+//#define kNode_Is(P, O)       (KFlag_Is(uintptr_t,(O)->h.magicflag, kNodeFlag_##P))
+//#define kNode_Set(P, O, B)   KFlag_Set(uintptr_t,(O)->h.magicflag, kNodeFlag_##P, B)
+//
+//#define kNode_At(E, N)            ((E)->NodeList->NodeItems[(N)])
+//#define kNode_IsError(STMT)         (kNode_node(STMT) == KNode_Error)
+//
+//#define kNode_GetObjectNULL(CTX, O, K)            (KLIB kObject_getObject(CTX, UPCAST(O), K, NULL))
+//#define kNode_GetObject(CTX, O, K, DEF)           (KLIB kObject_getObject(CTX, UPCAST(O), K, DEF))
+//#define kNode_SetObject(CTX, O, K, V)             KLIB kObjectProto_SetObject(CTX, UPCAST(O), K, kObject_typeId(V), UPCAST(V))
+//#define kNode_SetUnboxValue(CTX, O, K, T, V)      KLIB kObjectProto_SetUnboxValue(CTX, UPCAST(O), K, T, V)
+//#define kNode_RemoveKey(CTX, O, K)                KLIB kObjectProto_RemoveKey(CTX, UPCAST(O), K)
+//#define kNode_DoEach(CTX, O, THUNK, F)            kObjectProto_DoEach(CTX, UPCAST(O), THUNK, F)
+//
+//#define kNode_Message(kctx, STMT, PE, FMT, ...)            KLIB MessageNode(kctx, STMT, NULL, NULL, PE, FMT, ## __VA_ARGS__)
+//#define kNodeToken_Message(kctx, STMT, TK, PE, FMT, ...)   KLIB MessageNode(kctx, STMT, TK, NULL, PE, FMT, ## __VA_ARGS__)
+
+// Runtime 
+
+//#define kContext_Debug          ((khalfflag_t)(1<<0))
+//#define kContext_Interactive    ((khalfflag_t)(1<<1))
+//#define kContext_CompileOnly    ((khalfflag_t)(1<<2))
+//#define kContext_Test           ((khalfflag_t)(1<<3))
+//#define kContext_Trace          ((khalfflag_t)(1<<4))
+//
+//#define KonohaContext_Is(P, X)   (KFlag_Is(khalfflag_t,(X)->stack->flag, kContext_##P))
+//#define KonohaContext_Set(P, X)   KFlag_Set1(khalfflag_t, (X)->stack->flag, kContext_##P)
+
+//
+//#define CLASSAPI \
+//	void         (*init)(KonohaContext*, kObject*, void *conf);\
+//	void         (*reftrace)(KonohaContext*, kObject*, struct KObjectVisitor *visitor);\
+//	void         (*free)(KonohaContext*, kObject *);\
+//	kObject*     (*fnull)(KonohaContext*, KClass *);\
+//	uintptr_t    (*unbox)(KonohaContext*, kObject *);\
+//	void         (*format)(KonohaContext*, KonohaValue *, int, KBuffer *);\
+//	int          (*compareTo)(KonohaContext *, kObject *, kObject *);\
+//	int          (*compareUnboxValue)(uintptr_t, uintptr_t);\
+//	void         (*initdef)(KonohaContext*, KClassVar*, KTraceInfo *);\
+//	kbool_t      (*isSubType)(KonohaContext*, KClass*, KClass *);\
+//	KClass*      (*realtype)(KonohaContext*, KClass*, KClass *)
+
+
+/* namespace */
+
+class KNameSpace {
+	KonohaContext konoha;
+	KNameSpace                         ParentNULL;
+	int packageId;
+	int syntaxOption;
+	ArrayList<KNameSpace>              ImportedNameSpaceList;
+//	KDict                              constTable;
+//	kArray                            *metaPatternList;
+//	kObject                           *globalObjectNULL;
+//	kArray                            *methodList_OnList;   // default K_EMPTYARRAY
+//	size_t                             sortedMethodList;
+	// the below references are defined in sugar
+//	void                              *tokenMatrix;
+////	KHashMap                          *syntaxMapNN;
+//	const struct KBuilderAPI          *builderApi;
+//	KKeyValue                         *typeVariableItems;
+//	size_t                             typesize;
+//	struct KGammaLocalData            *genv;
+	
+	KNameSpace(KonohaContext konoha, KNameSpace parent) {
+		this.konoha = konoha;
+		this.ParentNULL = parent;
+	}
+	
+	KFuncStack[] TokenFuncMatrix;
+	KFuncStack[] TokenFuncMatrixCache;
+
+	KFuncStack[] MergeTokenFuncMatrix(int kchar, KFuncStack[] cache) {
+		if(TokenFuncMatrix != null) {
+			if(cache[kchar] == null) {
+				cache[kchar] = TokenFuncMatrix[kchar];
+			}
+			else {
+				cache[kchar] = cache[kchar].Merge(TokenFuncMatrix[kchar]);
+			}
+		}
+		return cache;
+	}
+	
+	KFuncStack GetTokenFunc(int kchar) {
+		if(TokenFuncMatrixCache == null) {
+			TokenFuncMatrixCache = new KFuncStack[KonohaConst.KCHAR_MAX];
+		}
+		if(TokenFuncMatrixCache[kchar] == null) {
+			TokenFuncMatrixCache[kchar] = TokenFuncMatrix[kchar];
+//			for(int i = 0; i < ImportedNameSpaceList.size(); i++) {
+//				TokenFuncMatrixCache = ImportedNameSpaceList.get(i).TokenFuncMatrix.MergeTokenFuncMatrix(kchar, TokenFuncMatrixCache);
+//			}
+		}
+		return TokenFuncMatrixCache[kchar];
+	}
+
+	ArrayList<KToken> Tokenize(String text, long line) {
+		KTokenizer tokenizer = new KTokenizer(this, text, line);
+		return tokenizer.Tokenize();
+	}
+
+	KMacro GetMacro(int symbol) {
+//		KMacro macro = MacroTable.get(symbol);
+//		return macro;
+		return null;
+	}
+
+	void Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		int c = beginIdx;
+		while(c < endIdx) {
+			KToken tk = tokenList.get(c);
+			KMacro m = GetMacro(tk.symbol);
+			if(m != null) {
+				c = m.Prep(this, tokenList, c, endIdx, bufferList);
+			}
+			else {
+				tk.resolvedSyntaxInfo = GetSyntax(tk.symbol);
+				bufferList.add(tk);
+				c = c + 1;
+			}
+		}
+	}
+
+	KSyntax GetSyntax(int symbol) {
+//		KSyntax syntax = SyntaxTable.get(symbol);
+//		return syntax;
+		return null;
+	}
+
+	KNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
+		return null;
+	}
+	
+	KTypedNode Type(KNode node) {
+		return null;
+	}
+}
+
+
+class KKeyIdMap {
+	int GetId(String key) {
+		return 0;
+	}
+	
+	void SetId(String key, int id) {
+		
+	}
+}
+
+class KParamMap {
+	int GetId(int hash) {
+		return 0;
+	}
+	void SetId(int hash, int id) {
+		
+	}
+}
+
+class KSymbolTable {
+	ArrayList<KClass>      ClassList;
+	KKeyIdMap              LongClassNameMap;
+	ArrayList<String>      FileIdList;
+	KKeyIdMap              FileIdMap;
+	ArrayList<KPackage>    PackageList;
+	KKeyIdMap              PackageMap;
+	ArrayList<String>      SymbolList;
+	KKeyIdMap              SymbolMap;
+	ArrayList<KParam>      ParamList;
+	KParamMap              ParamMap;
+	ArrayList<KParam>      SignatureList;
+	KParamMap              SignatureMap;
+	
+	KSymbolTable() {
+		this.ClassList    = new ArrayList<KClass>(64);
+		this.FileIdList    = new ArrayList<String>(16);
+		this.PackageList   = new ArrayList<KPackage>(16);
+		this.SymbolList    = new ArrayList<String>(64);
+		this.ParamList     = new ArrayList<KParam>(64);
+		this.SignatureList = new ArrayList<KParam>(64);
+		this.LongClassNameMap = new KKeyIdMap();
+		this.FileIdMap    = new KKeyIdMap();
+		this.PackageMap   = new KKeyIdMap();
+		this.SymbolMap    = new KKeyIdMap();
+		this.ParamMap     = new KParamMap();
+		this.SignatureMap = new KParamMap();
+	}
+	
+	void Init(KonohaContext kctx) {
+		// 
+		KPackage defaultPackage = NewPackage(kctx, "Konoha");
+		NewClass(kctx, defaultPackage, "void");
+	}
+	
+	int GetFileId(String file) {
+		int id = this.FileIdMap.GetId(file);
+		if(id == -1) {
+			id = this.FileIdList.size();
+			this.FileIdList.add(file);
+		}
+		return id;
+	}
+
+	int GetSymbol(String key, boolean isnew) {
+		int id = this.SymbolMap.GetId(key);
+		if(id == -1 && isnew) {
+			id = this.SymbolList.size();
+			this.SymbolList.add(key);
+		}
+		return id;
+	}
+	
+	KPackage NewPackage(KonohaContext kctx, String name) {
+		int packageId = this.PackageList.size();
+		KPackage p = new KPackage(kctx, packageId, name);
+		this.PackageList.add(p);
+		return p;
+	}
+	
+	KClass NewClass(KonohaContext kctx, KPackage p, String name) {
+		int classId = this.ClassList.size();
+		KClass c = new KClass(kctx, p, classId, name);
+		this.ClassList.add(c);
+		this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
+		return c;
+	}
+	
+}
+
+class KonohaContext {
+	//KonohaStack               *esp;
+	//PlatformApi               *platApi;
+	//KonohaLib                 *klib;
+	//KRuntime                  *share;
+	//KRuntimeContextVar        *stack;
+	//KRuntimeModel           **runtimeModels;
+	//KModelContext           **localContexts;
+
+	KNameSpace DefaultNameSpace;
+	KSymbolTable   SymbolTable;
+	
+	KonohaContext () {
+		this.DefaultNameSpace = new KNameSpace(this, null);
+		this.SymbolTable = new KSymbolTable();
+		this.SymbolTable.Init(this);
+	}
+	
+	public int GetSymbol(String key, boolean isnew) {
+		return this.SymbolTable.GetSymbol(key, isnew);
+	}
+	
+	void Eval(String text) {
+		System.out.println("Eval: " + text);
+	}
+}
+
+class KFuncStack {
+	KFuncStack prev;
+	Object callee;
+	Method method;
+
+	KFuncStack(Method method, Object callee, KFuncStack prev) {
+		this.method = method;
+		this.callee = callee;
+		this.prev = prev;
+	}
+	
+	KFuncStack pop() {
+		return this.prev;
+	}
+	
+	KFuncStack Merge(KFuncStack other) {
+		// TODO
+		return null;
+	}
+	
+	int InvokeTokenFunc(String source, int pos, ArrayList<KToken> bufferToken) {
+		return 0;
+	}
 
 }
+
+/* Tokenizer */
+
+class KTokenizer {
+	KNameSpace ns;
+	String     Source;
+	long       currentLine;
+	ArrayList<KToken> SourceTokenList;
+	
+	KTokenizer(KNameSpace ns, String text, long uline) {
+		this.ns = ns;
+		this.Source = text;
+		this.currentLine = uline;
+		this.SourceTokenList = new ArrayList<KToken>();
+	}
+	
+	int TokenizeFirstToken(ArrayList<KToken> tokenList) {
+		return 0;
+	}
+	
+	int AsciiToKonohaChar(int pos) {
+		return 0; //TODO
+	}
+	
+	
+	int DispatchFunc(int kchar, int pos) {
+		KFuncStack fstack = ns.GetTokenFunc(kchar);
+		while(fstack != null) {
+			int next = fstack.InvokeTokenFunc(this.Source, pos, this.SourceTokenList);
+			if(next != -1) return next;
+			fstack = fstack.pop();
+		}
+		return 0; //TODO
+	}
+	
+	ArrayList<KToken> Tokenize() {
+		int kchar, pos = 0;
+		pos = TokenizeFirstToken(this.SourceTokenList);
+		while((kchar = AsciiToKonohaChar(pos)) != 0) {
+			int pos2 = DispatchFunc(kchar, pos);
+			if(!(pos < pos2)) break;
+			pos = pos2; 
+		}
+		return this.SourceTokenList;
+	}
+	
+}
+
+public class Konoha {
+	public static void main(String[] argc) {
+		KonohaContext konoha = new KonohaContext();
+		konoha.Eval("hello,world");
+	}
+}
+
