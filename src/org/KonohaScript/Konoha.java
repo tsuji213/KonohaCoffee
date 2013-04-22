@@ -11,14 +11,8 @@ package org.KonohaScript;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /* konoha util */
-
-interface KonohaConst {
-	final static int KCHAR_MAX = 41;
-}
 
 class KParamType {
 	int typeId;
@@ -113,9 +107,6 @@ class KSyntax {
 //	khalfword_t tokenKonohaChar;         khalfword_t macroParamSize;
 //	khalfword_t precedence_op2;          khalfword_t precedence_op1;
 }
-
-
-
 
 class KNode {
 	KNode              Parent;
@@ -348,10 +339,11 @@ class KonohaContext {
 	KNameSpace DefaultNameSpace;
 	KSymbolTable   SymbolTable;
 	
-	KonohaContext () {
-		this.DefaultNameSpace = new KNameSpace(this, null);
+	KonohaContext (KonohaSyntax defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
+		this.DefaultNameSpace = new KNameSpace(this, null);
+		defaultSyntax.LoadDefaultSyntax(DefaultNameSpace);
 	}
 	
 	public int GetSymbol(String key, boolean isnew) {
@@ -363,12 +355,10 @@ class KonohaContext {
 	}
 }
 
-/* Tokenizer */
-
-
 public class Konoha {
 	public static void main(String[] argc) {
-		KonohaContext konoha = new KonohaContext();
+		KonohaSyntax defaultSyntax = new KonohaSyntax();
+		KonohaContext konoha = new KonohaContext(defaultSyntax);
 		konoha.Eval("hello,world");
 	}
 }
