@@ -26,13 +26,29 @@ package org.KonohaScript;
 import java.util.ArrayList;
 
 public class KToken {
-	long uline;
-	String Text;
-//			kArray  *GroupTokenList;
-//			kNode   *parsedNode;
+	public final static int Indent    = 0;
+	public final static int Text      = 1;
+	public final static int Number    = 2;
+	public final static int Symbol    = 3;
+	public final static int Member    = 4;
+	public final static int Group     = 5;
+	public final static int Resolved  = 6;
+	public final static int Error     = 7;
+
 	int tokenType;
+	long uline;
+	String text;
+	KToken(int tokenType, String text, long uline) {
+		this.tokenType = tokenType;
+		this.text      = text;
+		this.uline     = uline;
+	}
 	int symbol;
 	KSyntax resolvedSyntaxInfo;
+	
+//			kArray  *GroupTokenList;
+//			kNode   *parsedNode;
+
 //		union {
 //			ksymbol_t   tokenType;           // (resolvedSyntaxInfo == NULL)
 ////		ksymbol_t   symbol;      // symbol (resolvedSyntaxInfo != NULL)
@@ -47,9 +63,7 @@ public class KToken {
 //			ksymbol_t   ruleNameSymbol;      // pattern rule
 //		};
 	
-	
 	// Debug
-	
 	void Dump() {
 		System.out.println("("+(int)uline+") '" + Text + "'");
 	}
