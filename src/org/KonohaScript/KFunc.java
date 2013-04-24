@@ -42,7 +42,7 @@ public final class KFunc {
 		}
 		return null;
 	}
-	
+
 	KFunc(Object callee, Method method, KFunc prev) {
 		this.callee = callee;
 		this.method = method;

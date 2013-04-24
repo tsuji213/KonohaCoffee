@@ -26,20 +26,9 @@ package org.KonohaScript;
 import java.util.ArrayList;
 
 public final class KToken {
-//	public final static int Indent    = 0;
-//	public final static int Text      = 1;
-//	public final static int Number    = 2;
-//	public final static int Symbol    = 3;
-//	public final static int Member    = 4;
-//	public final static int Group     = 5;
-//	public final static int ResolvedType  = 6;
-//	public final static int Error     = 7;
-//	int tokenType;
 
-	KToken(String text, long uline) {
-//		this.tokenType = tokenType;
-		this.ParsedText      = text;
-		this.uline     = uline;
+	KToken(String text) {
+		this.ParsedText = text;
 	}
 
 	final static int ErrorTokenFlag = 1;
@@ -55,7 +44,6 @@ public final class KToken {
 	}
 
 	long uline;
-	
 	String  ParsedText;
 	boolean equals(String text) {
 		return ParsedText.equals(text);
@@ -76,10 +64,10 @@ public final class KToken {
 	}
 	
 	void SetErrorMessage(String msg) {
+		ResolvedSyntax = KSyntax.ErrorSyntax;
 		ResolvedObject = msg;
 		flag |= GroupTokenFlag;
 	}
-	
 	
 	// Debug
 	void Dump() {

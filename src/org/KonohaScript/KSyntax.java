@@ -24,7 +24,6 @@
 
 package org.KonohaScript;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import org.KonohaScript.CodeGen.TypedNode;
@@ -47,6 +46,7 @@ public class KSyntax {
 	final static int Precedence_CStyleTRINARY  = 1400;  /* ? : */
 	final static int Precedence_CStyleAssign   = 1500;
 	final static int Precedence_CStyleCOMMA    = 1600;
+	final static int Precedence_Error          = 1700;
 	final static int Precedence_Statement      = 1900;
 	final static int Precedence_CStyleStatementEnd    = 2000;
 
@@ -66,7 +66,7 @@ public class KSyntax {
 	KSyntax Pop() { return prev; }
 	
 	KSyntax(Object po, String methodName, int precedence_op1, int precedence_op2) {
-		this.ParseObject = po;
+		this.ParseObject = po == null ? this : po;
 		this.ParseMethod = KFunc.LookupMethod(po, methodName);
 	}
 	
@@ -79,6 +79,17 @@ public class KSyntax {
 	}
 
 	TypedNode TypeMethodCall(KGamma gma, UntypedNode node) {
+		return null;
+	}
+	
+	final static KSyntax ErrorSyntax = new KSyntax(null, "ParseErrorNode", Precedence_Error, Precedence_Error);
+	
+	int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+//		KToken token = tokens.get(optIdx);
+		node.Syntax = ErrorSyntax;
+		return endIdx;
+	}
+	TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
 		return null;
 	}
 	

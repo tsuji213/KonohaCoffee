@@ -239,7 +239,7 @@ public final class KNameSpace implements KonohaParserConst {
 		if(!token.IsErrorToken()) {
 			if(level == Error) {
 				msg = "(error) " + GetSourcePosition(token.uline) + " " + msg;
-				token.SetError(msg);
+				token.SetErrorMessage(msg);
 			}
 			else if(level == Warning) {
 				msg = "(warning) " + GetSourcePosition(token.uline) + " " + msg;

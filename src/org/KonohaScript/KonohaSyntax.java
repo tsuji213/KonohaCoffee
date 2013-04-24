@@ -25,11 +25,41 @@
 package org.KonohaScript;
 import java.util.ArrayList;
 
-public class KonohaSyntax {
+public class KonohaSyntax implements KonohaParserConst {
 	// 
 	int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
+	}
+
+	int SingleCharTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		KToken token = new KToken(SourceText.substring(pos, 1));
+		ParsedTokenList.add(token);
+		return pos+1;
+	}
+
+	int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		int start = pos + 1;
+		char prev = '"';
+		pos = start;
+		while(pos < SourceText.length()) {
+			char ch = SourceText.charAt(pos); 
+			if(ch == '"' && prev == '\\') {
+				KToken token = new KToken(SourceText.substring(start, pos - start));
+				token.ResolvedSyntax = ns.GetSyntax("$Text");
+				ParsedTokenList.add(token);
+				return pos+1;
+			}
+			if(ch == '\n') {
+				KToken token = new KToken(SourceText.substring(start, pos - start));
+				ns.Message(Error, token, "expected \" to close the string literal");
+				ParsedTokenList.add(token);
+				return pos;
+			}
+			pos = pos + 1;
+			prev = ch;
+		}
+		return pos;
 	}
 	
 	void LoadDefaultSyntax(KNameSpace ns) {
