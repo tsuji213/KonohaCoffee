@@ -27,7 +27,7 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public final class KNameSpace {
+public final class KNameSpace implements KonohaParserConst {
 	KonohaContext konoha;
 	int packageId;
 	int syntaxOption;
@@ -229,6 +229,26 @@ public final class KNameSpace {
 	void Eval(String text, long uline) {
 		ArrayList<KToken> tokens = Tokenize(text, uline);
 		KToken.DumpTokenList(tokens);
+	}
+	
+	String GetSourcePosition(long uline) {
+		return "(file:" + (int)uline + ")";
+	}
+	
+	void Message(int level, KToken token, String msg) {
+		if(!token.IsErrorToken()) {
+			if(level == Error) {
+				msg = "(error) " + GetSourcePosition(token.uline) + " " + msg;
+				token.SetError(msg);
+			}
+			else if(level == Warning) {
+				msg = "(warning) " + GetSourcePosition(token.uline) + " " + msg;
+			}
+			else if(level == Info) {
+				msg = "(info) " + GetSourcePosition(token.uline) + " " + msg;
+			}
+			System.out.println(msg);
+		}
 	}
 }
 

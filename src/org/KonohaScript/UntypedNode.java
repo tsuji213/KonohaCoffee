@@ -53,7 +53,7 @@ public class UntypedNode implements KonohaParserConst {
 	KNode              Parent;
 	KNameSpace         RootNodeNameSpace;
 	KSyntax            Syntax;
-	KToken             KeyOperatorToken;
+	KToken             KeyToken;
 	ArrayList<Object>  NodeList;
 	
 	UntypedNode(KNameSpace ns) {
@@ -185,5 +185,4 @@ public class UntypedNode implements KonohaParserConst {
 		}
 		return opIdx;
 	}
-
 }
