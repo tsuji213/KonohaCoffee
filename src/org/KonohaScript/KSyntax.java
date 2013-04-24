@@ -68,9 +68,16 @@ public class KSyntax {
 	KSyntax(String syntaxName, int flag, Object po, String methodName, int precedence_op1, int precedence_op2) {
 		this.syntaxName = syntaxName;
 		this.flag = flag;
+		this.precedence_op1 = precedence_op1;
+		this.precedence_op2 = precedence_op2;
+		
 		this.ParseObject = po == null ? this : po;
 		this.ParseMethod = KFunc.LookupMethod(po, methodName);
 	}
+	
+//	static KSyntax DefineSyntax(String syntaxName, int flag, Object base, String name, int precedence_op1, int precedence_op2) {
+//		return new KSyntax(syntaxName, flag, precedence_op1, precedence_op2);
+//	}
 	
 	int InvokeParseFunc(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
 		return -1; // Todo
@@ -84,15 +91,20 @@ public class KSyntax {
 		return null;
 	}
 	
-	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, null, "ParseErrorNode", Precedence_Error, Precedence_Error);
+	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, new CommonSyntax(), "ParseErrorNode", Precedence_Error, Precedence_Error);
+		
+}
+
+class CommonSyntax {
 	
-	int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
 //		KToken token = tokens.get(optIdx);
-		node.Syntax = ErrorSyntax;
+		node.Syntax = KSyntax.ErrorSyntax;
 		return endIdx;
 	}
-	TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
+	
+	public TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
 		return null;
 	}
-	
+
 }

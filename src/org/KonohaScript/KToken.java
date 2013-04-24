@@ -64,7 +64,7 @@ public final class KToken {
 	}
 	
 	void SetErrorMessage(String msg) {
-		//ResolvedSyntax = KSyntax.ErrorSyntax;
+		ResolvedSyntax = KSyntax.ErrorSyntax;
 		ResolvedObject = msg;
 		flag |= ErrorTokenFlag;
 	}
