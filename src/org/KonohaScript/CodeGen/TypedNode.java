@@ -24,6 +24,17 @@
 
 package org.KonohaScript.CodeGen;
 
-public class TypedNode {
-	
+import org.KonohaScript.KClass;
+
+class NotSupportedNodeError extends RuntimeException {
+	NotSupportedNodeError() {
+		super();
+	}
+}
+
+public abstract class TypedNode {
+	KClass classInfo;
+	boolean Compile(CodeGenerator Gen) {
+		throw new NotSupportedNodeError();
+	}
 }
