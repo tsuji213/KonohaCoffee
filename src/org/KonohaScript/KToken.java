@@ -64,15 +64,15 @@ public final class KToken {
 	}
 	
 	void SetErrorMessage(String msg) {
-		ResolvedSyntax = KSyntax.ErrorSyntax;
+		//ResolvedSyntax = KSyntax.ErrorSyntax;
 		ResolvedObject = msg;
-		flag |= GroupTokenFlag;
+		flag |= ErrorTokenFlag;
 	}
 	
 	// Debug
 	void Dump() {
-		String syntax = (ResolvedSyntax == null) ? "unknown" : ResolvedSyntax.syntaxName;
-		System.out.println("("+syntax+":" + (int)uline + ") '" + ParsedText + "'");
+		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.syntaxName;
+		System.out.println("["+syntax+"+" + (int)uline + "] '" + ParsedText + "'");
 		if(IsGroupToken()) {
 			ArrayList<KToken> group = GetGroupTokenList();
 			DumpTokenList(group, 0, group.size());

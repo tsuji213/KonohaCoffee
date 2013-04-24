@@ -25,20 +25,20 @@
 package org.KonohaScript;
 import java.util.ArrayList;
 
-public class KonohaSyntax implements KonohaParserConst {
+public final class KonohaSyntax implements KonohaParserConst {
 	// 
-	int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
 	}
 
-	int SingleCharTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
-		KToken token = new KToken(SourceText.substring(pos, 1));
+	public int SingleSymbolTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		KToken token = new KToken(SourceText.substring(pos, pos + 1));
 		ParsedTokenList.add(token);
 		return pos+1;
 	}
 
-	int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+	public int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
@@ -63,6 +63,7 @@ public class KonohaSyntax implements KonohaParserConst {
 	}
 	
 	void LoadDefaultSyntax(KNameSpace ns) {
-		ns.AddTokenFunc(0, this, "TokenFunc");
+		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
+		ns.AddTokenFunc("\"", this, "TextLiteralTokenFunc");
 	}
 }

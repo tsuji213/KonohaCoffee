@@ -307,7 +307,9 @@ class KonohaContext {
 	
 	void Eval(String text) {
 		System.out.println("Eval: " + text);
+		DefaultNameSpace.Tokenize(text, 1);
 	}
+	
 }
 
 public class Konoha {

@@ -33,14 +33,14 @@ public final class KFunc {
 	Method method;
 	KFunc  prev;
 	
-	static Method LookupMethod(Object callee, String name) {
+	static Method LookupMethod(Object callee, String methodName) {
 		Method[] methods = callee.getClass().getMethods();
 		for(int i = 0; i < methods.length; i++) {
-			if(name.equals(methods[i].getName())) {
+			if(methodName.equals(methods[i].getName())) {
 				return methods[i];
 			}
 		}
-		return null;
+		throw new KonohaParserException("method not found: " + callee.getClass().getName() + "." + methodName);
 	}
 
 	KFunc(Object callee, Method method, KFunc prev) {
@@ -49,8 +49,17 @@ public final class KFunc {
 		this.prev = prev;
 	}
 
-	KFunc(Object callee, String name, KFunc prev) {
-		this(callee, LookupMethod(callee, name), prev);
+	KFunc(Object callee, String methodName, KFunc prev) {
+		this(callee, LookupMethod(callee, methodName), prev);
+	}
+
+	static KFunc NewFunc(Object callee, String methodName, KFunc prev) {
+		Method method = LookupMethod(callee, methodName);
+		if(prev != null && prev.method.equals(method)) {
+			//KonohaDebug.P("same method: " + method.getName());
+			return prev;
+		}
+		return new KFunc(callee, method, prev);
 	}
 
 	KFunc Pop() {
@@ -72,6 +81,7 @@ public final class KFunc {
 
 	int InvokeTokenFunc(KNameSpace ns, String source, int pos, ArrayList<KToken> bufferToken) {
 		try {
+			//KonohaDebug.P("invoking: " + method + ", pos: " + pos + " < " + source.length());
 			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
 			return next.intValue();
 		} catch (IllegalArgumentException e) {
@@ -83,6 +93,7 @@ public final class KFunc {
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return -1;
 		}
 		return 0;
 	}

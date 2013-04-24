@@ -65,7 +65,9 @@ public class KSyntax {
 	KSyntax        prev;
 	KSyntax Pop() { return prev; }
 	
-	KSyntax(Object po, String methodName, int precedence_op1, int precedence_op2) {
+	KSyntax(String syntaxName, int flag, Object po, String methodName, int precedence_op1, int precedence_op2) {
+		this.syntaxName = syntaxName;
+		this.flag = flag;
 		this.ParseObject = po == null ? this : po;
 		this.ParseMethod = KFunc.LookupMethod(po, methodName);
 	}
@@ -82,7 +84,7 @@ public class KSyntax {
 		return null;
 	}
 	
-	final static KSyntax ErrorSyntax = new KSyntax(null, "ParseErrorNode", Precedence_Error, Precedence_Error);
+	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, null, "ParseErrorNode", Precedence_Error, Precedence_Error);
 	
 	int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
 //		KToken token = tokens.get(optIdx);
@@ -94,114 +96,3 @@ public class KSyntax {
 	}
 	
 }
-
-
-
-//static int FindFirstStatementToken(KonohaContext *kctx, kArray *tokenList, int currentIdx, int endIdx)
-//{
-//	for(; currentIdx < endIdx; currentIdx++) {
-//		kToken *tk = tokenList->TokenItems[currentIdx];
-//		if(kToken_IsStatementSeparator(tk)) continue;
-//		break;
-//	}
-//	return currentIdx;
-//}
-//
-//static int FindEndOfStatement(KonohaContext *kctx, kNameSpace *ns, kArray *tokenList, int beginIdx, int endIdx)
-//{
-//	int c;
-//	for(c = beginIdx; c < endIdx; c++) {
-//		kToken *tk = tokenList->TokenItems[c];
-//		if(kToken_IsStatementSeparator(tk)) return c;
-//	}
-//	return endIdx;
-//}
-//
-//static int SkipAnnotation(KonohaContext *kctx, kArray *tokenList, int currentIdx, int endIdx)
-//{
-//	for(; currentIdx < endIdx; currentIdx++) {
-//		kToken *tk = tokenList->TokenItems[currentIdx];
-//		if(kToken_IsIndent(tk)) continue;
-//		if(KSymbol_IsAnnotation(tk->symbol)) {
-//			if(currentIdx + 1 < endIdx) {
-//				kToken *nextToken = tokenList->TokenItems[currentIdx+1];
-//				if(nextToken->resolvedSyntaxInfo != NULL && nextToken->resolvedSyntaxInfo->keyword == KSymbol_ParenthesisGroup) {
-//					currentIdx++;
-//				}
-//			}
-//			continue;
-//		}
-//		break;
-//	}
-//	return currentIdx;
-//}
-//
-//static void kNode_AddAnnotation(KonohaContext *kctx, kNode *stmt, kArray *tokenList, int beginIdx, int endIdx)
-//{
-//	int currentIdx;
-//	for(currentIdx = beginIdx; currentIdx < endIdx; currentIdx++) {
-//		kToken *tk = tokenList->TokenItems[currentIdx];
-//		if(kToken_IsIndent(tk)) {
-//			continue;
-//		}
-//		if(KSymbol_IsAnnotation(tk->symbol)) {
-//			kObject *value = UPCAST(K_TRUE);
-//			if(currentIdx + 1 < endIdx) {
-//				kToken *nextToken = tokenList->TokenItems[currentIdx+1];
-//				if(nextToken->resolvedSyntaxInfo != NULL && nextToken->resolvedSyntaxInfo->keyword == KSymbol_ParenthesisGroup) {
-//					int start = 0;
-//					value = (kObject *)KLIB ParseNewNode(kctx, kNode_ns(stmt), nextToken->GroupTokenList, &start, kArray_size(nextToken->GroupTokenList), ParseExpressionOption, "(");
-//					currentIdx++;
-//				}
-//			}
-//			KLIB kObjectProto_SetObject(kctx, stmt, tk->symbol, kObject_typeId(value), value);
-//			continue;
-//		}
-//		break;
-//	}
-//}
-//
-//static int ParseMetaPattern(KonohaContext *kctx, kNameSpace *ns, kNode *node, kArray *tokenList, int beginIdx, int endIdx)
-//{
-//	int i;
-//	//KLIB dumpTokenArray(kctx, 0, tokenList, beginIdx, endIdx);
-//	for(i = beginIdx; i < endIdx; i++) {
-//		kToken *tk = tokenList->TokenItems[i];
-//		if(kToken_IsStatementSeparator(tk)) {
-//			return ParseSyntaxNode(kctx, tk->resolvedSyntaxInfo, node, 0, tokenList, beginIdx, i, endIdx);
-//		}
-//	}
-//	int currentIdx = SkipAnnotation(kctx, tokenList, beginIdx, endIdx);
-//	if(!(currentIdx < endIdx)) {
-//		return endIdx;  // empty
-//	}
-//	kToken *tk = tokenList->TokenItems[currentIdx];
-//	kSyntax *syn = tk->resolvedSyntaxInfo;
-//	if(syn->syntaxPatternListNULL == NULL) {
-//		kNameSpace *currentNameSpace = ns;
-//		KFieldSet(node, node->KeyOperatorToken, tk);
-//		while(currentNameSpace != NULL) {
-//			kArray *metaPatternList = currentNameSpace->metaPatternList;
-//			intptr_t i;
-//			for(i = kArray_size(metaPatternList) - 1; i >=0; i--) {
-//				kSyntax *patternSyntax = metaPatternList->SyntaxItems[i];
-//				DBG_ASSERT(IS_Syntax(patternSyntax));
-//				node->syn = patternSyntax;
-//				int nextIdx = ParseSyntaxNode(kctx, patternSyntax, node, 0, tokenList, currentIdx, PatternNoMatch, endIdx);
-//				//DBG_P(">>>>>>>>>> searching meta pattern = %s%s index=%d,%d,%d", KSymbol_Fmt2(patternToken->symbol), beginIdx, nextIdx, endIdx);
-//				if(nextIdx != PatternNoMatch) {
-//					if(beginIdx < currentIdx) {
-//						kNode_AddAnnotation(kctx, node, tokenList, beginIdx, currentIdx);
-//					}
-//					return nextIdx;
-//				}
-//				if(kNode_IsError(node)) return endIdx;
-//				node->syn = NULL;
-//				kNode_Reset(kctx, node);
-//			}
-//			currentNameSpace = currentNameSpace->parentNULL;
-//		}
-//	}
-//	KFieldSet(node, node->KeyOperatorToken, K_NULLTOKEN);
-//	return PatternNoMatch;
-//}

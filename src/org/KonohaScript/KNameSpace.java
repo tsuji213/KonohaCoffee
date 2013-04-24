@@ -60,7 +60,7 @@ public final class KNameSpace implements KonohaParserConst {
 	
 	KFunc GetTokenFunc(int kchar) {
 		if(ImportedTokenMatrix == null) {
-			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+			return null;
 		}
 		if(ImportedTokenMatrix[kchar] == null) {
 			KFunc func = null;
@@ -74,14 +74,22 @@ public final class KNameSpace implements KonohaParserConst {
 		return ImportedTokenMatrix[kchar];
 	}
 
-	void AddTokenFunc(int kchar, Object callee, String name) {
+	void AddTokenFunc(String keys, Object callee, String name) {
 		if(DefinedTokenMatrix == null) {
 			DefinedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
-		DefinedTokenMatrix[kchar] = new KFunc(callee, name, DefinedTokenMatrix[kchar]);
-		ImportedTokenMatrix[kchar] = new KFunc(callee, name, GetTokenFunc(kchar));
+		if(ImportedTokenMatrix == null) {
+			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+		}
+		for(int i = 0; i < keys.length(); i++) {
+			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
+			KonohaDebug.P("char: " + keys.charAt(i) + ", kchar: "+ kchar + "defined: " + DefinedTokenMatrix[kchar]);
+			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
+			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
+		}
 	}
 
+	
 	ArrayList<KToken> Tokenize(String text, long uline) {
 		return new KTokenizer(this, text, uline).Tokenize();
 	}
@@ -232,7 +240,7 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 	
 	String GetSourcePosition(long uline) {
-		return "(file:" + (int)uline + ")";
+		return "(eval:" + (int)uline + ")";
 	}
 	
 	void Message(int level, KToken token, String msg) {
@@ -253,7 +261,7 @@ public final class KNameSpace implements KonohaParserConst {
 }
 
 
-class KTokenizer {
+class KTokenizer implements KonohaParserConst {
 	KNameSpace ns;
 	String     Source;
 	long       currentLine;
@@ -273,22 +281,29 @@ class KTokenizer {
 	int DispatchFunc(int kchar, int pos) {
 		KFunc fstack = ns.GetTokenFunc(kchar);
 		while(fstack != null) {
-			int next = fstack.InvokeTokenFunc(this.ns, this.Source, pos, this.SourceTokenList);
-			if(next != -1) return next;
+			int next = fstack.InvokeTokenFunc(ns, Source, pos, SourceTokenList);
+			if(next != -1) {
+				return next;
+			}
 			fstack = fstack.Pop();
 		}
-		return 0; //TODO
+		KToken token = new KToken(Source.substring(pos));
+		ns.Message(Error, token, "undefined token: " + token.ParsedText);
+		SourceTokenList.add(token);
+		return Source.length();
 	}
 
 	ArrayList<KToken> Tokenize() {
-		int kchar, pos = 0;
-		pos = TokenizeFirstToken(this.SourceTokenList);
-		while((kchar = KonohaChar.JavaCharToKonohaChar(Source.charAt(pos))) != 0) {
+		int pos = 0, len = Source.length();
+		pos = TokenizeFirstToken(SourceTokenList);
+		while(pos < len) {
+			int kchar = KonohaChar.JavaCharToKonohaChar(Source.charAt(pos));
 			int pos2 = DispatchFunc(kchar, pos);
 			if(!(pos < pos2)) break;
 			pos = pos2; 
 		}
-		return this.SourceTokenList;
+		KToken.DumpTokenList(SourceTokenList);
+		return SourceTokenList;
 	}
 
 }
