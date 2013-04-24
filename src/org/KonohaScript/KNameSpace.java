@@ -302,6 +302,13 @@ class KTokenizer implements KonohaParserConst {
 			if(!(pos < pos2)) break;
 			pos = pos2; 
 		}
+		for(int i = 0; i < SourceTokenList.size(); i++) {
+			KToken token = SourceTokenList.get(i);
+			if(token.ResolvedSyntax == KSyntax.IndentSyntax) {
+				currentLine = currentLine + 1;
+			}
+			token.uline = currentLine;
+		}
 		KToken.DumpTokenList(SourceTokenList);
 		return SourceTokenList;
 	}

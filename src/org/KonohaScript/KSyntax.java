@@ -90,8 +90,10 @@ public class KSyntax {
 	TypedNode TypeMethodCall(KGamma gma, UntypedNode node) {
 		return null;
 	}
-	
-	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, new CommonSyntax(), "ParseErrorNode", Precedence_Error, Precedence_Error);
+
+	private final static CommonSyntax baseSyntax = new CommonSyntax();
+	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, baseSyntax, "ParseErrorNode", Precedence_Error, Precedence_Error);
+	final static KSyntax IndentSyntax = new KSyntax("$Indent", 0, baseSyntax, "ParseIndent", Precedence_Error, Precedence_Error);
 		
 }
 
@@ -105,6 +107,12 @@ class CommonSyntax {
 	
 	public TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
 		return null;
+	}
+
+	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+////		KToken token = tokens.get(optIdx);
+//		node.Syntax = KSyntax.ErrorSyntax;
+		return endIdx;
 	}
 
 }
