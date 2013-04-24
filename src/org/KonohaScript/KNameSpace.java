@@ -27,15 +27,15 @@ package org.KonohaScript;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class KNameSpace {
+public final class KNameSpace {
 	KonohaContext konoha;
-	KNameSpace                         ParentNULL;
 	int packageId;
 	int syntaxOption;
+	KNameSpace                         ParentNULL;
 	ArrayList<KNameSpace>              ImportedNameSpaceList;
-//	KDict                              constTable;
-//	kArray                            *metaPatternList;
+
 //	kObject                           *globalObjectNULL;
 //	kArray                            *methodList_OnList;   // default K_EMPTYARRAY
 //	size_t                             sortedMethodList;
@@ -52,134 +52,165 @@ public class KNameSpace {
 		this.ParentNULL = parent;
 	}
 	
-	KFuncStack[] TokenFuncMatrix;
-	KFuncStack[] TokenFuncMatrixCache;
-
-	void AddTokenFunc(int kchar, Object callee, String name) {
-		Method method = null; //callee.getClass().getMethod(name, Integer.class);
-		if(TokenFuncMatrix == null) {
-			TokenFuncMatrix = new KFuncStack[KonohaChar.MAX];
-		}
-		TokenFuncMatrix[kchar] = new KFuncStack(method, callee, TokenFuncMatrix[kchar]);
+	KFunc MergeFunc(KFunc f, KFunc f2) {
+		if(f == null) return f2;
+		if(f2 == null) return f;
+		return f.Merge(f2);
 	}
 	
-//	KFuncStack[] MergeTokenFuncMatrix(int kchar, KFuncStack[] cache) {
-//		if(TokenFuncMatrix != null) {
-//			if(cache[kchar] == null) {
-//				cache[kchar] = TokenFuncMatrix[kchar];
-//			}
-//			else {
-//				cache[kchar] = cache[kchar].Merge(TokenFuncMatrix[kchar]);
-//			}
-//		}
-//		return cache;
-//	}
+	KFunc[] DefinedTokenMatrix;
+	KFunc[] ImportedTokenMatrix;
+
+	KFunc GetDefinedTokenFunc(int kchar) {
+		return (DefinedTokenMatrix != null) ? DefinedTokenMatrix[kchar] : null;
+	}
 	
-	KFuncStack GetTokenFunc(int kchar) {
-		if(TokenFuncMatrixCache == null) {
-			TokenFuncMatrixCache = new KFuncStack[KonohaChar.MAX];
+	KFunc GetTokenFunc(int kchar) {
+		if(ImportedTokenMatrix == null) {
+			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
-		if(TokenFuncMatrixCache[kchar] == null) {
-			TokenFuncMatrixCache[kchar] = TokenFuncMatrix[kchar];
-//			for(int i = 0; i < ImportedNameSpaceList.size(); i++) {
-//				TokenFuncMatrixCache = ImportedNameSpaceList.get(i).TokenFuncMatrix.MergeTokenFuncMatrix(kchar, TokenFuncMatrixCache);
-//			}
+		if(ImportedTokenMatrix[kchar] == null) {
+			KFunc func = null;
+			if(ParentNULL != null) {
+				func = ParentNULL.GetTokenFunc(kchar);
+			}
+			func = MergeFunc(func, GetDefinedTokenFunc(kchar));
+			assert(func != null);
+			ImportedTokenMatrix[kchar] = func;
 		}
-		return TokenFuncMatrixCache[kchar];
+		return ImportedTokenMatrix[kchar];
+	}
+
+	void AddTokenFunc(int kchar, Object callee, String name) {
+		if(DefinedTokenMatrix == null) {
+			DefinedTokenMatrix = new KFunc[KonohaChar.MAX];
+		}
+		DefinedTokenMatrix[kchar] = new KFunc(callee, name, DefinedTokenMatrix[kchar]);
+		ImportedTokenMatrix[kchar] = new KFunc(callee, name, GetTokenFunc(kchar));
 	}
 
 	ArrayList<KToken> Tokenize(String text, long uline) {
 		return new KTokenizer(this, text, uline).Tokenize();
 	}
 
-	KMacro GetMacro(int symbol) {
-//		KMacro macro = MacroTable.get(symbol);
-//		return macro;
-		return null;
+	HashMap<String, Object> DefinedSymbolTable;
+	HashMap<String, Object> ImportedSymbolTable;
+
+	Object GetDefinedSymbol(String symbol) {
+		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol) : null;
 	}
 
+	Object GetSymbol(String symbol) {
+		if(ImportedSymbolTable == null) {
+			Object o = GetDefinedSymbol(symbol);
+			if(o != null) {
+				ImportedSymbolTable = new HashMap<String, Object>();
+				ImportedSymbolTable.put(symbol, o);
+			}
+			return o;
+		}
+		return ImportedSymbolTable.get(symbol);
+	}
+
+	void AddSymbol(String symbol, Object constValue) {
+		if(DefinedSymbolTable == null) {
+			DefinedSymbolTable = new HashMap<String, Object>();
+		}
+		DefinedSymbolTable.put(symbol, constValue);
+		if(ImportedSymbolTable != null) {
+			ImportedSymbolTable.put(symbol, constValue);
+		}
+	}
+
+	HashMap<String, KFunc> DefinedMacroTable;
+	HashMap<String, KFunc> ImportedMacroTable;
+
+	KFunc GetDefinedMacroFunc(String symbol) {
+		return (DefinedMacroTable != null) ? DefinedMacroTable.get(symbol) : null;
+	}
+
+	KFunc GetMacroFunc(String symbol) {
+		if(ImportedMacroTable == null) {
+			KFunc f = GetDefinedMacroFunc(symbol);
+			if(f != null) {
+				ImportedMacroTable = new HashMap<String, KFunc>();
+				ImportedMacroTable.put(symbol, f);
+			}
+			return f;
+		}
+		return ImportedMacroTable.get(symbol);
+	}
+
+	void AddMacroFunc(String symbol, Object callee, String name) {
+		if(DefinedMacroTable == null) {
+			DefinedMacroTable = new HashMap<String, KFunc>();
+		}
+		KFunc f = new KFunc(callee, name, null);
+		DefinedMacroTable.put(symbol, f);
+		if(ImportedMacroTable != null) {
+			ImportedMacroTable.put(symbol, f);
+		}
+	}
+
+	KSyntax GetSyntax(String symbol) {
+		Object o = GetSymbol(symbol);
+		return (o instanceof KSyntax) ? (KSyntax)o : null;
+	}
+	
+	void AddSyntax(String symbol, KSyntax syntax) {
+		syntax.packageNameSpace = this;
+		syntax.prev = GetSyntax(symbol);
+		AddSymbol(symbol, syntax);
+	}
+	
+	void ImportNameSpace(KNameSpace ns) {
+		if(ImportedNameSpaceList == null) {
+			ImportedNameSpaceList = new ArrayList<KNameSpace>();
+			ImportedNameSpaceList.add(ns);
+		}
+		if(ns.DefinedTokenMatrix != null) {
+			for(int i = 0; i < KonohaChar.MAX; i++) {
+				if(ns.DefinedTokenMatrix[i] != null) {
+					ImportedTokenMatrix[i] = MergeFunc(GetTokenFunc(i), ns.DefinedTokenMatrix[i]);
+				}
+			}
+		}
+//		if(ns.DefinedSymbolTable != null) {
+//			Set<Entry<String,Object>> data = DefinedSymbolTable.entrySet();
+//		}		
+	}
+	
 	void Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		int c = beginIdx;
 		while(c < endIdx) {
 			KToken tk = tokenList.get(c);
-			KMacro m = GetMacro(tk.symbol);
-			if(m != null) {
-				c = m.Prep(this, tokenList, c, endIdx, bufferList);
-			}
-			else {
-				tk.resolvedSyntaxInfo = GetSyntax(tk.symbol);
-				bufferList.add(tk);
-				c = c + 1;
-			}
+//			KFunc = GetMacroFunc(tk.text);
+//			if(m != null) {
+//				c = m.Prep(this, tokenList, c, endIdx, bufferList);
+//			}
+//			else {
+//				tk.resolvedSyntaxInfo = GetSyntax(tk.symbol);
+//				bufferList.add(tk);
+//				c = c + 1;
+//			}
 		}
 	}
 
-	KSyntax GetSyntax(int symbol) {
-//		KSyntax syntax = SyntaxTable.get(symbol);
-//		return syntax;
-		return null;
-	}
-
-	KNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
+	
+	UntypedNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
 		return null;
 	}
 	
-	KTypedNode Type(KNode node) {
-		return null;
-	}
+//	TypedNode Type(KGamma gma, UntypedNode node) {
+//		return node.Syntax.InvokeTypeFunc(gma, node);
+//	}
 	
 	void Eval(String text, long uline) {
 		ArrayList<KToken> tokens = Tokenize(text, uline);
 		KToken.DumpTokenList(tokens);
 	}
-	
 }
 
-class KFuncStack {
-	KFuncStack prev;
-	Object callee;
-	Method method;
-
-	KFuncStack(Method method, Object callee, KFuncStack prev) {
-		this.method = method;
-		this.callee = callee;
-		this.prev = prev;
-	}
-
-	KFuncStack Pop() {
-		return this.prev;
-	}
-
-	KFuncStack Duplicate() {
-		if(prev == null) {
-			return new KFuncStack(method, callee, null);
-		}
-		else {
-			return new KFuncStack(method, callee, prev.Duplicate());
-		}
-	}
-
-	KFuncStack Merge(KFuncStack other) {
-		return other.Duplicate().prev = this.Duplicate();
-	}
-
-	int InvokeTokenFunc(KNameSpace ns, String source, int pos, ArrayList<KToken> bufferToken) {
-		try {
-			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
-			return next.intValue();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-	}
-}
 
 class KTokenizer {
 	KNameSpace ns;
@@ -199,7 +230,7 @@ class KTokenizer {
 	}
 
 	int DispatchFunc(int kchar, int pos) {
-		KFuncStack fstack = ns.GetTokenFunc(kchar);
+		KFunc fstack = ns.GetTokenFunc(kchar);
 		while(fstack != null) {
 			int next = fstack.InvokeTokenFunc(this.ns, this.Source, pos, this.SourceTokenList);
 			if(next != -1) return next;

@@ -94,19 +94,6 @@ class KMacro {
 	}
 }
 
-class KSyntax {
-	KNameSpace                       packageNameSpace;
-	int keyword;
-	int flag;
-	ArrayList<Object>                syntaxPatternListNULL;
-	ArrayList<Object>                macroDataNULL;
-//	kFunc                            *TokenFuncNULL;
-//	kFunc                            *ParseFuncNULL;
-//	kFunc                            *TypeFuncNULL;
-//	kFunc                            *ReplaceFuncNULL;
-//	khalfword_t tokenKonohaChar;         khalfword_t macroParamSize;
-//	khalfword_t precedence_op2;          khalfword_t precedence_op1;
-}
 
 class KNode {
 	KNode              Parent;

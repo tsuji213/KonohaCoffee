@@ -23,61 +23,9 @@
  ***************************************************************************/
 
 package org.KonohaScript;
-import java.util.ArrayList;
 
-public class KToken {
-	public final static int Indent    = 0;
-	public final static int Text      = 1;
-	public final static int Number    = 2;
-	public final static int Symbol    = 3;
-	public final static int Member    = 4;
-	public final static int Group     = 5;
-	public final static int ResolvedType  = 6;
-	public final static int Error     = 7;
+import java.util.HashMap;
 
-	int tokenType;
-	long uline;
-	String text;
-	KToken(int tokenType, String text, long uline) {
-		this.tokenType = tokenType;
-		this.text      = text;
-		this.uline     = uline;
-	}
-	int symbol;
-	KSyntax resolvedSyntaxInfo;
-	
-//			kArray  *GroupTokenList;
-//			kNode   *parsedNode;
-
-//		union {
-//			ksymbol_t   tokenType;           // (resolvedSyntaxInfo == NULL)
-////		ksymbol_t   symbol;      // symbol (resolvedSyntaxInfo != NULL)
-//		};
-//		union {
-//			kuhalfword_t   indent;               // indent when kw == TokenType_Indent
-//			kuhalfword_t   openCloseChar;
-//		};
-//		ksymbol_t   symbol;
-//		union {
-//			ktypeattr_t resolvedTypeId;      // typeid if KSymbol_TypePattern
-//			ksymbol_t   ruleNameSymbol;      // pattern rule
-//		};
-	
-	// Debug
-	void Dump() {
-		System.out.println("("+(int)uline+") '" + Text + "'");
-	}
-	
-	static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {
-		for(int i = beginIdx; i < endIdx; i++) {
-			KToken token = list.get(i);
-			token.Dump();
-		}
-	}
-	
-	static void DumpTokenList(ArrayList<KToken> list) {
-		DumpTokenList(list, 0, list.size());
-	}
-	
+public class KObject {
+	HashMap<String, Object> prototypes;
 }
-
