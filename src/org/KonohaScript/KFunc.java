@@ -87,6 +87,22 @@ public final class KFunc {
 		return 0;
 	}
 
+	int InvokeMacroFunc(KNameSpace ns,  ArrayList<KToken> tokenToken, int beginIdx, int endIdx, ArrayList<KToken> bufferToken) {
+//		try {
+//			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
+//			return next.intValue();
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		return 0;
+	}
 
 
 }

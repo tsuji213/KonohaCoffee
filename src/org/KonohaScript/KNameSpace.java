@@ -38,12 +38,7 @@ public final class KNameSpace {
 //	kArray                            *methodList_OnList;   // default K_EMPTYARRAY
 //	size_t                             sortedMethodList;
 	// the below references are defined in sugar
-//	void                              *tokenMatrix;
-////	KHashMap                          *syntaxMapNN;
 //	const struct KBuilderAPI          *builderApi;
-//	KKeyValue                         *typeVariableItems;
-//	size_t                             typesize;
-//	struct KGammaLocalData            *genv;
 	
 	KNameSpace(KonohaContext konoha, KNameSpace parent) {
 		this.konoha = konoha;
@@ -178,20 +173,48 @@ public final class KNameSpace {
 //		}		
 	}
 	
-	void Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+	KSyntax ResolveSyntax(KToken tk) {
+		return null; // todo
+	}
+	
+	int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		int c = beginIdx;
 		while(c < endIdx) {
 			KToken tk = tokenList.get(c);
-//			KFunc = GetMacroFunc(tk.text);
-//			if(m != null) {
-//				c = m.Prep(this, tokenList, c, endIdx, bufferList);
-//			}
-//			else {
-//				tk.resolvedSyntaxInfo = GetSyntax(tk.symbol);
-//				bufferList.add(tk);
-//				c = c + 1;
-//			}
+			if(tk.resolvedSyntaxInfo == null) {
+				KFunc macro = GetMacroFunc(tk.text);
+				if(macro != null) {
+					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c, endIdx, bufferList);
+					if(nextIdx == -1) {
+						return c + 1;
+					}
+					c = nextIdx;
+					break;
+				}
+				tk.resolvedSyntaxInfo = ResolveSyntax(tk);
+			}
+			assert(tk.resolvedSyntaxInfo != null);
+			bufferList.add(tk);
+			c = c + 1;
 		}
+		return c;
+	}
+	
+	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		ArrayList<KToken> group = new ArrayList<KToken>();
+		int nextIdx = ns.Prep(tokenList, beginIdx+1, endIdx, group);
+		KToken lastToken = tokenList.get(nextIdx-1);
+		if(!lastToken.equals(")")) {
+			// ERROR
+		}
+		KToken groupToken = null;// TODO
+		bufferList.add(groupToken);
+		groupToken.resolvedSyntaxInfo = ns.GetSyntax("$()");
+		return nextIdx;
+	}
+
+	int MacroCloseParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		return -1;
 	}
 
 	
