@@ -1,6 +1,6 @@
 package org.KonohaScript.CodeGen;
 
-public class BinaryNode extends TypedNode {
+public abstract class BinaryNode extends TypedNode {
 	TypedNode Left;
 	TypedNode Right;
 	BinaryNode(TypedNode Left, TypedNode Right) {
