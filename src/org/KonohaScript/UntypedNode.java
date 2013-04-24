@@ -100,7 +100,7 @@ public class UntypedNode implements KonohaParserConst {
 			int i = beginIdx, start = i;
 			while(i < endIdx) {
 				KToken tk = tokenList.get(i);
-				if(tk.resolvedSyntaxInfo.precedence_op2 == KSyntax.Precedence_CStyleStatementEnd) {
+				if(tk.ResolvedSyntax.precedence_op2 == KSyntax.Precedence_CStyleStatementEnd) {
 					if(start < i) {
 						AddNode(ParseNewNode(RootNodeNameSpace, tokenList, start, i, StatementLevel));
 						nextIdx = endIdx;
@@ -137,7 +137,7 @@ public class UntypedNode implements KonohaParserConst {
 		int opIdx = FindOperator(tokenList, beginIdx, endIdx);
 		KToken keyOperator = tokenList.get(opIdx);
 		//DBG_P("KeyOperator >>>>>>>> %d<%d<%d, %s", beginIdx, opIdx, endIdx, KToken_t(keyOperator));
-		KSyntax syntax = RootNodeNameSpace.GetSyntax(keyOperator.text);
+		KSyntax syntax = RootNodeNameSpace.GetSyntax(keyOperator.ParsedText);
 		int nextIdx = NoMatch;
 		while(syntax != null) {
 			nextIdx = syntax.InvokeParseFunc(this, tokenList, beginIdx, beginIdx, endIdx);
@@ -156,7 +156,7 @@ public class UntypedNode implements KonohaParserConst {
 		KToken typeToken = null;
 		for(i = beginIdx; i < endIdx; i++) {
 			KToken tk = tokenList.get(i);
-			KSyntax syntax = tk.resolvedSyntaxInfo;
+			KSyntax syntax = tk.ResolvedSyntax;
 			if(isPrePosition) {
 				if(syntax.precedence_op1 > 0) {
 					if(precedence < syntax.precedence_op1) {
@@ -181,7 +181,7 @@ public class UntypedNode implements KonohaParserConst {
 					}
 				}
 			}
-			typeToken = (tk.tokenType == KToken.ResolvedType) ? tk : null;
+			typeToken = (tk.ResolvedObject instanceof KClass) ? tk : null;
 		}
 		return opIdx;
 	}

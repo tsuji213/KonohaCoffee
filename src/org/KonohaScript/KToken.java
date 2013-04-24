@@ -26,46 +26,43 @@ package org.KonohaScript;
 import java.util.ArrayList;
 
 public class KToken {
-	public final static int Indent    = 0;
-	public final static int Text      = 1;
-	public final static int Number    = 2;
-	public final static int Symbol    = 3;
-	public final static int Member    = 4;
-	public final static int Group     = 5;
-	public final static int ResolvedType  = 6;
-	public final static int Error     = 7;
-
-	int tokenType;
+//	public final static int Indent    = 0;
+//	public final static int Text      = 1;
+//	public final static int Number    = 2;
+//	public final static int Symbol    = 3;
+//	public final static int Member    = 4;
+//	public final static int Group     = 5;
+//	public final static int ResolvedType  = 6;
+//	public final static int Error     = 7;
+//	int tokenType;
 	long uline;
-	String text;
-	KToken(int tokenType, String text, long uline) {
-		this.tokenType = tokenType;
-		this.text      = text;
+
+	KToken(String text, long uline) {
+//		this.tokenType = tokenType;
+		this.ParsedText      = text;
 		this.uline     = uline;
 	}
-	int symbol;
-	KSyntax resolvedSyntaxInfo;
 	
-//			kArray  *GroupTokenList;
-//			kNode   *parsedNode;
-
-//		union {
-//			ksymbol_t   tokenType;           // (resolvedSyntaxInfo == NULL)
-////		ksymbol_t   symbol;      // symbol (resolvedSyntaxInfo != NULL)
-//		};
-//		union {
-//			kuhalfword_t   indent;               // indent when kw == TokenType_Indent
-//			kuhalfword_t   openCloseChar;
-//		};
-//		ksymbol_t   symbol;
-//		union {
-//			ktypeattr_t resolvedTypeId;      // typeid if KSymbol_TypePattern
-//			ksymbol_t   ruleNameSymbol;      // pattern rule
-//		};
+	String  ParsedText;
+	boolean equals(String text) {
+		return ParsedText.equals(text);
+	}
+	
+	KSyntax ResolvedSyntax;
+	Object  ResolvedObject;
+	
+	ArrayList<KToken> GetGroupTokenList() {
+		return (ArrayList<KToken>)ResolvedObject;
+	}
 	
 	// Debug
 	void Dump() {
-		System.out.println("("+(int)uline+") '" + Text + "'");
+		String syntax = (ResolvedSyntax == null) ? "unknown" : ResolvedSyntax.syntaxName;
+		System.out.println("("+syntax+":" + (int)uline + ") '" + ParsedText + "'");
+		if(ResolvedObject instanceof ArrayList<?>) {
+			ArrayList<KToken> group = GetGroupTokenList();
+			DumpTokenList(group, 0, group.size());
+		}
 	}
 	
 	static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {

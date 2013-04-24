@@ -181,8 +181,8 @@ public final class KNameSpace {
 		int c = beginIdx;
 		while(c < endIdx) {
 			KToken tk = tokenList.get(c);
-			if(tk.resolvedSyntaxInfo == null) {
-				KFunc macro = GetMacroFunc(tk.text);
+			if(tk.ResolvedSyntax == null) {
+				KFunc macro = GetMacroFunc(tk.ParsedText);
 				if(macro != null) {
 					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c, endIdx, bufferList);
 					if(nextIdx == -1) {
@@ -191,9 +191,9 @@ public final class KNameSpace {
 					c = nextIdx;
 					break;
 				}
-				tk.resolvedSyntaxInfo = ResolveSyntax(tk);
+				tk.ResolvedSyntax = ResolveSyntax(tk);
 			}
-			assert(tk.resolvedSyntaxInfo != null);
+			assert(tk.ResolvedSyntax != null);
 			bufferList.add(tk);
 			c = c + 1;
 		}
@@ -209,7 +209,7 @@ public final class KNameSpace {
 		}
 		KToken groupToken = null;// TODO
 		bufferList.add(groupToken);
-		groupToken.resolvedSyntaxInfo = ns.GetSyntax("$()");
+		groupToken.ResolvedSyntax = ns.GetSyntax("$()");
 		return nextIdx;
 	}
 
