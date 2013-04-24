@@ -95,10 +95,10 @@ class KNode {
 //} ;
 
 
-class KTypedNode {
-	int nodeType;
-	int typeId;
-}
+//class KTypedNode {
+//	int nodeType;
+//	int typeId;
+//}
 
 //#define kNode_uline(O)   (O)->KeyOperatorToken->uline
 //
