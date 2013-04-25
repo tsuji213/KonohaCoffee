@@ -1,11 +1,12 @@
 package org.KonohaScript.AST;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class ReturnNode extends UnaryNode {
 
-	ReturnNode(TypedNode Expr) {
-		super(Expr);
+	public ReturnNode(KClass ClassInfo, TypedNode Expr) {
+		super(ClassInfo, Expr);
 	}
 
 	@Override

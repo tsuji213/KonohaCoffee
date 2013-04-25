@@ -1,11 +1,12 @@
 package org.KonohaScript.AST;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class OrNode extends BinaryNode {
 
-	OrNode(TypedNode Left, TypedNode Right) {
-		super(Left, Right);
+	OrNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
+		super(ClassInfo, Left, Right);
 	}
 
 	@Override

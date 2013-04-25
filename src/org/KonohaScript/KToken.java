@@ -23,6 +23,7 @@
  ***************************************************************************/
 
 package org.KonohaScript;
+
 import java.util.ArrayList;
 
 public final class KToken {
@@ -32,7 +33,7 @@ public final class KToken {
 	}
 
 	final static int ErrorTokenFlag = 1;
-	final static int GroupTokenFlag = (1<<1);
+	final static int GroupTokenFlag = (1 << 1);
 	int flag;
 
 	boolean IsErrorToken() {
@@ -44,51 +45,53 @@ public final class KToken {
 	}
 
 	long uline;
-	String  ParsedText;
+	public String ParsedText;
+
 	boolean equals(String text) {
 		return ParsedText.equals(text);
 	}
-	
+
 	KSyntax ResolvedSyntax;
-	Object  ResolvedObject;
+	Object ResolvedObject;
 
 	void SetGroupTokenList(KSyntax syntax, ArrayList<KToken> group) {
 		ResolvedSyntax = syntax;
 		ResolvedObject = group;
 		flag |= GroupTokenFlag;
 	}
-	
+
 	ArrayList<KToken> GetGroupTokenList() {
 		assert (IsGroupToken());
-		return (ArrayList<KToken>)ResolvedObject;
+		return (ArrayList<KToken>) ResolvedObject;
 	}
-	
+
 	void SetErrorMessage(String msg) {
 		ResolvedSyntax = KSyntax.ErrorSyntax;
 		ResolvedObject = msg;
 		flag |= ErrorTokenFlag;
 	}
-	
+
 	// Debug
 	void Dump() {
-		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.syntaxName;
-		System.out.println("["+syntax+"+" + (int)uline + "] '" + ParsedText + "'");
-		if(IsGroupToken()) {
+		String syntax = (ResolvedSyntax == null) ? "symbol"
+				: ResolvedSyntax.syntaxName;
+		System.out.println("[" + syntax + "+" + (int) uline + "] '"
+				+ ParsedText + "'");
+		if (IsGroupToken()) {
 			ArrayList<KToken> group = GetGroupTokenList();
 			DumpTokenList(group, 0, group.size());
 		}
 	}
-	
+
 	static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {
-		for(int i = beginIdx; i < endIdx; i++) {
+		for (int i = beginIdx; i < endIdx; i++) {
 			KToken token = list.get(i);
 			token.Dump();
 		}
 	}
-	
+
 	static void DumpTokenList(ArrayList<KToken> list) {
 		DumpTokenList(list, 0, list.size());
 	}
-	
-}
 
+}

@@ -1,8 +1,13 @@
 package org.KonohaScript.AST;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class LoopNode extends TypedNode {
+	public LoopNode(KClass ClassInfo) {
+		super(ClassInfo);
+	}
+
 	/* while CondExpr then { LoopBlock; IterationExpr } */
 	TypedNode CondExpr;
 	TypedNode LoopBody;

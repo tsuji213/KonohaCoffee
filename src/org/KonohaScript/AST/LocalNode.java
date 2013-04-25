@@ -1,14 +1,16 @@
 package org.KonohaScript.AST;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class LocalNode extends TypedNode {
 	/* frame[$Index] (or TermToken->text) */
-	KToken TermToken;
+	public KToken TermToken;
 	int Index;
 
-	LocalNode(KToken TermToken, int Index) {
+	LocalNode(KClass ClassInfo, KToken TermToken, int Index) {
+		super(ClassInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
 	}

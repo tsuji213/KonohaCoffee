@@ -1,11 +1,12 @@
 package org.KonohaScript.AST;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class ThrowNode extends UnaryNode {
 	/* THROW ExceptionExpr */
-	ThrowNode(TypedNode Expr) {
-		super(Expr);
+	ThrowNode(KClass ClassInfo, TypedNode Expr) {
+		super(ClassInfo, Expr);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package org.KonohaScript.AST;
 
 import java.util.ArrayList;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class TryNode extends TypedNode {
@@ -11,12 +12,16 @@ public class TryNode extends TypedNode {
 	 * CatchedExceptions[1] then CatchBlock[1] ... FinallyBlock end
 	 */
 	TypedNode TryBlock;
-	ArrayList<TypedNode> CatcheExceptionPairs; /* (ExceptionType, CatchBlock) */
+	ArrayList<TypedNode> TargetException;
+	public ArrayList<TypedNode> CatchBlock;
 	TypedNode FinallyBlock;
 
-	TryNode(TypedNode TryBlock, TypedNode FinallyBlock) {
+	TryNode(KClass ClassInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
+		super(ClassInfo);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
+		this.CatchBlock = new ArrayList<TypedNode>();
+		this.TargetException = new ArrayList<TypedNode>();
 	}
 
 	@Override
