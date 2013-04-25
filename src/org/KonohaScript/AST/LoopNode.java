@@ -1,7 +1,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LoopNode extends TypedNode {
 	public LoopNode(KClass ClassInfo) {
@@ -14,12 +14,12 @@ public class LoopNode extends TypedNode {
 	TypedNode IterationExpr;
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterLoop(this);
-		Gen.Visit(this.CondExpr);
-		Gen.Visit(this.LoopBody);
-		Gen.Visit(this.IterationExpr);
-		Gen.ExitLoop(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterLoop(this);
+		Visitor.Visit(this.CondExpr);
+		Visitor.Visit(this.LoopBody);
+		Visitor.Visit(this.IterationExpr);
+		Visitor.ExitLoop(this);
 		return true;
 	}
 }

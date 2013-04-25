@@ -3,7 +3,7 @@ package org.KonohaScript.AST;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class SwitchNode extends TypedNode {
 	public SwitchNode(KClass ClassInfo) {
@@ -18,13 +18,13 @@ public class SwitchNode extends TypedNode {
 	public ArrayList<TypedNode> Blocks;
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterSwitch(this);
-		Gen.Visit(this.CondExpr);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterSwitch(this);
+		Visitor.Visit(this.CondExpr);
 		for (TypedNode Node : this.Blocks) {
-			Gen.Visit(Node);
+			Visitor.Visit(Node);
 		}
-		Gen.ExitSwitch(this);
+		Visitor.ExitSwitch(this);
 		return true;
 	}
 }

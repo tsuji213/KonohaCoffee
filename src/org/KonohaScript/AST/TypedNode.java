@@ -25,7 +25,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 class NotSupportedNodeError extends RuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -46,7 +46,7 @@ public abstract class TypedNode {
 		return ClassInfo.classId == 3/* KType_Int */|| ClassInfo.classId == 4/* KType_Boolean */;
 	}
 
-	public boolean Evaluate(CodeGenerator Gen) {
+	public boolean Evaluate(ASTVisitor Visitor) {
 		throw new NotSupportedNodeError();
 	}
 }

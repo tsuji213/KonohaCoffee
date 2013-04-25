@@ -3,7 +3,7 @@ package org.KonohaScript.AST;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class TryNode extends TypedNode {
 	/*
@@ -16,7 +16,7 @@ public class TryNode extends TypedNode {
 	public ArrayList<TypedNode> CatchBlock;
 	TypedNode FinallyBlock;
 
-	TryNode(KClass ClassInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
+	public TryNode(KClass ClassInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
 		super(ClassInfo);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
@@ -25,11 +25,11 @@ public class TryNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterTry(this);
-		Gen.Visit(this.TryBlock);
-		Gen.Visit(FinallyBlock);
-		Gen.ExitTry(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterTry(this);
+		Visitor.Visit(this.TryBlock);
+		Visitor.Visit(FinallyBlock);
+		Visitor.ExitTry(this);
 		return false; // FIXME
 	}
 }

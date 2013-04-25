@@ -2,7 +2,7 @@ package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
 import org.KonohaScript.KToken;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class FieldNode extends TypedNode {
 	/* frame[Index][Xindex] (or ($TermToken->text)[Xindex] */
@@ -10,7 +10,7 @@ public class FieldNode extends TypedNode {
 	int Index;
 	public int Xindex;
 
-	FieldNode(KClass ClassInfo, KToken TermToken, int Index, int Xindex) {
+	public FieldNode(KClass ClassInfo, KToken TermToken, int Index, int Xindex) {
 		super(ClassInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
@@ -18,9 +18,9 @@ public class FieldNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterField(this);
-		Gen.ExitField(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterField(this);
+		Visitor.ExitField(this);
 		return true;
 	}
 }

@@ -1,7 +1,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ConstNode extends TypedNode {
 	public long ConstValue;
@@ -49,9 +49,9 @@ public class ConstNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterConst(this);
-		Gen.ExitConst(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterConst(this);
+		Visitor.ExitConst(this);
 		return true;
 	}
 }

@@ -1,19 +1,19 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AndNode extends BinaryNode {
-	AndNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
+	public AndNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
 		super(ClassInfo, Left, Right);
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterAnd(this);
-		Gen.Visit(this.Left);
-		Gen.Visit(this.Right);
-		Gen.ExitAnd(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterAnd(this);
+		Visitor.Visit(this.Left);
+		Visitor.Visit(this.Right);
+		Visitor.ExitAnd(this);
 		return true;
 	}
 

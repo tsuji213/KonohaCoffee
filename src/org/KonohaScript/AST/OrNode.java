@@ -1,20 +1,20 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class OrNode extends BinaryNode {
 
-	OrNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
+	public OrNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
 		super(ClassInfo, Left, Right);
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterOr(this);
-		Gen.Visit(this.Left);
-		Gen.Visit(this.Right);
-		Gen.ExitOr(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterOr(this);
+		Visitor.Visit(this.Left);
+		Visitor.Visit(this.Right);
+		Visitor.ExitOr(this);
 		return true;
 	}
 }

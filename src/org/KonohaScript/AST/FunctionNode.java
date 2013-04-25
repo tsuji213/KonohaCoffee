@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class FunctionNode extends TypedNode implements CallableNode {
 	/* [Method, DefaultObject, [Env1, Env2, ...., EnvN] */
@@ -15,7 +15,7 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	ArrayList<TypedNode> EnvList;
 	Method Mtd;
 
-	FunctionNode(KClass ClassInfo, Method Mtd) {
+	public FunctionNode(KClass ClassInfo, Method Mtd) {
 		super(ClassInfo);
 		this.Mtd = Mtd;
 		this.EnvList = new ArrayList<TypedNode>();
@@ -27,9 +27,9 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterFunction(this);
-		Gen.ExitFunction(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterFunction(this);
+		Visitor.ExitFunction(this);
 		return true;
 	}
 }

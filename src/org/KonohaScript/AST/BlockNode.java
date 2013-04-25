@@ -3,7 +3,7 @@ package org.KonohaScript.AST;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class BlockNode extends TypedNode {
 	public ArrayList<TypedNode> ExprList;
@@ -41,12 +41,12 @@ public class BlockNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterBlock(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterBlock(this);
 		for (TypedNode Node : this.ExprList) {
-			Gen.Visit(Node);
+			Visitor.Visit(Node);
 		}
-		Gen.ExitBlock(this);
+		Visitor.ExitBlock(this);
 		return true;
 	}
 }

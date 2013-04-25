@@ -1,18 +1,18 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class BoxNode extends UnaryNode {
-	BoxNode(KClass ClassInfo, TypedNode Expr) {
+	public BoxNode(KClass ClassInfo, TypedNode Expr) {
 		super(ClassInfo, Expr);
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterBox(this);
-		Gen.Visit(this.Expr);
-		Gen.ExitBox(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterBox(this);
+		Visitor.Visit(this.Expr);
+		Visitor.ExitBox(this);
 		return true;
 	}
 }

@@ -2,7 +2,7 @@ package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
 import org.KonohaScript.KToken;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AssignNode extends TypedNode {
 	public KToken TermToken;
@@ -10,7 +10,8 @@ public class AssignNode extends TypedNode {
 	TypedNode Right;
 
 	/* frame[Index] = Right */
-	AssignNode(KClass ClassInfo, KToken TermToken, int Index, TypedNode Right) {
+	public AssignNode(KClass ClassInfo, KToken TermToken, int Index,
+			TypedNode Right) {
 		super(ClassInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
@@ -18,9 +19,9 @@ public class AssignNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterAssign(this);
-		Gen.ExitAssign(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterAssign(this);
+		Visitor.ExitAssign(this);
 		return true;
 	}
 

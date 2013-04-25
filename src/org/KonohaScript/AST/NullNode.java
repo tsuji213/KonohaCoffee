@@ -1,7 +1,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class NullNode extends TypedNode {
 
@@ -10,9 +10,9 @@ public class NullNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterNull(this);
-		Gen.ExitNull(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterNull(this);
+		Visitor.ExitNull(this);
 		return true;
 	}
 }

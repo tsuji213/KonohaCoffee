@@ -27,23 +27,12 @@ import org.KonohaScript.AST.ThrowNode;
 import org.KonohaScript.AST.TryNode;
 import org.KonohaScript.AST.TypedNode;
 
-class Local {
-	int Index;
-	String Name;
-
-	public Local(int index, String name) {
-		this.Index = index;
-		this.Name = name;
-	}
-}
-
-public class SimpleVMCodeGen implements CodeGenerator {
+public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	ArrayList<String> Program;
-	ArrayList<Local> LocalVals;
 
 	public SimpleVMCodeGen() {
+		super();
 		this.Program = new ArrayList<String>();
-		this.LocalVals = new ArrayList<Local>();
 	}
 
 	@Override
@@ -98,7 +87,8 @@ public class SimpleVMCodeGen implements CodeGenerator {
 
 	@Override
 	public void ExitNew(NewNode Node) {
-		this.Program.add(Node.ClassInfo.ShortClassName.toString());
+		this.Program.add("new " + Node.ClassInfo.ShortClassName.toString()
+				+ "()");
 	}
 
 	@Override
@@ -109,17 +99,6 @@ public class SimpleVMCodeGen implements CodeGenerator {
 	@Override
 	public void ExitNull(NullNode Node) {
 		this.Program.add("null");
-	}
-
-	Local AddLocalVarIfNotDefined(String Text) {
-		for (Local l : this.LocalVals) {
-			if (l.Name.compareTo(Text) == 0) {
-				return l;
-			}
-		}
-		Local local = new Local(this.LocalVals.size(), Text);
-		this.LocalVals.add(local);
-		return local;
 	}
 
 	@Override
@@ -208,7 +187,7 @@ public class SimpleVMCodeGen implements CodeGenerator {
 	@Override
 	public void ExitAssign(AssignNode Node) {
 		String Right = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Node.TermToken.ParsedText + " = " + Right + ";");
+		this.Program.add(Node.TermToken.ParsedText + " = " + Right);
 	}
 
 	@Override
@@ -220,8 +199,7 @@ public class SimpleVMCodeGen implements CodeGenerator {
 	public void ExitLet(LetNode Node) {
 		String Right = this.Program.remove(this.Program.size() - 1);
 		String Block = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Node.TermToken.ParsedText + " = " + Right + ";"
-				+ Block);
+		this.Program.add(Node.TermToken.ParsedText + " = " + Right + Block);
 	}
 
 	@Override
@@ -238,7 +216,7 @@ public class SimpleVMCodeGen implements CodeGenerator {
 			if (i != 0) {
 				Exprs = "," + Exprs;
 			}
-			Exprs = Expr + Exprs;
+			Exprs = Expr + ";" + Exprs;
 		}
 		this.Program.add("{" + Exprs + "}");
 	}
@@ -297,7 +275,7 @@ public class SimpleVMCodeGen implements CodeGenerator {
 	@Override
 	public void ExitReturn(ReturnNode Node) {
 		String Expr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("return " + Expr + ";");
+		this.Program.add("return " + Expr);
 	}
 
 	@Override

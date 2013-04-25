@@ -1,7 +1,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class NewNode extends TypedNode {
 
@@ -10,9 +10,9 @@ public class NewNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterNew(this);
-		Gen.ExitNew(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterNew(this);
+		Visitor.ExitNew(this);
 		return true;
 	}
 }

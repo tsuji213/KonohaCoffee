@@ -1,7 +1,7 @@
 package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ReturnNode extends UnaryNode {
 
@@ -10,10 +10,10 @@ public class ReturnNode extends UnaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterReturn(this);
-		Gen.Visit(this.Expr);
-		Gen.ExitReturn(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterReturn(this);
+		Visitor.Visit(this.Expr);
+		Visitor.ExitReturn(this);
 		return true;
 	}
 }

@@ -4,14 +4,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class MethodCallNode extends TypedNode implements CallableNode {
 	public ArrayList<TypedNode> Params; /* [this, arg1, arg2, ...] */
 	Method Mtd;
 
 	/* call self.Method(arg1, arg2, ...) */
-	MethodCallNode(KClass ClassInfo, Method Mtd) {
+	public MethodCallNode(KClass ClassInfo, Method Mtd) {
 		super(ClassInfo);
 		this.Mtd = Mtd;
 		this.Params = new ArrayList<TypedNode>();
@@ -23,12 +23,12 @@ public class MethodCallNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(CodeGenerator Gen) {
-		Gen.EnterMethodCall(this);
+	public boolean Evaluate(ASTVisitor Visitor) {
+		Visitor.EnterMethodCall(this);
 		for (TypedNode Node : this.Params) {
-			Gen.Visit(Node);
+			Visitor.Visit(Node);
 		}
-		Gen.ExitMethodCall(this);
+		Visitor.ExitMethodCall(this);
 		return true;
 	}
 }
