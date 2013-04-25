@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class KNameSpace implements KonohaParserConst {
-	KonohaContext konoha;
+	Konoha konoha;
 	int packageId;
 	int syntaxOption;
 	KNameSpace                         ParentNULL;
@@ -40,7 +40,7 @@ public final class KNameSpace implements KonohaParserConst {
 	// the below references are defined in sugar
 //	const struct KBuilderAPI          *builderApi;
 	
-	KNameSpace(KonohaContext konoha, KNameSpace parent) {
+	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.konoha = konoha;
 		this.ParentNULL = parent;
 	}
@@ -209,7 +209,7 @@ public final class KNameSpace implements KonohaParserConst {
 	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		ArrayList<KToken> group = new ArrayList<KToken>();
 		int nextIdx = ns.Prep(tokenList, beginIdx+1, endIdx, group);
-		KToken lastToken = tokenList.get(nextIdx-1);
+		KToken lastToken = tokenList.get(nextIdx - 1);
 		if(!lastToken.equals(")")) {
 			// ERROR
 		}
