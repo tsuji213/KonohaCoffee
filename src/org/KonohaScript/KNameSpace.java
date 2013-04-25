@@ -83,13 +83,11 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 		for(int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
-			KonohaDebug.P("char: " + keys.charAt(i) + ", kchar: "+ kchar + "defined: " + DefinedTokenMatrix[kchar]);
 			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
 			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
 		}
 	}
 
-	
 	ArrayList<KToken> Tokenize(String text, long uline) {
 		return new KTokenizer(this, text, uline).Tokenize();
 	}
@@ -230,6 +228,17 @@ public final class KNameSpace implements KonohaParserConst {
 		return null;
 	}
 	
+	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
+		UntypedNode node = new UntypedNode(this);
+		node.ParseNode(beforeToken, tokens, beginIdx, endIdx, level);
+		return node;
+	}
+
+	UntypedNode ParseNewGroupNode(String beforeToken, KToken groupToken, int level) {
+		ArrayList<KToken> groups = groupToken.GetGroupTokenList();
+		return ParseNewNode(beforeToken, groups, 0, groups.size(), level);
+	}
+
 //	TypedNode Type(KGamma gma, UntypedNode node) {
 //		return node.Syntax.InvokeTypeFunc(gma, node);
 //	}

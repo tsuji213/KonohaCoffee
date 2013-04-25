@@ -26,7 +26,7 @@ package org.KonohaScript;
 import java.util.ArrayList;
 
 public final class KonohaSyntax implements KonohaParserConst {
-	// 
+	// Token 
 	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
@@ -61,6 +61,23 @@ public final class KonohaSyntax implements KonohaParserConst {
 		}
 		return pos;
 	}
+	
+	// Macro
+	
+	// Parse
+	
+
+	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int opIdx, int endIdx) {
+		int nextIdx = node.MatchCondition("if", tokens, beginIdx + 1, endIdx);
+		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, endIdx);
+		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, endIdx);
+		nextIdx = node.MatchSingleBlock("else", tokens, nextIdx, endIdx);
+		return nextIdx;
+	}
+
+//	TypedNode TypeIfNode(KGamma gma, UntypedNode node) {
+//		return null;
+//	}
 	
 	void LoadDefaultSyntax(KNameSpace ns) {
 		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
