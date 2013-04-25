@@ -1,5 +1,7 @@
 package org.KonohaScript.CodeGen;
 
+import java.util.ArrayList;
+
 import org.KonohaScript.AST.AndNode;
 import org.KonohaScript.AST.AssignNode;
 import org.KonohaScript.AST.BlockNode;
@@ -25,7 +27,12 @@ import org.KonohaScript.AST.ThrowNode;
 import org.KonohaScript.AST.TryNode;
 import org.KonohaScript.AST.TypedNode;
 
-public class ASTDumper implements CodeGenerator {
+public class SimpleVMCodeGen implements CodeGenerator {
+	ArrayList<Object> Evaluated;
+
+	public SimpleVMCodeGen() {
+		this.Evaluated = new ArrayList<Object>();
+	}
 
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
