@@ -22,11 +22,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.AST;
 
 import org.KonohaScript.KClass;
+import org.KonohaScript.CodeGen.CodeGenerator;
 
 class NotSupportedNodeError extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
 	NotSupportedNodeError() {
 		super();
 	}
@@ -34,7 +37,7 @@ class NotSupportedNodeError extends RuntimeException {
 
 public abstract class TypedNode {
 	KClass classInfo;
-	boolean Compile(CodeGenerator Gen) {
+	public boolean Evaluate(CodeGenerator Gen) {
 		throw new NotSupportedNodeError();
 	}
 }

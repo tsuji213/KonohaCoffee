@@ -1,4 +1,4 @@
-//package org.KonohaScript.CodeGen;
+package org.KonohaScript.CodeGen;
 //import java.lang.reflect.Constructor;
 //import java.lang.reflect.Method;
 //import org.KonohaScript.KClass;

@@ -1,4 +1,4 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.AST;
 
 public abstract class BinaryNode extends TypedNode {
 	TypedNode Left;

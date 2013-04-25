@@ -1,7 +1,9 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.AST;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+
+import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class FunctionNode extends TypedNode implements CallableNode {
 	/* [Method, DefaultObject, [Env1, Env2, ...., EnvN] */
@@ -23,5 +25,12 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	@Override
 	public void Append(TypedNode Expr) {
 		this.EnvList.add(Expr);
+	}
+
+	@Override
+	public boolean Evaluate(CodeGenerator Gen) {
+	    Gen.EnterFunction(this);
+	    Gen.ExitFunction(this);
+	    return true;
 	}
 }
