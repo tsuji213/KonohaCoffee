@@ -23,34 +23,11 @@
  ***************************************************************************/
 
 package org.KonohaScript;
-/****************************************************************************
- * Copyright (c) 2012, the Konoha project authors. All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *  * Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- ***************************************************************************/
 
 import java.util.ArrayList;
 
 public class UntypedNode implements KonohaParserConst {	
-	KNode              Parent;
+	UntypedNode        Parent;
 	KNameSpace         RootNodeNameSpace;
 	KSyntax            Syntax;
 	KToken             KeyToken;
@@ -63,36 +40,34 @@ public class UntypedNode implements KonohaParserConst {
 	UntypedNode AddNode(UntypedNode node) {
 		return null;
 	}
-	
-	final static int BlockLevel = 0;
-	final static int StatementLevel = 0;
-	final static int ExpressionLevel = 0;
 
-	UntypedNode ParseNewNode(KNameSpace ns, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level  /*ParseOption option, const char *requiredTokenText*/) {
-		UntypedNode node = new UntypedNode(ns);
-//		int nextIdx = ParseNode(kctx, node, tokenList, beginIdx[0], endIdx, option, requiredTokenText);
-//		beginIdx[0] = nextIdx;
-		return node;
+	UntypedNode AddParsedNode(UntypedNode node) {
+		return null;
 	}
-	
-	int ParseNode(ArrayList<KToken> tokens, int beginIdx, int endIdx, int level/*, ParseOption option, const char *requiredTokenText*/) {
-		int nextIdx = ParseBlockLevel(tokens, beginIdx, endIdx, level);
-		if(nextIdx == NoMatch) {
-			nextIdx = ParseStatementLevel(tokens, beginIdx, endIdx, level);
+		
+	int ExpectedAfter(String beforeToken, ArrayList<KToken> tokens, int beginIdx, String nextToken) {
+		if(beforeToken != null) {
+			KeyToken = new KToken(nextToken + " is expected after " + beforeToken);
+			if(0 < beginIdx - 1) {
+				KeyToken.uline = tokens.get(beginIdx-1).uline;
+			}
 		}
-		if(nextIdx == NoMatch) {
-			nextIdx = ParseExpressionLevel(tokens, beginIdx, endIdx, level);
-		}
-		return nextIdx;
+		return -1;
 	}
-//		else {
-//			if(requiredTokenText != NULL) {
-//				kNode_Message(kctx, node, ErrTag, "expected expression after %s", requiredTokenText);
-//			}
-//			else {
-//				//DBG_ABORT("set null in future");
-//			}
-//		}
+
+	int ParseNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
+		if(beginIdx < endIdx) {
+			int nextIdx = ParseBlockLevel(tokens, beginIdx, endIdx, level);
+			if(nextIdx == NoMatch) {
+				nextIdx = ParseStatementLevel(tokens, beginIdx, endIdx, level);
+			}
+			if(nextIdx == NoMatch) {
+				nextIdx = ParseExpressionLevel(tokens, beginIdx, endIdx, level);
+			}
+			return nextIdx;
+		}
+		return ExpectedAfter(beforeToken, tokens, beginIdx, "expression");
+	}
 
 	int ParseBlockLevel(ArrayList<KToken> tokenList, int beginIdx, int endIdx, int level) {
 		int nextIdx = NoMatch;
@@ -102,7 +77,7 @@ public class UntypedNode implements KonohaParserConst {
 				KToken tk = tokenList.get(i);
 				if(tk.ResolvedSyntax.precedence_op2 == KSyntax.Precedence_CStyleStatementEnd) {
 					if(start < i) {
-						AddNode(ParseNewNode(RootNodeNameSpace, tokenList, start, i, StatementLevel));
+						AddNode(RootNodeNameSpace.ParseNewNode(null, tokenList, start, i, StatementLevel));
 						nextIdx = endIdx;
 					}
 					start = i + 1;
@@ -110,7 +85,7 @@ public class UntypedNode implements KonohaParserConst {
 				i++;
 			}
 			if(start < endIdx) {
-				AddNode(ParseNewNode(RootNodeNameSpace, tokenList, start, endIdx, StatementLevel));			
+				AddNode(RootNodeNameSpace.ParseNewNode(null, tokenList, start, endIdx, StatementLevel));			
 				nextIdx = endIdx;
 			}
 		}
@@ -129,6 +104,7 @@ public class UntypedNode implements KonohaParserConst {
 				}
 				syntax = syntax.Pop();
 			}
+			
 		}
 		return nextIdx;
 	}
@@ -147,6 +123,7 @@ public class UntypedNode implements KonohaParserConst {
 			}
 			syntax = syntax.Pop();
 		}
+		
 		return nextIdx;
 	}
 
@@ -185,4 +162,49 @@ public class UntypedNode implements KonohaParserConst {
 		}
 		return opIdx;
 	}
+	
+	// Matcher
+	
+	public int MatchCondition(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+		if(beginIdx == -1) return -1;
+		if(beginIdx < endIdx) {
+			KToken token = tokens.get(beginIdx);
+			if(token.ResolvedSyntax.equals("$()")) {
+				AddParsedNode(RootNodeNameSpace.ParseNewGroupNode("(", token, ExpressionLevel));
+				return beginIdx + 1;
+			}
+		}
+		return ExpectedAfter(prev, tokens, beginIdx, "(");
+	}
+
+	public int MatchExpression(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+		if(beginIdx == -1) return -1;
+		AddParsedNode(RootNodeNameSpace.ParseNewNode(prev, tokens, beginIdx, endIdx, StatementLevel));
+		return endIdx;
+	}
+	
+	public int MatchSingleBlock(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+		if(beginIdx == -1) return -1;
+		if(beginIdx < endIdx) {
+			KToken token = tokens.get(beginIdx);
+			if(token.ResolvedSyntax.equals("${}")) {
+				AddParsedNode(RootNodeNameSpace.ParseNewGroupNode(null, token, BlockLevel));
+				return beginIdx + 1;
+			}
+			return MatchExpression(prev, tokens, beginIdx, endIdx);
+		}
+		return ExpectedAfter(prev, tokens, beginIdx, "{");
+	}
+
+	public int MatchSymbol(String prev, String symbol, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+		if(beginIdx == -1) return -1;
+		if(beginIdx < endIdx) {
+			KToken token = tokens.get(beginIdx);
+			if(token.equals(symbol)) {
+				return beginIdx + 1;
+			}
+		}
+		return ExpectedAfter(prev, tokens, beginIdx, symbol);
+	}
+	
 }

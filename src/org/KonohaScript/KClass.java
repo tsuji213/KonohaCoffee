@@ -25,7 +25,7 @@ public class KClass {
 	KClass SearchSimilarClassNULL;
 	KClass SearchSuperMethodClassNULL;
 
-	KClass(KonohaContext kctx, KPackage p, int classId, String cname) {
+	KClass(Konoha kctx, KPackage p, int classId, String cname) {
 		this.packageId = p.packageId;
 		this.classId = classId;
 		this.BaseClass = this;

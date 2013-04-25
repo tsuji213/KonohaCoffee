@@ -6,7 +6,7 @@ public class KPackage {
 	KNameSpace PackageNameSpace;
 	int kickoutFileId;
 
-	public KPackage(KonohaContext kctx, int packageId, String name) {
+	public KPackage(Konoha kctx, int packageId, String name) {
 		this.packageId = packageId;
 		this.PackageName = name;
 		this.PackageNameSpace = new KNameSpace(kctx, kctx.DefaultNameSpace);

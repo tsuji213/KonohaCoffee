@@ -2,13 +2,13 @@ package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.KClass;
 import org.KonohaScript.KPackage;
-import org.KonohaScript.KonohaContext;
-import org.KonohaScript.KonohaSyntax;
+import org.KonohaScript.Konoha;
 import org.KonohaScript.AST.BlockNode;
 import org.KonohaScript.AST.ConstNode;
 import org.KonohaScript.AST.IfNode;
 import org.KonohaScript.AST.NewNode;
 import org.KonohaScript.AST.ReturnNode;
+import org.KonohaScript.GrammarSet.MiniKonoha;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,8 +16,8 @@ public class SimpleVMCodeGenTest {
 
 	@Test
 	public void testCompile() {
-		KonohaSyntax defaultSyntax = new KonohaSyntax();
-		KonohaContext kctx = new KonohaContext(defaultSyntax);
+		MiniKonoha defaultSyntax = new MiniKonoha();
+		Konoha kctx = new Konoha(defaultSyntax);
 		KPackage pkg = new KPackage(kctx, 0, "SimpleVMTest");
 		KClass VoidTy = kctx.AddClass("void", pkg);
 		KClass ObjectTy = kctx.AddClass("Object", pkg);

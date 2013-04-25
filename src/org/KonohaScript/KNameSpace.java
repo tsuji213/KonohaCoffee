@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class KNameSpace implements KonohaParserConst {
-	KonohaContext konoha;
+	Konoha konoha;
 	int packageId;
 	int syntaxOption;
 	KNameSpace                         ParentNULL;
@@ -40,7 +40,7 @@ public final class KNameSpace implements KonohaParserConst {
 	// the below references are defined in sugar
 //	const struct KBuilderAPI          *builderApi;
 	
-	KNameSpace(KonohaContext konoha, KNameSpace parent) {
+	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.konoha = konoha;
 		this.ParentNULL = parent;
 	}
@@ -74,7 +74,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return ImportedTokenMatrix[kchar];
 	}
 
-	void AddTokenFunc(String keys, Object callee, String name) {
+	public void AddTokenFunc(String keys, Object callee, String name) {
 		if(DefinedTokenMatrix == null) {
 			DefinedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
@@ -83,14 +83,12 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 		for(int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
-			KonohaDebug.P("char: " + keys.charAt(i) + ", kchar: "+ kchar + "defined: " + DefinedTokenMatrix[kchar]);
 			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
 			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
 		}
 	}
 
-	
-	ArrayList<KToken> Tokenize(String text, long uline) {
+	public ArrayList<KToken> Tokenize(String text, long uline) {
 		return new KTokenizer(this, text, uline).Tokenize();
 	}
 
@@ -101,7 +99,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol) : null;
 	}
 
-	Object GetSymbol(String symbol) {
+	public Object GetSymbol(String symbol) {
 		if(ImportedSymbolTable == null) {
 			Object o = GetDefinedSymbol(symbol);
 			if(o != null) {
@@ -113,7 +111,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return ImportedSymbolTable.get(symbol);
 	}
 
-	void AddSymbol(String symbol, Object constValue) {
+	public void AddSymbol(String symbol, Object constValue) {
 		if(DefinedSymbolTable == null) {
 			DefinedSymbolTable = new HashMap<String, Object>();
 		}
@@ -142,7 +140,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return ImportedMacroTable.get(symbol);
 	}
 
-	void AddMacroFunc(String symbol, Object callee, String name) {
+	public void AddMacroFunc(String symbol, Object callee, String name) {
 		if(DefinedMacroTable == null) {
 			DefinedMacroTable = new HashMap<String, KFunc>();
 		}
@@ -153,18 +151,18 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 	}
 
-	KSyntax GetSyntax(String symbol) {
+	public KSyntax GetSyntax(String symbol) {
 		Object o = GetSymbol(symbol);
 		return (o instanceof KSyntax) ? (KSyntax)o : null;
 	}
 	
-	void AddSyntax(String symbol, KSyntax syntax) {
+	public void AddSyntax(String symbol, KSyntax syntax) {
 		syntax.packageNameSpace = this;
 		syntax.prev = GetSyntax(symbol);
 		AddSymbol(symbol, syntax);
 	}
 	
-	void ImportNameSpace(KNameSpace ns) {
+	public void ImportNameSpace(KNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
 			ImportedNameSpaceList = new ArrayList<KNameSpace>();
 			ImportedNameSpaceList.add(ns);
@@ -185,7 +183,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return null; // todo
 	}
 	
-	int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+	public int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		int c = beginIdx;
 		while(c < endIdx) {
 			KToken tk = tokenList.get(c);
@@ -211,7 +209,7 @@ public final class KNameSpace implements KonohaParserConst {
 	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		ArrayList<KToken> group = new ArrayList<KToken>();
 		int nextIdx = ns.Prep(tokenList, beginIdx+1, endIdx, group);
-		KToken lastToken = tokenList.get(nextIdx-1);
+		KToken lastToken = tokenList.get(nextIdx - 1);
 		if(!lastToken.equals(")")) {
 			// ERROR
 		}
@@ -230,6 +228,17 @@ public final class KNameSpace implements KonohaParserConst {
 		return null;
 	}
 	
+	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
+		UntypedNode node = new UntypedNode(this);
+		node.ParseNode(beforeToken, tokens, beginIdx, endIdx, level);
+		return node;
+	}
+
+	UntypedNode ParseNewGroupNode(String beforeToken, KToken groupToken, int level) {
+		ArrayList<KToken> groups = groupToken.GetGroupTokenList();
+		return ParseNewNode(beforeToken, groups, 0, groups.size(), level);
+	}
+
 //	TypedNode Type(KGamma gma, UntypedNode node) {
 //		return node.Syntax.InvokeTypeFunc(gma, node);
 //	}
@@ -243,7 +252,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return "(eval:" + (int)uline + ")";
 	}
 	
-	void Message(int level, KToken token, String msg) {
+	public void Message(int level, KToken token, String msg) {
 		if(!token.IsErrorToken()) {
 			if(level == Error) {
 				msg = "(error) " + GetSourcePosition(token.uline) + " " + msg;

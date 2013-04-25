@@ -11,6 +11,8 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.KonohaScript.GrammarSet.MiniKonoha;
+
 /* konoha util */
 
 class KParamType {
@@ -190,8 +192,6 @@ class KNode {
 // kbool_t (*isSubType)(KonohaContext*, KClass*, KClass *);\
 // KClass* (*realtype)(KonohaContext*, KClass*, KClass *)
 
-/* namespace */
-
 class KKeyIdMap {
 	int GetId(String key) {
 		return 0;
@@ -241,8 +241,7 @@ class KSymbolTable {
 		this.SignatureMap = new KParamMap();
 	}
 
-	void Init(KonohaContext kctx) {
-		//
+	void Init(Konoha kctx) {
 		KPackage defaultPackage = NewPackage(kctx, "Konoha");
 		NewClass(kctx, defaultPackage, "void");
 	}
@@ -265,27 +264,55 @@ class KSymbolTable {
 		return id;
 	}
 
-	KPackage NewPackage(KonohaContext kctx, String name) {
+	KPackage NewPackage(Konoha kctx, String name) {
 		int packageId = this.PackageList.size();
 		KPackage p = new KPackage(kctx, packageId, name);
 		this.PackageList.add(p);
 		return p;
 	}
 
-	KClass NewClass(KonohaContext kctx, KPackage p, String name) {
+	KClass NewClass(Konoha kctx, KPackage p, String name) {
 		int classId = this.ClassList.size();
 		KClass c = new KClass(kctx, p, classId, name);
 		this.ClassList.add(c);
 		this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
 		return c;
 	}
-
 }
 
 public class Konoha {
+
+	KNameSpace DefaultNameSpace;
+	KSymbolTable SymbolTable;
+
+	public Konoha(MiniKonoha defaultSyntax) {
+		this.SymbolTable = new KSymbolTable();
+		this.SymbolTable.Init(this);
+		this.DefaultNameSpace = new KNameSpace(this, null);
+		defaultSyntax.LoadDefaultSyntax(DefaultNameSpace);
+	}
+
+	public int GetSymbol(String key, boolean isnew) {
+		return this.SymbolTable.GetSymbol(key, isnew);
+	}
+
+	public void Eval(String text, long uline) {
+		System.out.println("Eval: " + text);
+		DefaultNameSpace.Tokenize(text, uline);
+	}
+
+	public KClass AddClass(String name, KPackage p) {// FIXME adhoc impl.
+		return this.SymbolTable.NewClass(this, p, name);
+	}
+
+	public void Load(String fileName) {
+		// System.out.println("Eval: " + text);
+		// DefaultNameSpace.Tokenize(text, uline);
+	}
+
 	public static void main(String[] argc) {
-		KonohaSyntax defaultSyntax = new KonohaSyntax();
-		KonohaContext konoha = new KonohaContext(defaultSyntax);
-		konoha.Eval("hello,world");
+		MiniKonoha defaultSyntax = new MiniKonoha();
+		Konoha konoha = new Konoha(defaultSyntax);
+		konoha.Eval("hello,world", 1);
 	}
 }

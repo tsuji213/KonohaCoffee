@@ -22,11 +22,16 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.GrammarSet;
 import java.util.ArrayList;
 
-public final class KonohaSyntax implements KonohaParserConst {
-	// 
+import org.KonohaScript.KNameSpace;
+import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaParserConst;
+import org.KonohaScript.UntypedNode;
+
+public final class MiniKonoha implements KonohaParserConst {
+	// Token 
 	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
@@ -62,7 +67,24 @@ public final class KonohaSyntax implements KonohaParserConst {
 		return pos;
 	}
 	
-	void LoadDefaultSyntax(KNameSpace ns) {
+	// Macro
+	
+	// Parse
+	
+
+	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int opIdx, int endIdx) {
+		int nextIdx = node.MatchCondition("if", tokens, beginIdx + 1, endIdx);
+		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, endIdx);
+		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, endIdx);
+		nextIdx = node.MatchSingleBlock("else", tokens, nextIdx, endIdx);
+		return nextIdx;
+	}
+
+//	TypedNode TypeIfNode(KGamma gma, UntypedNode node) {
+//		return null;
+//	}
+	
+	public void LoadDefaultSyntax(KNameSpace ns) {
 		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
 		ns.AddTokenFunc("\"", this, "TextLiteralTokenFunc");
 	}
