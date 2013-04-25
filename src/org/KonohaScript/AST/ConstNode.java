@@ -1,4 +1,6 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.AST;
+
+import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class ConstNode extends TypedNode {
 	long   ConstValue;
@@ -14,5 +16,11 @@ public class ConstNode extends TypedNode {
 	}
 	ConstNode(boolean ConstValue) {
 		this.ConstValue = ConstValue ? 1 : 0;
+	}
+	@Override
+	public boolean Evaluate(CodeGenerator Gen) {
+	    Gen.EnterConst(this);
+	    Gen.ExitConst(this);
+	    return true;
 	}
 }

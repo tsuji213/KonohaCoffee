@@ -26,7 +26,8 @@ package org.KonohaScript;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import org.KonohaScript.CodeGen.TypedNode;
+
+import org.KonohaScript.AST.TypedNode;
 
 public class KSyntax {
 	final static int Precedence_CPPStyleScope  =  50;

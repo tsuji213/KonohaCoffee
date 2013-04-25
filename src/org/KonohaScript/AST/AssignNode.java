@@ -1,6 +1,7 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.AST;
 
 import org.KonohaScript.KToken;
+import org.KonohaScript.CodeGen.CodeGenerator;
 
 public class AssignNode extends TypedNode {
 	KToken TermToken;
@@ -13,4 +14,12 @@ public class AssignNode extends TypedNode {
 		this.Index     = Index;
 		this.Right     = Right;
 	}
+
+	@Override
+	public boolean Evaluate(CodeGenerator Gen) {
+	    Gen.EnterAssign(this);
+	    Gen.ExitAssign(this);
+	    return true;
+	}
+
 }
