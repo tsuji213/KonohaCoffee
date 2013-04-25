@@ -12,6 +12,8 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.KonohaScript.GrammarSet.MiniKonoha;
+
 /* konoha util */
 
 class KParamType {
@@ -294,7 +296,7 @@ class KonohaContext {
 	KNameSpace DefaultNameSpace;
 	KSymbolTable   SymbolTable;
 	
-	KonohaContext (KonohaSyntax defaultSyntax) {
+	KonohaContext (MiniKonoha defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		this.DefaultNameSpace = new KNameSpace(this, null);
@@ -314,7 +316,7 @@ class KonohaContext {
 
 public class Konoha {
 	public static void main(String[] argc) {
-		KonohaSyntax defaultSyntax = new KonohaSyntax();
+		MiniKonoha defaultSyntax = new MiniKonoha();
 		KonohaContext konoha = new KonohaContext(defaultSyntax);
 		konoha.Eval("hello,world");
 	}

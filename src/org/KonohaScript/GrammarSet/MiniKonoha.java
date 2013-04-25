@@ -22,10 +22,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.GrammarSet;
 import java.util.ArrayList;
 
-public final class KonohaSyntax implements KonohaParserConst {
+import org.KonohaScript.KNameSpace;
+import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaParserConst;
+import org.KonohaScript.UntypedNode;
+
+public final class MiniKonoha implements KonohaParserConst {
 	// Token 
 	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
@@ -79,7 +84,7 @@ public final class KonohaSyntax implements KonohaParserConst {
 //		return null;
 //	}
 	
-	void LoadDefaultSyntax(KNameSpace ns) {
+	public void LoadDefaultSyntax(KNameSpace ns) {
 		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
 		ns.AddTokenFunc("\"", this, "TextLiteralTokenFunc");
 	}

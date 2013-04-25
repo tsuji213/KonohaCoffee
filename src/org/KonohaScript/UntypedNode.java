@@ -188,7 +188,7 @@ public class UntypedNode implements KonohaParserConst {
 	
 	// Matcher
 	
-	int MatchCondition(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+	public int MatchCondition(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
 		if(beginIdx == -1) return -1;
 		if(beginIdx < endIdx) {
 			KToken token = tokens.get(beginIdx);
@@ -200,13 +200,13 @@ public class UntypedNode implements KonohaParserConst {
 		return ExpectedAfter(prev, tokens, beginIdx, "(");
 	}
 
-	int MatchExpression(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+	public int MatchExpression(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
 		if(beginIdx == -1) return -1;
 		AddParsedNode(RootNodeNameSpace.ParseNewNode(prev, tokens, beginIdx, endIdx, StatementLevel));
 		return endIdx;
 	}
 	
-	int MatchSingleBlock(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+	public int MatchSingleBlock(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
 		if(beginIdx == -1) return -1;
 		if(beginIdx < endIdx) {
 			KToken token = tokens.get(beginIdx);
@@ -219,7 +219,7 @@ public class UntypedNode implements KonohaParserConst {
 		return ExpectedAfter(prev, tokens, beginIdx, "{");
 	}
 
-	int MatchSymbol(String prev, String symbol, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
+	public int MatchSymbol(String prev, String symbol, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
 		if(beginIdx == -1) return -1;
 		if(beginIdx < endIdx) {
 			KToken token = tokens.get(beginIdx);
@@ -229,6 +229,5 @@ public class UntypedNode implements KonohaParserConst {
 		}
 		return ExpectedAfter(prev, tokens, beginIdx, symbol);
 	}
-
 	
 }

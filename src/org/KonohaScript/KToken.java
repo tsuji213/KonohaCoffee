@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 public final class KToken {
 
-	KToken(String text) {
+	public KToken(String text) {
 		this.ParsedText = text;
 	}
 
@@ -43,13 +43,13 @@ public final class KToken {
 		return ((flag & GroupTokenFlag) == GroupTokenFlag);
 	}
 
-	long uline;
-	String  ParsedText;
+	public long uline;
+	public String  ParsedText;
 	boolean equals(String text) {
 		return ParsedText.equals(text);
 	}
 	
-	KSyntax ResolvedSyntax;
+	public KSyntax ResolvedSyntax;
 	Object  ResolvedObject;
 
 	void SetGroupTokenList(KSyntax syntax, ArrayList<KToken> group) {
