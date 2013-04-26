@@ -15,8 +15,8 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	ArrayList<TypedNode> EnvList;
 	Method Mtd;
 
-	public FunctionNode(KClass ClassInfo, Method Mtd) {
-		super(ClassInfo);
+	public FunctionNode(KClass TypeInfo, Method Mtd) {
+		super(TypeInfo);
 		this.Mtd = Mtd;
 		this.EnvList = new ArrayList<TypedNode>();
 	}
@@ -29,7 +29,6 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterFunction(this);
-		Visitor.ExitFunction(this);
-		return true;
+		return Visitor.ExitFunction(this);
 	}
 }

@@ -5,14 +5,13 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class NullNode extends TypedNode {
 
-	public NullNode(KClass ClassInfo) {
-		super(ClassInfo);
+	public NullNode(KClass TypeInfo) {
+		super(TypeInfo);
 	}
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterNull(this);
-		Visitor.ExitNull(this);
-		return true;
+		return Visitor.ExitNull(this);
 	}
 }

@@ -9,9 +9,9 @@ public class IfNode extends TypedNode {
 	BlockNode ElseBlock;
 
 	/* If CondExpr then ThenBlock else ElseBlock */
-	public IfNode(KClass ClassInfo, TypedNode CondExpr, BlockNode ThenBlock,
+	public IfNode(KClass TypeInfo, TypedNode CondExpr, BlockNode ThenBlock,
 			BlockNode ElseNode) {
-		super(ClassInfo);
+		super(TypeInfo);
 		this.CondExpr = CondExpr;
 		this.ThenBlock = ThenBlock;
 		this.ElseBlock = ElseNode;
@@ -23,7 +23,6 @@ public class IfNode extends TypedNode {
 		Visitor.Visit(this.CondExpr);
 		Visitor.Visit(this.ThenBlock);
 		Visitor.Visit(this.ElseBlock);
-		Visitor.ExitIf(this);
-		return true;
+		return Visitor.ExitIf(this);
 	}
 }

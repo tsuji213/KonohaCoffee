@@ -7,15 +7,14 @@ public class JumpNode extends TypedNode {
 	public String Label;
 
 	/* goto Label */
-	public JumpNode(KClass ClassInfo, String Label) {
-		super(ClassInfo);
+	public JumpNode(KClass TypeInfo, String Label) {
+		super(TypeInfo);
 		this.Label = Label;
 	}
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterJump(this);
-		Visitor.ExitJump(this);
-		return true;
+		return Visitor.ExitJump(this);
 	}
 }

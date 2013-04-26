@@ -6,15 +6,14 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 public class ErrorNode extends TypedNode {
 	String ErrorMessage;
 
-	public ErrorNode(KClass ClassInfo, String ErrorMessage) {
-		super(ClassInfo);
+	public ErrorNode(KClass TypeInfo, String ErrorMessage) {
+		super(TypeInfo);
 		this.ErrorMessage = ErrorMessage;
 	}
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterError(this);
-		Visitor.ExitError(this);
-		return true;
+		return Visitor.ExitError(this);
 	}
 }

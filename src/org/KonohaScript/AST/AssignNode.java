@@ -10,9 +10,9 @@ public class AssignNode extends TypedNode {
 	TypedNode Right;
 
 	/* frame[Index] = Right */
-	public AssignNode(KClass ClassInfo, KToken TermToken, int Index,
+	public AssignNode(KClass TypeInfo, KToken TermToken, int Index,
 			TypedNode Right) {
-		super(ClassInfo);
+		super(TypeInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
 		this.Right = Right;
@@ -21,8 +21,7 @@ public class AssignNode extends TypedNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterAssign(this);
-		Visitor.ExitAssign(this);
-		return true;
+		return Visitor.ExitAssign(this);
 	}
 
 }

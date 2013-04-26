@@ -16,8 +16,8 @@ public class TryNode extends TypedNode {
 	public ArrayList<TypedNode> CatchBlock;
 	TypedNode FinallyBlock;
 
-	public TryNode(KClass ClassInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
-		super(ClassInfo);
+	public TryNode(KClass TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
+		super(TypeInfo);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
 		this.CatchBlock = new ArrayList<TypedNode>();
@@ -29,7 +29,6 @@ public class TryNode extends TypedNode {
 		Visitor.EnterTry(this);
 		Visitor.Visit(this.TryBlock);
 		Visitor.Visit(FinallyBlock);
-		Visitor.ExitTry(this);
-		return false; // FIXME
+		return Visitor.ExitTry(this);
 	}
 }

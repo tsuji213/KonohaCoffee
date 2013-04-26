@@ -36,15 +36,11 @@ class NotSupportedNodeError extends RuntimeException {
 }
 
 public abstract class TypedNode {
-	public TypedNode(KClass ClassInfo) {
-		this.ClassInfo = ClassInfo;
+	public TypedNode(KClass TypeInfo) {
+		this.TypeInfo = TypeInfo;
 	}
 
-	public KClass ClassInfo;
-
-	public boolean IsUnboxedNode() {
-		return ClassInfo.classId == 3/* KType_Int */|| ClassInfo.classId == 4/* KType_Boolean */;
-	}
+	public KClass TypeInfo;
 
 	public boolean Evaluate(ASTVisitor Visitor) {
 		throw new NotSupportedNodeError();

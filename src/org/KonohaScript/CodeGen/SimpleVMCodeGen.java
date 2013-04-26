@@ -35,6 +35,14 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Program = new ArrayList<String>();
 	}
 
+	private String pop() {
+		return this.Program.remove(this.Program.size() - 1);
+	}
+
+	private void push(String Program) {
+		this.Program.add(Program);
+	}
+
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		Visit(Block);
@@ -45,8 +53,8 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void Visit(TypedNode Node) {
-		Node.Evaluate(this);
+	public boolean Visit(TypedNode Node) {
+		return Node.Evaluate(this);
 	}
 
 	@Override
@@ -55,8 +63,8 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitDone(DoneNode Node) {
-		/* do nothing */
+	public boolean ExitDone(DoneNode Node) {
+		return true;
 	}
 
 	@Override
@@ -65,19 +73,19 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitConst(ConstNode Node) {
-		if (Node.IsUnboxedNode()) {
+	public boolean ExitConst(ConstNode Node) {
+		if (Node.TypeInfo.IsUnboxedNode()) {
 			if (/* IsInt(Node) */true) {
-				this.Program.add(Integer.toString((int) Node.ConstValue));
+				push(Integer.toString((int) Node.ConstValue));
 			} else if (/* IsFloat(Node) */false) {
-				this.Program.add(Double.toString(Double
-						.longBitsToDouble(Node.ConstValue)));
+				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
 			} else if (/* IsBoolean(Node) */false) {
-				this.Program.add(Boolean.toString(Node.ConstValue == 0));
+				push(Boolean.toString(Node.ConstValue == 0));
 			}
 		} else {
-			this.Program.add(Node.ConstObject.toString());
+			push(Node.ConstObject.toString());
 		}
+		return true;
 	}
 
 	@Override
@@ -86,9 +94,10 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitNew(NewNode Node) {
-		this.Program.add("new " + Node.ClassInfo.ShortClassName.toString()
-				+ "()");
+	public boolean ExitNew(NewNode Node) {
+		push("new " + Node.TypeInfo.ShortClassName.toString() + "()");
+		return true;
+
 	}
 
 	@Override
@@ -97,8 +106,10 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitNull(NullNode Node) {
-		this.Program.add("null");
+	public boolean ExitNull(NullNode Node) {
+		push("null");
+		return true;
+
 	}
 
 	@Override
@@ -107,8 +118,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitLocal(LocalNode Node) {
-		this.Program.add(Node.TermToken.ParsedText);
+	public boolean ExitLocal(LocalNode Node) {
+		push(Node.TermToken.ParsedText);
+		return true;
 
 	}
 
@@ -118,10 +130,11 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitField(FieldNode Node) {
+	public boolean ExitField(FieldNode Node) {
 		String Expr = Node.TermToken.ParsedText;
-		this.Program.add(Expr + "."
-				+ Node.ClassInfo.FieldNames.get(Node.Xindex));
+		push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
+		return true;
+
 	}
 
 	@Override
@@ -130,8 +143,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitBox(BoxNode Node) {
-		/* do nothing */
+	public boolean ExitBox(BoxNode Node) {
+		/* do nothing */return true;
+
 	}
 
 	@Override
@@ -140,19 +154,21 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitMethodCall(MethodCallNode Node) {
-		String thisNode = this.Program.remove(this.Program.size() - 1);
+	public boolean ExitMethodCall(MethodCallNode Node) {
+		String thisNode = pop();
 		String Params = "";
 		String methodName = "mtd";
 		int ParamSize = Node.Params.size();
 		for (int i = 0; i < ParamSize; i = i + 1) {
-			String Expr = this.Program.remove(this.Program.size() - 1);
+			String Expr = pop();
 			if (i != 0) {
 				Params = "," + Params;
 			}
 			Params = Expr + Params;
 		}
-		this.Program.add(thisNode + "." + methodName + "(" + Params + ")");
+		push(thisNode + "." + methodName + "(" + Params + ")");
+		return true;
+
 	}
 
 	@Override
@@ -161,10 +177,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitAnd(AndNode Node) {
-		String Left = this.Program.remove(this.Program.size() - 1);
-		String Right = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Left + " && " + Right);
+	public boolean ExitAnd(AndNode Node) {
+		String Right = pop();
+		String Left = pop();
+		push(Left + " && " + Right);
+		return true;
+
 	}
 
 	@Override
@@ -173,10 +191,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitOr(OrNode Node) {
-		String Left = this.Program.remove(this.Program.size() - 1);
-		String Right = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Left + " || " + Right);
+	public boolean ExitOr(OrNode Node) {
+		String Right = pop();
+		String Left = pop();
+		push(Left + " || " + Right);
+		return true;
+
 	}
 
 	@Override
@@ -185,9 +205,11 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitAssign(AssignNode Node) {
-		String Right = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Node.TermToken.ParsedText + " = " + Right);
+	public boolean ExitAssign(AssignNode Node) {
+		String Right = pop();
+		push(Node.TermToken.ParsedText + " = " + Right);
+		return true;
+
 	}
 
 	@Override
@@ -196,10 +218,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitLet(LetNode Node) {
-		String Right = this.Program.remove(this.Program.size() - 1);
-		String Block = this.Program.remove(this.Program.size() - 1);
-		this.Program.add(Node.TermToken.ParsedText + " = " + Right + Block);
+	public boolean ExitLet(LetNode Node) {
+		String Right = pop();
+		String Block = pop();
+		push(Node.TermToken.ParsedText + " = " + Right + Block);
+		return true;
+
 	}
 
 	@Override
@@ -208,17 +232,19 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitBlock(BlockNode Node) {
+	public boolean ExitBlock(BlockNode Node) {
 		String Exprs = "";
 		int Size = Node.ExprList.size();
 		for (int i = 0; i < Size; i = i + 1) {
-			String Expr = this.Program.remove(this.Program.size() - 1);
+			String Expr = pop();
 			if (i != 0) {
 				Exprs = "," + Exprs;
 			}
 			Exprs = Expr + ";" + Exprs;
 		}
-		this.Program.add("{" + Exprs + "}");
+		push("{" + Exprs + "}");
+		return true;
+
 	}
 
 	@Override
@@ -227,12 +253,13 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitIf(IfNode Node) {
-		String ElseBlock = this.Program.remove(this.Program.size() - 1);
-		String ThenBlock = this.Program.remove(this.Program.size() - 1);
-		String CondExpr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("if (" + CondExpr + ") {" + ThenBlock + " else "
-				+ ElseBlock);
+	public boolean ExitIf(IfNode Node) {
+		String ElseBlock = pop();
+		String ThenBlock = pop();
+		String CondExpr = pop();
+		push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
+		return true;
+
 	}
 
 	@Override
@@ -241,16 +268,18 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitSwitch(SwitchNode Node) {
+	public boolean ExitSwitch(SwitchNode Node) {
 		int Size = Node.Labels.size();
 		String Exprs = "";
 		for (int i = 0; i < Size; i = i + 1) {
 			String Label = Node.Labels.get(Size - i);
-			String Block = this.Program.remove(this.Program.size() - 1);
+			String Block = pop();
 			Exprs = "case " + Label + ":" + Block + Exprs;
 		}
-		String CondExpr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("switch (" + CondExpr + ") {" + Exprs + "}");
+		String CondExpr = pop();
+		push("switch (" + CondExpr + ") {" + Exprs + "}");
+		return true;
+
 	}
 
 	@Override
@@ -259,12 +288,13 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitLoop(LoopNode Node) {
-		String LoopBody = this.Program.remove(this.Program.size() - 1);
-		String IterExpr = this.Program.remove(this.Program.size() - 1);
-		String CondExpr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("while (" + CondExpr + ") {" + LoopBody + IterExpr
-				+ "}");
+	public boolean ExitLoop(LoopNode Node) {
+		String LoopBody = pop();
+		String IterExpr = pop();
+		String CondExpr = pop();
+		push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		return true;
+
 	}
 
 	@Override
@@ -273,9 +303,11 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitReturn(ReturnNode Node) {
-		String Expr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("return " + Expr);
+	public boolean ExitReturn(ReturnNode Node) {
+		String Expr = pop();
+		push("return " + Expr);
+		return false;
+
 	}
 
 	@Override
@@ -284,15 +316,17 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitLabel(LabelNode Node) {
+	public boolean ExitLabel(LabelNode Node) {
 		String Label = Node.Label;
 		if (Label.compareTo("continue") == 0) {
-			this.Program.add("");
+			push("");
 		} else if (Label.compareTo("continue") == 0) {
-			this.Program.add("");
+			push("");
 		} else {
-			this.Program.add(Label + ":");
+			push(Label + ":");
 		}
+		return true;
+
 	}
 
 	@Override
@@ -301,15 +335,17 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitJump(JumpNode Node) {
+	public boolean ExitJump(JumpNode Node) {
 		String Label = Node.Label;
 		if (Label.compareTo("continue") == 0) {
-			this.Program.add("continue;");
+			push("continue;");
 		} else if (Label.compareTo("continue") == 0) {
-			this.Program.add("break;");
+			push("break;");
 		} else {
-			this.Program.add("goto " + Label);
+			push("goto " + Label);
 		}
+		return false;
+
 	}
 
 	@Override
@@ -318,15 +354,17 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitTry(TryNode Node) {
-		String FinallyBlock = this.Program.remove(this.Program.size() - 1);
+	public boolean ExitTry(TryNode Node) {
+		String FinallyBlock = pop();
 		String CatchBlocks = "";
 		for (int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
-			String Block = this.Program.remove(this.Program.size() - 1);
+			String Block = pop();
 			CatchBlocks = "catch() " + Block + CatchBlocks;
 		}
-		String TryBlock = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("try " + TryBlock + "" + CatchBlocks + FinallyBlock);
+		String TryBlock = pop();
+		push("try " + TryBlock + "" + CatchBlocks + FinallyBlock);
+		return true;
+
 	}
 
 	@Override
@@ -335,9 +373,11 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitThrow(ThrowNode Node) {
-		String Expr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("throw " + Expr + ";");
+	public boolean ExitThrow(ThrowNode Node) {
+		String Expr = pop();
+		push("throw " + Expr + ";");
+		return false;
+
 	}
 
 	@Override
@@ -346,8 +386,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitFunction(FunctionNode Node) {
+	public boolean ExitFunction(FunctionNode Node) {
 		// TODO Auto-generated method stub
+		return true;
 
 	}
 
@@ -357,8 +398,10 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void ExitError(ErrorNode Node) {
-		String Expr = this.Program.remove(this.Program.size() - 1);
-		this.Program.add("throw new Exception(" + Expr + ";");
+	public boolean ExitError(ErrorNode Node) {
+		String Expr = pop();
+		push("throw new Exception(" + Expr + ";");
+		return false;
+
 	}
 }

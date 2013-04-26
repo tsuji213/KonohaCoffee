@@ -5,15 +5,14 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ReturnNode extends UnaryNode {
 
-	public ReturnNode(KClass ClassInfo, TypedNode Expr) {
-		super(ClassInfo, Expr);
+	public ReturnNode(KClass TypeInfo, TypedNode Expr) {
+		super(TypeInfo, Expr);
 	}
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterReturn(this);
 		Visitor.Visit(this.Expr);
-		Visitor.ExitReturn(this);
-		return true;
+		return Visitor.ExitReturn(this);
 	}
 }

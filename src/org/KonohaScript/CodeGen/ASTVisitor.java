@@ -26,97 +26,97 @@ import org.KonohaScript.AST.TryNode;
 import org.KonohaScript.AST.TypedNode;
 
 public interface ASTVisitor {
-	void Visit(TypedNode Node);
+	boolean Visit(TypedNode Node);
 
 	void EnterDone(DoneNode Node);
 
-	void ExitDone(DoneNode Node);
+	boolean ExitDone(DoneNode Node);
 
 	void EnterConst(ConstNode Node);
 
-	void ExitConst(ConstNode Node);
+	boolean ExitConst(ConstNode Node);
 
 	void EnterNew(NewNode Node);
 
-	void ExitNew(NewNode Node);
+	boolean ExitNew(NewNode Node);
 
 	void EnterNull(NullNode Node);
 
-	void ExitNull(NullNode Node);
+	boolean ExitNull(NullNode Node);
 
 	void EnterLocal(LocalNode Node);
 
-	void ExitLocal(LocalNode Node);
+	boolean ExitLocal(LocalNode Node);
 
 	void EnterField(FieldNode Node);
 
-	void ExitField(FieldNode Node);
+	boolean ExitField(FieldNode Node);
 
 	void EnterBox(BoxNode Node);
 
-	void ExitBox(BoxNode Node);
+	boolean ExitBox(BoxNode Node);
 
 	void EnterMethodCall(MethodCallNode Node);
 
-	void ExitMethodCall(MethodCallNode Node);
+	boolean ExitMethodCall(MethodCallNode Node);
 
 	void EnterAnd(AndNode Node);
 
-	void ExitAnd(AndNode Node);
+	boolean ExitAnd(AndNode Node);
 
 	void EnterOr(OrNode Node);
 
-	void ExitOr(OrNode Node);
+	boolean ExitOr(OrNode Node);
 
 	void EnterAssign(AssignNode Node);
 
-	void ExitAssign(AssignNode Node);
+	boolean ExitAssign(AssignNode Node);
 
 	void EnterLet(LetNode Node);
 
-	void ExitLet(LetNode Node);
+	boolean ExitLet(LetNode Node);
 
 	void EnterBlock(BlockNode Node);
 
-	void ExitBlock(BlockNode Node);
+	boolean ExitBlock(BlockNode Node);
 
 	void EnterIf(IfNode Node);
 
-	void ExitIf(IfNode Node);
+	boolean ExitIf(IfNode Node);
 
 	void EnterSwitch(SwitchNode Node);
 
-	void ExitSwitch(SwitchNode Node);
+	boolean ExitSwitch(SwitchNode Node);
 
 	void EnterLoop(LoopNode Node);
 
-	void ExitLoop(LoopNode Node);
+	boolean ExitLoop(LoopNode Node);
 
 	void EnterReturn(ReturnNode Node);
 
-	void ExitReturn(ReturnNode Node);
+	boolean ExitReturn(ReturnNode Node);
 
 	void EnterLabel(LabelNode Node);
 
-	void ExitLabel(LabelNode Node);
+	boolean ExitLabel(LabelNode Node);
 
 	void EnterJump(JumpNode Node);
 
-	void ExitJump(JumpNode Node);
+	boolean ExitJump(JumpNode Node);
 
 	void EnterTry(TryNode Node);
 
-	void ExitTry(TryNode Node);
+	boolean ExitTry(TryNode Node);
 
 	void EnterThrow(ThrowNode Node);
 
-	void ExitThrow(ThrowNode Node);
+	boolean ExitThrow(ThrowNode Node);
 
 	void EnterFunction(FunctionNode Node);
 
-	void ExitFunction(FunctionNode Node);
+	boolean ExitFunction(FunctionNode Node);
 
 	void EnterError(ErrorNode Node);
 
-	void ExitError(ErrorNode Node);
+	boolean ExitError(ErrorNode Node);
 }

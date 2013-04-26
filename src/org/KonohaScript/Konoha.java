@@ -299,10 +299,9 @@ public class Konoha {
 	public void Eval(String text, long uline) {
 		System.out.println("Eval: " + text);
 		DefaultNameSpace.Tokenize(text, uline);
-	}
-
-	public KClass AddClass(String name, KPackage p) {// FIXME adhoc impl.
-		return this.SymbolTable.NewClass(this, p, name);
+		// Preprocess();
+		// Parse();
+		// CodeGenerator();
 	}
 
 	public void Load(String fileName) {
@@ -313,6 +312,7 @@ public class Konoha {
 	public static void main(String[] argc) {
 		MiniKonoha defaultSyntax = new MiniKonoha();
 		Konoha konoha = new Konoha(defaultSyntax);
-		konoha.Eval("hello,world", 1);
+		konoha.Eval("int fibo(int n) {}", 1);
+
 	}
 }

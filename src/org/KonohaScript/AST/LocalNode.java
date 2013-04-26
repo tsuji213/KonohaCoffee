@@ -7,18 +7,18 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 public class LocalNode extends TypedNode {
 	/* frame[$Index] (or TermToken->text) */
 	public KToken TermToken;
-	int Index;
+	@Deprecated
+	int ClassicKonohaIndex;
 
-	public LocalNode(KClass ClassInfo, KToken TermToken, int Index) {
-		super(ClassInfo);
+	public LocalNode(KClass TypeInfo, KToken TermToken, int Index) {
+		super(TypeInfo);
 		this.TermToken = TermToken;
-		this.Index = Index;
+		this.ClassicKonohaIndex = Index;
 	}
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterLocal(this);
-		Visitor.ExitLocal(this);
-		return true;
+		return Visitor.ExitLocal(this);
 	}
 }

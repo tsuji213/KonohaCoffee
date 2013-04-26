@@ -4,8 +4,8 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LoopNode extends TypedNode {
-	public LoopNode(KClass ClassInfo) {
-		super(ClassInfo);
+	public LoopNode(KClass TypeInfo) {
+		super(TypeInfo);
 	}
 
 	/* while CondExpr then { LoopBlock; IterationExpr } */
@@ -19,7 +19,6 @@ public class LoopNode extends TypedNode {
 		Visitor.Visit(this.CondExpr);
 		Visitor.Visit(this.LoopBody);
 		Visitor.Visit(this.IterationExpr);
-		Visitor.ExitLoop(this);
-		return true;
+		return Visitor.ExitLoop(this);
 	}
 }

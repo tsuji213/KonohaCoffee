@@ -8,6 +8,7 @@ import org.KonohaScript.AST.ConstNode;
 import org.KonohaScript.AST.IfNode;
 import org.KonohaScript.AST.NewNode;
 import org.KonohaScript.AST.ReturnNode;
+import org.KonohaScript.AST.TypedNode;
 import org.KonohaScript.GrammarSet.MiniKonoha;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,32 +20,35 @@ public class SimpleVMCodeGenTest {
 		MiniKonoha defaultSyntax = new MiniKonoha();
 		Konoha kctx = new Konoha(defaultSyntax);
 		KPackage pkg = new KPackage(kctx, 0, "SimpleVMTest");
-		KClass VoidTy = kctx.AddClass("void", pkg);
-		KClass ObjectTy = kctx.AddClass("Object", pkg);
-		KClass BooleanTy = kctx.AddClass("booelan", pkg);
-		KClass IntTy = kctx.AddClass("int", pkg);
-		KClass StringTy = kctx.AddClass("String", pkg);
+
+		KClass VoidTy = new KClass(kctx, pkg, 0, "void");
+		KClass ObjectTy = new KClass(kctx, pkg, 1, "Object");
+		KClass BooleanTy = new KClass(kctx, pkg, 3, "booelan");
+		KClass IntTy = new KClass(kctx, pkg, 4, "int");
+		KClass StringTy = new KClass(kctx, pkg, 5, "String");
 		{
 			SimpleVMCodeGen G = new SimpleVMCodeGen();
-			BlockNode Block = new BlockNode(VoidTy, new ReturnNode(IntTy,
+			TypedNode Block = new BlockNode(VoidTy, new ReturnNode(IntTy,
 					new ConstNode(IntTy, 1)));
 			CompiledMethod Mtd = G.Compile(Block);
 			Assert.assertTrue(Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
-			Assert.assertEquals(Program, "{return 1;}");
+			Assert.assertEquals("{return 1;}", Program);
 		}
 
 		{
 			SimpleVMCodeGen G = new SimpleVMCodeGen();
-			IfNode Block = new IfNode(VoidTy, new ConstNode(BooleanTy, true),
-					new BlockNode(VoidTy, new NewNode(ObjectTy)),
-					new BlockNode(VoidTy, new ReturnNode(IntTy, new ConstNode(
-							BooleanTy, false))));
+			TypedNode Block = new IfNode(VoidTy,
+					new ConstNode(BooleanTy, true), new BlockNode(VoidTy,
+							new NewNode(ObjectTy)), new BlockNode(VoidTy,
+							new ReturnNode(IntTy, new ConstNode(BooleanTy,
+									false))));
 			CompiledMethod Mtd = G.Compile(Block);
 			Assert.assertTrue(Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
-			Assert.assertEquals(Program,
-					"if(true) { new Object();} else { return false; }");
+			Assert.assertEquals(
+					"if (true) { new Object(); } else { return false; }",
+					Program);
 		}
 	}
 }

@@ -11,8 +11,8 @@ public class MethodCallNode extends TypedNode implements CallableNode {
 	Method Mtd;
 
 	/* call self.Method(arg1, arg2, ...) */
-	public MethodCallNode(KClass ClassInfo, Method Mtd) {
-		super(ClassInfo);
+	public MethodCallNode(KClass TypeInfo, Method Mtd) {
+		super(TypeInfo);
 		this.Mtd = Mtd;
 		this.Params = new ArrayList<TypedNode>();
 	}
@@ -28,7 +28,6 @@ public class MethodCallNode extends TypedNode implements CallableNode {
 		for (TypedNode Node : this.Params) {
 			Visitor.Visit(Node);
 		}
-		Visitor.ExitMethodCall(this);
-		return true;
+		return Visitor.ExitMethodCall(this);
 	}
 }

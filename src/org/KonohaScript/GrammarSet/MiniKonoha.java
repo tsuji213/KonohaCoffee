@@ -23,6 +23,7 @@
  ***************************************************************************/
 
 package org.KonohaScript.GrammarSet;
+
 import java.util.ArrayList;
 
 import org.KonohaScript.KNameSpace;
@@ -31,33 +32,39 @@ import org.KonohaScript.KonohaParserConst;
 import org.KonohaScript.UntypedNode;
 
 public final class MiniKonoha implements KonohaParserConst {
-	// Token 
-	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+	// Token
+	public int TokenFunc(KNameSpace ns, String SourceText, int pos,
+			ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
 	}
 
-	public int SingleSymbolTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+	public int SingleSymbolTokenFunc(KNameSpace ns, String SourceText, int pos,
+			ArrayList<KToken> ParsedTokenList) {
 		KToken token = new KToken(SourceText.substring(pos, pos + 1));
 		ParsedTokenList.add(token);
-		return pos+1;
+		return pos + 1;
 	}
 
-	public int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+	public int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos,
+			ArrayList<KToken> ParsedTokenList) {
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
-		while(pos < SourceText.length()) {
-			char ch = SourceText.charAt(pos); 
-			if(ch == '"' && prev == '\\') {
-				KToken token = new KToken(SourceText.substring(start, pos - start));
+		while (pos < SourceText.length()) {
+			char ch = SourceText.charAt(pos);
+			if (ch == '"' && prev == '\\') {
+				KToken token = new KToken(SourceText.substring(start, pos
+						- start));
 				token.ResolvedSyntax = ns.GetSyntax("$Text");
 				ParsedTokenList.add(token);
-				return pos+1;
+				return pos + 1;
 			}
-			if(ch == '\n') {
-				KToken token = new KToken(SourceText.substring(start, pos - start));
-				ns.Message(Error, token, "expected \" to close the string literal");
+			if (ch == '\n') {
+				KToken token = new KToken(SourceText.substring(start, pos
+						- start));
+				ns.Message(Error, token,
+						"expected \" to close the string literal");
 				ParsedTokenList.add(token);
 				return pos;
 			}
@@ -66,13 +73,13 @@ public final class MiniKonoha implements KonohaParserConst {
 		}
 		return pos;
 	}
-	
-	// Macro
-	
-	// Parse
-	
 
-	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int opIdx, int endIdx) {
+	// Macro
+
+	// Parse
+
+	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx,
+			int opIdx, int endIdx) {
 		int nextIdx = node.MatchCondition("if", tokens, beginIdx + 1, endIdx);
 		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, endIdx);
 		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, endIdx);
@@ -80,12 +87,13 @@ public final class MiniKonoha implements KonohaParserConst {
 		return nextIdx;
 	}
 
-//	TypedNode TypeIfNode(KGamma gma, UntypedNode node) {
-//		return null;
-//	}
-	
+	// TypedNode TypeIfNode(KGamma gma, UntypedNode node) {
+	// return null;
+	// }
+
 	public void LoadDefaultSyntax(KNameSpace ns) {
 		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
 		ns.AddTokenFunc("\"", this, "TextLiteralTokenFunc");
+		ns.AddTokenFunc("1234567890", this, "NumberLiteralTokneFunc");
 	}
 }

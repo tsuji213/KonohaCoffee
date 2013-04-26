@@ -10,8 +10,8 @@ public class FieldNode extends TypedNode {
 	int Index;
 	public int Xindex;
 
-	public FieldNode(KClass ClassInfo, KToken TermToken, int Index, int Xindex) {
-		super(ClassInfo);
+	public FieldNode(KClass TypeInfo, KToken TermToken, int Index, int Xindex) {
+		super(TypeInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
 		this.Xindex = Xindex;
@@ -20,7 +20,6 @@ public class FieldNode extends TypedNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterField(this);
-		Visitor.ExitField(this);
-		return true;
+		return Visitor.ExitField(this);
 	}
 }

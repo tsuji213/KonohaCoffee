@@ -7,28 +7,28 @@ public class ConstNode extends TypedNode {
 	public long ConstValue;
 	public Object ConstObject;
 
-	public ConstNode(KClass ClassInfo, Object ConstObject) {
-		super(ClassInfo);
+	public ConstNode(KClass TypeInfo, Object ConstObject) {
+		super(TypeInfo);
 		init(ConstObject);
 	}
 
-	public ConstNode(KClass ClassInfo, long ConstValue) {
-		super(ClassInfo);
+	public ConstNode(KClass TypeInfo, long ConstValue) {
+		super(TypeInfo);
 		this.ConstValue = ConstValue;
 	}
 
-	public ConstNode(KClass ClassInfo, int ConstValue) {
-		super(ClassInfo);
+	public ConstNode(KClass TypeInfo, int ConstValue) {
+		super(TypeInfo);
 		this.ConstValue = ConstValue;
 	}
 
-	public ConstNode(KClass ClassInfo, float ConstValue) {
-		super(ClassInfo);
+	public ConstNode(KClass TypeInfo, float ConstValue) {
+		super(TypeInfo);
 		this.ConstValue = Double.doubleToLongBits(ConstValue);
 	}
 
-	public ConstNode(KClass ClassInfo, boolean ConstValue) {
-		super(ClassInfo);
+	public ConstNode(KClass TypeInfo, boolean ConstValue) {
+		super(TypeInfo);
 		this.ConstValue = ConstValue ? 1 : 0;
 	}
 
@@ -51,7 +51,6 @@ public class ConstNode extends TypedNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterConst(this);
-		Visitor.ExitConst(this);
-		return true;
+		return Visitor.ExitConst(this);
 	}
 }

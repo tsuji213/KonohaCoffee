@@ -11,9 +11,9 @@ public class LetNode extends TypedNode {
 	TypedNode Block;
 
 	/* let frame[Index] = Right in Block end */
-	public LetNode(KClass ClassInfo, KToken TermToken, int Index,
+	public LetNode(KClass TypeInfo, KToken TermToken, int Index,
 			TypedNode Right, BlockNode Block) {
-		super(ClassInfo);
+		super(TypeInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;
 		this.Right = Right;
@@ -25,7 +25,6 @@ public class LetNode extends TypedNode {
 		Visitor.EnterLet(this);
 		Visitor.Visit(this.Right);
 		Visitor.Visit(this.Block);
-		Visitor.ExitLet(this);
-		return true;
+		return Visitor.ExitLet(this);
 	}
 }

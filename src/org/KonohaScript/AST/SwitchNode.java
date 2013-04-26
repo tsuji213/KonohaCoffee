@@ -6,8 +6,8 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class SwitchNode extends TypedNode {
-	public SwitchNode(KClass ClassInfo) {
-		super(ClassInfo);
+	public SwitchNode(KClass TypeInfo) {
+		super(TypeInfo);
 	}
 
 	/*
@@ -24,7 +24,6 @@ public class SwitchNode extends TypedNode {
 		for (TypedNode Node : this.Blocks) {
 			Visitor.Visit(Node);
 		}
-		Visitor.ExitSwitch(this);
-		return true;
+		return Visitor.ExitSwitch(this);
 	}
 }

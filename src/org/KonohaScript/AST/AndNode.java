@@ -4,8 +4,8 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AndNode extends BinaryNode {
-	public AndNode(KClass ClassInfo, TypedNode Left, TypedNode Right) {
-		super(ClassInfo, Left, Right);
+	public AndNode(KClass TypeInfo, TypedNode Left, TypedNode Right) {
+		super(TypeInfo, Left, Right);
 	}
 
 	@Override
@@ -13,8 +13,7 @@ public class AndNode extends BinaryNode {
 		Visitor.EnterAnd(this);
 		Visitor.Visit(this.Left);
 		Visitor.Visit(this.Right);
-		Visitor.ExitAnd(this);
-		return true;
+		return Visitor.ExitAnd(this);
 	}
 
 }
