@@ -29,18 +29,18 @@ public class KClass {
 
 	public static final ArrayList<KMethod> EmptyMethodList = new ArrayList<KMethod>();
 
-	public boolean IsUnboxedNode() {
-		return this.classId == 3/* KType_Int */||
-				this.classId == 4/* KType_Boolean */;
-	}
+//	public boolean IsUnboxedNode() {
+//		return this.classId == 3/* KType_Int */||
+//				this.classId == 4/* KType_Boolean */;
+//	}
 
-	public KClass(Konoha kctx, KPackage p, int classId, String cname) {
+	public KClass(Konoha konoha, KPackage p, int classId, String cname) {
 		this.packageId = p.packageId;
 		this.classId = classId;
 		this.BaseClass = this;
 		this.SuperClass = this;
 		this.ShortClassName = cname;
-		this.classNameSymbol = kctx.GetSymbol(cname, true);
+		this.classNameSymbol = konoha.GetSymbol(cname, true);
 		this.FieldNames = null;
 		this.FieldTypes = null;
 		this.ClassMethodList = EmptyMethodList;

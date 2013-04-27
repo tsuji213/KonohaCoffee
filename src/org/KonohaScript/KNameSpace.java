@@ -31,7 +31,7 @@ public final class KNameSpace implements KonohaParserConst {
 	Konoha konoha;
 	int packageId;
 	// int syntaxOption;
-	KNameSpace ParentNULL;
+	KNameSpace ParentNameSpace;
 	ArrayList<KNameSpace> ImportedNameSpaceList;
 
 	// kObject *globalObjectNULL;
@@ -42,7 +42,7 @@ public final class KNameSpace implements KonohaParserConst {
 
 	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.konoha = konoha;
-		this.ParentNULL = parent;
+		this.ParentNameSpace = parent;
 	}
 
 	KFunc MergeFunc(KFunc f, KFunc f2) {
@@ -66,8 +66,8 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 		if (ImportedTokenMatrix[kchar] == null) {
 			KFunc func = null;
-			if (ParentNULL != null) {
-				func = ParentNULL.GetTokenFunc(kchar);
+			if (ParentNameSpace != null) {
+				func = ParentNameSpace.GetTokenFunc(kchar);
 			}
 			func = MergeFunc(func, GetDefinedTokenFunc(kchar));
 			assert (func != null);
@@ -96,12 +96,12 @@ public final class KNameSpace implements KonohaParserConst {
 		return new KTokenizer(this, text, uline).Tokenize();
 	}
 
+	
 	HashMap<String, Object> DefinedSymbolTable;
 	HashMap<String, Object> ImportedSymbolTable;
 
 	Object GetDefinedSymbol(String symbol) {
-		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol)
-				: null;
+		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol) : null;
 	}
 
 	public Object GetSymbol(String symbol) {
@@ -126,35 +126,24 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 	}
 
-	HashMap<String, KFunc> DefinedMacroTable;
-	HashMap<String, KFunc> ImportedMacroTable;
+//	HashMap<String, KFunc> DefinedSymbolTable;
+//	HashMap<String, KFunc> ImportedSymbolTable;
 
 	KFunc GetDefinedMacroFunc(String symbol) {
-		return (DefinedMacroTable != null) ? DefinedMacroTable.get(symbol)
-				: null;
+		if(DefinedSymbolTable != null) {
+			Object object = DefinedSymbolTable.get(symbol);
+			return (object instanceof KFunc) ? (KFunc)object : null;
+		}
+		return null;
 	}
 
-	KFunc GetMacroFunc(String symbol) {
-		if (ImportedMacroTable == null) {
-			KFunc f = GetDefinedMacroFunc(symbol);
-			if (f != null) {
-				ImportedMacroTable = new HashMap<String, KFunc>();
-				ImportedMacroTable.put(symbol, f);
-			}
-			return f;
-		}
-		return ImportedMacroTable.get(symbol);
+	KFunc GetMacroFunc(String symbol) {		
+		Object o = GetSymbol(symbol);
+		return (o instanceof KFunc) ? (KFunc) o : null;
 	}
 
 	public void AddMacroFunc(String symbol, Object callee, String name) {
-		if (DefinedMacroTable == null) {
-			DefinedMacroTable = new HashMap<String, KFunc>();
-		}
-		KFunc f = new KFunc(callee, name, null);
-		DefinedMacroTable.put(symbol, f);
-		if (ImportedMacroTable != null) {
-			ImportedMacroTable.put(symbol, f);
-		}
+		AddSymbol(symbol, new KFunc(callee, name, null));
 	}
 
 	public KSyntax GetSyntax(String symbol) {
@@ -190,16 +179,14 @@ public final class KNameSpace implements KonohaParserConst {
 		return null; // todo
 	}
 
-	public int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx,
-			ArrayList<KToken> bufferList) {
+	public int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		int c = beginIdx;
 		while (c < endIdx) {
 			KToken tk = tokenList.get(c);
 			if (tk.ResolvedSyntax == null) {
 				KFunc macro = GetMacroFunc(tk.ParsedText);
 				if (macro != null) {
-					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c,
-							endIdx, bufferList);
+					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c, endIdx, bufferList);
 					if (nextIdx == -1) {
 						return c + 1;
 					}
@@ -213,25 +200,6 @@ public final class KNameSpace implements KonohaParserConst {
 			c = c + 1;
 		}
 		return c;
-	}
-
-	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList,
-			int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		ArrayList<KToken> group = new ArrayList<KToken>();
-		int nextIdx = ns.Prep(tokenList, beginIdx + 1, endIdx, group);
-		KToken lastToken = tokenList.get(nextIdx - 1);
-		if (!lastToken.equals(")")) {
-			// ERROR
-		}
-		KToken groupToken = null;// TODO
-		bufferList.add(groupToken);
-		groupToken.ResolvedSyntax = ns.GetSyntax("$()");
-		return nextIdx;
-	}
-
-	int MacroCloseParenthesis(KNameSpace ns, ArrayList<KToken> tokenList,
-			int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		return -1;
 	}
 
 	UntypedNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {

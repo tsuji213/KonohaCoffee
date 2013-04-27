@@ -28,22 +28,6 @@ import java.util.ArrayList;
 
 public final class KToken {
 
-	public KToken(String text) {
-		this.ParsedText = text;
-	}
-
-	final static int ErrorTokenFlag = 1;
-	final static int GroupTokenFlag = (1 << 1);
-	int flag;
-
-	boolean IsErrorToken() {
-		return ((flag & ErrorTokenFlag) == ErrorTokenFlag);
-	}
-
-	boolean IsGroupToken() {
-		return ((flag & GroupTokenFlag) == GroupTokenFlag);
-	}
-
 	public long uline;
 	public String ParsedText;
 
@@ -51,10 +35,32 @@ public final class KToken {
 		return ParsedText.equals(text);
 	}
 
+	public KToken(String text) {
+		this.ParsedText = text;
+	}
+
+	public KToken(String text, long uline) {
+		this.ParsedText = text;
+		this.uline = uline;
+	}
+	
+	final static int ErrorTokenFlag = 1;
+	final static int GroupTokenFlag = (1 << 1);
+	int flag;
+
+	public boolean IsErrorToken() {
+		return ((flag & ErrorTokenFlag) == ErrorTokenFlag);
+	}
+
+	public boolean IsGroupToken() {
+		return ((flag & GroupTokenFlag) == GroupTokenFlag);
+	}
+
+
 	public KSyntax ResolvedSyntax;
 	Object ResolvedObject;
 
-	void SetGroupTokenList(KSyntax syntax, ArrayList<KToken> group) {
+	public void SetGroup(KSyntax syntax, ArrayList<KToken> group) {
 		ResolvedSyntax = syntax;
 		ResolvedObject = group;
 		flag |= GroupTokenFlag;
@@ -65,7 +71,7 @@ public final class KToken {
 		return (ArrayList<KToken>) ResolvedObject;
 	}
 
-	void SetErrorMessage(String msg) {
+	public void SetErrorMessage(String msg) {
 		ResolvedSyntax = KSyntax.ErrorSyntax;
 		ResolvedObject = msg;
 		flag |= ErrorTokenFlag;

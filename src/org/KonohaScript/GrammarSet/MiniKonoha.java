@@ -76,10 +76,30 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	// Macro
 
+	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		ArrayList<KToken> group = new ArrayList<KToken>();
+		KToken BeginToken = tokenList.get(beginIdx);
+		group.add(BeginToken);
+		int nextIdx = ns.Prep(tokenList, beginIdx + 1, endIdx, group);
+		KToken lastToken = tokenList.get(nextIdx - 1);
+		if (!lastToken.equals(")")) { // ERROR
+			lastToken.SetErrorMessage("must close )");
+		}
+		else {
+			KToken GroupToken = new KToken("()", BeginToken.uline);
+			GroupToken.SetGroup(ns.GetSyntax("$()"), group);
+			bufferList.add(GroupToken);
+		}
+		return nextIdx;
+	}
+
+	int MacroCloseParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		return -1;
+	}
+
 	// Parse
 
-	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx,
-			int opIdx, int endIdx) {
+	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int opIdx, int endIdx) {
 		int nextIdx = node.MatchCondition("if", tokens, beginIdx + 1, endIdx);
 		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, endIdx);
 		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, endIdx);
