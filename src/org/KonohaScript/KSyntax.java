@@ -95,7 +95,9 @@ public class KSyntax {
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
 	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, baseSyntax, "ParseErrorNode", Precedence_Error, Precedence_Error);
 	final static KSyntax IndentSyntax = new KSyntax("$Indent", 0, baseSyntax, "ParseIndent", Precedence_Error, Precedence_Error);
-		
+	final static KSyntax TypeSyntax = null;
+	final static KSyntax ConstSyntax = null;
+	final static KSyntax SymbolSyntax = null;	
 }
 
 class CommonSyntax {

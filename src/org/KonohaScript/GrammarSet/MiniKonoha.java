@@ -29,42 +29,74 @@ import java.util.ArrayList;
 import org.KonohaScript.KNameSpace;
 import org.KonohaScript.KToken;
 import org.KonohaScript.KonohaParserConst;
+import org.KonohaScript.LexicalConverter;
 import org.KonohaScript.UntypedNode;
 
 public final class MiniKonoha implements KonohaParserConst {
 	// Token
-	public int TokenFunc(KNameSpace ns, String SourceText, int pos,
-			ArrayList<KToken> ParsedTokenList) {
+	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		System.out.println("TokenFunc");
 		return -1;
 	}
 
-	public int SingleSymbolTokenFunc(KNameSpace ns, String SourceText, int pos,
-			ArrayList<KToken> ParsedTokenList) {
+	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		for (; pos < SourceText.length(); pos++) {
+			char ch = SourceText.charAt(pos);
+			if(!Character.isWhitespace(ch)) {
+				break;
+			}
+		}
+		return pos;
+	}
+	
+	public int SingleSymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		KToken token = new KToken(SourceText.substring(pos, pos + 1));
 		ParsedTokenList.add(token);
 		return pos + 1;
 	}
 
-	public int TextLiteralTokenFunc(KNameSpace ns, String SourceText, int pos,
-			ArrayList<KToken> ParsedTokenList) {
+	public int SymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		int start = pos;
+		for (; pos < SourceText.length(); pos++) {
+			char ch = SourceText.charAt(pos);
+			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
+				break;
+			}
+		}
+		KToken token = new KToken(SourceText.substring(start, pos));
+		ParsedTokenList.add(token);
+		return pos;
+	}
+
+	public int NumberLiteralToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		int start = pos;
+		for (; pos < SourceText.length(); pos++) {
+			char ch = SourceText.charAt(pos);
+			if(!Character.isDigit(ch)) {
+				break;
+			}
+		}
+		KToken token = new KToken(SourceText.substring(start, pos));
+		token.ResolvedSyntax = ns.GetSyntax("$IntLiteral");
+		ParsedTokenList.add(token);
+		return pos;
+	}
+
+	public int StringLiteralToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
 		while (pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
 			if (ch == '"' && prev == '\\') {
-				KToken token = new KToken(SourceText.substring(start, pos
-						- start));
+				KToken token = new KToken(SourceText.substring(start, pos - start));
 				token.ResolvedSyntax = ns.GetSyntax("$Text");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
 			if (ch == '\n') {
-				KToken token = new KToken(SourceText.substring(start, pos
-						- start));
-				ns.Message(Error, token,
-						"expected \" to close the string literal");
+				KToken token = new KToken(SourceText.substring(start, pos - start));
+				ns.Message(Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
 				return pos;
 			}
@@ -76,25 +108,26 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	// Macro
 
-	int MacroOpenParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+	int MacroOpenParenthesis(LexicalConverter lex, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
 		ArrayList<KToken> group = new ArrayList<KToken>();
 		KToken BeginToken = tokenList.get(beginIdx);
 		group.add(BeginToken);
-		int nextIdx = ns.Prep(tokenList, beginIdx + 1, endIdx, group);
-		KToken lastToken = tokenList.get(nextIdx - 1);
+		int nextIdx = lex.Do(tokenList, beginIdx + 1, endIdx, group);
+		KToken lastToken = group.get(nextIdx - 1);
 		if (!lastToken.equals(")")) { // ERROR
 			lastToken.SetErrorMessage("must close )");
 		}
 		else {
-			KToken GroupToken = new KToken("()", BeginToken.uline);
-			GroupToken.SetGroup(ns.GetSyntax("$()"), group);
+			KToken GroupToken = new KToken("( ... )", BeginToken.uline);
+			GroupToken.SetGroup(lex.GetSyntax("$()"), group);
 			bufferList.add(GroupToken);
 		}
 		return nextIdx;
 	}
 
-	int MacroCloseParenthesis(KNameSpace ns, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		return -1;
+	int MacroCloseParenthesis(LexicalConverter lex, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
+		bufferList.add(tokenList.get(beginIdx));
+		return BreakPreProcess;
 	}
 
 	// Parse
@@ -112,8 +145,12 @@ public final class MiniKonoha implements KonohaParserConst {
 	// }
 
 	public void LoadDefaultSyntax(KNameSpace ns) {
-		ns.AddTokenFunc("abc", this, "SingleSymbolTokenFunc");
-		ns.AddTokenFunc("\"", this, "TextLiteralTokenFunc");
-		ns.AddTokenFunc("1234567890", this, "NumberLiteralTokneFunc");
+		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
+		ns.AddTokenFunc("(){}[],;+-*/%=", this, "SingleSymbolToken");
+		ns.AddTokenFunc("1", this, "NumberLiteralToken");
+		ns.AddTokenFunc("a", this, "SymbolToken");
+		ns.AddTokenFunc("\"", this, "StringLiteralToken");
+		
+		//ns.AddSymbol(symbol, constValue);
 	}
 }

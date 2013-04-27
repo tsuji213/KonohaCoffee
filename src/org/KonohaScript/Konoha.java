@@ -144,7 +144,7 @@ class KSymbolTable {
 	}
 }
 
-public class Konoha {
+public class Konoha implements KonohaParserConst {
 
 	KNameSpace RootNameSpace;
 	KNameSpace DefaultNameSpace;
@@ -158,13 +158,20 @@ public class Konoha {
 		this.DefaultNameSpace = new KNameSpace(this, RootNameSpace);
 	}
 
-	public int GetSymbol(String key, boolean isnew) {
-		return this.SymbolTable.GetSymbol(key, isnew);
-	}
+//	public int GetSymbol(String key, boolean isnew) {
+//		return this.SymbolTable.GetSymbol(key, isnew);
+//	}
 
+	public void Define(String symbol, Object Value) {
+		RootNameSpace.AddSymbol(symbol, Value);
+	}
+	
 	public void Eval(String text, long uline) {
 		System.out.println("Eval: " + text);
-		DefaultNameSpace.Tokenize(text, uline);
+		ArrayList<KToken> BufferList = DefaultNameSpace.Tokenize(text, uline);
+		int next = BufferList.size();
+		DefaultNameSpace.PreProcess(BufferList, 0, next, BufferList);
+		UntypedNode node = DefaultNameSpace.ParseNewNode(null, BufferList, next, BufferList.size(), BlockLevel);
 		// Preprocess();
 		// Parse();
 		// CodeGenerator();

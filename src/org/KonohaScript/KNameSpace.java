@@ -43,6 +43,15 @@ public final class KNameSpace implements KonohaParserConst {
 	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.konoha = konoha;
 		this.ParentNameSpace = parent;
+
+		if(parent != null) {
+			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+			for (int i = 0; i < KonohaChar.MAX; i++) {
+				if (parent.ImportedTokenMatrix[i] != null) {
+					ImportedTokenMatrix[i] = parent.GetTokenFunc(i).Duplicate();
+				}
+			}
+		}
 	}
 
 	KFunc MergeFunc(KFunc f, KFunc f2) {
@@ -85,10 +94,9 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 		for (int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
-			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name,
-					DefinedTokenMatrix[kchar]);
-			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name,
-					GetTokenFunc(kchar));
+			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
+			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
+			KonohaDebug.P("key="+kchar+", " + name + ", " + GetTokenFunc(kchar));
 		}
 	}
 
@@ -158,15 +166,18 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	public void ImportNameSpace(KNameSpace ns) {
-		if (ImportedNameSpaceList == null) {
+		if(ImportedNameSpaceList == null) {
 			ImportedNameSpaceList = new ArrayList<KNameSpace>();
 			ImportedNameSpaceList.add(ns);
 		}
-		if (ns.DefinedTokenMatrix != null) {
+		if (ImportedTokenMatrix == null) {
+			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+		}
+
+		if(ns.DefinedTokenMatrix != null) {
 			for (int i = 0; i < KonohaChar.MAX; i++) {
 				if (ns.DefinedTokenMatrix[i] != null) {
-					ImportedTokenMatrix[i] = MergeFunc(GetTokenFunc(i),
-							ns.DefinedTokenMatrix[i]);
+					ImportedTokenMatrix[i] = MergeFunc(GetTokenFunc(i), ns.DefinedTokenMatrix[i]);
 				}
 			}
 		}
@@ -175,46 +186,21 @@ public final class KNameSpace implements KonohaParserConst {
 		// }
 	}
 
-	KSyntax ResolveSyntax(KToken tk) {
-		return null; // todo
-	}
-
-	public int Prep(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		int c = beginIdx;
-		while (c < endIdx) {
-			KToken tk = tokenList.get(c);
-			if (tk.ResolvedSyntax == null) {
-				KFunc macro = GetMacroFunc(tk.ParsedText);
-				if (macro != null) {
-					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c, endIdx, bufferList);
-					if (nextIdx == -1) {
-						return c + 1;
-					}
-					c = nextIdx;
-					break;
-				}
-				tk.ResolvedSyntax = ResolveSyntax(tk);
-			}
-			assert (tk.ResolvedSyntax != null);
-			bufferList.add(tk);
-			c = c + 1;
-		}
-		return c;
+	public int PreProcess(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
+		return new LexicalConverter(this).Do(tokenList, beginIdx, endIdx, BufferList);
 	}
 
 	UntypedNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
 		return null;
 	}
 
-	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens,
-			int beginIdx, int endIdx, int level) {
+	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
 		UntypedNode node = new UntypedNode(this);
 		node.ParseNode(beforeToken, tokens, beginIdx, endIdx, level);
 		return node;
 	}
 
-	UntypedNode ParseNewGroupNode(String beforeToken, KToken groupToken,
-			int level) {
+	UntypedNode ParseNewGroupNode(String beforeToken, KToken groupToken, int level) {
 		ArrayList<KToken> groups = groupToken.GetGroupTokenList();
 		return ParseNewNode(beforeToken, groups, 0, groups.size(), level);
 	}
@@ -273,6 +259,7 @@ class KTokenizer implements KonohaParserConst {
 			}
 			fstack = fstack.Pop();
 		}
+		KonohaDebug.P("key="+kchar+", " + ns.GetTokenFunc(kchar));
 		KToken token = new KToken(Source.substring(pos));
 		ns.Message(Error, token, "undefined token: " + token.ParsedText);
 		SourceTokenList.add(token);

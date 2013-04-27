@@ -98,7 +98,7 @@ public final class KFunc {
 		return 0;
 	}
 
-	int InvokeMacroFunc(KNameSpace ns,  ArrayList<KToken> tokenToken, int beginIdx, int endIdx, ArrayList<KToken> bufferToken) {
+	int InvokeMacroFunc(LexicalConverter lex,  ArrayList<KToken> tokenToken, int beginIdx, int endIdx, ArrayList<KToken> bufferToken) {
 //		try {
 //			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
 //			return next.intValue();

@@ -2,6 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
+import org.KonohaScript.*;
 import org.KonohaScript.AST.AndNode;
 import org.KonohaScript.AST.AssignNode;
 import org.KonohaScript.AST.BlockNode;
@@ -27,6 +28,7 @@ import org.KonohaScript.AST.ThrowNode;
 import org.KonohaScript.AST.TryNode;
 import org.KonohaScript.AST.TypedNode;
 
+
 public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	ArrayList<String> Program;
 
@@ -43,6 +45,10 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Program.add(Program);
 	}
 
+	boolean IsUnboxedType(KClass Class) {
+		return false; //Node.TypeInfo
+	}
+	
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		Visit(Block);
@@ -74,7 +80,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		if (Node.TypeInfo.IsUnboxedNode()) {
+		if (IsUnboxedType(Node.TypeInfo)) {
 			if (/* IsInt(Node) */true) {
 				push(Integer.toString((int) Node.ConstValue));
 			} else if (/* IsFloat(Node) */false) {
