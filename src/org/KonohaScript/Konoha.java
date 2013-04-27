@@ -14,16 +14,6 @@ import org.KonohaScript.GrammarSet.MiniKonoha;
 
 /* konoha util */
 
-class KParamType {
-	int typeId;
-	int symbol;
-}
-
-class KParam {
-	int returnTypeId;
-	int paramSize;
-	KParamType[] ParamTypeItems;
-}
 
 class KMethod {
 	// KMethodFunc invokeKMethodFunc;
