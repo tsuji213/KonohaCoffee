@@ -31,7 +31,7 @@ public final class KToken {
 	public long uline;
 	public String ParsedText;
 
-	boolean equals(String text) {
+	public boolean EqualsText(String text) {
 		return ParsedText.equals(text);
 	}
 
@@ -66,6 +66,7 @@ public final class KToken {
 		flag |= GroupTokenFlag;
 	}
 
+	@SuppressWarnings("unchecked")
 	ArrayList<KToken> GetGroupTokenList() {
 		assert (IsGroupToken());
 		return (ArrayList<KToken>) ResolvedObject;
@@ -79,8 +80,7 @@ public final class KToken {
 
 	// Debug
 	void Dump() {
-		String syntax = (ResolvedSyntax == null) ? "symbol"
-				: ResolvedSyntax.syntaxName;
+		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.syntaxName;
 		System.out.println("[" + syntax + "+" + (int) uline + "] '"
 				+ ParsedText + "'");
 		if (IsGroupToken()) {
@@ -89,14 +89,14 @@ public final class KToken {
 		}
 	}
 
-	static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {
+	public static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {
 		for (int i = beginIdx; i < endIdx; i++) {
 			KToken token = list.get(i);
-			token.Dump();
+			System.out.print("["+i +"] "); token.Dump();
 		}
 	}
 
-	static void DumpTokenList(ArrayList<KToken> list) {
+	public static void DumpTokenList(ArrayList<KToken> list) {
 		DumpTokenList(list, 0, list.size());
 	}
 

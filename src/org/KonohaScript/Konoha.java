@@ -213,7 +213,7 @@ public class Konoha implements KonohaParserConst {
 //	}
 
 	public void Define(String symbol, Object Value) {
-		RootNameSpace.AddSymbol(symbol, Value);
+		RootNameSpace.DefineSymbol(symbol, Value);
 	}
 	
 	public void Eval(String text, long uline) {
@@ -221,7 +221,8 @@ public class Konoha implements KonohaParserConst {
 		ArrayList<KToken> BufferList = DefaultNameSpace.Tokenize(text, uline);
 		int next = BufferList.size();
 		DefaultNameSpace.PreProcess(BufferList, 0, next, BufferList);
-		UntypedNode node = DefaultNameSpace.ParseNewNode(null, BufferList, next, BufferList.size(), BlockLevel);
+		KToken.DumpTokenList(BufferList, next, BufferList.size());
+		//UntypedNode node = DefaultNameSpace.ParseNewNode(null, BufferList, next, BufferList.size(), BlockLevel);
 		// Preprocess();
 		// Parse();
 		// CodeGenerator();

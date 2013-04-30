@@ -26,24 +26,25 @@ public final class LexicalConverter implements KonohaParserConst {
 		}
 	}
 
-	public int Do(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
+	public int Do(ArrayList<KToken> SourceList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
 		int c = beginIdx;
 		while (c < endIdx) {
-			KToken tk = tokenList.get(c);
-			if (tk.ResolvedSyntax == null) {
-				KFunc macro = ns.GetMacroFunc(tk.ParsedText);
+			KToken Token = SourceList.get(c);
+			if (Token.ResolvedSyntax == null) {
+				KFunc macro = ns.GetMacroFunc(Token.ParsedText);
+				KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+macro);
 				if (macro != null) {
-					int nextIdx = macro.InvokeMacroFunc(this, tokenList, c, endIdx, BufferList);
+					int nextIdx = macro.InvokeMacroFunc(this, SourceList, c, endIdx, BufferList);
 					if (nextIdx == BreakPreProcess) {
 						return c + 1;
 					}
 					c = nextIdx;
-					break;
+					continue;
 				}
-				ResolveTokenSyntax(tk);
+				ResolveTokenSyntax(Token);
 			}
-			assert (tk.ResolvedSyntax != null);
-			BufferList.add(tk);
+			assert (Token.ResolvedSyntax != null);
+			BufferList.add(Token);
 			c = c + 1;
 		}
 		return c;

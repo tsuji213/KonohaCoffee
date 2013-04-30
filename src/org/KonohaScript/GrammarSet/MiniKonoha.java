@@ -31,6 +31,7 @@ import org.KonohaScript.KToken;
 import org.KonohaScript.KonohaParserConst;
 import org.KonohaScript.LexicalConverter;
 import org.KonohaScript.UntypedNode;
+import org.KonohaScript.KonohaDebug;
 
 public final class MiniKonoha implements KonohaParserConst {
 	// Token
@@ -90,7 +91,7 @@ public final class MiniKonoha implements KonohaParserConst {
 			char ch = SourceText.charAt(pos);
 			if (ch == '"' && prev == '\\') {
 				KToken token = new KToken(SourceText.substring(start, pos - start));
-				token.ResolvedSyntax = ns.GetSyntax("$Text");
+				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
@@ -108,25 +109,26 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	// Macro
 
-	int MacroOpenParenthesis(LexicalConverter lex, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		ArrayList<KToken> group = new ArrayList<KToken>();
-		KToken BeginToken = tokenList.get(beginIdx);
-		group.add(BeginToken);
-		int nextIdx = lex.Do(tokenList, beginIdx + 1, endIdx, group);
-		KToken lastToken = group.get(nextIdx - 1);
-		if (!lastToken.equals(")")) { // ERROR
+	public int OpenParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
+		ArrayList<KToken> GroupList = new ArrayList<KToken>();
+		KToken BeginToken = SourceList.get(beginIdx);
+		GroupList.add(BeginToken);
+		int nextIdx = lex.Do(SourceList, beginIdx + 1, endIdx, GroupList);
+		KToken lastToken = GroupList.get(GroupList.size()-1);
+		if (!lastToken.EqualsText(")")) { // ERROR
 			lastToken.SetErrorMessage("must close )");
 		}
 		else {
 			KToken GroupToken = new KToken("( ... )", BeginToken.uline);
-			GroupToken.SetGroup(lex.GetSyntax("$()"), group);
-			bufferList.add(GroupToken);
+			GroupToken.SetGroup(lex.GetSyntax("$()"), GroupList);
+			BufferList.add(GroupToken);
 		}
+		KonohaDebug.P("beginIdx=" + beginIdx + ",nextIdx="+nextIdx + ",endIdx="+endIdx);
 		return nextIdx;
 	}
 
-	int MacroCloseParenthesis(LexicalConverter lex, ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferList) {
-		bufferList.add(tokenList.get(beginIdx));
+	public int CloseParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
+		BufferList.add(SourceList.get(beginIdx));
 		return BreakPreProcess;
 	}
 
@@ -150,7 +152,9 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddTokenFunc("1", this, "NumberLiteralToken");
 		ns.AddTokenFunc("a", this, "SymbolToken");
 		ns.AddTokenFunc("\"", this, "StringLiteralToken");
-		
+		// Macro
+		ns.AddMacroFunc("(", this, "OpenParenthesisMacro");
+		ns.AddMacroFunc(")", this, "CloseParenthesisMacro");
 		//ns.AddSymbol(symbol, constValue);
 	}
 }
