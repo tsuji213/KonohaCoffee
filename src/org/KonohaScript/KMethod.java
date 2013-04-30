@@ -23,7 +23,28 @@
  ***************************************************************************/
 
 package org.KonohaScript;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class KMethod {
+	int flag;
+	KClass ClassInfo;
+	int MethodSymbol;
+	int CanonicalSymbol;
+	KParam Param;
+	Method MethodRef;
+
+//	String Source;
+//	long uline;
+//	KNameSpace LazyCompileNameSpace;
+	
+	KMethod(Konoha KonohaContext, int flag, KClass ClassInfo, String name, Method MethodRef) {
+
+	}
+	
+	boolean IsStaticInvocation() {
+		return Modifier.isStatic(MethodRef.getModifiers());
+	}
 	
 }
+

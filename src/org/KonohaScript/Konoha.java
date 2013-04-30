@@ -9,29 +9,13 @@ package org.KonohaScript;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.KonohaScript.GrammarSet.MiniKonoha;
 
 /* konoha util */
 
 
-class KMethod {
-	// KMethodFunc invokeKMethodFunc;
-	// union {
-	// struct KVirtualCode *vcode_start;
-	// struct KVirtualCodeAPI **virtualCodeApi_plus1;
-	// };
-	int flag;
-	int packageId;
-	int typeId;
-	int mn;
-	int symbol;
-	KParam param;
-	KParam signature;
-	String Source;
-	long uline;
-	KNameSpace LazyCompileNameSpace;
-}
 
 // Runtime
 
@@ -66,15 +50,19 @@ class KParamMap {
 	}
 }
 
-class KSymbolTable {
+class KSymbolTable implements KonohaParserConst {
 	ArrayList<KClass> ClassList;
 	KKeyIdMap LongClassNameMap;
-	ArrayList<String> FileIdList;
-	KKeyIdMap FileIdMap;
+
 	ArrayList<KPackage> PackageList;
 	KKeyIdMap PackageMap;
+
+	ArrayList<String> FileIdList;
+	HashMap<String,Integer> FileIdMap;
+	
 	ArrayList<String> SymbolList;
-	KKeyIdMap SymbolMap;
+	HashMap<String,Integer> SymbolMap;
+	
 	ArrayList<KParam> ParamList;
 	KParamMap ParamMap;
 	ArrayList<KParam> SignatureList;
@@ -82,15 +70,18 @@ class KSymbolTable {
 
 	KSymbolTable() {
 		this.ClassList = new ArrayList<KClass>(64);
+		this.LongClassNameMap = new KKeyIdMap();
+		
 		this.FileIdList = new ArrayList<String>(16);
-		this.PackageList = new ArrayList<KPackage>(16);
+		this.FileIdMap = new HashMap<String, Integer>();
+
 		this.SymbolList = new ArrayList<String>(64);
+		this.SymbolMap = new HashMap<String, Integer>();
+
+		this.PackageList = new ArrayList<KPackage>(16);
 		this.ParamList = new ArrayList<KParam>(64);
 		this.SignatureList = new ArrayList<KParam>(64);
-		this.LongClassNameMap = new KKeyIdMap();
-		this.FileIdMap = new KKeyIdMap();
 		this.PackageMap = new KKeyIdMap();
-		this.SymbolMap = new KKeyIdMap();
 		this.ParamMap = new KParamMap();
 		this.SignatureMap = new KParamMap();
 	}
@@ -100,20 +91,89 @@ class KSymbolTable {
 		NewClass(kctx, defaultPackage, "void");
 	}
 
-	int GetFileId(String file) {
-		int id = this.FileIdMap.GetId(file);
-		if (id == -1) {
-			id = this.FileIdList.size();
-			this.FileIdList.add(file);
+	long GetFileId(String file, int linenum) {
+		Integer fileid = this.FileIdMap.get(file);
+		if (fileid == null) {
+			int id = FileIdList.size();
+			FileIdList.add(file);
+			FileIdMap.put(file, new Integer(id));
+			return ((long)id << 32) | linenum;
 		}
-		return id;
+		return (fileid.longValue() << 32) | linenum;
 	}
 
-	int GetSymbol(String key, boolean isnew) {
-		int id = this.SymbolMap.GetId(key);
-		if (id == -1 && isnew) {
-			id = this.SymbolList.size();
-			this.SymbolList.add(key);
+	String GetFileName(long uline) {
+		int id = (int)(uline >> 32);
+		return FileIdList.get(id);
+	}
+	
+	// Symbol 
+	
+	public final static int MaskSymbol(int n, int mask) {
+		return (n << 2) | mask;
+	}
+
+	public final static int UnmaskSymbol(int id) {
+		return id >> 2;
+	}
+
+	public String StringfySymbol(int Symbol) {
+		String key = SymbolList.get(UnmaskSymbol(Symbol));
+		if((Symbol & GetterSymbol) == GetterSymbol) {
+			return "Get" + key;
+		}
+		if((Symbol & SetterSymbol) == SetterSymbol) {
+			return "Get" + key;
+		}
+		if((Symbol & MetaSymbol) == MetaSymbol) {
+			return "\\" + key;
+		}
+		return key;
+	}
+
+	public int GetSymbol(String Symbol, int DefaultValue) {
+		String key = Symbol;
+		int mask = 0;
+		if(Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
+			if(Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
+				key = Symbol.substring(3);
+				mask = GetterSymbol;
+			}
+			if(Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
+				key = Symbol.substring(3);
+				mask = SetterSymbol;
+			}
+		}
+		if(Symbol.startsWith("\\")) {
+			mask = MetaSymbol;
+		}
+		Integer id = SymbolMap.get(key);
+		if(id == null) {
+			if(DefaultValue == AllowNewId) {
+				int n = SymbolList.size();
+				SymbolList.add(key);
+				SymbolMap.put(key, new Integer(n));
+				return MaskSymbol(n, mask);
+			}
+			return DefaultValue;
+		}
+		return MaskSymbol(id.intValue(), mask);
+	}
+
+	public static String CanonicalSymbol(String Symbol) {
+		return Symbol.toLowerCase().replaceAll("_", "");
+	}
+
+	public int GetCanonicalSymbol(String Symbol, int DefaultValue) {
+		return GetSymbol(CanonicalSymbol(Symbol), DefaultValue);
+	}
+	
+	
+	
+	int GetSymbol(String symbol, boolean isnew) {
+		Integer id = SymbolMap.get(symbol);
+		if(id == null && isnew) {
+			
 		}
 		return id;
 	}

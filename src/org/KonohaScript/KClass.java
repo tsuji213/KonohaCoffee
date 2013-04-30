@@ -28,8 +28,7 @@ import java.util.ArrayList;
 
 public class KClass {
 	int cflag;
-	int packageId;
-	int packageDomain;
+	KPackage Package;
 	public int classId;
 	KClass BaseClass;
 	KClass SuperClass;
@@ -50,7 +49,7 @@ public class KClass {
 	public static final ArrayList<KMethod> EmptyMethodList = new ArrayList<KMethod>();
 
 	public KClass(Konoha konoha, KPackage p, int classId, String cname) {
-		this.packageId = p.packageId;
+		this.Package = p;
 		this.classId = classId;
 		this.BaseClass  = this;
 		this.SuperClass = null;
