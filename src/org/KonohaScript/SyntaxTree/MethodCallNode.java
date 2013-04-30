@@ -1,4 +1,4 @@
-package org.KonohaScript.AST;
+package org.KonohaScript.SyntaxTree;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

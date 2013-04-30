@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.AST.TypedNode;
+import org.KonohaScript.SyntaxTree.TypedNode;
 
 class CompiledMethod {
 	public Object CompiledCode;

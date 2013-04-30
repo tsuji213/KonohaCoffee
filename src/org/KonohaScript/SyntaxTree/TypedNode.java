@@ -22,7 +22,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript.AST;
+package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
