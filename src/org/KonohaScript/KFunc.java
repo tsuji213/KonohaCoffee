@@ -98,9 +98,9 @@ public final class KFunc {
 		return 0;
 	}
 
-	int InvokeMacroFunc(LexicalConverter lex,  ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> bufferToken) {
+	int InvokeMacroFunc(LexicalConverter lex,  ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> bufferToken) {
 		try {
-			Integer next = (Integer)method.invoke(callee, lex, tokenList, beginIdx, endIdx, bufferToken);
+			Integer next = (Integer)method.invoke(callee, lex, tokenList, BeginIdx, EndIdx, bufferToken);
 			return next.intValue();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -112,7 +112,7 @@ public final class KFunc {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return endIdx;
+		return EndIdx;
 	}
 	
 	@Override public String toString() {

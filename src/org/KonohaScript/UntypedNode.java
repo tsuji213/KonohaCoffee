@@ -45,59 +45,59 @@ public class UntypedNode implements KonohaParserConst {
 		return null;
 	}
 		
-	int ExpectedAfter(String beforeToken, ArrayList<KToken> tokens, int beginIdx, String nextToken) {
+	int ExpectedAfter(String beforeToken, ArrayList<KToken> tokens, int BeginIdx, String nextToken) {
 		if(beforeToken != null) {
 			KeyToken = new KToken(nextToken + " is expected after " + beforeToken);
-			if(0 < beginIdx - 1) {
-				KeyToken.uline = tokens.get(beginIdx-1).uline;
+			if(0 < BeginIdx - 1) {
+				KeyToken.uline = tokens.get(BeginIdx-1).uline;
 			}
 		}
 		return -1;
 	}
 
-	int ParseNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
-		if(beginIdx < endIdx) {
-			int nextIdx = ParseBlockLevel(tokens, beginIdx, endIdx, level);
+	int ParseNode(String beforeToken, ArrayList<KToken> tokens, int BeginIdx, int EndIdx, int level) {
+		if(BeginIdx < EndIdx) {
+			int nextIdx = ParseBlockLevel(tokens, BeginIdx, EndIdx, level);
 			if(nextIdx == NoMatch) {
-				nextIdx = ParseStatementLevel(tokens, beginIdx, endIdx, level);
+				nextIdx = ParseStatementLevel(tokens, BeginIdx, EndIdx, level);
 			}
 			if(nextIdx == NoMatch) {
-				nextIdx = ParseExpressionLevel(tokens, beginIdx, endIdx, level);
+				nextIdx = ParseExpressionLevel(tokens, BeginIdx, EndIdx, level);
 			}
 			return nextIdx;
 		}
-		return ExpectedAfter(beforeToken, tokens, beginIdx, "expression");
+		return ExpectedAfter(beforeToken, tokens, BeginIdx, "expression");
 	}
 
-	int ParseBlockLevel(ArrayList<KToken> tokenList, int beginIdx, int endIdx, int level) {
+	int ParseBlockLevel(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, int level) {
 		int nextIdx = NoMatch;
 		if(level == BlockLevel) {
-			int i = beginIdx, start = i;
-			while(i < endIdx) {
+			int i = BeginIdx, start = i;
+			while(i < EndIdx) {
 				KToken tk = tokenList.get(i);
 				if(tk.ResolvedSyntax.precedence_op2 == KSyntax.Precedence_CStyleStatementEnd) {
 					if(start < i) {
 						AddNode(RootNodeNameSpace.ParseNewNode(null, tokenList, start, i, StatementLevel));
-						nextIdx = endIdx;
+						nextIdx = EndIdx;
 					}
 					start = i + 1;
 				}
 				i++;
 			}
-			if(start < endIdx) {
-				AddNode(RootNodeNameSpace.ParseNewNode(null, tokenList, start, endIdx, StatementLevel));			
-				nextIdx = endIdx;
+			if(start < EndIdx) {
+				AddNode(RootNodeNameSpace.ParseNewNode(null, tokenList, start, EndIdx, StatementLevel));			
+				nextIdx = EndIdx;
 			}
 		}
 		return nextIdx;
 	}
 
-	int ParseStatementLevel(ArrayList<KToken> tokenList, int beginIdx, int endIdx, int level) {
+	int ParseStatementLevel(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, int level) {
 		int nextIdx = NoMatch;
 		if(level <= StatementLevel) {
 			KSyntax syntax = RootNodeNameSpace.GetSyntax("");
 			while(syntax != null) {
-				nextIdx = syntax.InvokeParseFunc(this, tokenList, beginIdx, beginIdx, endIdx);
+				nextIdx = syntax.InvokeParseFunc(this, tokenList, BeginIdx, BeginIdx, EndIdx);
 				if(nextIdx != NoMatch) {
 					this.Syntax = syntax;
 					return nextIdx;
@@ -109,14 +109,14 @@ public class UntypedNode implements KonohaParserConst {
 		return nextIdx;
 	}
 
-	int ParseExpressionLevel(ArrayList<KToken> tokenList, int beginIdx, int endIdx, int level) {
-		int opIdx = FindOperator(tokenList, beginIdx, endIdx);
+	int ParseExpressionLevel(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, int level) {
+		int opIdx = FindOperator(tokenList, BeginIdx, EndIdx);
 		KToken keyOperator = tokenList.get(opIdx);
-		//DBG_P("KeyOperator >>>>>>>> %d<%d<%d, %s", beginIdx, opIdx, endIdx, KToken_t(keyOperator));
+		//DBG_P("KeyOperator >>>>>>>> %d<%d<%d, %s", BeginIdx, opIdx, EndIdx, KToken_t(keyOperator));
 		KSyntax syntax = RootNodeNameSpace.GetSyntax(keyOperator.ParsedText);
 		int nextIdx = NoMatch;
 		while(syntax != null) {
-			nextIdx = syntax.InvokeParseFunc(this, tokenList, beginIdx, beginIdx, endIdx);
+			nextIdx = syntax.InvokeParseFunc(this, tokenList, BeginIdx, BeginIdx, EndIdx);
 			if(nextIdx != NoMatch) {
 				this.Syntax = syntax;
 				return nextIdx;
@@ -127,11 +127,11 @@ public class UntypedNode implements KonohaParserConst {
 		return nextIdx;
 	}
 
-	int FindOperator(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
+	int FindOperator(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx) {
 		boolean isPrePosition = true;
-		int opIdx = beginIdx, i, precedence = 0;
+		int opIdx = BeginIdx, i, precedence = 0;
 		KToken typeToken = null;
-		for(i = beginIdx; i < endIdx; i++) {
+		for(i = BeginIdx; i < EndIdx; i++) {
 			KToken tk = tokenList.get(i);
 			KSyntax syntax = tk.ResolvedSyntax;
 			if(isPrePosition) {
@@ -165,46 +165,46 @@ public class UntypedNode implements KonohaParserConst {
 	
 	// Matcher
 	
-	public int MatchCondition(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
-		if(beginIdx == -1) return -1;
-		if(beginIdx < endIdx) {
-			KToken token = tokens.get(beginIdx);
+	public int MatchCondition(String prev, ArrayList<KToken> tokens, int BeginIdx, int EndIdx) {
+		if(BeginIdx == -1) return -1;
+		if(BeginIdx < EndIdx) {
+			KToken token = tokens.get(BeginIdx);
 			if(token.ResolvedSyntax.equals("$()")) {
 				AddParsedNode(RootNodeNameSpace.ParseNewGroupNode("(", token, ExpressionLevel));
-				return beginIdx + 1;
+				return BeginIdx + 1;
 			}
 		}
-		return ExpectedAfter(prev, tokens, beginIdx, "(");
+		return ExpectedAfter(prev, tokens, BeginIdx, "(");
 	}
 
-	public int MatchExpression(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
-		if(beginIdx == -1) return -1;
-		AddParsedNode(RootNodeNameSpace.ParseNewNode(prev, tokens, beginIdx, endIdx, StatementLevel));
-		return endIdx;
+	public int MatchExpression(String prev, ArrayList<KToken> tokens, int BeginIdx, int EndIdx) {
+		if(BeginIdx == -1) return -1;
+		AddParsedNode(RootNodeNameSpace.ParseNewNode(prev, tokens, BeginIdx, EndIdx, StatementLevel));
+		return EndIdx;
 	}
 	
-	public int MatchSingleBlock(String prev, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
-		if(beginIdx == -1) return -1;
-		if(beginIdx < endIdx) {
-			KToken token = tokens.get(beginIdx);
+	public int MatchSingleBlock(String prev, ArrayList<KToken> tokens, int BeginIdx, int EndIdx) {
+		if(BeginIdx == -1) return -1;
+		if(BeginIdx < EndIdx) {
+			KToken token = tokens.get(BeginIdx);
 			if(token.ResolvedSyntax.equals("${}")) {
 				AddParsedNode(RootNodeNameSpace.ParseNewGroupNode(null, token, BlockLevel));
-				return beginIdx + 1;
+				return BeginIdx + 1;
 			}
-			return MatchExpression(prev, tokens, beginIdx, endIdx);
+			return MatchExpression(prev, tokens, BeginIdx, EndIdx);
 		}
-		return ExpectedAfter(prev, tokens, beginIdx, "{");
+		return ExpectedAfter(prev, tokens, BeginIdx, "{");
 	}
 
-	public int MatchSymbol(String prev, String symbol, ArrayList<KToken> tokens, int beginIdx, int endIdx) {
-		if(beginIdx == -1) return -1;
-		if(beginIdx < endIdx) {
-			KToken token = tokens.get(beginIdx);
+	public int MatchSymbol(String prev, String symbol, ArrayList<KToken> tokens, int BeginIdx, int EndIdx) {
+		if(BeginIdx == -1) return -1;
+		if(BeginIdx < EndIdx) {
+			KToken token = tokens.get(BeginIdx);
 			if(token.equals(symbol)) {
-				return beginIdx + 1;
+				return BeginIdx + 1;
 			}
 		}
-		return ExpectedAfter(prev, tokens, beginIdx, symbol);
+		return ExpectedAfter(prev, tokens, BeginIdx, symbol);
 	}
 	
 }

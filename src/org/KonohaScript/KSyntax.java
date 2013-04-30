@@ -80,7 +80,7 @@ public class KSyntax {
 //		return new KSyntax(syntaxName, flag, precedence_op1, precedence_op2);
 //	}
 	
-	int InvokeParseFunc(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+	int InvokeParseFunc(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
 		return -1; // Todo
 	}
 
@@ -102,20 +102,20 @@ public class KSyntax {
 
 class CommonSyntax {
 	
-	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
 //		KToken token = tokens.get(optIdx);
 		node.Syntax = KSyntax.ErrorSyntax;
-		return endIdx;
+		return EndIdx;
 	}
 	
 	public TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
 		return null;
 	}
 
-	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int optIdx, int endIdx) {
+	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
 ////		KToken token = tokens.get(optIdx);
 //		node.Syntax = KSyntax.ErrorSyntax;
-		return endIdx;
+		return EndIdx;
 	}
 
 }

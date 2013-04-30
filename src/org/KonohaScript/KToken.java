@@ -89,8 +89,8 @@ public final class KToken {
 		}
 	}
 
-	public static void DumpTokenList(ArrayList<KToken> list, int beginIdx, int endIdx) {
-		for (int i = beginIdx; i < endIdx; i++) {
+	public static void DumpTokenList(ArrayList<KToken> list, int BeginIdx, int EndIdx) {
+		for (int i = BeginIdx; i < EndIdx; i++) {
 			KToken token = list.get(i);
 			System.out.print("["+i +"] "); token.Dump();
 		}

@@ -180,17 +180,17 @@ public final class KNameSpace implements KonohaParserConst {
 		// }
 	}
 
-	public int PreProcess(ArrayList<KToken> tokenList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
-		return new LexicalConverter(this).Do(tokenList, beginIdx, endIdx, BufferList);
+	public int PreProcess(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+		return new LexicalConverter(this).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
-	UntypedNode ParseNode(ArrayList<KToken> tokenList, int beginIdx, int endIdx) {
+	UntypedNode ParseNode(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx) {
 		return null;
 	}
 
-	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int beginIdx, int endIdx, int level) {
+	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int BeginIdx, int EndIdx, int level) {
 		UntypedNode node = new UntypedNode(this);
-		node.ParseNode(beforeToken, tokens, beginIdx, endIdx, level);
+		node.ParseNode(beforeToken, tokens, BeginIdx, EndIdx, level);
 		return node;
 	}
 

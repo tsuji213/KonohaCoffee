@@ -109,11 +109,11 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	// Macro
 
-	public int OpenParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
+	public int OpenParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		ArrayList<KToken> GroupList = new ArrayList<KToken>();
-		KToken BeginToken = SourceList.get(beginIdx);
+		KToken BeginToken = SourceList.get(BeginIdx);
 		GroupList.add(BeginToken);
-		int nextIdx = lex.Do(SourceList, beginIdx + 1, endIdx, GroupList);
+		int nextIdx = lex.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken lastToken = GroupList.get(GroupList.size()-1);
 		if (!lastToken.EqualsText(")")) { // ERROR
 			lastToken.SetErrorMessage("must close )");
@@ -123,22 +123,22 @@ public final class MiniKonoha implements KonohaParserConst {
 			GroupToken.SetGroup(lex.GetSyntax("$()"), GroupList);
 			BufferList.add(GroupToken);
 		}
-		KonohaDebug.P("beginIdx=" + beginIdx + ",nextIdx="+nextIdx + ",endIdx="+endIdx);
+		KonohaDebug.P("BeginIdx=" + BeginIdx + ",nextIdx="+nextIdx + ",EndIdx="+EndIdx);
 		return nextIdx;
 	}
 
-	public int CloseParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int beginIdx, int endIdx, ArrayList<KToken> BufferList) {
-		BufferList.add(SourceList.get(beginIdx));
+	public int CloseParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+		BufferList.add(SourceList.get(BeginIdx));
 		return BreakPreProcess;
 	}
 
 	// Parse
 
-	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int beginIdx, int opIdx, int endIdx) {
-		int nextIdx = node.MatchCondition("if", tokens, beginIdx + 1, endIdx);
-		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, endIdx);
-		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, endIdx);
-		nextIdx = node.MatchSingleBlock("else", tokens, nextIdx, endIdx);
+	int ParseIfNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int opIdx, int EndIdx) {
+		int nextIdx = node.MatchCondition("if", tokens, BeginIdx + 1, EndIdx);
+		nextIdx = node.MatchSingleBlock(")", tokens, nextIdx, EndIdx);
+		nextIdx = node.MatchSymbol(null, "else", tokens, nextIdx, EndIdx);
+		nextIdx = node.MatchSingleBlock("else", tokens, nextIdx, EndIdx);
 		return nextIdx;
 	}
 
