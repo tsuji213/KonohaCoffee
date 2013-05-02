@@ -52,7 +52,7 @@ class KParamMap {
 
 class KSymbolTable implements KonohaParserConst {
 	ArrayList<KClass> ClassList;
-	KKeyIdMap LongClassNameMap;
+	HashMap<String, KClass> ClassNameMap;
 
 	ArrayList<KPackage> PackageList;
 	KKeyIdMap PackageMap;
@@ -70,7 +70,7 @@ class KSymbolTable implements KonohaParserConst {
 
 	KSymbolTable() {
 		this.ClassList = new ArrayList<KClass>(64);
-		this.LongClassNameMap = new KKeyIdMap();
+		this.ClassNameMap = new HashMap<String, KClass>();
 		
 		this.FileIdList = new ArrayList<String>(16);
 		this.FileIdMap = new HashMap<String, Integer>();
@@ -88,7 +88,7 @@ class KSymbolTable implements KonohaParserConst {
 
 	void Init(Konoha kctx) {
 		KPackage defaultPackage = NewPackage(kctx, "Konoha");
-		NewClass(kctx, defaultPackage, "void");
+//		NewClass(kctx, defaultPackage, "void");
 	}
 
 	long GetFileId(String file, int linenum) {
@@ -185,13 +185,13 @@ class KSymbolTable implements KonohaParserConst {
 		return p;
 	}
 
-	KClass NewClass(Konoha kctx, KPackage p, String name) {
-		int classId = this.ClassList.size();
-		KClass c = new KClass(kctx, p, classId, name);
-		this.ClassList.add(c);
-		this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
-		return c;
-	}
+//	KClass NewClass(Konoha kctx, KPackage p, String name) {
+//		int classId = this.ClassList.size();
+//		KClass c = new KClass(kctx, p, classId, name);
+//		this.ClassList.add(c);
+//		this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
+//		return c;
+//	}
 }
 
 public class Konoha implements KonohaParserConst {
@@ -200,12 +200,26 @@ public class Konoha implements KonohaParserConst {
 	KNameSpace DefaultNameSpace;
 	KSymbolTable SymbolTable;
 
+	public final KClass VoidType;
+	public final KClass BooleanType;
+	
 	public Konoha(MiniKonoha defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		RootNameSpace = new KNameSpace(this, null);
+		VoidType = RootNameSpace.LookupConstTypeInfo(new Boolean(true)); // FIXME
+		BooleanType = RootNameSpace.LookupConstTypeInfo(new Boolean(true));
 		defaultSyntax.LoadDefaultSyntax(RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, RootNameSpace);
+	}
+
+	final KClass LookupTypeInfo(String ClassName) throws ClassNotFoundException {
+		KClass TypeInfo = SymbolTable.ClassNameMap.get(ClassName);
+		if(TypeInfo == null) {
+			TypeInfo = new KClass(this, ClassName);
+			SymbolTable.ClassNameMap.put(ClassName, TypeInfo);
+		}
+		return TypeInfo;
 	}
 
 //	public int GetSymbol(String key, boolean isnew) {

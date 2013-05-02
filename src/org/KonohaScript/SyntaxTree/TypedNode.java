@@ -24,6 +24,7 @@
 
 package org.KonohaScript.SyntaxTree;
 
+import org.KonohaScript.KToken;
 import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
@@ -36,13 +37,51 @@ class NotSupportedNodeError extends RuntimeException {
 }
 
 public abstract class TypedNode {
+
+	TypedNode ParentNode = null;
+	TypedNode PreviousNode = null;
+	TypedNode NextNode = null;
+
+	public final TypedNode GetHeadNode() {
+		TypedNode Node = this;
+		while(Node.PreviousNode != null) {
+			Node = Node.ParentNode;
+		}
+		return Node;
+	}
+
+	public final TypedNode GetTailNode() {
+		TypedNode Node = this;
+		while(Node.NextNode != null) {
+			Node = Node.NextNode;
+		}
+		return Node;
+	}
+	
+	public final void LinkNode(TypedNode Node) {
+		Node.PreviousNode = this;
+		this.NextNode = Node;
+	}
+
 	public TypedNode(KClass TypeInfo) {
 		this.TypeInfo = TypeInfo;
+		this.SourceToken = null;
+	}
+
+	public TypedNode(KClass TypeInfo, KToken SourceToken) {
+		this.TypeInfo = TypeInfo;
+		this.SourceToken = SourceToken;
 	}
 
 	public KClass TypeInfo;
-
+	public KToken SourceToken;
+	
 	public boolean Evaluate(ASTVisitor Visitor) {
 		throw new NotSupportedNodeError();
 	}
+
+	public final boolean IsError() {
+		return (this instanceof ErrorNode);
+	}
+	
 }

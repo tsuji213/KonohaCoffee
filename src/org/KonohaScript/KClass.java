@@ -62,22 +62,33 @@ public class KClass {
 	
 	Class<?> HostedClassInfo = null;
 
-	private KClass() {
-		this(Object.class, "Object", null);
-	}
-	
-	KClass(Class<?> ClassInfo, String cname, KClass SuperClass) {
+	public KClass(Konoha konoha, String ClassName) throws ClassNotFoundException {
+		Class<?> ClassInfo = Class.forName(ClassName);
 		this.HostedClassInfo = ClassInfo;
-		this.ShortClassName = (cname == null) ? ClassInfo.getSimpleName() : cname;		
+		this.ShortClassName = ClassInfo.getSimpleName();
 		this.BaseClass  = this;
-		this.SuperClass = SuperClass;
-		this.ClassMethodList = EmptyMethodList;
+		if(ClassInfo != Object.class) {
+			this.SuperClass = konoha.LookupTypeInfo(ClassInfo.getSuperclass().getName());
+		}
 	}
-	
-	public static KClass ObjectType  = new KClass();	
-	public static KClass BooleanType = new KClass(Boolean.class, "boolean", ObjectType);
-	public static KClass IntType     = new KClass(Integer.class, "int", ObjectType);
-	public static KClass StringType  = new KClass(String.class,  "String", ObjectType);
+//
+//	private KClass() {
+//		this(Object.class, "Object", null);
+//	}
+//	
+//	KClass(Class<?> ClassInfo, String cname, KClass SuperClass) {
+//		this.HostedClassInfo = ClassInfo;
+//		this.ShortClassName = (cname == null) ? ClassInfo.getSimpleName() : cname;		
+//		this.BaseClass  = this;
+//		this.SuperClass = SuperClass;
+//		this.ClassMethodList = EmptyMethodList;
+//	}
+
+	public static KClass ObjectType  = null;	
+	public static KClass VoidType    = null;
+	public static KClass BooleanType = null;
+	public static KClass IntType     = null;
+	public static KClass StringType  = null;
 	
 	public boolean Accept(KClass TypeInfo) {
 		if(this == TypeInfo) return true;

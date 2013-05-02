@@ -80,17 +80,17 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		if (IsUnboxedType(Node.TypeInfo)) {
-			if (/* IsInt(Node) */true) {
-				push(Integer.toString((int) Node.ConstValue));
-			} else if (/* IsFloat(Node) */false) {
-				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
-			} else if (/* IsBoolean(Node) */false) {
-				push(Boolean.toString(Node.ConstValue == 0));
-			}
-		} else {
-			push(Node.ConstObject.toString());
-		}
+//		if (IsUnboxedType(Node.TypeInfo)) {
+//			if (/* IsInt(Node) */true) {
+//				push(Integer.toString((int) Node.ConstValue));
+//			} else if (/* IsFloat(Node) */false) {
+//				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
+//			} else if (/* IsBoolean(Node) */false) {
+//				push(Boolean.toString(Node.ConstValue == 0));
+//			}
+//		} else {
+//			push(Node.ConstObject.toString());
+//		}
 		return true;
 	}
 
@@ -120,12 +120,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLocal(LocalNode Node) {
-		AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.SourceToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLocal(LocalNode Node) {
-		push(Node.TermToken.ParsedText);
+		push(Node.SourceToken.ParsedText);
 		return true;
 
 	}

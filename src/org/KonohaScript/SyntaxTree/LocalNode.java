@@ -6,14 +6,11 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LocalNode extends TypedNode {
 	/* frame[$Index] (or TermToken->text) */
-	public KToken TermToken;
-	@Deprecated
-	int ClassicKonohaIndex;
+	int ClassicStackIndex;
 
-	public LocalNode(KClass TypeInfo, KToken TermToken, int Index) {
-		super(TypeInfo);
-		this.TermToken = TermToken;
-		this.ClassicKonohaIndex = Index;
+	public LocalNode(KClass TypeInfo, KToken SourceToken, int Index) {
+		super(TypeInfo, SourceToken);
+		this.ClassicStackIndex = Index;
 	}
 
 	@Override

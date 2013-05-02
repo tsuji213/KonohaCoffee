@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public final class KNameSpace implements KonohaParserConst {
-	Konoha konoha;
+	public Konoha Common;
 	int packageId;
 	// int syntaxOption;
 	KNameSpace ParentNameSpace;
@@ -42,7 +42,7 @@ public final class KNameSpace implements KonohaParserConst {
 
 	@SuppressWarnings("unchecked")
 	KNameSpace(Konoha konoha, KNameSpace parent) {
-		this.konoha = konoha;
+		this.Common = konoha;
 		this.ParentNameSpace = parent;
 
 		if(parent != null) {
@@ -58,6 +58,20 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 	}
 
+	public final KClass LookupTypeInfo(String ClassName) throws ClassNotFoundException {
+		return Common.LookupTypeInfo(ClassName);
+	}
+
+	public final KClass LookupConstTypeInfo(Object Value) {
+		try {
+			return Common.LookupTypeInfo(Value.getClass().getName());
+		}
+		catch(ClassNotFoundException e) {
+		}
+		return null;
+	}
+
+	
 	KFunc MergeFunc(KFunc f, KFunc f2) {
 		if (f == null)
 			return f2;
@@ -100,7 +114,7 @@ public final class KNameSpace implements KonohaParserConst {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
 			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
 			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
-			KonohaDebug.P("key="+kchar+", " + name + ", " + GetTokenFunc(kchar));
+			//KonohaDebug.P("key="+kchar+", " + name + ", " + GetTokenFunc(kchar));
 		}
 	}
 
@@ -153,10 +167,10 @@ public final class KNameSpace implements KonohaParserConst {
 		return (o instanceof KSyntax) ? (KSyntax) o : null;
 	}
 
-	public void AddSyntax(String symbol, KSyntax syntax) {
-		syntax.packageNameSpace = this;
-		syntax.prev = GetSyntax(symbol);
-		DefineSymbol(symbol, syntax);
+	public void AddSyntax(String Symbol, KSyntax Syntax) {
+		Syntax.PackageNameSpace = this;
+		Syntax.ParentSyntax = GetSyntax(Symbol);
+		DefineSymbol(Symbol, Syntax);
 	}
 
 	public void ImportNameSpace(KNameSpace ns) {
@@ -182,21 +196,6 @@ public final class KNameSpace implements KonohaParserConst {
 
 	public int PreProcess(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		return new LexicalConverter(this).Do(tokenList, BeginIdx, EndIdx, BufferList);
-	}
-
-	UntypedNode ParseNode(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx) {
-		return null;
-	}
-
-	UntypedNode ParseNewNode(String beforeToken, ArrayList<KToken> tokens, int BeginIdx, int EndIdx, int level) {
-		UntypedNode node = new UntypedNode(this);
-		node.ParseNode(beforeToken, tokens, BeginIdx, EndIdx, level);
-		return node;
-	}
-
-	UntypedNode ParseNewGroupNode(String beforeToken, KToken groupToken, int level) {
-		ArrayList<KToken> groups = groupToken.GetGroupTokenList();
-		return ParseNewNode(beforeToken, groups, 0, groups.size(), level);
 	}
 
 	// TypedNode Type(KGamma gma, UntypedNode node) {

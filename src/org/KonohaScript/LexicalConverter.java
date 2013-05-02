@@ -32,7 +32,7 @@ public final class LexicalConverter implements KonohaParserConst {
 			KToken Token = SourceList.get(c);
 			if (Token.ResolvedSyntax == null) {
 				KFunc macro = ns.GetMacroFunc(Token.ParsedText);
-				KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+macro);
+				//KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+macro);
 				if (macro != null) {
 					int nextIdx = macro.InvokeMacroFunc(this, SourceList, c, EndIdx, BufferList);
 					if (nextIdx == BreakPreProcess) {

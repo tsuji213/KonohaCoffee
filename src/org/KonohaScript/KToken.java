@@ -67,24 +67,25 @@ public final class KToken {
 	}
 
 	@SuppressWarnings("unchecked")
-	ArrayList<KToken> GetGroupTokenList() {
+	public ArrayList<KToken> GetGroupList() {
 		assert (IsGroupToken());
 		return (ArrayList<KToken>) ResolvedObject;
 	}
 
-	public void SetErrorMessage(String msg) {
+	public String SetErrorMessage(String msg) {
 		ResolvedSyntax = KSyntax.ErrorSyntax;
-		ResolvedObject = msg;
 		flag |= ErrorTokenFlag;
+		ResolvedObject = msg;
+		return msg;
 	}
 
 	// Debug
 	void Dump() {
-		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.syntaxName;
+		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.SyntaxName;
 		System.out.println("[" + syntax + "+" + (int) uline + "] '"
 				+ ParsedText + "'");
 		if (IsGroupToken()) {
-			ArrayList<KToken> group = GetGroupTokenList();
+			ArrayList<KToken> group = GetGroupList();
 			DumpTokenList(group, 0, group.size());
 		}
 	}

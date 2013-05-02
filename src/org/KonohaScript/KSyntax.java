@@ -24,86 +24,119 @@
 
 package org.KonohaScript;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.KonohaScript.SyntaxTree.TypedNode;
+import org.KonohaScript.SyntaxTree.*;
 
-public class KSyntax {
-	final static int Precedence_CPPStyleScope  =  50;
-	final static int Precedence_CStyleSuffixCall     = 100;  /*x(); x[]; x.x x->x x++ */
-	final static int Precedence_CStylePrefixOperator = 200;  /*++x; --x; sizeof x &x +x -x !x (T)x  */
+public final class KSyntax {
+	public final static int Term = 1;	
+	public final static int BinaryOperator = 1 << 1;
+	public final static int SuffixOperator = 1 << 2;
+	public final static int LeftJoin       = 1 << 3;
+	public final static int PrecedenceShift = 4;
+	
+	final static int Precedence_CStyleValue    =        (1  << PrecedenceShift);
+	final static int Precedence_CPPStyleScope  =        (50 << PrecedenceShift);
+	final static int Precedence_CStyleSuffixCall     = (100 << PrecedenceShift);  /*x(); x[]; x.x x->x x++ */
+	final static int Precedence_CStylePrefixOperator = (200 << PrecedenceShift);  /*++x; --x; sizeof x &x +x -x !x (T)x  */
 //	Precedence_CppMember      = 300;  /* .x ->x */
-	final static int Precedence_CStyleMUL      = 400;  /* x * x; x / x; x % x*/
-	final static int Precedence_CStyleADD      = 500;  /* x + x; x - x */
-	final static int Precedence_CStyleSHIFT    = 600;  /* x << x; x >> x */
-	final static int Precedence_CStyleCOMPARE  = 700;
-	final static int Precedence_CStyleEquals   = 800;
-	final static int Precedence_CStyleBITAND   = 900;
-	final static int Precedence_CStyleBITXOR   = 1000;
-	final static int Precedence_CStyleBITOR    = 1100;
-	final static int Precedence_CStyleAND      = 1200;
-	final static int Precedence_CStyleOR       = 1300;
-	final static int Precedence_CStyleTRINARY  = 1400;  /* ? : */
-	final static int Precedence_CStyleAssign   = 1500;
-	final static int Precedence_CStyleCOMMA    = 1600;
-	final static int Precedence_Error          = 1700;
-	final static int Precedence_Statement      = 1900;
-	final static int Precedence_CStyleStatementEnd    = 2000;
+	final static int Precedence_CStyleMUL      = (400 << PrecedenceShift);  /* x * x; x / x; x % x*/
+	final static int Precedence_CStyleADD      = (500 << PrecedenceShift);  /* x + x; x - x */
+	final static int Precedence_CStyleSHIFT    = (600 << PrecedenceShift);  /* x << x; x >> x */
+	final static int Precedence_CStyleCOMPARE  = (700 << PrecedenceShift);
+	final static int Precedence_CStyleEquals   = (800 << PrecedenceShift);
+	final static int Precedence_CStyleBITAND   = (900 << PrecedenceShift);
+	final static int Precedence_CStyleBITXOR   = (1000 << PrecedenceShift);
+	final static int Precedence_CStyleBITOR    = (1100 << PrecedenceShift);
+	final static int Precedence_CStyleAND      = (1200 << PrecedenceShift);
+	final static int Precedence_CStyleOR       = (1300 << PrecedenceShift);
+	final static int Precedence_CStyleTRINARY  = (1400 << PrecedenceShift);  /* ? : */
+	final static int Precedence_CStyleAssign   = (1500 << PrecedenceShift);
+	final static int Precedence_CStyleCOMMA    = (1600 << PrecedenceShift);
+	final static int Precedence_Error          = (1700 << PrecedenceShift);
+	final static int Precedence_Statement      = (1900 << PrecedenceShift);
+	final static int Precedence_CStyleStatementEnd    = (2000 << PrecedenceShift);
 
-	KNameSpace     packageNameSpace;
-	String         syntaxName;
-	int            flag;
-	boolean IsTypeSuffix() { return false; }
-	boolean IsOperatorSuffix() { return false; }
-	boolean IsLeftJoinOperator() {return false; }
-	int precedence_op2;
-	int precedence_op1;
-	Object ParseObject;
-	Method ParseMethod;
-	Object TypeObject;
-	Method TypeMethod;
-	KSyntax        prev;
-	KSyntax Pop() { return prev; }
+	public KNameSpace     PackageNameSpace;
+	public String         SyntaxName;
+	int                   SyntaxFlag;
 	
-	KSyntax(String syntaxName, int flag, Object po, String methodName, int precedence_op1, int precedence_op2) {
-		this.syntaxName = syntaxName;
-		this.flag = flag;
-		this.precedence_op1 = precedence_op1;
-		this.precedence_op2 = precedence_op2;
-		
+	public boolean IsBeginTerm() {
+		return ((SyntaxFlag & Term) == Term);
+	}
+	public boolean IsBinaryOperator() {
+		return ((SyntaxFlag & BinaryOperator) == BinaryOperator);
+	}
+	public boolean IsSuffixOperator() {
+		return ((SyntaxFlag & SuffixOperator) == SuffixOperator);
+	}
+	public boolean IsDelim() {
+		return ((SyntaxFlag & Precedence_CStyleStatementEnd) == Precedence_CStyleStatementEnd);
+	}
+
+	public final static boolean IsFlag(int flag, int flag2) {
+		return ((flag & flag2) == flag2);
+	}
+	public boolean IsLeftJoin(KSyntax Right) {
+		int left = this.SyntaxFlag >> PrecedenceShift, right = Right.SyntaxFlag >> PrecedenceShift;
+		return (left < right || (left == right && IsFlag(this.SyntaxFlag, LeftJoin) && IsFlag(Right.SyntaxFlag, LeftJoin)));
+	}
+
+	public Object ParseObject;
+	public Method ParseMethod;
+	public Object TypeObject;
+	public Method TypeMethod;
+	public KSyntax  ParentSyntax = null;
+	//KSyntax Pop() { return ParentSyntax; }
+	
+	KSyntax(String SyntaxName, int flag, Object po, String ParseMethod, String TypeMethod) {
+		this.SyntaxName = SyntaxName;
+		this.SyntaxFlag = flag;
 		this.ParseObject = po == null ? this : po;
-		this.ParseMethod = KFunc.LookupMethod(po, methodName);
+		this.ParseMethod = KFunc.LookupMethod(po, ParseMethod);
+		if(TypeMethod != null) {
+			this.TypeMethod  = KFunc.LookupMethod(po, TypeMethod);
+		}
+		else {
+			this.TypeMethod  = null;
+		}
 	}
 	
-//	static KSyntax DefineSyntax(String syntaxName, int flag, Object base, String name, int precedence_op1, int precedence_op2) {
-//		return new KSyntax(syntaxName, flag, precedence_op1, precedence_op2);
-//	}
-	
-	int InvokeParseFunc(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
-		return -1; // Todo
-	}
-
-	int InvokeTypeFunc(UntypedNode node) {
-		return -1; // Todo
-	}
-
-	TypedNode TypeMethodCall(KGamma gma, UntypedNode node) {
-		return null;
-	}
-
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
-	final static KSyntax ErrorSyntax = new KSyntax("$Error", 0, baseSyntax, "ParseErrorNode", Precedence_Error, Precedence_Error);
-	final static KSyntax IndentSyntax = new KSyntax("$Indent", 0, baseSyntax, "ParseIndent", Precedence_Error, Precedence_Error);
-	final static KSyntax TypeSyntax = null;
-	final static KSyntax ConstSyntax = null;
-	final static KSyntax SymbolSyntax = null;	
+	public final static KSyntax ErrorSyntax  = new KSyntax("$Error",  Precedence_Error, baseSyntax, "ParseErrorNode", null);
+	public final static KSyntax IndentSyntax = new KSyntax("$Indent", Precedence_Error, baseSyntax, "ParseIndent", null);
+	public final static KSyntax EmptySyntax  = new KSyntax("$Empty",  Precedence_Error, baseSyntax, "ParseValue", null);
+	public final static KSyntax TypeSyntax   = new KSyntax("$Type",   Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
+	public final static KSyntax ConstSyntax  = new KSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KSyntax SymbolSyntax = new KSyntax("$Symbol", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KSyntax ApplyMethodSyntax = new KSyntax("$ApplyMethod", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+
+	
+	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		try {
+			Integer NextId = (Integer)ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
+			return NextId.intValue();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 }
 
 class CommonSyntax {
 	
-	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
-//		KToken token = tokens.get(optIdx);
+	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+//		KToken token = tokens.get(OpIdx);
 		node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
@@ -112,10 +145,36 @@ class CommonSyntax {
 		return null;
 	}
 
-	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int optIdx, int EndIdx) {
-////		KToken token = tokens.get(optIdx);
+	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+////		KToken token = tokens.get(OpIdx);
 //		node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
+	public int ParseTypeStatement(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+////	KToken token = tokens.get(OpIdx);
+//	node.Syntax = KSyntax.ErrorSyntax;
+	return EndIdx;
+	}
+
+	public int ParseValue(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+		KToken Token = tokens.get(OpIdx);
+		return EndIdx;
+	}
+
+	public TypedNode TypeValue(KGamma Gamma, UntypedNode Node, KClass ReqType) {
+		KToken KeyToken = Node.KeyToken;
+		KClass TypeInfo = Node.NodeNameSpace.LookupConstTypeInfo(KeyToken.ResolvedObject);
+		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
+	}
+
+	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode Node, KClass ReqType) {
+		KClass TypeInfo = Gamma.GetLocalType(Node.KeyToken.ParsedText);
+		if(TypeInfo != null) {
+			return new LocalNode(TypeInfo, Node.KeyToken, Gamma.GetLocalIndex(Node.KeyToken.ParsedText));
+		}
+		return new ErrorNode(ReqType, Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
+	}
+
+	
 }
