@@ -34,9 +34,4 @@ public interface KonohaParserConst {
 //	TypeCheckPolicy_Creation       = (1 << 6)   /* TypeCheckNodeByName */
 //} TypeCheckPolicy;
 
-	
-	public final static int BlockLevel = 0;
-	public final static int StatementLevel = 1;
-	public final static int ExpressionLevel = 2;
-
 }

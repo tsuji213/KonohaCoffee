@@ -1,5 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
+import org.KonohaScript.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -7,13 +8,13 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class MethodCallNode extends TypedNode implements CallableNode {
+	KMethod Method;
 	public ArrayList<TypedNode> Params; /* [this, arg1, arg2, ...] */
-	Method Mtd;
 
 	/* call self.Method(arg1, arg2, ...) */
-	public MethodCallNode(KClass TypeInfo, Method Mtd) {
-		super(TypeInfo);
-		this.Mtd = Mtd;
+	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Mtd) {
+		super(TypeInfo, KeyToken);
+		this.Method = Mtd;
 		this.Params = new ArrayList<TypedNode>();
 	}
 
