@@ -31,10 +31,6 @@ import org.KonohaScript.SyntaxTree.*;
 
 public final class MiniKonoha implements KonohaParserConst {
 	// Token
-	public int TokenFunc(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
-		System.out.println("TokenFunc");
-		return -1;
-	}
 
 	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		for (; pos < SourceText.length(); pos++) {
@@ -45,10 +41,25 @@ public final class MiniKonoha implements KonohaParserConst {
 		}
 		return pos;
 	}
+
+	public int IndentToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		int LineStart = pos + 1;
+		pos = pos + 1;
+		for (; pos < SourceText.length(); pos++) {
+			char ch = SourceText.charAt(pos);
+			if(!Character.isWhitespace(ch)) {
+				break;
+			}
+		}
+		KToken Token = new KToken((LineStart < pos) ? SourceText.substring(LineStart, pos) : "");
+		Token.ResolvedSyntax = KSyntax.IndentSyntax;
+		ParsedTokenList.add(Token);			
+		return pos;
+	}
 	
 	public int SingleSymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
-		KToken token = new KToken(SourceText.substring(pos, pos + 1));
-		ParsedTokenList.add(token);
+		KToken Token = new KToken(SourceText.substring(pos, pos + 1));
+		ParsedTokenList.add(Token);
 		return pos + 1;
 	}
 
@@ -60,8 +71,22 @@ public final class MiniKonoha implements KonohaParserConst {
 				break;
 			}
 		}
-		KToken token = new KToken(SourceText.substring(start, pos));
-		ParsedTokenList.add(token);
+		KToken Token = new KToken(SourceText.substring(start, pos));
+		ParsedTokenList.add(Token);
+		return pos;
+	}
+
+	public int MemberToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
+		int start = pos + 1;
+		for (; pos < SourceText.length(); pos++) {
+			char ch = SourceText.charAt(pos);
+			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
+				break;
+			}
+		}
+		KToken Token = new KToken(SourceText.substring(start, pos));
+		Token.ResolvedSyntax = KSyntax.MemberSyntax;
+		ParsedTokenList.add(Token);
 		return pos;
 	}
 
@@ -210,11 +235,10 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public int MergeOperatorMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		KToken Token = SourceList.get(BeginIdx);
-		KonohaDebug.P("****************");
 		if(BufferList.size() > 0) {
 			KToken PrevToken = BufferList.get(BufferList.size()-1);			
 			if(PrevToken.ResolvedSyntax != null && PrevToken.uline == Token.uline) {
-				//if(!Character.isLetter(PrevToken.ParsedText.charAt(0))) {
+//				if(!Character.isLetter(PrevToken.ParsedText.charAt(0))) {
 					String MergedOperator = PrevToken.ParsedText + Token.ParsedText;
 					KSyntax Syntax = Lexer.GetSyntax(MergedOperator);
 					if(Syntax != null) {
@@ -222,7 +246,7 @@ public final class MiniKonoha implements KonohaParserConst {
 						PrevToken.ParsedText = MergedOperator;
 						return BeginIdx + 1;
 					}
-				//}
+//				}
 			}
 		}
 		Lexer.ResolveTokenSyntax(Token);
@@ -373,7 +397,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	public final static int VarDeclValue = 1;
 
 	public int ParseVarDecl(UntypedNode UNode, KToken TypeToken, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchSyntax(VarDeclName, KSyntax.SymbolSyntax, TokenList, BeginIdx, EndIdx, ParseOption);
+		int NextIdx = UNode.MatchSyntax(VarDeclName, "$Symbol", TokenList, BeginIdx, EndIdx, ParseOption);
 		int SkipIdx = UNode.MatchKeyword(-1, "=", TokenList, NextIdx, EndIdx, AllowEmpty|AllowSkip);
 		if(NextIdx < SkipIdx) {
 			for(NextIdx = SkipIdx; NextIdx < EndIdx; NextIdx++) {
@@ -428,7 +452,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	public final static int MethodDeclParam  = 4;
 	
 	public int ParseMethodDecl(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchSyntax(MethodDeclClass, KSyntax.TypeSyntax, TokenList, BeginIdx + 1, EndIdx, AllowEmpty|AllowSkip);
+		int NextIdx = UNode.MatchSyntax(MethodDeclClass, "$Type", TokenList, BeginIdx + 1, EndIdx, AllowEmpty|AllowSkip);
 		if(NextIdx > BeginIdx + 1) {
 			NextIdx = UNode.MatchKeyword(-1, ".", TokenList, NextIdx, EndIdx, 0);
 		}
@@ -436,7 +460,7 @@ public final class MiniKonoha implements KonohaParserConst {
 			NextIdx = BeginIdx + 1;
 			UNode.AddParsedNode(MethodDeclClass, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx));
 		}
-		NextIdx = UNode.MatchSyntax(MethodDeclName, KSyntax.SymbolSyntax, TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, NextIdx, EndIdx, ParseOption);
 		NextIdx = UNode.MatchKeyword(-1, "()", TokenList, NextIdx, EndIdx, ParseOption);
 		if(NextIdx == -1 || UNode.Syntax.IsError()) return NextIdx;
 		NextIdx = UNode.MatchKeyword(MethodDeclBlock, "{}", TokenList, NextIdx, EndIdx, ParseOption);
@@ -450,11 +474,12 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.DefineSymbol("String",  ns.LookupConstTypeInfo(""));
 
 		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
+		ns.AddTokenFunc("\n", this, "IndentToken");		
 		ns.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
-		ns.AddTokenFunc("1", this, "NumberLiteralToken");
 		ns.AddTokenFunc("a", this, "SymbolToken");
-		ns.AddTokenFunc("\"", this, "StringLiteralToken");
 		ns.AddTokenFunc(".", this, "MemberToken");
+		ns.AddTokenFunc("\"", this, "StringLiteralToken");
+		ns.AddTokenFunc("1", this, "NumberLiteralToken");
 		
 		// Macro
 		ns.AddMacroFunc("(", this, "OpenParenthesisMacro");
@@ -488,6 +513,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddSyntax(new KSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign"));
 		ns.AddSyntax(new KSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign"));
 		ns.AddSyntax(new KSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign"));
+		ns.AddSyntax(new KSyntax(";",  Precedence_CStyleDelim, this, null, null));
 
 		ns.AddSyntax(new KSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol"));
 		ns.AddSyntax(new KSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember"));
@@ -495,6 +521,9 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddSyntax(new KSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null));
 		ns.AddSyntax(new KSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null));
 
+		ns.AddSyntax(new KSyntax("$Symbol", Term, this, "ParseSymbol", "TypeSymbol"));
+		ns.AddSyntax(new KSyntax("$Const",  Term, this, "ParseConst", "TypeConst"));
+		
 		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol"));
 		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl"));
 		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl"));

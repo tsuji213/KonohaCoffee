@@ -41,7 +41,7 @@ public interface KonohaParserConst {
 	public final static int Precedence_CStyleCOMMA    = (1600 << PrecedenceShift);
 	public final static int Precedence_Error          = (1700 << PrecedenceShift);
 	public final static int Precedence_Statement      = (1900 << PrecedenceShift);
-	public final static int Precedence_CStyleStatementEnd    = (2000 << PrecedenceShift);
+	public final static int Precedence_CStyleDelim    = (2000 << PrecedenceShift);
 
 	public final static int TermRequired     = 0;
 	public final static int AllowEmpty       = 1;

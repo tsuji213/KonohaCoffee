@@ -23,10 +23,10 @@ public final class LexicalConverter implements KonohaParserConst {
 	public void ResolveTokenSyntax(KToken Token) {
 		Token.ResolvedObject = ns.GetSymbol(Token.ParsedText);
 		if(Token.ResolvedObject == null) {
-			Token.ResolvedSyntax = KSyntax.SymbolSyntax;
+			Token.ResolvedSyntax = ns.GetSyntax("$Symbol");
 		}
 		else if(Token.ResolvedObject instanceof KClass) {
-			Token.ResolvedSyntax = KSyntax.TypeSyntax;
+			Token.ResolvedSyntax = ns.GetSyntax("$Type");
 		}
 		else if(Token.ResolvedObject instanceof KSyntax) {
 			Token.ResolvedSyntax = (KSyntax)Token.ResolvedObject;

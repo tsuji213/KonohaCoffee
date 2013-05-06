@@ -276,11 +276,11 @@ public class UntypedNode implements KonohaParserConst {
 		return ExpectedAfter(TokenList, BeginIdx, EndIdx, ParseOption, Symbol);
 	}
 
-	public int MatchSyntax(int Index, KSyntax Syntax, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int MatchSyntax(int Index, String SyntaxName, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
-			if(Token.ResolvedSyntax == Syntax) {
+			if(Token.ResolvedSyntax.equals(SyntaxName)) {
 				return BeginIdx + 1;
 			}
 		}

@@ -46,7 +46,7 @@ public final class KSyntax implements KonohaParserConst {
 		return ((SyntaxFlag & SuffixOperator) == SuffixOperator);
 	}
 	public boolean IsDelim() {
-		return ((SyntaxFlag & Precedence_CStyleStatementEnd) == Precedence_CStyleStatementEnd);
+		return ((SyntaxFlag & Precedence_CStyleDelim) == Precedence_CStyleDelim);
 	}
 
 	public final static boolean IsFlag(int flag, int flag2) {
@@ -84,11 +84,11 @@ public final class KSyntax implements KonohaParserConst {
 	
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
 	public final static KSyntax ErrorSyntax  = new KSyntax("$Error",  Precedence_Error, baseSyntax, "ParseErrorNode", null);
-	public final static KSyntax IndentSyntax = new KSyntax("$Indent", Precedence_Error, baseSyntax, "ParseIndent", null);
+	public final static KSyntax IndentSyntax = new KSyntax("$Indent", Precedence_CStyleDelim, baseSyntax, "ParseIndent", null);
 	public final static KSyntax EmptySyntax  = new KSyntax("$Empty",  Precedence_Error, baseSyntax, "ParseValue", null);
 	public final static KSyntax TypeSyntax   = new KSyntax("$Type",   Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
 	public final static KSyntax ConstSyntax  = new KSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
-	public final static KSyntax SymbolSyntax = new KSyntax("$Symbol", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KSyntax MemberSyntax = new KSyntax("$Member", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 	public final static KSyntax ApplyMethodSyntax = new KSyntax("$ApplyMethod", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 
 	public boolean IsError() { return this == ErrorSyntax; }	
