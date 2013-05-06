@@ -29,8 +29,6 @@ import java.util.HashMap;
 
 public final class KNameSpace implements KonohaParserConst {
 	public Konoha Common;
-	int packageId;
-	// int syntaxOption;
 	KNameSpace ParentNameSpace;
 	ArrayList<KNameSpace> ImportedNameSpaceList;
 
@@ -58,6 +56,7 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 	}
 
+	// class
 	public final KClass LookupTypeInfo(String ClassName) throws ClassNotFoundException {
 		return Common.LookupTypeInfo(ClassName);
 	}
@@ -70,7 +69,6 @@ public final class KNameSpace implements KonohaParserConst {
 		}
 		return null;
 	}
-
 	
 	KFunc MergeFunc(KFunc f, KFunc f2) {
 		if (f == null)
@@ -195,7 +193,7 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	public int PreProcess(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
-		return new LexicalConverter(this).Do(tokenList, BeginIdx, EndIdx, BufferList);
+		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	// TypedNode Type(KGamma gma, UntypedNode node) {
@@ -211,17 +209,17 @@ public final class KNameSpace implements KonohaParserConst {
 		return "(eval:" + (int) uline + ")";
 	}
 
-	public void Message(int level, KToken token, String msg) {
+	public void Message(int level, KToken token, String Message) {
 		if (!token.IsErrorToken()) {
 			if (level == Error) {
-				msg = "(error) " + GetSourcePosition(token.uline) + " " + msg;
-				token.SetErrorMessage(msg);
+				Message = "(error) " + GetSourcePosition(token.uline) + " " + Message;
+				token.SetErrorMessage(Message);
 			} else if (level == Warning) {
-				msg = "(warning) " + GetSourcePosition(token.uline) + " " + msg;
+				Message = "(warning) " + GetSourcePosition(token.uline) + " " + Message;
 			} else if (level == Info) {
-				msg = "(info) " + GetSourcePosition(token.uline) + " " + msg;
+				Message = "(info) " + GetSourcePosition(token.uline) + " " + Message;
 			}
-			System.out.println(msg);
+			System.out.println(Message);
 		}
 	}
 }

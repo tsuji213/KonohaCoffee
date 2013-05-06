@@ -232,7 +232,7 @@ public class UntypedNode implements KonohaParserConst {
 		if(BeginIdx == -1) return -1;
 		if(BeginIdx < EndIdx) {
 			KToken GroupToken = TokenList.get(BeginIdx);
-			if(GroupToken.ResolvedSyntax.equals("$()")) {
+			if(GroupToken.ResolvedSyntax.equals("()")) {
 				AddParsedNode(Index, ParseGroup(NodeNameSpace, GroupToken, 0));
 				return BeginIdx + 1;
 			}
@@ -256,7 +256,7 @@ public class UntypedNode implements KonohaParserConst {
 		if(BeginIdx == -1) return -1;
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
-			if(Token.ResolvedSyntax.equals("${}")) {
+			if(Token.ResolvedSyntax.equals("{}")) {
 				AddParsedNode(Index, ParseGroup(NodeNameSpace, Token, AllowEmpty|CreateNullNode));
 				return BeginIdx + 1;
 			}

@@ -105,25 +105,25 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	// Macro
 
-	public int OpenParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int OpenParenthesisMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		ArrayList<KToken> GroupList = new ArrayList<KToken>();
 		KToken BeginToken = SourceList.get(BeginIdx);
 		GroupList.add(BeginToken);
-		int nextIdx = lex.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
+		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
 		if (!LastToken.EqualsText(")")) { // ERROR
 			LastToken.SetErrorMessage("must close )");
 		}
 		else {
 			KToken GroupToken = new KToken("( ... )", BeginToken.uline);
-			GroupToken.SetGroup(lex.GetSyntax("$()"), GroupList);
+			GroupToken.SetGroup(Lexer.GetSyntax("()"), GroupList);
 			BufferList.add(GroupToken);
 		}
 		//KonohaDebug.P("BeginIdx=" + BeginIdx + ",nextIdx="+nextIdx + ",EndIdx="+EndIdx);
 		return nextIdx;
 	}
 
-	public int CloseParenthesisMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int CloseParenthesisMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		KToken Token = SourceList.get(BeginIdx);
 		if(BufferList.size() == 0 || !BufferList.get(0).EqualsText("(")) {
 			Token.SetErrorMessage("mismatched )");
@@ -132,25 +132,24 @@ public final class MiniKonoha implements KonohaParserConst {
 		return BreakPreProcess;
 	}
 
-	public int OpenBraceMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int OpenBraceMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		ArrayList<KToken> GroupList = new ArrayList<KToken>();
 		KToken BeginToken = SourceList.get(BeginIdx);
 		GroupList.add(BeginToken);
-		int nextIdx = lex.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
+		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
 		if (!LastToken.EqualsText("}")) { // ERROR
 			LastToken.SetErrorMessage("must close }");
 		}
 		else {
 			KToken GroupToken = new KToken("{ ... }", BeginToken.uline);
-			GroupToken.SetGroup(lex.GetSyntax("${}"), GroupList);
+			GroupToken.SetGroup(Lexer.GetSyntax("{}"), GroupList);
 			BufferList.add(GroupToken);
 		}
-		//KonohaDebug.P("BeginIdx=" + BeginIdx + ",nextIdx="+nextIdx + ",EndIdx="+EndIdx);
 		return nextIdx;
 	}
 
-	public int CloseBraceMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int CloseBraceMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		KToken Token = SourceList.get(BeginIdx);
 		if(BufferList.size() == 0 || !BufferList.get(0).EqualsText("{")) {
 			Token.SetErrorMessage("mismatched }");
@@ -159,21 +158,44 @@ public final class MiniKonoha implements KonohaParserConst {
 		return BreakPreProcess;
 	}
 
-	public int OpenBracketMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int OpenCloseBraceMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+		int BraceLevel = 0;
+		ArrayList<KToken> GroupList = new ArrayList<KToken>();
+		for(int i = BeginIdx; i < EndIdx; i++) {
+			KToken Token = SourceList.get(i);
+			GroupList.add(Token);
+			if(Token.EqualsText("{")) {
+				BraceLevel++;
+			}
+			if(Token.EqualsText("}")) {
+				BraceLevel--;
+				if(BraceLevel == 0) {
+					KToken GroupToken = new KToken("{ ... }", SourceList.get(BeginIdx).uline);
+					GroupToken.SetGroup(Lexer.GetSyntax("${}"), GroupList);
+					BufferList.add(GroupToken);
+					return i+1;
+				}
+			}
+		}
+		SourceList.get(BeginIdx).SetErrorMessage("must close }");
+		BufferList.add(SourceList.get(BeginIdx));
+		return EndIdx;
+	}
+
+	public int OpenBracketMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		ArrayList<KToken> GroupList = new ArrayList<KToken>();
 		KToken BeginToken = SourceList.get(BeginIdx);
 		GroupList.add(BeginToken);
-		int nextIdx = lex.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
+		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
 		if (!LastToken.EqualsText("]")) { // ERROR
 			LastToken.SetErrorMessage("must close ]");
 		}
 		else {
 			KToken GroupToken = new KToken("[ ... ]", BeginToken.uline);
-			GroupToken.SetGroup(lex.GetSyntax("$[]"), GroupList);
+			GroupToken.SetGroup(Lexer.GetSyntax("[]"), GroupList);
 			BufferList.add(GroupToken);
 		}
-		//KonohaDebug.P("BeginIdx=" + BeginIdx + ",nextIdx="+nextIdx + ",EndIdx="+EndIdx);
 		return nextIdx;
 	}
 
@@ -187,7 +209,6 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	// Parse
-	
 
 	public int ParseUniaryOperator(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int NextIdx = EndIdx;
@@ -307,24 +328,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		if(ElseNode.IsError()) return ElseNode;
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
 	}
-	
-//	// Else Statement
-//	public final static int ElseClause = 0;
-//	
-//	public int ParseElse(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int OpIdx, int EndIdx) {
-//		return UNode.MatchSingleBlock("else", TokenList, BeginIdx+1, EndIdx);
-//	}
-//
-//	public TypedNode TypeElse(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-//		TypedNode Node = UNode.GetPreviousTypedNode();
-//		if(Node instanceof IfNode) {
-//			IfNode StmtNode = (IfNode)Node;
-//			StmtNode.ElseNode = UNode.TypeNodeAt(ElseClause, Gamma, StmtNode.ThenNode.TypeInfo, 0);
-//			return StmtNode;
-//		}
-//		return new ErrorNode(TypeInfo, UNode.KeyToken, "else is not a statement");
-//	}
-	
+		
 	// Return Statement
 
 	public int ParseReturn(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -397,7 +401,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	
 	public final static int MethodDeclReturn = 0;
 	public final static int MethodDeclClass  = 1;
-	public final static int MethodDeclMethod = 2;
+	public final static int MethodDeclName = 2;
 	public final static int MethodDeclBlock  = 3;
 	public final static int MethodDeclParam  = 4;
 	
@@ -410,10 +414,12 @@ public final class MiniKonoha implements KonohaParserConst {
 			NextIdx = BeginIdx + 1;
 			UNode.AddParsedNode(MethodDeclClass, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx));
 		}
-		NextIdx = UNode.MatchSyntax(MethodDeclMethod, KSyntax.SymbolSyntax, TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchSyntax(MethodDeclName, KSyntax.SymbolSyntax, TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchKeyword(-1, "()", TokenList, NextIdx, EndIdx, ParseOption);
+		if(NextIdx == -1 || UNode.Syntax.IsError()) return NextIdx;
+		NextIdx = UNode.MatchKeyword(MethodDeclBlock, "{}", TokenList, NextIdx, EndIdx, ParseOption);
 		return -1;
 	}
-	
 	
 	public void LoadDefaultSyntax(KNameSpace ns) {
 		ns.DefineSymbol("void",    ns.Common.VoidType); // FIXME
@@ -434,6 +440,8 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddMacroFunc("[", this, "OpenBracketMacro");
 		ns.AddMacroFunc("]", this, "CloseBracketMacro");
 		//ns.AddSymbol(symbol, constValue);
+		
+		ns.AddSyntax("+", new KSyntax("+", Precedence_CStyleADD|Term|BinaryOperator, this, "ParseUniaryOperator", null));
 	}
 }
 
