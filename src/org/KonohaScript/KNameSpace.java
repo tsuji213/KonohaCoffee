@@ -121,6 +121,25 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	
+	static final String MacroPrefix = "@$";  // FIXME: use different symbol tables
+	
+	KFunc GetDefinedMacroFunc(String Symbol) {
+		if(DefinedSymbolTable != null) {
+			Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
+			return (object instanceof KFunc) ? (KFunc)object : null;
+		}
+		return null;
+	}
+
+	KFunc GetMacroFunc(String Symbol) {		
+		Object o = GetSymbol(MacroPrefix + Symbol);
+		return (o instanceof KFunc) ? (KFunc) o : null;
+	}
+
+	public void AddMacroFunc(String Symbol, Object Callee, String MethodName) {
+		DefineSymbol(MacroPrefix + Symbol, new KFunc(Callee, MethodName, null));
+	}
+
 	HashMap<String, Object> DefinedSymbolTable;
 	HashMap<String, Object> ImportedSymbolTable;
 
@@ -143,32 +162,15 @@ public final class KNameSpace implements KonohaParserConst {
 		ImportedSymbolTable.put(Symbol, Value);
 	}
 
-	KFunc GetDefinedMacroFunc(String symbol) {
-		if(DefinedSymbolTable != null) {
-			Object object = DefinedSymbolTable.get(symbol);
-			return (object instanceof KFunc) ? (KFunc)object : null;
-		}
-		return null;
-	}
-
-	KFunc GetMacroFunc(String symbol) {		
-		Object o = GetSymbol(symbol);
-		return (o instanceof KFunc) ? (KFunc) o : null;
-	}
-
-	public void AddMacroFunc(String symbol, Object callee, String name) {
-		DefineSymbol(symbol, new KFunc(callee, name, null));
-	}
-
 	public KSyntax GetSyntax(String symbol) {
 		Object o = GetSymbol(symbol);
 		return (o instanceof KSyntax) ? (KSyntax) o : null;
 	}
 
-	public void AddSyntax(String Symbol, KSyntax Syntax) {
+	public void AddSyntax(KSyntax Syntax) {
 		Syntax.PackageNameSpace = this;
-		Syntax.ParentSyntax = GetSyntax(Symbol);
-		DefineSymbol(Symbol, Syntax);
+		Syntax.ParentSyntax = GetSyntax(Syntax.SyntaxName);
+		DefineSymbol(Syntax.SyntaxName, Syntax);
 	}
 
 	public void ImportNameSpace(KNameSpace ns) {

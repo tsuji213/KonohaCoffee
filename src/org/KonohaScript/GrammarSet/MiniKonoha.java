@@ -74,7 +74,7 @@ public final class MiniKonoha implements KonohaParserConst {
 			}
 		}
 		KToken token = new KToken(SourceText.substring(start, pos));
-		token.ResolvedSyntax = ns.GetSyntax("$IntLiteral");
+		token.ResolvedSyntax = ns.GetSyntax("$IntegerLiteral");
 		ParsedTokenList.add(token);
 		return pos;
 	}
@@ -199,7 +199,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		return nextIdx;
 	}
 
-	public int CloseBracketMacro(LexicalConverter lex, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int CloseBracketMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
 		KToken Token = SourceList.get(BeginIdx);
 		if(BufferList.size() == 0 || !BufferList.get(0).EqualsText("[")) {
 			Token.SetErrorMessage("mismatched ]");
@@ -208,6 +208,28 @@ public final class MiniKonoha implements KonohaParserConst {
 		return BreakPreProcess;
 	}
 
+	public int MergeOperatorMacro(LexicalConverter Lexer, ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+		KToken Token = SourceList.get(BeginIdx);
+		KonohaDebug.P("****************");
+		if(BufferList.size() > 0) {
+			KToken PrevToken = BufferList.get(BufferList.size()-1);			
+			if(PrevToken.ResolvedSyntax != null && PrevToken.uline == Token.uline) {
+				//if(!Character.isLetter(PrevToken.ParsedText.charAt(0))) {
+					String MergedOperator = PrevToken.ParsedText + Token.ParsedText;
+					KSyntax Syntax = Lexer.GetSyntax(MergedOperator);
+					if(Syntax != null) {
+						PrevToken.ResolvedSyntax = Syntax;
+						PrevToken.ParsedText = MergedOperator;
+						return BeginIdx + 1;
+					}
+				//}
+			}
+		}
+		Lexer.ResolveTokenSyntax(Token);
+		BufferList.add(Token);
+		return BeginIdx + 1;
+	}
+	
 	// Parse
 
 	public int ParseUniaryOperator(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -424,14 +446,16 @@ public final class MiniKonoha implements KonohaParserConst {
 	public void LoadDefaultSyntax(KNameSpace ns) {
 		ns.DefineSymbol("void",    ns.Common.VoidType); // FIXME
 		ns.DefineSymbol("boolean", ns.Common.BooleanType);
-		ns.DefineSymbol("int",    ns.LookupConstTypeInfo(new Integer(0)));
-		ns.DefineSymbol("String", ns.LookupConstTypeInfo(""));
+		ns.DefineSymbol("int",     ns.LookupConstTypeInfo(new Integer(0)));
+		ns.DefineSymbol("String",  ns.LookupConstTypeInfo(""));
 
 		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
-		ns.AddTokenFunc("(){}[],;+-*/%=", this, "SingleSymbolToken");
+		ns.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
 		ns.AddTokenFunc("1", this, "NumberLiteralToken");
 		ns.AddTokenFunc("a", this, "SymbolToken");
 		ns.AddTokenFunc("\"", this, "StringLiteralToken");
+		ns.AddTokenFunc(".", this, "MemberToken");
+		
 		// Macro
 		ns.AddMacroFunc("(", this, "OpenParenthesisMacro");
 		ns.AddMacroFunc(")", this, "CloseParenthesisMacro");
@@ -439,9 +463,71 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddMacroFunc("}", this, "CloseBraceMacro");
 		ns.AddMacroFunc("[", this, "OpenBracketMacro");
 		ns.AddMacroFunc("]", this, "CloseBracketMacro");
+		ns.AddMacroFunc("=", this, "MergeOperatorMacro");
+		ns.AddMacroFunc("&", this, "MergeOperatorMacro");
+		ns.AddMacroFunc("|", this, "MergeOperatorMacro");
 		//ns.AddSymbol(symbol, constValue);
+
+		ns.AddSyntax(new KSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, null, null));
+		ns.AddSyntax(new KSyntax("/", BinaryOperator|Precedence_CStyleMUL, this, null, null));
+		ns.AddSyntax(new KSyntax("%", BinaryOperator|Precedence_CStyleMUL, this, null, null));
 		
-		ns.AddSyntax("+", new KSyntax("+", Precedence_CStyleADD|Term|BinaryOperator, this, "ParseUniaryOperator", null));
+		ns.AddSyntax(new KSyntax("+", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null));
+		ns.AddSyntax(new KSyntax("-", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null));
+
+		ns.AddSyntax(new KSyntax("<", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
+		ns.AddSyntax(new KSyntax("<=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
+		ns.AddSyntax(new KSyntax(">", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
+		ns.AddSyntax(new KSyntax(">=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
+
+		ns.AddSyntax(new KSyntax("==", BinaryOperator|Precedence_CStyleEquals, this, null, null));
+		ns.AddSyntax(new KSyntax("!=", BinaryOperator|Precedence_CStyleEquals, this, null, null));
+
+		ns.AddSyntax(new KSyntax("=", BinaryOperator|Precedence_CStyleAssign|LeftJoin, this, null, "TypeAssign"));
+
+		ns.AddSyntax(new KSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign"));
+		ns.AddSyntax(new KSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign"));
+		ns.AddSyntax(new KSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign"));
+
+		ns.AddSyntax(new KSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol"));
+		ns.AddSyntax(new KSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember"));
+		ns.AddSyntax(new KSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember"));
+		ns.AddSyntax(new KSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null));
+		ns.AddSyntax(new KSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null));
+
+		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol"));
+		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl"));
+		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl"));
+
+		ns.AddSyntax(new KSyntax("if", Term, this, "ParseIfNode", "TypeIfNode"));
+		ns.AddSyntax(new KSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode"));
+
+//		{ PATTERN(Indent), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
+//		{ TOKEN(SEMICOLON), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
+//		{ PATTERN(Symbol),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodName}, {SUGARFUNC TypeCheck_Symbol},},
+//		{ PATTERN(Text),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_TextLiteral},},
+//		{ PATTERN(Number),  SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_IntLiteral},},
+//		{ PATTERN(Member),  SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseMember}, {SUGARFUNC TypeCheck_Getter}},
+//		{ GROUP(Parenthesis), SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseParenthesis}, {SUGARFUNC TypeCheck_FuncStyleCall}}, //KSymbol_ParenthesisGroup
+//		{ GROUP(Bracket),  SYNFLAG_CParseFunc|SYNFLAG_Suffix|SYNFLAG_TypeSuffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseIndexer}, {MethodCallFunc}}, //KSymbol_BracketGroup
+//		{ GROUP(Brace),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC ParseBlock}, {SUGARFUNC TypeCheck_Block}},   // KSymbol_BraceGroup
+//		{ PATTERN(Block), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleBlock}, {SUGARFUNC TypeCheck_Block}, },
+//		{ PATTERN(Param), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleParam}, {SUGARFUNC Statement_ParamDecl},},
+//		{ PATTERN(Token), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Token}, {NULL}},
+////		{ TOKEN(DOT), },
+//		{ TOKEN(COLON), 0, Precedence_CStyleTRINARY, },  // colon
+//		{ TOKEN(COMMA), SYNFLAG_CFunc, Precedence_CStyleCOMMA, 0, {SUGARFUNC ParseCOMMA}, {NULL}},
+////		{ TOKEN(DOLLAR),  /* 0, 0, 0, NULL, ParseDOLLAR, */ },
+//		{ TOKEN(true),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_true}, },
+//		{ TOKEN(false),   SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_false}, },
+//		{ PATTERN(Expr),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Expression}, {NULL}, },
+//		{ PATTERN(Type),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Type}, {SUGARFUNC TypeCheck_Type}, },
+//		{ PATTERN(TypeDecl),   SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_TypeDecl}, {SUGARFUNC Statement_TypeDecl}},
+//		{ PATTERN(MethodDecl), SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodDecl}, {SUGARFUNC Statement_MethodDecl}},
+//		{ TOKEN(return), SYNFLAG_CTypeFunc|SYNFLAG_NodeBreakExec, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_return} },
+//		{ TOKEN(new), SYNFLAG_CFunc, 0, Precedence_CStyleSuffixCall, {SUGARFUNC Parsenew}, },
+
+		
 	}
 }
 
@@ -1495,47 +1581,6 @@ public final class MiniKonoha implements KonohaParserConst {
 //	nullSyntax->precedence_op1 = Precedence_CStyleStatementEnd;
 //	nullSyntax->ParseFuncNULL = KSugarFunc(ns, Parse_Block);
 //	KDEFINE_SYNTAX SYNTAX[] = {
-//		{ PATTERN(Indent), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
-//		{ TOKEN(SEMICOLON), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
-//		{ PATTERN(Symbol),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodName}, {SUGARFUNC TypeCheck_Symbol},},
-//		{ PATTERN(Text),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_TextLiteral},},
-//		{ PATTERN(Number),  SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_IntLiteral},},
-//		{ PATTERN(Member),  SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseMember}, {SUGARFUNC TypeCheck_Getter}},
-//		{ GROUP(Parenthesis), SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseParenthesis}, {SUGARFUNC TypeCheck_FuncStyleCall}}, //KSymbol_ParenthesisGroup
-//		{ GROUP(Bracket),  SYNFLAG_CParseFunc|SYNFLAG_Suffix|SYNFLAG_TypeSuffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseIndexer}, {MethodCallFunc}}, //KSymbol_BracketGroup
-//		{ GROUP(Brace),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC ParseBlock}, {SUGARFUNC TypeCheck_Block}},   // KSymbol_BraceGroup
-//		{ PATTERN(Block), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleBlock}, {SUGARFUNC TypeCheck_Block}, },
-//		{ PATTERN(Param), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleParam}, {SUGARFUNC Statement_ParamDecl},},
-//		{ PATTERN(Token), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Token}, {NULL}},
-////		{ TOKEN(DOT), },
-//		{ TOKEN(DIV), 0, Precedence_CStyleMUL, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(MOD), 0, Precedence_CStyleMUL, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(MUL), 0, Precedence_CStyleMUL, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(ADD), 0, Precedence_CStyleADD, Precedence_CStylePrefixOperator, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(SUB), 0, Precedence_CStyleADD, Precedence_CStylePrefixOperator, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(LT),  0, Precedence_CStyleCOMPARE, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(LTE), 0, Precedence_CStyleCOMPARE, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(GT),  0, Precedence_CStyleCOMPARE, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(GTE), 0, Precedence_CStyleCOMPARE, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(EQ),  0, Precedence_CStyleEquals, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(NEQ), 0, Precedence_CStyleEquals, 0, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(LET), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleAssign, 0, {OperatorFunc}, {SUGARFUNC TypeCheck_Assign}, },
-//		{ TOKEN(AND), SYNFLAG_CTypeFunc, Precedence_CStyleAND, 0, {OperatorFunc}, {SUGARFUNC TypeCheck_AndOperator}, },
-//		{ TOKEN(OR),  SYNFLAG_CTypeFunc, Precedence_CStyleOR,  0, {OperatorFunc}, {SUGARFUNC TypeCheck_OrOperator}, },
-//		{ TOKEN(NOT), 0, 0, Precedence_CStylePrefixOperator, {OperatorFunc}, {MethodCallFunc}},
-//		{ TOKEN(COLON), 0, Precedence_CStyleTRINARY, },  // colon
-//		{ TOKEN(COMMA), SYNFLAG_CFunc, Precedence_CStyleCOMMA, 0, {SUGARFUNC ParseCOMMA}, {NULL}},
-////		{ TOKEN(DOLLAR),  /* 0, 0, 0, NULL, ParseDOLLAR, */ },
-//		{ TOKEN(true),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_true}, },
-//		{ TOKEN(false),   SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_false}, },
-//		{ PATTERN(Expr),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Expression}, {NULL}, },
-//		{ PATTERN(Type),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Type}, {SUGARFUNC TypeCheck_Type}, },
-//		{ PATTERN(TypeDecl),   SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_TypeDecl}, {SUGARFUNC Statement_TypeDecl}},
-//		{ PATTERN(MethodDecl), SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodDecl}, {SUGARFUNC Statement_MethodDecl}},
-//		{ TOKEN(if),           SYNFLAG_CTypeFunc, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_if}},
-//		{ TOKEN(else),         SYNFLAG_CTypeFunc, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_else}},
-//		{ TOKEN(return), SYNFLAG_CTypeFunc|SYNFLAG_NodeBreakExec, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_return} },
-//		{ TOKEN(new), SYNFLAG_CFunc, 0, Precedence_CStyleSuffixCall, {SUGARFUNC Parsenew}, },
 //		{ KSymbol_END, },
 //	};
 //	kNameSpace_DefineSyntax(kctx, ns, SYNTAX, NULL);

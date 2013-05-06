@@ -57,18 +57,23 @@ public final class KSyntax implements KonohaParserConst {
 		return (left < right || (left == right && IsFlag(this.SyntaxFlag, LeftJoin) && IsFlag(Right.SyntaxFlag, LeftJoin)));
 	}
 
-	public Object ParseObject;
-	public Method ParseMethod;
-	public Object TypeObject;
-	public Method TypeMethod;
-	public KSyntax  ParentSyntax = null;
+	public Object  ParseObject;
+	public Method  ParseMethod;
+	public Object  TypeObject;
+	public Method  TypeMethod;
+	public KSyntax ParentSyntax = null;
 	//KSyntax Pop() { return ParentSyntax; }
 	
 	public KSyntax(String SyntaxName, int flag, Object po, String ParseMethod, String TypeMethod) {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
 		this.ParseObject = po == null ? this : po;
-		this.ParseMethod = KFunc.LookupMethod(po, ParseMethod);
+		if(ParseMethod != null) {
+			this.ParseMethod  = KFunc.LookupMethod(po, ParseMethod);
+		}
+		else {
+			this.ParseMethod  = null;
+		}
 		if(TypeMethod != null) {
 			this.TypeMethod  = KFunc.LookupMethod(po, TypeMethod);
 		}

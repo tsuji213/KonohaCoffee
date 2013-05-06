@@ -33,14 +33,15 @@ public final class KFunc {
 	Method method;
 	KFunc  prev;
 	
-	static Method LookupMethod(Object callee, String methodName) {
-		Method[] methods = callee.getClass().getMethods();
+	static Method LookupMethod(Object Callee, String MethodName) {
+		Method[] methods = Callee.getClass().getMethods();
 		for(int i = 0; i < methods.length; i++) {
-			if(methodName.equals(methods[i].getName())) {
+			if(MethodName.equals(methods[i].getName())) {
 				return methods[i];
 			}
 		}
-		throw new KonohaParserException("method not found: " + callee.getClass().getName() + "." + methodName);
+		KonohaDebug.P("method not found: " + Callee.getClass().getSimpleName() + "." + MethodName);
+		return null; /*throw new KonohaParserException("method not found: " + callee.getClass().getName() + "." + methodName);*/
 	}
 
 	KFunc(Object callee, Method method, KFunc prev) {
@@ -53,10 +54,18 @@ public final class KFunc {
 		this(callee, LookupMethod(callee, methodName), prev);
 	}
 
+	static boolean EqualsMethod(Method m1, Method m2) {
+		if(m1 == null) {
+			return (m2 == null) ? true : false;
+		}
+		else {
+			return (m2 == null) ? false: m1.equals(m2);
+		}
+	}
+	
 	static KFunc NewFunc(Object callee, String methodName, KFunc prev) {
 		Method method = LookupMethod(callee, methodName);
-		if(prev != null && prev.method.equals(method)) {
-			//KonohaDebug.P("same method: " + method.getName());
+		if(prev != null && EqualsMethod(prev.method, method)) {
 			return prev;
 		}
 		return new KFunc(callee, method, prev);

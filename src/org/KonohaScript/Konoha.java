@@ -248,9 +248,9 @@ public class Konoha implements KonohaParserConst {
 	}
 
 	public static void main(String[] argc) {
-		MiniKonoha defaultSyntax = new MiniKonoha();
-		Konoha konoha = new Konoha(defaultSyntax);
-		konoha.Eval("int fibo(int n) {}", 1);
-
+		MiniKonoha Grammar = new MiniKonoha();
+		Konoha konoha = new Konoha(Grammar);
+		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
+		konoha.Eval("a == b + 1; c + 2 == d", 2);
 	}
 }
