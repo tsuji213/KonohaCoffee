@@ -202,10 +202,6 @@ public final class KNameSpace implements KonohaParserConst {
 	// return node.Syntax.InvokeTypeFunc(gma, node);
 	// }
 
-	void Eval(String text, long uline) {
-		ArrayList<KToken> SourceList = Tokenize(text, uline);
-		KToken.DumpTokenList(SourceList);
-	}
 
 	String GetSourcePosition(long uline) {
 		return "(eval:" + (int) uline + ")";
@@ -223,6 +219,15 @@ public final class KNameSpace implements KonohaParserConst {
 			}
 			System.out.println(Message);
 		}
+	}
+	
+	public void Eval(String text, long uline) {
+		System.out.println("Eval: " + text);
+		ArrayList<KToken> BufferList = Tokenize(text, uline);
+		int next = BufferList.size();
+		PreProcess(BufferList, 0, next, BufferList);
+		UntypedNode UNode = UntypedNode.ParseNewNode2(this, null, BufferList, next, BufferList.size(), AllowEmpty);
+		System.out.println("untyped tree: " + UNode);
 	}
 }
 

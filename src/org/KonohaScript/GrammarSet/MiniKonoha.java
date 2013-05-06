@@ -256,6 +256,10 @@ public final class MiniKonoha implements KonohaParserConst {
 	
 	// Parse
 
+	public int ParseSymbol(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		return BeginIdx+1;
+	}
+
 	public int ParseUniaryOperator(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int NextIdx = EndIdx;
 		for(int i = BeginIdx+1; i < EndIdx; i++) {
@@ -476,7 +480,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
 		ns.AddTokenFunc("\n", this, "IndentToken");		
 		ns.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
-		ns.AddTokenFunc("a", this, "SymbolToken");
+		ns.AddTokenFunc("Aa", this, "SymbolToken");
 		ns.AddTokenFunc(".", this, "MemberToken");
 		ns.AddTokenFunc("\"", this, "StringLiteralToken");
 		ns.AddTokenFunc("1", this, "NumberLiteralToken");
@@ -555,7 +559,6 @@ public final class MiniKonoha implements KonohaParserConst {
 //		{ PATTERN(MethodDecl), SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodDecl}, {SUGARFUNC Statement_MethodDecl}},
 //		{ TOKEN(return), SYNFLAG_CTypeFunc|SYNFLAG_NodeBreakExec, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_return} },
 //		{ TOKEN(new), SYNFLAG_CFunc, 0, Precedence_CStyleSuffixCall, {SUGARFUNC Parsenew}, },
-
 		
 	}
 }

@@ -34,6 +34,7 @@ public final class KSyntax implements KonohaParserConst {
 
 	public KNameSpace     PackageNameSpace;
 	public String         SyntaxName;
+	public String toString() { return SyntaxName; }
 	int                   SyntaxFlag;
 	
 	public boolean IsBeginTerm() {
@@ -54,6 +55,7 @@ public final class KSyntax implements KonohaParserConst {
 	}
 	public boolean IsLeftJoin(KSyntax Right) {
 		int left = this.SyntaxFlag >> PrecedenceShift, right = Right.SyntaxFlag >> PrecedenceShift;
+		//System.err.printf("left=%d,%s, right=%d,%s\n", left, this.SyntaxName, right, Right.SyntaxName);
 		return (left < right || (left == right && IsFlag(this.SyntaxFlag, LeftJoin) && IsFlag(Right.SyntaxFlag, LeftJoin)));
 	}
 
@@ -94,6 +96,7 @@ public final class KSyntax implements KonohaParserConst {
 	public boolean IsError() { return this == ErrorSyntax; }	
 	
 	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		
 		try {
 			Integer NextId = (Integer)ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
@@ -104,6 +107,10 @@ public final class KSyntax implements KonohaParserConst {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.err.println("undefined ParseMethod: " + SyntaxName);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -231,15 +231,7 @@ public class Konoha implements KonohaParserConst {
 	}
 	
 	public void Eval(String text, long uline) {
-		System.out.println("Eval: " + text);
-		ArrayList<KToken> BufferList = DefaultNameSpace.Tokenize(text, uline);
-		int next = BufferList.size();
-		DefaultNameSpace.PreProcess(BufferList, 0, next, BufferList);
-		KToken.DumpTokenList(BufferList, next, BufferList.size());
-		//UntypedNode node = DefaultNameSpace.ParseNewNode(null, BufferList, next, BufferList.size(), BlockLevel);
-		// Preprocess();
-		// Parse();
-		// CodeGenerator();
+		DefaultNameSpace.Eval(text, uline);
 	}
 
 	public void Load(String fileName) {
@@ -251,6 +243,6 @@ public class Konoha implements KonohaParserConst {
 		MiniKonoha Grammar = new MiniKonoha();
 		Konoha konoha = new Konoha(Grammar);
 		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
-		konoha.Eval("a == b + 1; c + 2 == d", 2);
+		konoha.Eval("a == b + C; D + e == F", 2);
 	}
 }
