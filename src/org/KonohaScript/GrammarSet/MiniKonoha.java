@@ -370,7 +370,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeIf(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, UNode.NodeNameSpace.Common.BooleanType, 0);
+		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, UNode.NodeNameSpace.KonohaContext.BooleanType, 0);
 		if(CondNode.IsError()) return CondNode;
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
 		if(ThenNode.IsError()) return ThenNode;
@@ -472,11 +472,13 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 	
 	public void LoadDefaultSyntax(KNameSpace ns) {
-		ns.DefineSymbol("void",    ns.Common.VoidType); // FIXME
-		ns.DefineSymbol("boolean", ns.Common.BooleanType);
-		ns.DefineSymbol("int",     ns.LookupConstTypeInfo(new Integer(0)));
-		ns.DefineSymbol("String",  ns.LookupConstTypeInfo(""));
-
+		ns.DefineSymbol("void",    ns.KonohaContext.VoidType); // FIXME
+		ns.DefineSymbol("boolean", ns.KonohaContext.BooleanType);
+		ns.DefineSymbol("int",     ns.LookupTypeInfo(Integer.class));
+		ns.DefineSymbol("String",  ns.LookupTypeInfo(String.class));
+		ns.DefineSymbol("true",    new Boolean(true));
+		ns.DefineSymbol("false",   new Boolean(false));
+				
 		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
 		ns.AddTokenFunc("\n", this, "IndentToken");		
 		ns.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
@@ -535,34 +537,42 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddSyntax(new KSyntax("if", Term, this, "ParseIfNode", "TypeIfNode"));
 		ns.AddSyntax(new KSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode"));
 
-//		{ PATTERN(Indent), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
-//		{ TOKEN(SEMICOLON), SYNFLAG_CTypeFunc|SYNFLAG_NodeLeftJoinOp2, Precedence_CStyleStatementEnd, Precedence_CStyleStatementEnd, {nullSyntax->ParseFuncNULL}, {SUGARFUNC TypeCheck_Block}},
-//		{ PATTERN(Symbol),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodName}, {SUGARFUNC TypeCheck_Symbol},},
-//		{ PATTERN(Text),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_TextLiteral},},
-//		{ PATTERN(Number),  SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_IntLiteral},},
-//		{ PATTERN(Member),  SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseMember}, {SUGARFUNC TypeCheck_Getter}},
-//		{ GROUP(Parenthesis), SYNFLAG_CFunc|SYNFLAG_Suffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseParenthesis}, {SUGARFUNC TypeCheck_FuncStyleCall}}, //KSymbol_ParenthesisGroup
-//		{ GROUP(Bracket),  SYNFLAG_CParseFunc|SYNFLAG_Suffix|SYNFLAG_TypeSuffix, Precedence_CStyleSuffixCall, 0, {SUGARFUNC ParseIndexer}, {MethodCallFunc}}, //KSymbol_BracketGroup
-//		{ GROUP(Brace),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC ParseBlock}, {SUGARFUNC TypeCheck_Block}},   // KSymbol_BraceGroup
-//		{ PATTERN(Block), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleBlock}, {SUGARFUNC TypeCheck_Block}, },
-//		{ PATTERN(Param), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_CStyleParam}, {SUGARFUNC Statement_ParamDecl},},
-//		{ PATTERN(Token), SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Token}, {NULL}},
-////		{ TOKEN(DOT), },
-//		{ TOKEN(COLON), 0, Precedence_CStyleTRINARY, },  // colon
-//		{ TOKEN(COMMA), SYNFLAG_CFunc, Precedence_CStyleCOMMA, 0, {SUGARFUNC ParseCOMMA}, {NULL}},
-////		{ TOKEN(DOLLAR),  /* 0, 0, 0, NULL, ParseDOLLAR, */ },
-//		{ TOKEN(true),    SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_true}, },
-//		{ TOKEN(false),   SYNFLAG_CTypeFunc, 0, 0, {TermFunc}, {SUGARFUNC TypeCheck_false}, },
-//		{ PATTERN(Expr),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Expression}, {NULL}, },
-//		{ PATTERN(Type),  SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_Type}, {SUGARFUNC TypeCheck_Type}, },
-//		{ PATTERN(TypeDecl),   SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_TypeDecl}, {SUGARFUNC Statement_TypeDecl}},
-//		{ PATTERN(MethodDecl), SYNFLAG_MetaPattern|SYNFLAG_CFunc, 0, 0, {SUGARFUNC PatternMatch_MethodDecl}, {SUGARFUNC Statement_MethodDecl}},
-//		{ TOKEN(return), SYNFLAG_CTypeFunc|SYNFLAG_NodeBreakExec, 0, Precedence_Statement, {patternParseFunc}, {SUGARFUNC Statement_return} },
-//		{ TOKEN(new), SYNFLAG_CFunc, 0, Precedence_CStyleSuffixCall, {SUGARFUNC Parsenew}, },
+		
+		new IntegerMethod(ns);
 		
 	}
 }
 
+class IntegerMethod implements KonohaParserConst {
+	
+	IntegerMethod (KNameSpace ns) {
+		KClass BaseClass = ns.LookupTypeInfo(Integer.class);
+		KParam BinaryParam = KParam.ParseOf(ns, "int int x");
+		KParam UniaryParam = KParam.ParseOf(ns, "int");
+		
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", UniaryParam, this, "Plus");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", BinaryParam, this, "Add");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", UniaryParam, this, "Minus");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", BinaryParam, this, "Sub");
+	}
+	
+	public static int Plus(int x) {
+		return +x;
+	}
+
+	public static int Add(int x, int y) {
+		return x + y;
+	}
+
+	public static int Minus(int x) {
+		return -x;
+	}
+
+	public static int Sub(int x, int y) {
+		return x - y;
+	}
+
+}
 
 //static KMETHOD PatternMatch_Expression()
 //{

@@ -138,7 +138,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitField(FieldNode Node) {
 		String Expr = Node.TermToken.ParsedText;
-		push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
+//		push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		return true;
 
 	}

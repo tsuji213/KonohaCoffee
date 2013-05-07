@@ -150,7 +150,7 @@ class CommonSyntax {
 
 	public TypedNode TypeValue(KGamma Gamma, UntypedNode Node, KClass ReqType) {
 		KToken KeyToken = Node.KeyToken;
-		KClass TypeInfo = Node.NodeNameSpace.LookupConstTypeInfo(KeyToken.ResolvedObject);
+		KClass TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
 		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
 	}
 

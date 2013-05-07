@@ -27,8 +27,10 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.KonohaScript.SyntaxTree.TypedNode;
+
 public final class KNameSpace implements KonohaParserConst {
-	public Konoha Common;
+	public Konoha KonohaContext;
 	KNameSpace ParentNameSpace;
 	ArrayList<KNameSpace> ImportedNameSpaceList;
 
@@ -40,7 +42,7 @@ public final class KNameSpace implements KonohaParserConst {
 
 	@SuppressWarnings("unchecked")
 	KNameSpace(Konoha konoha, KNameSpace parent) {
-		this.Common = konoha;
+		this.KonohaContext = konoha;
 		this.ParentNameSpace = parent;
 
 		if(parent != null) {
@@ -57,18 +59,23 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	// class
-	public final KClass LookupTypeInfo(String ClassName) throws ClassNotFoundException {
-		return Common.LookupTypeInfo(ClassName);
-	}
-
-	public final KClass LookupConstTypeInfo(Object Value) {
+	public final KClass LookupTypeInfo(String ClassName) /* throws ClassNotFoundException */ {
 		try {
-			return Common.LookupTypeInfo(Value.getClass().getName());
+			return KonohaContext.LookupTypeInfo(Class.forName(ClassName));
+
 		}
 		catch(ClassNotFoundException e) {
 		}
 		return null;
 	}
+
+	public final KClass LookupTypeInfo(Class<?> ClassInfo) {
+		return KonohaContext.LookupTypeInfo(ClassInfo);
+	}
+
+//	public final KClass LookupConstTypeInfo(Object Value) {
+//		return KonohaContext.LookupTypeInfo(Value.getClass());
+//	}
 	
 	KFunc MergeFunc(KFunc f, KFunc f2) {
 		if (f == null)
@@ -220,7 +227,7 @@ public final class KNameSpace implements KonohaParserConst {
 			System.out.println(Message);
 		}
 	}
-	
+		
 	public void Eval(String text, long uline) {
 		System.out.println("Eval: " + text);
 		ArrayList<KToken> BufferList = Tokenize(text, uline);
@@ -228,6 +235,10 @@ public final class KNameSpace implements KonohaParserConst {
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode2(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
+//		if(UNode != null) {
+//			TypedNode TNode = TypedNode.Type(KGamma, UNode, null);
+//			TNode.Eval();
+//		}
 	}
 }
 
