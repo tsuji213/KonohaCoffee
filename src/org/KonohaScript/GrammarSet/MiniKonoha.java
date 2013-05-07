@@ -499,43 +499,43 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddMacroFunc("|", this, "MergeOperatorMacro");
 		//ns.AddSymbol(symbol, constValue);
 
-		ns.AddSyntax(new KSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, null, null));
-		ns.AddSyntax(new KSyntax("/", BinaryOperator|Precedence_CStyleMUL, this, null, null));
-		ns.AddSyntax(new KSyntax("%", BinaryOperator|Precedence_CStyleMUL, this, null, null));
+		ns.DefineSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, null, null);
+		ns.DefineSyntax("/", BinaryOperator|Precedence_CStyleMUL, this, null, null);
+		ns.DefineSyntax("%", BinaryOperator|Precedence_CStyleMUL, this, null, null);
 		
-		ns.AddSyntax(new KSyntax("+", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null));
-		ns.AddSyntax(new KSyntax("-", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null));
+		ns.DefineSyntax("+", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
+		ns.DefineSyntax("-", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
 
-		ns.AddSyntax(new KSyntax("<", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
-		ns.AddSyntax(new KSyntax("<=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
-		ns.AddSyntax(new KSyntax(">", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
-		ns.AddSyntax(new KSyntax(">=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null));
+		ns.DefineSyntax("<", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		ns.DefineSyntax("<=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		ns.DefineSyntax(">", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		ns.DefineSyntax(">=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
 
-		ns.AddSyntax(new KSyntax("==", BinaryOperator|Precedence_CStyleEquals, this, null, null));
-		ns.AddSyntax(new KSyntax("!=", BinaryOperator|Precedence_CStyleEquals, this, null, null));
+		ns.DefineSyntax("==", BinaryOperator|Precedence_CStyleEquals, this, null, null);
+		ns.DefineSyntax("!=", BinaryOperator|Precedence_CStyleEquals, this, null, null);
 
-		ns.AddSyntax(new KSyntax("=", BinaryOperator|Precedence_CStyleAssign|LeftJoin, this, null, "TypeAssign"));
+		ns.DefineSyntax("=", BinaryOperator|Precedence_CStyleAssign|LeftJoin, this, null, "TypeAssign");
 
-		ns.AddSyntax(new KSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign"));
-		ns.AddSyntax(new KSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign"));
-		ns.AddSyntax(new KSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign"));
-		ns.AddSyntax(new KSyntax(";",  Precedence_CStyleDelim, this, null, null));
+		ns.DefineSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign");
+		ns.DefineSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign");
+		ns.DefineSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign");
+		ns.DefineSyntax(";",  Precedence_CStyleDelim, this, null, null);
 
-		ns.AddSyntax(new KSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol"));
-		ns.AddSyntax(new KSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember"));
-		ns.AddSyntax(new KSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember"));
-		ns.AddSyntax(new KSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null));
-		ns.AddSyntax(new KSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null));
+		ns.DefineSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol");
+		ns.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
+		ns.DefineSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
+		ns.DefineSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null);
+		ns.DefineSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null);
 
-		ns.AddSyntax(new KSyntax("$Symbol", Term, this, "ParseSymbol", "TypeSymbol"));
-		ns.AddSyntax(new KSyntax("$Const",  Term, this, "ParseConst", "TypeConst"));
+		ns.DefineSyntax("$Symbol", Term, this, "ParseSymbol", "TypeSymbol");
+		ns.DefineSyntax("$Const",  Term, this, "ParseConst", "TypeConst");
 		
-		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol"));
-		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl"));
-		ns.AddSyntax(new KSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl"));
+		ns.DefineSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol");
+		ns.DefineSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl");
+		ns.DefineSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl");
 
-		ns.AddSyntax(new KSyntax("if", Term, this, "ParseIfNode", "TypeIfNode"));
-		ns.AddSyntax(new KSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode"));
+		ns.DefineSyntax("if", Term, this, "ParseIfNode", "TypeIfNode");
+		ns.DefineSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode");
 
 		
 		DefineIntegerMethod(ns);

@@ -180,6 +180,10 @@ public final class KNameSpace implements KonohaParserConst {
 		DefineSymbol(Syntax.SyntaxName, Syntax);
 	}
 
+	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, ParseMethod, TypeMethod));
+	}
+
 	public void ImportNameSpace(KNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
 			ImportedNameSpaceList = new ArrayList<KNameSpace>();
