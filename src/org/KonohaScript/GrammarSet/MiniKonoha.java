@@ -538,14 +538,11 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.AddSyntax(new KSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode"));
 
 		
-		new IntegerMethod(ns);
+		DefineIntegerMethod(ns);
 		
 	}
-}
-
-class IntegerMethod implements KonohaParserConst {
 	
-	IntegerMethod (KNameSpace ns) {
+	void DefineIntegerMethod (KNameSpace ns) {
 		KClass BaseClass = ns.LookupTypeInfo(Integer.class);
 		KParam BinaryParam = KParam.ParseOf(ns, "int int x");
 		KParam UniaryParam = KParam.ParseOf(ns, "int");
@@ -554,6 +551,17 @@ class IntegerMethod implements KonohaParserConst {
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", BinaryParam, this, "Add");
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", UniaryParam, this, "Minus");
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", BinaryParam, this, "Sub");
+		
+		if(KonohaDebug.UseBuiltInTest) {
+			assert(BaseClass.LookupMethod("+", 0) != null);
+			assert(BaseClass.LookupMethod("+", 1) != null);
+			assert(BaseClass.LookupMethod("+", 2) == null);
+			KMethod m = BaseClass.LookupMethod("+", 1);
+			Object[] p = new Object[2];
+			p[0] = new Integer(1);
+			p[1] = new Integer(2);
+			System.out.println("******* 1+2=" + m.Eval(p));
+		}
 	}
 	
 	public static int Plus(int x) {

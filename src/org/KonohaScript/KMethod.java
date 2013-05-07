@@ -23,12 +23,12 @@
  ***************************************************************************/
 
 package org.KonohaScript;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class KMethod implements KonohaParserConst {
 	
-
 	int MethodFlag;
 	KClass ClassInfo;
 	String MethodName;
@@ -46,8 +46,7 @@ public class KMethod implements KonohaParserConst {
 		this.ClassInfo = ClassInfo;
 		this.MethodName = MethodName;
 		this.Param = Param;
-		this.MethodRef = MethodRef;
-		
+		this.MethodRef = MethodRef;	
 	}
 	
 	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
@@ -68,6 +67,40 @@ public class KMethod implements KonohaParserConst {
 //		KParam Param = KParam.ParseOf(ns, "int int x, int y");
 //		IntClass.Add(new KMethod(flag, IntClass, "+", Param, KFunc.LookupMethod(this, MethodName));
 //	}
+
+	public Object Eval(Object[] ParamData) {
+		int ParamSize = Param.GetParamSize();
+		try {
+			if(IsStaticInvocation()) {
+				switch(ParamSize) {
+				case 0: return MethodRef.invoke(null, ParamData[0]);
+				case 1: return MethodRef.invoke(null, ParamData[0], ParamData[1]);
+				default:
+					return MethodRef.invoke(null, ParamData);  // FIXME
+				}
+			}
+			else {
+				switch(ParamSize) {
+				case 0: return MethodRef.invoke(ParamData[0]);
+				case 1: return MethodRef.invoke(ParamData[0], ParamData[1]);
+				default:
+					return MethodRef.invoke(ParamData[0], ParamData);  // FIXME
+				}
+			}
+		}
+		catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		KonohaDebug.P("ParamSize: " + ParamSize);
+		return null;
+	}
 	
 }
 
