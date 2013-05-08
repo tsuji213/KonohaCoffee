@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.*;
+import org.KonohaScript.KClass;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
@@ -28,13 +28,14 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-
 public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	ArrayList<String> Program;
+	private int CurrentProgramSize;
 
 	public SimpleVMCodeGen() {
 		super();
 		this.Program = new ArrayList<String>();
+		this.CurrentProgramSize = 0;
 	}
 
 	private String pop() {
@@ -46,9 +47,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	boolean IsUnboxedType(KClass Class) {
-		return false; //Node.TypeInfo
+		return false; // Node.TypeInfo
 	}
-	
+
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		Visit(Block);
@@ -78,19 +79,32 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
+	private static boolean IsFloat(KClass Type) {
+		return false;
+	}
+
+	private static boolean IsInt(KClass Type) {
+		return false;
+	}
+
+	private static boolean IsBoolean(KClass Type) {
+		return false;
+	}
+
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-//		if (IsUnboxedType(Node.TypeInfo)) {
-//			if (/* IsInt(Node) */true) {
-//				push(Integer.toString((int) Node.ConstValue));
-//			} else if (/* IsFloat(Node) */false) {
-//				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
-//			} else if (/* IsBoolean(Node) */false) {
-//				push(Boolean.toString(Node.ConstValue == 0));
-//			}
-//		} else {
-//			push(Node.ConstObject.toString());
-//		}
+		KClass Type = Node.TypeInfo;
+		if (IsUnboxedType(Type)) {
+			if (IsInt(Type)) {
+				push(Integer.toString((int) Node.ConstValue));
+			} else if (IsFloat(Type)) {
+				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
+			} else if (IsBoolean(Type)) {
+				push(Boolean.toString(Node.ConstValue == 0));
+			}
+		} else {
+			push(Node.ConstObject.toString());
+		}
 		return true;
 	}
 
@@ -138,7 +152,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitField(FieldNode Node) {
 		String Expr = Node.TermToken.ParsedText;
-//		push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
+		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		return true;
 
 	}
@@ -161,7 +175,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
-		String thisNode = pop();
 		String Params = "";
 		String methodName = "mtd";
 		int ParamSize = Node.Params.size();
@@ -172,6 +185,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 			}
 			Params = Expr + Params;
 		}
+		String thisNode = pop();
 		push(thisNode + "." + methodName + "(" + Params + ")");
 		return true;
 
@@ -225,8 +239,8 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		String Right = pop();
 		String Block = pop();
+		String Right = pop();
 		push(Node.TermToken.ParsedText + " = " + Right + Block);
 		return true;
 
@@ -234,18 +248,15 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterBlock(BlockNode Node) {
-		/* do nothing */
+		this.CurrentProgramSize = this.Program.size();
 	}
 
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
 		String Exprs = "";
-		int Size = Node.ExprList.size();
+		int Size = this.Program.size() - this.CurrentProgramSize;
 		for (int i = 0; i < Size; i = i + 1) {
 			String Expr = pop();
-			if (i != 0) {
-				Exprs = "," + Exprs;
-			}
 			Exprs = Expr + ";" + Exprs;
 		}
 		push("{" + Exprs + "}");
@@ -285,7 +296,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String CondExpr = pop();
 		push("switch (" + CondExpr + ") {" + Exprs + "}");
 		return true;
-
 	}
 
 	@Override
