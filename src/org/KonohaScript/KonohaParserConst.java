@@ -13,24 +13,24 @@ public interface KonohaParserConst {
 	public final static int InterfaceClass            = 1<<6;
 	
 	// MethodFlag
-	public final static int PrivateMethod               = 1<<0;
+	public final static int PrivateMethod              = 1<<0;
 	public final static int VirtualMethod              = 1<<1;
 	public final static int FinalMethod                = 1<<2;
 	public final static int ConstMethod                = 1<<3;
 	public final static int StaticMethod               = 1<<4;
 	public final static int ImmutableMethod            = 1<<5;
-//	public final static int Compilation          = 1<<6;
+	public final static int TopLevelMethod             = 1<<6;
 
 	// call rule
 	public final static int CoercionMethod             = 1<<7;
 	public final static int RestrictedMethod           = 1<<8;
-//	public final static int FastCall             = 1<<9;
+	public final static int UncheckedMethod            = 1<<9;
 	public final static int SmartReturnMethod          = 1<<10;
 	public final static int VariadicMethod             = 1<<11;
 	public final static int IterativeMethod            = 1<<12;
 
 	// compatible
-//	public final static int CCompatible          = 1<<13;
+	public final static int UniversalMethod            = 1<<13;
 //	public final static int JSCompatible         = 1<<14;
 //	public final static int JCompatible          = 1<<15;
 //	public final static int Accountable          = 1<<16;

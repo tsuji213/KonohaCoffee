@@ -269,7 +269,7 @@ public final class MiniKonoha implements KonohaParserConst {
 				break;
 			}
 		}
-		Node.AddParsedNode(0, UntypedNode.ParseNewNode2(Node.NodeNameSpace, null, TokenList, BeginIdx+1, NextIdx, 0));
+		Node.SetAtNode(0, UntypedNode.ParseNewNode2(Node.NodeNameSpace, null, TokenList, BeginIdx+1, NextIdx, 0));
 		return NextIdx;
 	}
 
@@ -282,26 +282,11 @@ public final class MiniKonoha implements KonohaParserConst {
 			BodyNode.Syntax = KSyntax.ApplyMethodSyntax;
 		}
 		else {
-			Node.AddParsedNode(0, UntypedNode.ParseGroup(Node.NodeNameSpace, GroupToken, 0));
+			Node.SetAtNode(0, UntypedNode.ParseGroup(Node.NodeNameSpace, GroupToken, 0));
 		}
 		return BeginIdx+1;
 	}
 
-//	public int ParseIndexer()
-//	{
-//		VAR_Expression(stmt, TokenList, BeginIdx, OpIdx, EndIdx);
-//		kNameSpace *ns = kNode_ns(stmt);
-//		if(BeginIdx < OpIdx) {
-//			kTokenVar *groupToken = TokenList.get(OpIdx);
-//			groupToken->symbol = KMethodName_ToGetter(0);
-////			getToken->resolvedSyntaxInfo = groupToken->kSyntax_(ns, KSymbol_MemberPattern/*MethodCall*/);
-//			kNode_Op(kctx, stmt, groupToken, 1, KLIB ParseNewNode(kctx, ns, TokenList, &BeginIdx, OpIdx, ParseExpressionOption, NULL));
-//			AppendParsedNode(kctx, stmt, RangeGroup(groupToken->GroupTokenList), NULL, ParseExpressionOption, "[");
-//			return (OpIdx + 1);
-//		}
-//		return (-1);
-//	}
-//
 //	public int TypeCheck_Getter()
 //	{
 //		VAR_TypeCheck2(stmt, expr, ns, reqc);
@@ -326,30 +311,6 @@ public final class MiniKonoha implements KonohaParserConst {
 //		}
 //		KLIB MessageNode(kctx, stmt, fieldToken, ns, ErrTag, "undefined field: %s", kString_text(fieldToken->text));
 //	}
-//
-//	public int ParseCOMMA()
-//	{
-//		VAR_Expression(node, TokenList, BeginIdx, OpIdx, EndIdx);
-//		kNode_Op(kctx, node, TokenList->TokenItems[OpIdx], 0);
-//		AppendParsedNode(kctx, node, TokenList, BeginIdx, EndIdx, NULL, ParseExpressionOption, NULL);
-//		return (EndIdx);
-//	}
-//
-//	public int Parsenew()
-//	{
-//		VAR_Expression(expr, TokenList, BeginIdx, OpIdx, EndIdx);
-//		if(BeginIdx == OpIdx && BeginIdx + 1 < EndIdx) {
-//			kNameSpace *ns = kNode_ns(expr);
-//			KClass *foundClass = NULL;
-//			int nextIdx = KLIB ParseTypePattern(kctx, ns, TokenList, BeginIdx + 1, EndIdx, &foundClass);
-//			if(foundClass != NULL) {
-//				kNode_setnode(expr, KNode_New);
-//				expr->typeAttr = foundClass->typeId;
-//				return (nextIdx);
-//			}
-//		}
-//		return (-1);
-//	}
 
 	// If Statement
 	public final static int IfCond = 0;
@@ -361,7 +322,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		NextIdx = UNode.MatchSingleBlock(IfThen, TokenList, NextIdx, EndIdx, ParseOption);
 		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty|AllowSkip);
 		if(NextIdx == NextIdx2 && NextIdx != -1) {  // skiped
-			UNode.AddParsedNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
+			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
 		}
 		else {
 			NextIdx2 = UNode.MatchSingleBlock(IfElse, TokenList, NextIdx2, EndIdx, ParseOption);
@@ -400,7 +361,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	public final static int VarDeclName  = 0;
 	public final static int VarDeclValue = 1;
 
-	public int ParseVarDecl(UntypedNode UNode, KToken TypeToken, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int ParseVarDeclIteration(UntypedNode UNode, KToken TypeToken, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int NextIdx = UNode.MatchSyntax(VarDeclName, "$Symbol", TokenList, BeginIdx, EndIdx, ParseOption);
 		int SkipIdx = UNode.MatchKeyword(-1, "=", TokenList, NextIdx, EndIdx, AllowEmpty|AllowSkip);
 		if(NextIdx < SkipIdx) {
@@ -410,7 +371,7 @@ public final class MiniKonoha implements KonohaParserConst {
 					UNode.MatchExpression(VarDeclValue, TokenList, SkipIdx, NextIdx, 0);
 					UntypedNode NewNode = new UntypedNode(UNode.NodeNameSpace, TypeToken);
 					UNode.LinkNode(NewNode);
-					return ParseVarDecl(NewNode, TypeToken, TokenList, NextIdx+1, EndIdx, 0);
+					return ParseVarDeclIteration(NewNode, TypeToken, TokenList, NextIdx+1, EndIdx, 0);
 				}
 				if(DelimToken.ResolvedSyntax.IsDelim()) {
 					UNode.MatchExpression(VarDeclValue, TokenList, SkipIdx, NextIdx, 0);
@@ -422,26 +383,32 @@ public final class MiniKonoha implements KonohaParserConst {
 		if(SkipIdx != -1 ) {
 			KToken DelimToken = TokenList.get(SkipIdx);
 			if(DelimToken.EqualsText(",")) {
-				UNode.AddParsedNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
+				UNode.SetAtNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
 				UntypedNode NewNode = new UntypedNode(UNode.NodeNameSpace, TypeToken);
 				UNode.LinkNode(NewNode);
-				return ParseVarDecl(NewNode, TypeToken, TokenList, SkipIdx+1, EndIdx, 0);
+				return ParseVarDeclIteration(NewNode, TypeToken, TokenList, SkipIdx+1, EndIdx, 0);
 			}
 			if(DelimToken.ResolvedSyntax.IsDelim()) {
-				UNode.AddParsedNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
+				UNode.SetAtNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
 				return SkipIdx+1;
 			}
 			if(UntypedNode.IsAllowNoMatch(ParseOption)) {
 				return NoMatch;
 			}
-			UNode.SetErrorMessage(DelimToken, "unexpected token: " + DelimToken.ParsedText);
+			UNode.ReportError(DelimToken, "unexpected token: " + DelimToken.ParsedText, ParseOption);
 			return EndIdx;
 		}
 		return NoMatch;
 	}
 	
 	public int ParseVarDecl(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		return ParseVarDecl(UNode, TokenList.get(BeginIdx), TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		KToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
+		int SymbolIdx = BeginIdx + 1;
+		int AfterSymbolIdx  = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+		int NextIdx = UNode.MatchKeyword(-1, "()", TokenList, AfterSymbolIdx, EndIdx, AllowSkip|ParseOption);
+		System.out.printf("SymbolIdx=%d,  AfterSymbolIdx=%d, NextIdx=%d, EndIdx=%d\n", SymbolIdx, AfterSymbolIdx, NextIdx, EndIdx);
+		if(NextIdx == BeginIdx + 3) return -1;
+		return ParseVarDeclIteration(UNode, TokenList.get(BeginIdx), TokenList, BeginIdx + 1, EndIdx, ParseOption);
 	}
 
 	public TypedNode TypeVarDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
@@ -462,13 +429,13 @@ public final class MiniKonoha implements KonohaParserConst {
 		}
 		else {
 			NextIdx = BeginIdx + 1;
-			UNode.AddParsedNode(MethodDeclClass, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx));
+			UNode.SetAtNode(MethodDeclClass, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx));
 		}
 		NextIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, NextIdx, EndIdx, ParseOption);
 		NextIdx = UNode.MatchKeyword(-1, "()", TokenList, NextIdx, EndIdx, ParseOption);
 		if(NextIdx == -1 || UNode.Syntax.IsError()) return NextIdx;
-		NextIdx = UNode.MatchKeyword(MethodDeclBlock, "{}", TokenList, NextIdx, EndIdx, ParseOption);
-		return -1;
+		NextIdx = UNode.MatchSyntax(MethodDeclBlock, "{}", TokenList, NextIdx, EndIdx, ParseOption);
+		return NextIdx;
 	}
 	
 	public void LoadDefaultSyntax(KNameSpace ns) {
@@ -537,7 +504,6 @@ public final class MiniKonoha implements KonohaParserConst {
 		ns.DefineSyntax("if", Term, this, "ParseIfNode", "TypeIfNode");
 		ns.DefineSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode");
 
-		
 		DefineIntegerMethod(ns);
 		
 	}

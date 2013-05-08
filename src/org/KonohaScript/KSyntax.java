@@ -96,8 +96,8 @@ public final class KSyntax implements KonohaParserConst {
 	public boolean IsError() { return this == ErrorSyntax; }	
 	
 	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		
 		try {
+			System.err.println("invoking.." + ParseMethod);
 			Integer NextId = (Integer)ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
 		} catch (IllegalArgumentException e) {

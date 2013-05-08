@@ -80,25 +80,37 @@ public final class KToken {
 	}
 
 	// Debug
-	void Dump() {
-		String syntax = (ResolvedSyntax == null) ? "symbol" : ResolvedSyntax.SyntaxName;
-		System.out.println("[" + syntax + "+" + (int) uline + "] '"
-				+ ParsedText + "'");
+	private final static String Tab = "  ";
+	void Dump(int Level) {
+		String Syntax = (ResolvedSyntax == null) ? "null" : ResolvedSyntax.SyntaxName;
+		System.out.println("[" + Syntax + "+" + (int) uline + "] '" + ParsedText + "'");
 		if (IsGroupToken()) {
 			ArrayList<KToken> group = GetGroupList();
-			DumpTokenList(group, 0, group.size());
+			DumpTokenList(Level + 1, null, group, 0, group.size());
 		}
 	}
 
-	public static void DumpTokenList(ArrayList<KToken> list, int BeginIdx, int EndIdx) {
+	public static void DumpTokenList(int Level, String Message, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx) {
+		if(Message != null) {
+			KonohaDebug.Indent(Level, Tab);			
+			System.out.println("Begin: " + Message);
+			Level++;
+		}
 		for (int i = BeginIdx; i < EndIdx; i++) {
-			KToken token = list.get(i);
-			System.out.print("["+i +"] "); token.Dump();
+			KToken Token = TokenList.get(i);
+			KonohaDebug.Indent(Level, Tab);			
+			System.out.print("<"+i +"> "); 
+			Token.Dump(Level);
+		}
+		if(Message != null) {
+			Level--;
+			KonohaDebug.Indent(Level, Tab);			
+			System.out.println("End: " + Message);
 		}
 	}
 
-	public static void DumpTokenList(ArrayList<KToken> list) {
-		DumpTokenList(list, 0, list.size());
+	public static void DumpTokenList(ArrayList<KToken> TokenList) {
+		DumpTokenList(0, null, TokenList, 0, TokenList.size());
 	}
 
 }
