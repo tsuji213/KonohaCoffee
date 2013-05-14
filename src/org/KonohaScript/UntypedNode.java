@@ -74,7 +74,6 @@ public class UntypedNode implements KonohaParserConst {
 //	public UntypedNode AddNode(UntypedNode node) {
 //		return null;
 //	}
-//
 
 	public UntypedNode AddParsedNode(UntypedNode Node) {
 		if(NodeList == null) {
@@ -84,20 +83,40 @@ public class UntypedNode implements KonohaParserConst {
 		return Node;
 	}
 
-	public UntypedNode AddParsedNode(int Index, UntypedNode Node) {
-		if(NodeList == null) {
-			NodeList = new ArrayList<Object>();
+	void SetAt(int Index, Object Value) {
+		if(Index >= 0) {
+			if(NodeList == null) {
+				NodeList = new ArrayList<Object>();
+			}
+			if(Index < NodeList.size()) {
+				NodeList.set(Index, Value);
+			}
+			while(NodeList.size() < Index) {
+				NodeList.add(null);				
+			}
+			NodeList.add(Value);
 		}
-		NodeList.add(Node);
-		return Node;
 	}
 	
-	public void SetErrorMessage(KToken Token, String Message) {
-		if(Token != null) {
-			KeyToken = Token;
+	public UntypedNode SetAtNode(int Index, UntypedNode Node) {
+		SetAt(Index, Node);
+		return Node;
+	}
+
+	public void SetAtToken(int Index, KToken Token) {
+		SetAt(Index, Token);
+	}
+	
+	public int ReportError(KToken Token, String Message, int ParseOption) {
+		if((ParseOption & HasNextPattern) == HasNextPattern) {
+			if(Token != null) {
+				KeyToken = Token;
+			}
+			NodeNameSpace.Message(Error, KeyToken, Message);
+			this.Syntax = KSyntax.ErrorSyntax;
+			this.NodeList = null;
 		}
-		KeyToken.SetErrorMessage(Message);
-		this.Syntax = KSyntax.ErrorSyntax;
+		return NoMatch;
 	}
 	
 	public static UntypedNode NewNullNode(KNameSpace ns, ArrayList<KToken> TokenList, int BeginIdx) {
@@ -113,15 +132,17 @@ public class UntypedNode implements KonohaParserConst {
 		int NextIdx = NoMatch;
 		while(Syntax != null) {
 			this.Syntax = Syntax;
+			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
 			NextIdx = Syntax.InvokeParseFunc(this, TokenList, BeginIdx, EndIdx, (Syntax.ParentSyntax == null) ? 0 : HasNextPattern);
 			if(NextIdx != NoMatch) {
+				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":"+Syntax.ParseMethod.getName());
 				return NextIdx;
 			}
 			this.Syntax = null;
 			this.NodeList = null;
 			Syntax = Syntax.ParentSyntax;
 		}
-		SetErrorMessage(KeyToken, "undefined syntax: " + KeyToken.ParsedText);
+		ReportError(KeyToken, "undefined syntax: " + KeyToken.ParsedText, 0);
 		return EndIdx;
 	}
 
@@ -136,15 +157,15 @@ public class UntypedNode implements KonohaParserConst {
 		if(RightNode.Syntax.IsBinaryOperator()) {
 			if(KeyToken.ResolvedSyntax.IsLeftJoin(RightNode.Syntax)) {
 				UntypedNode NewNode = new UntypedNode(ns, KeyToken);
-				NewNode.AddParsedNode(LeftTerm, LeftNode);
-				NewNode.AddParsedNode(RightTerm, (UntypedNode)(RightNode.NodeList.get(LeftTerm)));
+				NewNode.SetAtNode(LeftTerm, LeftNode);
+				NewNode.SetAtNode(RightTerm, (UntypedNode)(RightNode.NodeList.get(LeftTerm)));
 				RightNode.NodeList.set(LeftTerm, NewNode);
 				return RightNode;
 			}
 		}
 		UntypedNode NewNode = new UntypedNode(ns, KeyToken);
-		NewNode.AddParsedNode(LeftTerm, LeftNode);
-		NewNode.AddParsedNode(RightTerm, RightNode);
+		NewNode.SetAtNode(LeftTerm, LeftNode);
+		NewNode.SetAtNode(RightTerm, RightNode);
 		if(RightNode.NextNode != null) {
 			NewNode.LinkNode(RightNode.NextNode);
 			RightNode.NextNode = null;
@@ -152,22 +173,24 @@ public class UntypedNode implements KonohaParserConst {
 		return NewNode;
 	}
 	
-	int ExpectedAfter(ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption, String NextSyntax) {
+	int ReportExpectedAfter(ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, String NextSyntax, int ParseOption) {
+		if(BeginIdx == NoMatch) return NoMatch;
+		if((ParseOption & AllowSkip) == AllowSkip) return BeginIdx;
 		if((ParseOption & AllowEmpty) != AllowEmpty) {
-			this.SetErrorMessage(TokenList.get(BeginIdx-1), NextSyntax + " is expected after " + KeyToken.ParsedText);
-			return EndIdx;
+			KToken Token = TokenList.get(BeginIdx-1);
+			return ReportError(Token, NextSyntax + " is expected after " + Token.ParsedText, ParseOption);
 		}
-		return ((ParseOption & AllowSkip) == AllowSkip) ? BeginIdx : NoMatch;
+		return BeginIdx;
 	}
 	
 	public static UntypedNode ParseNewNode2(KNameSpace ns, UntypedNode PrevNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		UntypedNode LeftNode = null;
-		KToken.DumpTokenList(TokenList, BeginIdx, EndIdx);
+		KToken.DumpTokenList(0, "ParseNewNode2", TokenList, BeginIdx, EndIdx);
 		while(BeginIdx < EndIdx) {
 			int NextIdx = BeginIdx;
 			KToken KeyToken = TokenList.get(NextIdx);
 			KSyntax Syntax = KeyToken.ResolvedSyntax;
-			KonohaDebug.P("nextIdx="+NextIdx+",Syntax="+Syntax);
+			//KonohaDebug.P("nextIdx="+NextIdx+",Syntax="+Syntax);
 			if(LeftNode == null) {
 				if(Syntax.IsDelim()) {  // A ; B
 					NextIdx++;
@@ -220,7 +243,7 @@ public class UntypedNode implements KonohaParserConst {
 		UntypedNode ChildNode = new UntypedNode(NodeNameSpace, KeyToken);
 		ChildNode.NodeList = NodeList;
 		NodeList = null; // initalized
-		AddParsedNode(0, ChildNode);
+		SetAtNode(0, ChildNode);
 		return this;
 	}
 	
@@ -267,11 +290,11 @@ public class UntypedNode implements KonohaParserConst {
 		if(BeginIdx < EndIdx) {
 			KToken GroupToken = TokenList.get(BeginIdx);
 			if(GroupToken.ResolvedSyntax.equals("()")) {
-				AddParsedNode(Index, ParseGroup(NodeNameSpace, GroupToken, 0));
+				SetAtNode(Index, ParseGroup(NodeNameSpace, GroupToken, ParseOption));
 				return BeginIdx + 1;
 			}
 		}
-		return ExpectedAfter(TokenList, BeginIdx, EndIdx, ParseOption, "(");
+		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, "(", ParseOption);
 	}
 
 	public int MatchExpression(int Index, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -282,7 +305,7 @@ public class UntypedNode implements KonohaParserConst {
 				NextIdx = i;
 			}
 		}
-		AddParsedNode(Index, ParseNewNode2(NodeNameSpace, null, TokenList, BeginIdx, NextIdx, ParseOption));
+		SetAtNode(Index, ParseNewNode2(NodeNameSpace, null, TokenList, BeginIdx, NextIdx, ParseOption));
 		return NextIdx+1;
 	}
 	
@@ -291,36 +314,37 @@ public class UntypedNode implements KonohaParserConst {
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
 			if(Token.ResolvedSyntax.equals("{}")) {
-				AddParsedNode(Index, ParseGroup(NodeNameSpace, Token, AllowEmpty|CreateNullNode));
+				SetAtNode(Index, ParseGroup(NodeNameSpace, Token, AllowEmpty|CreateNullNode));
 				return BeginIdx + 1;
 			}
 			return MatchExpression(Index, TokenList, BeginIdx, EndIdx, ParseOption);
 		}
-		return ExpectedAfter(TokenList, BeginIdx, EndIdx, ParseOption, "{");
+		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, "{", ParseOption);
 	}
-
+	
 	public int MatchKeyword(int Index, String Symbol, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
 			if(Token.EqualsText(Symbol)) {
+				SetAt(Index, Token);
 				return BeginIdx + 1;
 			}
 		}
-		return ExpectedAfter(TokenList, BeginIdx, EndIdx, ParseOption, Symbol);
+		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, Symbol, ParseOption);
 	}
 
 	public int MatchSyntax(int Index, String SyntaxName, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
-			if(Token.ResolvedSyntax.equals(SyntaxName)) {
+			if(Token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
+				SetAt(Index, Token);
 				return BeginIdx + 1;
 			}
 		}
-		return ExpectedAfter(TokenList, BeginIdx, EndIdx, ParseOption, Syntax.SyntaxName);
+		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, Syntax.SyntaxName, ParseOption);
 	}
-
 	
 	public final TypedNode TypeNodeAt(int Index, KGamma Gamma, KClass TypeInfo, int TypeCheckPolicy) {
 		if(NodeList != null) {

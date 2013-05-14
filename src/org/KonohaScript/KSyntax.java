@@ -66,18 +66,18 @@ public final class KSyntax implements KonohaParserConst {
 	public KSyntax ParentSyntax = null;
 	//KSyntax Pop() { return ParentSyntax; }
 	
-	public KSyntax(String SyntaxName, int flag, Object po, String ParseMethod, String TypeMethod) {
+	public KSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
-		this.ParseObject = po == null ? this : po;
+		this.ParseObject = Callee == null ? this : Callee;
 		if(ParseMethod != null) {
-			this.ParseMethod  = KFunc.LookupMethod(po, ParseMethod);
+			this.ParseMethod  = KFunc.LookupMethod(Callee, ParseMethod);
 		}
 		else {
 			this.ParseMethod  = null;
 		}
 		if(TypeMethod != null) {
-			this.TypeMethod  = KFunc.LookupMethod(po, TypeMethod);
+			this.TypeMethod  = KFunc.LookupMethod(Callee, TypeMethod);
 		}
 		else {
 			this.TypeMethod  = null;
@@ -96,8 +96,8 @@ public final class KSyntax implements KonohaParserConst {
 	public boolean IsError() { return this == ErrorSyntax; }	
 	
 	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		
 		try {
+			System.err.println("invoking.." + ParseMethod);
 			Integer NextId = (Integer)ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
 		} catch (IllegalArgumentException e) {
@@ -150,7 +150,7 @@ class CommonSyntax {
 
 	public TypedNode TypeValue(KGamma Gamma, UntypedNode Node, KClass ReqType) {
 		KToken KeyToken = Node.KeyToken;
-		KClass TypeInfo = Node.NodeNameSpace.LookupConstTypeInfo(KeyToken.ResolvedObject);
+		KClass TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
 		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
 	}
 

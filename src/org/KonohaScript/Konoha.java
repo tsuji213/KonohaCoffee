@@ -207,21 +207,21 @@ public class Konoha implements KonohaParserConst {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		RootNameSpace = new KNameSpace(this, null);
-		VoidType = RootNameSpace.LookupConstTypeInfo(new Boolean(true)); // FIXME
-		BooleanType = RootNameSpace.LookupConstTypeInfo(new Boolean(true));
+		VoidType = RootNameSpace.LookupTypeInfo(Void.class);
+		BooleanType = RootNameSpace.LookupTypeInfo(Boolean.class);
 		defaultSyntax.LoadDefaultSyntax(RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, RootNameSpace);
 	}
 
-	final KClass LookupTypeInfo(String ClassName) throws ClassNotFoundException {
-		KClass TypeInfo = SymbolTable.ClassNameMap.get(ClassName);
+	final KClass LookupTypeInfo(Class<?> ClassInfo) {
+		KClass TypeInfo = SymbolTable.ClassNameMap.get(ClassInfo.getName());
 		if(TypeInfo == null) {
-			TypeInfo = new KClass(this, ClassName);
-			SymbolTable.ClassNameMap.put(ClassName, TypeInfo);
+			TypeInfo = new KClass(this, ClassInfo);
+			SymbolTable.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
 		}
 		return TypeInfo;
 	}
-
+	
 //	public int GetSymbol(String key, boolean isnew) {
 //		return this.SymbolTable.GetSymbol(key, isnew);
 //	}
@@ -241,8 +241,13 @@ public class Konoha implements KonohaParserConst {
 
 	public static void main(String[] argc) {
 		MiniKonoha Grammar = new MiniKonoha();
-		Konoha konoha = new Konoha(Grammar);
+		Konoha KonohaContext = new Konoha(Grammar);
 		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
-		konoha.Eval("a == b + C; D + e == F", 2);
+		KonohaContext.Eval("a == b + C; D + e == F", 2);
+		KonohaContext.Eval(
+			"int fibo(int n) {\n" +
+			"\tif(n < 3) return 1;\n"+
+			"\treturn fibo(n-1)+fibo(n-2);\n"+
+			"}", 1000);
 	}
 }
