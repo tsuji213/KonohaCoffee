@@ -47,7 +47,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	boolean IsUnboxedType(KClass Class) {
-		return false; // Node.TypeInfo
+		return IsInt(Class) || IsFloat(Class) || IsBoolean(Class);
 	}
 
 	@Override
@@ -84,11 +84,11 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	private static boolean IsInt(KClass Type) {
-		return false;
+		return Type.equals(KClass.IntType);
 	}
 
 	private static boolean IsBoolean(KClass Type) {
-		return false;
+		return Type.equals(KClass.BooleanType);
 	}
 
 	@Override
@@ -100,10 +100,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 			} else if (IsFloat(Type)) {
 				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
 			} else if (IsBoolean(Type)) {
-				push(Boolean.toString(Node.ConstValue == 0));
+				push(Boolean.toString(Node.ConstValue != 0));
 			}
-		} else {
+		} else if(Node.ConstObject != null){
 			push(Node.ConstObject.toString());
+		} else {
+			push("null");
 		}
 		return true;
 	}

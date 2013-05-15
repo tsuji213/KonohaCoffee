@@ -34,18 +34,17 @@ public class ConstNode extends TypedNode {
 	}
 
 	void init(Object Value) {
-		if (ConstObject instanceof Integer) {
+		this.ConstObject = null;
+		if (Value instanceof Integer) {
 			this.ConstValue = ((Integer) Value).intValue();
-
-		} else if (ConstObject instanceof Double) {
+		} else if (Value instanceof Double) {
 			double val = ((Double) Value).doubleValue();
 			this.ConstValue = Double.doubleToLongBits(val);
-		} else if (ConstObject instanceof Boolean) {
+		} else if (Value instanceof Boolean) {
 			boolean val = ((Boolean) Value).booleanValue();
 			this.ConstValue = val ? 1 : 0;
 		} else {
 			this.ConstObject = Value;
-
 		}
 	}
 

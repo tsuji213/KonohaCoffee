@@ -20,11 +20,11 @@ public class SimpleVMCodeGenTest {
 		MiniKonoha defaultSyntax = new MiniKonoha();
 		Konoha kctx = new Konoha(defaultSyntax);
 
-		KClass VoidTy = KClass.VoidType;
-		KClass ObjectTy = KClass.ObjectType;
-		KClass BooleanTy = KClass.BooleanType;
-		KClass IntTy = KClass.IntType;
-		KClass StringTy = KClass.StringType;
+		KClass VoidTy = KClass.VoidType = new KClass(kctx, Void.class);
+		KClass ObjectTy = KClass.ObjectType = new KClass(kctx, Object.class);
+		KClass BooleanTy = KClass.BooleanType = new KClass(kctx, Boolean.class);
+		KClass IntTy = KClass.IntType = new KClass(kctx, Integer.class);
+		KClass StringTy = KClass.StringType = new KClass(kctx, String.class);
 		{
 			SimpleVMCodeGen G = new SimpleVMCodeGen();
 			TypedNode Block = new BlockNode(VoidTy, new ReturnNode(IntTy,
@@ -46,7 +46,7 @@ public class SimpleVMCodeGenTest {
 			Assert.assertTrue(Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
 			Assert.assertEquals(
-					"if (true) { new Object(); } else { return false; }",
+					"if (true) {new Object();  else {return false;}",
 					Program);
 		}
 	}
