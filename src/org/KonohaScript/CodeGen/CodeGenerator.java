@@ -29,13 +29,11 @@ public abstract class CodeGenerator {
 		this.LocalVals = new ArrayList<Local>();
 	}
 
-	CompiledMethod Compile(TypedNode Block) {
-		return null;
-	}
+	abstract CompiledMethod Compile(TypedNode Block);
 
 	Local AddLocalVarIfNotDefined(String Text) {
 		for (Local l : this.LocalVals) {
-			if (l.Name.compareTo(Text) == 0) {
+			if (l.Name.equals(Text)) {
 				return l;
 			}
 		}
