@@ -8,13 +8,13 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class MethodCallNode extends TypedNode implements CallableNode {
-	KMethod Method;
+	public KMethod Method;
 	public ArrayList<TypedNode> Params; /* [this, arg1, arg2, ...] */
 
 	/* call self.Method(arg1, arg2, ...) */
-	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Mtd) {
+	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method) {
 		super(TypeInfo, KeyToken);
-		this.Method = Mtd;
+		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 	}
 

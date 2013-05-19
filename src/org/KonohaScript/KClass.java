@@ -110,12 +110,6 @@ public class KClass {
 		return Count;
 	}
 
-	public static KClass VoidType = null;
-	public static KClass ObjectType = null;
-	public static KClass BooleanType = null;
-//	public static KClass IntType = null;
-//	public static KClass StringType = null;
-
 	public boolean Accept(KClass TypeInfo) {
 		if (this == TypeInfo)
 			return true;

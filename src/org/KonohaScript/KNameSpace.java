@@ -169,8 +169,12 @@ public final class KNameSpace implements KonohaParserConst {
 		DefineSymbol(Syntax.SyntaxName, Syntax);
 	}
 
+	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+MethodName, "Type"+MethodName));
+	}
+
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, ParseMethod, TypeMethod));
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+ParseMethod, "Type"+TypeMethod));
 	}
 
 	public void ImportNameSpace(KNameSpace ns) {
@@ -230,7 +234,7 @@ public final class KNameSpace implements KonohaParserConst {
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
 			KGamma Gamma = new KGamma(this);
-			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KClass.VoidType, 0);
+			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KonohaContext.VoidType, 0);
 			if(TNode != null) {
 //				Builder = GetBuilder();
 				//TNode.Eval();

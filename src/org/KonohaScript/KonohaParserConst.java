@@ -61,7 +61,9 @@ public interface KonohaParserConst {
 	public final static int Info     = 2;
 
 	// Syntax
-	public final static int Term = 1;	
+	public final static int Term = 1;
+	public final static int UniaryOperator = 1;  /* same as Term for readability */
+	public final static int Statement = 1;       /* same as Term for readability */
 	public final static int BinaryOperator = 1 << 1;
 	public final static int SuffixOperator = 1 << 2;
 	public final static int LeftJoin       = 1 << 3;
@@ -95,6 +97,7 @@ public interface KonohaParserConst {
 	public final static int SkipIndent       = (1<<2);
 	public final static int HasNextPattern   = (1<<3);
 
+	public final static int DefaultTypeCheckPolicy = 0;
 	public final static int Preliminary      = 0;
 	public final static int TypeCheckPolicy_AllowEmpty = 1;
 	

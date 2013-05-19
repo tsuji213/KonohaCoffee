@@ -79,32 +79,32 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
-	private static boolean IsFloat(KClass Type) {
-		return false;
-	}
-
-	private static boolean IsInt(KClass Type) {
-		return false;
-	}
-
-	private static boolean IsBoolean(KClass Type) {
-		return false;
-	}
+//	private static boolean IsFloat(KClass Type) {
+//		return false;
+//	}
+//
+//	private static boolean IsInt(KClass Type) {
+//		return false;
+//	}
+//
+//	private static boolean IsBoolean(KClass Type) {
+//		return false;
+//	}
 
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		KClass Type = Node.TypeInfo;
-		if (IsUnboxedType(Type)) {
-			if (IsInt(Type)) {
-				push(Integer.toString((int) Node.ConstValue));
-			} else if (IsFloat(Type)) {
-				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
-			} else if (IsBoolean(Type)) {
-				push(Boolean.toString(Node.ConstValue == 0));
-			}
-		} else {
-			push(Node.ConstObject.toString());
-		}
+//		KClass Type = Node.TypeInfo;
+//		if (IsUnboxedType(Type)) {
+//			if (IsInt(Type)) {
+//				push(Integer.toString((int) Node.ConstValue));
+//			} else if (IsFloat(Type)) {
+//				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
+//			} else if (IsBoolean(Type)) {
+//				push(Boolean.toString(Node.ConstValue == 0));
+//			}
+//		} else {
+			push(Node.ConstValue.toString());
+//		}
 		return true;
 	}
 

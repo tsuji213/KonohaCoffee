@@ -71,18 +71,8 @@ public final class KSyntax implements KonohaParserConst {
 		this.SyntaxFlag = flag;
 		this.ParseObject = Callee == null ? this : Callee;
 		this.TypeObject = this.ParseObject;
-		if(ParseMethod != null) {
-			this.ParseMethod  = KFunc.LookupMethod(Callee, ParseMethod);
-		}
-		else {
-			this.ParseMethod  = null;
-		}
-		if(TypeMethod != null) {
-			this.TypeMethod  = KFunc.LookupMethod(Callee, TypeMethod);
-		}
-		else {
-			this.TypeMethod  = null;
-		}
+		this.ParseMethod  = KFunc.LookupMethod(this.ParseObject, ParseMethod);
+		this.TypeMethod  = KFunc.LookupMethod(this.TypeObject, TypeMethod);
 	}
 	
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
@@ -117,6 +107,8 @@ public final class KSyntax implements KonohaParserConst {
 		}
 		return -1;
 	}
+	
+
 	
 }
 

@@ -34,7 +34,7 @@ public class UntypedNode implements KonohaParserConst {
 	public KNameSpace         NodeNameSpace;
 	public KSyntax            Syntax;
 	public KToken             KeyToken;
-	ArrayList<Object>         NodeList;
+	public ArrayList<Object>         NodeList;
 	
 	@Override public String toString() {
 		String key = KeyToken.ParsedText + ":" + ((Syntax != null) ? Syntax.SyntaxName : "null");
@@ -60,11 +60,7 @@ public class UntypedNode implements KonohaParserConst {
 		}
 		return sb.toString();
 	}
-	
-//	UntypedNode(KNameSpace ns) {
-//		this.NodeNameSpace = ns;
-//	}
-	
+		
 	public UntypedNode(KNameSpace ns, KToken KeyToken) {
 		this.NodeNameSpace = ns;
 		this.KeyToken = KeyToken;
@@ -76,10 +72,6 @@ public class UntypedNode implements KonohaParserConst {
 		this.NextNode = Node;
 	}
 	
-//	public UntypedNode AddNode(UntypedNode node) {
-//		return null;
-//	}
-
 	public UntypedNode AddParsedNode(UntypedNode Node) {
 		if(NodeList == null) {
 			NodeList = new ArrayList<Object>();
@@ -112,6 +104,8 @@ public class UntypedNode implements KonohaParserConst {
 		SetAt(Index, Token);
 	}
 	
+	// parser 
+	
 	public int ReportError(KToken Token, String Message, int ParseOption) {
 		if((ParseOption & HasNextPattern) != HasNextPattern) {
 			if(Token != null) {
@@ -136,10 +130,10 @@ public class UntypedNode implements KonohaParserConst {
 		KSyntax Syntax = KeyToken.ResolvedSyntax;
 		while(Syntax != null) {
 			this.Syntax = Syntax;
-			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
+			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
 			int NextIdx = Syntax.InvokeParseFunc(this, TokenList, BeginIdx, EndIdx, ((Syntax.ParentSyntax == null) ? 0 : HasNextPattern));
 			if(NextIdx != NoMatch) {
-				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":"+Syntax.ParseMethod.getName());
+				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":"+Syntax.ParseMethod);
 				return NextIdx;
 			}
 			if(this.Syntax == KSyntax.ErrorSyntax) {

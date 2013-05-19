@@ -19,10 +19,22 @@ import org.KonohaScript.SyntaxTree.*;
 
 public class KGamma {
 	
-	KNameSpace GammaNameSpace; 
+	public KNameSpace GammaNameSpace; 
+	
+	/* for convinient short cut */
+	public final KClass VoidType;
+	public final KClass BooleanType;
+	public final KClass IntType;
+	public final KClass StringType;
+	public final KClass VarType;
 	
 	KGamma(KNameSpace ns) {
 		GammaNameSpace = ns;
+		VoidType = ns.KonohaContext.VoidType;
+		BooleanType = ns.KonohaContext.BooleanType;
+		IntType = ns.KonohaContext.IntType;
+		StringType = ns.KonohaContext.StringType;
+		VarType = ns.KonohaContext.VarType;
 	}
 	
 	KClass GetLocalType(String Symbol) {
@@ -33,9 +45,17 @@ public class KGamma {
 		return -1;
 	}
 	
+	public TypedNode GetDefaultTypedNode(KClass TypeInfo) {
+		return null;  // TODO
+	}
+	
 	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		TypedNode Node = null;
 		try {
+//			System.err.println("Syntax" + UNode.Syntax);
+//			System.err.println("Syntax.TypeMethod" + UNode.Syntax.TypeMethod);
+//			System.err.println("Syntax.TypeObject" + UNode.Syntax.TypeObject);
+//			
 			Node = (TypedNode)UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
 		} 
 		catch (IllegalArgumentException e) {
@@ -70,7 +90,7 @@ public class KGamma {
 	public static TypedNode TypeCheck(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
 		TypedNode TPrevNode = null;
 		while(UNode != null) {
-			KClass CurrentTypeInfo = (UNode.NextNode != null) ? KClass.VoidType : TypeInfo;
+			KClass CurrentTypeInfo = (UNode.NextNode != null) ? Gamma.VoidType : TypeInfo;
 			TypedNode CurrentTypedNode = TypeCheckEachNode(Gamma, UNode, CurrentTypeInfo, TypeCheckPolicy);
 			if(TPrevNode == null) {
 				TPrevNode = CurrentTypedNode;
