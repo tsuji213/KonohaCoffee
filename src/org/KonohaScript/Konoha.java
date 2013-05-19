@@ -240,10 +240,10 @@ public class Konoha implements KonohaParserConst {
 	}
 
 	public static void main(String[] argc) {
-		MiniKonoha Grammar = new MiniKonoha();
-		Konoha KonohaContext = new Konoha(Grammar);
+		MiniKonoha MiniKonohaGrammar = new MiniKonoha();
+		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
 		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
-		KonohaContext.Eval("a == b + C; D + e == F", 2);
+		//KonohaContext.Eval("a == b + C; D + e == F", 2);
 		KonohaContext.Eval(
 			"int fibo(int n) {\n" +
 			"\tif(n < 3) return 1;\n"+
