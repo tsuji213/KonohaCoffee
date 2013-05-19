@@ -440,8 +440,8 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeMethodDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		
-		return null;
+		System.err.println("@@@@@ " + UNode);
+		return new DoneNode(TypeInfo);
 	}
 	
 	public int ParseEmpty(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -521,19 +521,19 @@ public final class MiniKonoha implements KonohaParserConst {
 		NameSpace.DefineSyntax("if", Term, this, "ParseIfNode", "TypeIfNode");
 		NameSpace.DefineSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode");
 
-		DefineIntegerMethod(NameSpace);
+		DefineIntMethod(NameSpace);
 		
 	}
 	
-	void DefineIntegerMethod (KNameSpace ns) {
+	void DefineIntMethod (KNameSpace ns) {
 		KClass BaseClass = ns.LookupTypeInfo(Integer.class);
 		KParam BinaryParam = KParam.ParseOf(ns, "int int x");
 		KParam UniaryParam = KParam.ParseOf(ns, "int");
 		
-		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", UniaryParam, this, "Plus");
-		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", BinaryParam, this, "Add");
-		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", UniaryParam, this, "Minus");
-		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", BinaryParam, this, "Sub");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", UniaryParam, this, "PlusInt");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", BinaryParam, this, "IntAddInt");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", UniaryParam, this, "MinusInt");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", BinaryParam, this, "IntSubInt");
 		
 		if(KonohaDebug.UseBuiltInTest) {
 			assert(BaseClass.LookupMethod("+", 0) != null);
@@ -547,19 +547,19 @@ public final class MiniKonoha implements KonohaParserConst {
 		}
 	}
 	
-	public static int Plus(int x) {
+	public static int PlusInt(int x) {
 		return +x;
 	}
 
-	public static int Add(int x, int y) {
+	public static int IntAddInt(int x, int y) {
 		return x + y;
 	}
 
-	public static int Minus(int x) {
+	public static int MinusInt(int x) {
 		return -x;
 	}
 
-	public static int Sub(int x, int y) {
+	public static int IntSubInt(int x, int y) {
 		return x - y;
 	}
 

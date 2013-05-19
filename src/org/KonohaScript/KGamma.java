@@ -1,7 +1,6 @@
 package org.KonohaScript;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.KonohaScript.SyntaxTree.*;
 
 //struct KGammaStack {
@@ -33,29 +32,31 @@ public class KGamma {
 	int GetLocalIndex(String Symbol) {
 		return -1;
 	}
-
 	
-	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode Node, KClass ReqType) {
-		TypedNode TNode = null;
+	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
+		TypedNode Node = null;
 		try {
-			TNode = (TypedNode)Node.Syntax.TypeMethod.invoke(Node.Syntax.TypeObject, Gamma, Node, ReqType);
-		} catch (IllegalArgumentException e) {
+			Node = (TypedNode)UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
+		} 
+		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			TNode = new ErrorNode(ReqType, Node.KeyToken, "internal error: " + e);
-		} catch (IllegalAccessException e) {
+			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
+		} 
+		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			TNode = new ErrorNode(ReqType, Node.KeyToken, "internal error: " + e);
-		} catch (InvocationTargetException e) {
+			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
+		} 
+		catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			TNode = new ErrorNode(ReqType, Node.KeyToken, "internal error: " + e);
+			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
 		}
-		if(TNode == null) {
-			TNode = new ErrorNode(ReqType, Node.KeyToken, "undefined type checker: " + Node.Syntax);
+		if(Node == null) {
+			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "undefined type checker: " + UNode.Syntax);
 		}
-		return TNode;
+		return Node;
 	}
 
 	public static TypedNode TypeCheckEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
@@ -84,6 +85,5 @@ public class KGamma {
 		}
 		return TPrevNode == null ? null : TPrevNode.GetHeadNode();
 	}
-
 
 }

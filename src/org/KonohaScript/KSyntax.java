@@ -70,6 +70,7 @@ public final class KSyntax implements KonohaParserConst {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
 		this.ParseObject = Callee == null ? this : Callee;
+		this.TypeObject = this.ParseObject;
 		if(ParseMethod != null) {
 			this.ParseMethod  = KFunc.LookupMethod(Callee, ParseMethod);
 		}

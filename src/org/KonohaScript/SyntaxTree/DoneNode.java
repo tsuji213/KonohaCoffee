@@ -4,6 +4,7 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class DoneNode extends TypedNode {
+	
 	public DoneNode(KClass TypeInfo) {
 		super(TypeInfo);
 	}
