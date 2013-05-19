@@ -305,6 +305,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeMethodCall(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
+		KonohaDebug.P("(> <) typing method calls: " + UNode);
 		ArrayList<Object> NodeList = UNode.NodeList;
 		assert(NodeList.size() > 1);
 		UntypedNode UntypedBaseNode = (UntypedNode)NodeList.get(0);
@@ -329,7 +330,7 @@ public final class MiniKonoha implements KonohaParserConst {
 			WorkingNode.Append(BaseNode);
 			return TypeMethodEachParam(Gamma, BaseNode.TypeInfo, WorkingNode, NodeList);
 		}
-		return null;
+		return Gamma.NewErrorNode(KeyToken, "undefined method: " + KeyToken.ParsedText + " in " + BaseNode.TypeInfo.ShortClassName);
 	}
 
 	private TypedNode TypeMethodEachParam(KGamma Gamma, KClass BaseType, MethodCallNode WorkingNode, ArrayList<Object> NodeList) {
@@ -427,13 +428,14 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeReturn(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
-		if(CondNode.IsError()) return CondNode;
-		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
-		if(CondNode.IsError()) return ThenNode;
-		TypedNode ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, TypeCheckPolicy_AllowEmpty);
-		if(CondNode.IsError()) return ThenNode;
-		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, CondNode);
+//		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
+//		if(CondNode.IsError()) return CondNode;
+//		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
+//		if(CondNode.IsError()) return ThenNode;
+//		TypedNode ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, TypeCheckPolicy_AllowEmpty);
+//		if(CondNode.IsError()) return ThenNode;
+//		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, CondNode);
+		return null;
 	}
 
 	public final static int VarDeclType  = 0;
@@ -603,8 +605,8 @@ public final class MiniKonoha implements KonohaParserConst {
 		NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
 		NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
 
-		NameSpace.DefineSyntax("if", Statement, this, "IfNode");
-		NameSpace.DefineSyntax("return", Statement, this, "ReturnNode");
+		NameSpace.DefineSyntax("if", Statement, this, "If");
+		NameSpace.DefineSyntax("return", Statement, this, "Return");
 
 		DefineIntMethod(NameSpace);
 		

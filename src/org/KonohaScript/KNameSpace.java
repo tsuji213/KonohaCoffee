@@ -211,7 +211,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return "(eval:" + (int) uline + ")";
 	}
 
-	public void Message(int Level, KToken Token, String Message) {
+	public String Message(int Level, KToken Token, String Message) {
 		if (!Token.IsErrorToken()) {
 			if (Level == Error) {
 				Message = "(error) " + GetSourcePosition(Token.uline) + " " + Message;
@@ -222,7 +222,9 @@ public final class KNameSpace implements KonohaParserConst {
 				Message = "(info) " + GetSourcePosition(Token.uline) + " " + Message;
 			}
 			System.out.println(Message);
+			return Message;
 		}
+		return Token.GetErrorMessage();
 	}
 		
 	public void Eval(String text, long uline) {

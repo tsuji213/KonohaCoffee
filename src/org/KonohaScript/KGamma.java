@@ -49,6 +49,10 @@ public class KGamma {
 		return null;  // TODO
 	}
 	
+	public TypedNode NewErrorNode(KToken KeyToken, String Message) {
+		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaParserConst.Error, KeyToken, Message));
+	}
+	
 	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		TypedNode Node = null;
 		try {
@@ -61,20 +65,20 @@ public class KGamma {
 		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
 		} 
 		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
 		} 
 		catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "internal error: " + e);
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
 		}
 		if(Node == null) {
-			Node = new ErrorNode(TypeInfo, UNode.KeyToken, "undefined type checker: " + UNode.Syntax);
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "undefined type checker: " + UNode.Syntax);
 		}
 		return Node;
 	}

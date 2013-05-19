@@ -58,7 +58,6 @@ public final class KToken {
 		return ((TokenFlag & GroupTokenFlag) == GroupTokenFlag);
 	}
 
-
 	public KSyntax ResolvedSyntax;
 	Object ResolvedObject;
 
@@ -82,6 +81,11 @@ public final class KToken {
 		return msg;
 	}
 
+	public String GetErrorMessage() {
+		return (String)ResolvedObject;
+	}
+
+	
 	// Debug
 	private final static String Tab = "  ";
 	void Dump(int Level) {

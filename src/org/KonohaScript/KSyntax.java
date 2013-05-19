@@ -152,8 +152,7 @@ class CommonSyntax {
 		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, Node.KeyToken, Gamma.GetLocalIndex(Node.KeyToken.ParsedText));
 		}
-		return new ErrorNode(ReqType, Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
+		return Gamma.NewErrorNode(Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
 	}
-
 	
 }
