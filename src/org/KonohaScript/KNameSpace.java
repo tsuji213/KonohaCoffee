@@ -226,7 +226,7 @@ public final class KNameSpace implements KonohaParserConst {
 		ArrayList<KToken> BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
-		UntypedNode UNode = UntypedNode.ParseNewNode2(this, null, BufferList, next, BufferList.size(), AllowEmpty);
+		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
 //		if(UNode != null) {
 //			TypedNode TNode = TypedNode.Type(KGamma, UNode, null);

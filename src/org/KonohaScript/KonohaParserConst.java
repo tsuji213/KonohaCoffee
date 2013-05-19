@@ -90,8 +90,9 @@ public interface KonohaParserConst {
 
 	public final static int TermRequired     = 0;
 	public final static int AllowEmpty       = 1;
+//	public final static int AllowSkip        = 1;
 	public final static int CreateNullNode   = (1<<1);
-	public final static int AllowSkip        = (1<<2);
+	public final static int SkipIndent       = (1<<2);
 	public final static int HasNextPattern   = (1<<3);
 
 	public final static int Preliminary      = 0;

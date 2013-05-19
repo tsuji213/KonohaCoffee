@@ -144,7 +144,6 @@ public final class MiniKonoha implements KonohaParserConst {
 			GroupToken.SetGroup(Lexer.GetSyntax("()"), GroupList);
 			BufferList.add(GroupToken);
 		}
-		//KonohaDebug.P("BeginIdx=" + BeginIdx + ",nextIdx="+nextIdx + ",EndIdx="+EndIdx);
 		return nextIdx;
 	}
 
@@ -269,7 +268,7 @@ public final class MiniKonoha implements KonohaParserConst {
 				break;
 			}
 		}
-		Node.SetAtNode(0, UntypedNode.ParseNewNode2(Node.NodeNameSpace, null, TokenList, BeginIdx+1, NextIdx, 0));
+		Node.SetAtNode(0, UntypedNode.ParseNewNode(Node.NodeNameSpace, null, TokenList, BeginIdx+1, NextIdx, 0));
 		return NextIdx;
 	}
 
@@ -320,7 +319,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	public int ParseIf(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int NextIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
 		NextIdx = UNode.MatchSingleBlock(IfThen, TokenList, NextIdx, EndIdx, ParseOption);
-		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty|AllowSkip);
+		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty);
 		if(NextIdx == NextIdx2 && NextIdx != -1) {  // skiped
 			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
 		}
@@ -344,7 +343,7 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public int ParseReturn(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int NextIdx = UntypedNode.FindDelim(TokenList, BeginIdx, EndIdx);
-		UNode.AddParsedNode(UntypedNode.ParseNewNode2(UNode.NodeNameSpace, null, TokenList, BeginIdx + 1, NextIdx, AllowEmpty|CreateNullNode));
+		UNode.AddParsedNode(UntypedNode.ParseNewNode(UNode.NodeNameSpace, null, TokenList, BeginIdx + 1, NextIdx, AllowEmpty|CreateNullNode));
 		return NextIdx;
 	}
 
@@ -358,57 +357,59 @@ public final class MiniKonoha implements KonohaParserConst {
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, CondNode);
 	}
 
-	public final static int VarDeclName  = 0;
-	public final static int VarDeclValue = 1;
+	
+	
+	public final static int VarDeclType  = 0;
+	public final static int VarDeclName  = 1;
+	public final static int VarDeclValue = 2;
+	public final static int VarDeclScope = 3;
 
-	public int ParseVarDeclIteration(UntypedNode UNode, KToken TypeToken, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchSyntax(VarDeclName, "$Symbol", TokenList, BeginIdx, EndIdx, ParseOption);
-		int SkipIdx = UNode.MatchKeyword(-1, "=", TokenList, NextIdx, EndIdx, AllowEmpty|AllowSkip);
-		if(NextIdx < SkipIdx) {
-			for(NextIdx = SkipIdx; NextIdx < EndIdx; NextIdx++) {
-				KToken DelimToken = TokenList.get(NextIdx);
-				if(DelimToken.EqualsText(",")) {
-					UNode.MatchExpression(VarDeclValue, TokenList, SkipIdx, NextIdx, 0);
-					UntypedNode NewNode = new UntypedNode(UNode.NodeNameSpace, TypeToken);
-					UNode.LinkNode(NewNode);
-					return ParseVarDeclIteration(NewNode, TypeToken, TokenList, NextIdx+1, EndIdx, 0);
-				}
-				if(DelimToken.ResolvedSyntax.IsDelim()) {
-					UNode.MatchExpression(VarDeclValue, TokenList, SkipIdx, NextIdx, 0);
-					return NextIdx+1;
-				}
-			}
-		}
-		if(!(SkipIdx < EndIdx)) return EndIdx;
-		if(SkipIdx != -1 ) {
-			KToken DelimToken = TokenList.get(SkipIdx);
-			if(DelimToken.EqualsText(",")) {
-				UNode.SetAtNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
-				UntypedNode NewNode = new UntypedNode(UNode.NodeNameSpace, TypeToken);
-				UNode.LinkNode(NewNode);
-				return ParseVarDeclIteration(NewNode, TypeToken, TokenList, SkipIdx+1, EndIdx, 0);
-			}
-			if(DelimToken.ResolvedSyntax.IsDelim()) {
-				UNode.SetAtNode(VarDeclValue, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, SkipIdx));
-				return SkipIdx+1;
-			}
-			if(UntypedNode.IsAllowNoMatch(ParseOption)) {
-				return NoMatch;
-			}
-			UNode.ReportError(DelimToken, "unexpected token: " + DelimToken.ParsedText, ParseOption);
+	public int ParseVarDeclIteration(UntypedNode UNode, KToken TypeToken, ArrayList<KToken> TokenList, int SymbolIdx, int EndIdx, int ParseOption) {
+		UNode.SetAtToken(VarDeclType, TypeToken);
+		int NextIdx = UNode.MatchSyntax(VarDeclName, "$Symbol", TokenList, SymbolIdx, EndIdx, TermRequired);
+		//System.out.printf("SymbolIdx=%d,  NextIdx=%d, EndIdx=%d\n", SymbolIdx, NextIdx, EndIdx);
+		if (NextIdx == NoMatch) return EndIdx;
+		if(NextIdx == EndIdx) {
+			UNode.SetAtToken(VarDeclValue, null);
+			UNode.SetAtToken(VarDeclScope, null);
 			return EndIdx;
 		}
-		return NoMatch;
+		int ValueIdx = UNode.MatchKeyword(-1, "=", TokenList, NextIdx, EndIdx, HasNextPattern);
+		if(ValueIdx != NoMatch) {
+			NextIdx = UNode.MatchExpression(VarDeclValue, TokenList, ValueIdx, EndIdx, ",", TermRequired);
+			if(NextIdx == -1) return EndIdx;
+			NextIdx = NextIdx - 1;
+		}
+		else {
+			UNode.SetAtToken(VarDeclValue, null);			
+		}
+		int NextVarDeclIdx = UNode.MatchKeyword(-1, ",", TokenList, NextIdx, EndIdx, HasNextPattern);
+		if(NextVarDeclIdx != NoMatch) {
+			UntypedNode ScopeNode = new UntypedNode(UNode.NodeNameSpace, TypeToken);
+			UNode.SetAtNode(VarDeclScope, ScopeNode);
+			return ParseVarDeclIteration(ScopeNode, TypeToken, TokenList, NextVarDeclIdx, EndIdx, TermRequired);
+		}
+		if(NextIdx < EndIdx) {
+			UNode.SetAtNode(VarDeclScope, UntypedNode.ParseNewNode(UNode.NodeNameSpace, null, TokenList, NextIdx, EndIdx, TermRequired));
+		}
+		else {
+			UNode.SetAtToken(VarDeclScope, null);
+		}
+		return EndIdx;
 	}
 	
 	public int ParseVarDecl(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		KToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
 		int SymbolIdx = BeginIdx + 1;
 		int AfterSymbolIdx  = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
-		int NextIdx = UNode.MatchKeyword(-1, "()", TokenList, AfterSymbolIdx, EndIdx, AllowSkip|ParseOption);
-		System.out.printf("SymbolIdx=%d,  AfterSymbolIdx=%d, NextIdx=%d, EndIdx=%d\n", SymbolIdx, AfterSymbolIdx, NextIdx, EndIdx);
-		if(NextIdx == BeginIdx + 3) return -1;
-		return ParseVarDeclIteration(UNode, TokenList.get(BeginIdx), TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		if(AfterSymbolIdx == -1) return -1;
+		//System.out.printf("SymbolIdx=%d,  AfterSymbolIdx=%d, EndIdx=%d\n", SymbolIdx, AfterSymbolIdx, EndIdx);
+		if(AfterSymbolIdx < EndIdx) {
+			int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, AfterSymbolIdx, EndIdx, AllowEmpty|ParseOption);
+			//System.out.printf("SymbolIdx=%d,  AfterSymbolIdx=%d, NextIdx=%d, EndIdx=%d\n", SymbolIdx, AfterSymbolIdx, NextIdx, EndIdx);
+			if(AfterSymbolIdx + 1 == NextIdx) return NoMatch;
+		}
+		return ParseVarDeclIteration(UNode, TokenList.get(BeginIdx), TokenList, SymbolIdx, EndIdx, TermRequired);
 	}
 
 	public TypedNode TypeVarDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
@@ -423,88 +424,104 @@ public final class MiniKonoha implements KonohaParserConst {
 	public final static int MethodDeclParam  = 4;
 	
 	public int ParseMethodDecl(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchSyntax(MethodDeclClass, "$Type", TokenList, BeginIdx + 1, EndIdx, AllowEmpty|AllowSkip);
-		if(NextIdx > BeginIdx + 1) {
-			NextIdx = UNode.MatchKeyword(-1, ".", TokenList, NextIdx, EndIdx, 0);
+		UNode.SetAtToken(MethodDeclReturn, TokenList.get(BeginIdx));
+		UNode.SetAtToken(MethodDeclClass, null);
+		int SymbolIdx = BeginIdx + 1;
+		int ParamIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+		int BlockIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
+		int NextIdx = UNode.MatchSyntax(MethodDeclBlock, "{}", TokenList, BlockIdx, EndIdx, ParseOption);
+		if(NextIdx != -1) {
+			KToken GroupToken = TokenList.get(ParamIdx);
+			ArrayList<KToken> GroupList = GroupToken.GetGroupList();
+			UNode.AppendTokenList(",", GroupList, 1, GroupList.size()-1, 0/*ParseOption*/);
 		}
-		else {
-			NextIdx = BeginIdx + 1;
-			UNode.SetAtNode(MethodDeclClass, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx));
-		}
-		NextIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, NextIdx, EndIdx, ParseOption);
-		NextIdx = UNode.MatchKeyword(-1, "()", TokenList, NextIdx, EndIdx, ParseOption);
-		if(NextIdx == -1 || UNode.Syntax.IsError()) return NextIdx;
-		NextIdx = UNode.MatchSyntax(MethodDeclBlock, "{}", TokenList, NextIdx, EndIdx, ParseOption);
+		//System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n", SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
 		return NextIdx;
 	}
+
+	public TypedNode TypeMethodDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
+		
+		return null;
+	}
 	
-	public void LoadDefaultSyntax(KNameSpace ns) {
-		ns.DefineSymbol("void",    ns.KonohaContext.VoidType); // FIXME
-		ns.DefineSymbol("boolean", ns.KonohaContext.BooleanType);
-		ns.DefineSymbol("int",     ns.LookupTypeInfo(Integer.class));
-		ns.DefineSymbol("String",  ns.LookupTypeInfo(String.class));
-		ns.DefineSymbol("true",    new Boolean(true));
-		ns.DefineSymbol("false",   new Boolean(false));
+	public int ParseEmpty(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
+		return NoMatch;
+	}
+
+	public TypedNode TypeEmpty(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
+		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
+		return null;
+	}
+	
+	public void LoadDefaultSyntax(KNameSpace NameSpace) {
+		NameSpace.DefineSymbol("void",    NameSpace.KonohaContext.VoidType); // FIXME
+		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
+		NameSpace.DefineSymbol("int",     NameSpace.LookupTypeInfo(Integer.class));
+		NameSpace.DefineSymbol("String",  NameSpace.LookupTypeInfo(String.class));
+		NameSpace.DefineSymbol("true",    new Boolean(true));
+		NameSpace.DefineSymbol("false",   new Boolean(false));
 				
-		ns.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
-		ns.AddTokenFunc("\n", this, "IndentToken");		
-		ns.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
-		ns.AddTokenFunc("Aa", this, "SymbolToken");
-		ns.AddTokenFunc(".", this, "MemberToken");
-		ns.AddTokenFunc("\"", this, "StringLiteralToken");
-		ns.AddTokenFunc("1", this, "NumberLiteralToken");
+		NameSpace.AddTokenFunc(" \t", this, "WhiteSpaceToken");		
+		NameSpace.AddTokenFunc("\n", this, "IndentToken");		
+		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
+		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
+		NameSpace.AddTokenFunc(".", this, "MemberToken");
+		NameSpace.AddTokenFunc("\"", this, "StringLiteralToken");
+		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
 		
 		// Macro
-		ns.AddMacroFunc("(", this, "OpenParenthesisMacro");
-		ns.AddMacroFunc(")", this, "CloseParenthesisMacro");
-		ns.AddMacroFunc("{", this, "OpenBraceMacro");
-		ns.AddMacroFunc("}", this, "CloseBraceMacro");
-		ns.AddMacroFunc("[", this, "OpenBracketMacro");
-		ns.AddMacroFunc("]", this, "CloseBracketMacro");
-		ns.AddMacroFunc("=", this, "MergeOperatorMacro");
-		ns.AddMacroFunc("&", this, "MergeOperatorMacro");
-		ns.AddMacroFunc("|", this, "MergeOperatorMacro");
+		NameSpace.AddMacroFunc("(", this, "OpenParenthesisMacro");
+		NameSpace.AddMacroFunc(")", this, "CloseParenthesisMacro");
+		NameSpace.AddMacroFunc("{", this, "OpenBraceMacro");
+		NameSpace.AddMacroFunc("}", this, "CloseBraceMacro");
+		NameSpace.AddMacroFunc("[", this, "OpenBracketMacro");
+		NameSpace.AddMacroFunc("]", this, "CloseBracketMacro");
+		NameSpace.AddMacroFunc("=", this, "MergeOperatorMacro");
+		NameSpace.AddMacroFunc("&", this, "MergeOperatorMacro");
+		NameSpace.AddMacroFunc("|", this, "MergeOperatorMacro");
 		//ns.AddSymbol(symbol, constValue);
 
-		ns.DefineSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, null, null);
-		ns.DefineSyntax("/", BinaryOperator|Precedence_CStyleMUL, this, null, null);
-		ns.DefineSyntax("%", BinaryOperator|Precedence_CStyleMUL, this, null, null);
+		NameSpace.DefineSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, null, null);
+		NameSpace.DefineSyntax("/", BinaryOperator|Precedence_CStyleMUL, this, null, null);
+		NameSpace.DefineSyntax("%", BinaryOperator|Precedence_CStyleMUL, this, null, null);
 		
-		ns.DefineSyntax("+", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
-		ns.DefineSyntax("-", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
+		NameSpace.DefineSyntax("+", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
+		NameSpace.DefineSyntax("-", Term|BinaryOperator|Precedence_CStyleADD, this, "ParseUniaryOperator", null);
 
-		ns.DefineSyntax("<", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
-		ns.DefineSyntax("<=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
-		ns.DefineSyntax(">", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
-		ns.DefineSyntax(">=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		NameSpace.DefineSyntax("<", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		NameSpace.DefineSyntax("<=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		NameSpace.DefineSyntax(">", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
+		NameSpace.DefineSyntax(">=", BinaryOperator|Precedence_CStyleCOMPARE, this, null, null);
 
-		ns.DefineSyntax("==", BinaryOperator|Precedence_CStyleEquals, this, null, null);
-		ns.DefineSyntax("!=", BinaryOperator|Precedence_CStyleEquals, this, null, null);
+		NameSpace.DefineSyntax("==", BinaryOperator|Precedence_CStyleEquals, this, null, null);
+		NameSpace.DefineSyntax("!=", BinaryOperator|Precedence_CStyleEquals, this, null, null);
 
-		ns.DefineSyntax("=", BinaryOperator|Precedence_CStyleAssign|LeftJoin, this, null, "TypeAssign");
+		NameSpace.DefineSyntax("=", BinaryOperator|Precedence_CStyleAssign|LeftJoin, this, null, "TypeAssign");
 
-		ns.DefineSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign");
-		ns.DefineSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign");
-		ns.DefineSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign");
-		ns.DefineSyntax(";",  Precedence_CStyleDelim, this, null, null);
+		NameSpace.DefineSyntax("&&", BinaryOperator|Precedence_CStyleAND, this, null, "TypeAssign");
+		NameSpace.DefineSyntax("||", BinaryOperator|Precedence_CStyleOR, this, null, "TypeAssign");
+		NameSpace.DefineSyntax("!",  Term, this, "ParseUniaryOperator", "TypeAssign");
+		NameSpace.DefineSyntax(";",  Precedence_CStyleDelim, this, null, null);
 
-		ns.DefineSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol");
-		ns.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
-		ns.DefineSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
-		ns.DefineSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null);
-		ns.DefineSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null);
+		NameSpace.DefineSyntax("$Synbol", Term, this, "ParseSymbol", "TypeSymbol");
+		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
+		NameSpace.DefineSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "ParseMember", "TypeMember");
+		NameSpace.DefineSyntax("{}", 0, this, "ParseEmpty", "TypeEmpty");
+		NameSpace.DefineSyntax("$StringLiteral",  Term, this, "ParseStrngLiteral", null);
+		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "ParseNumberLiteral", null);
 
-		ns.DefineSyntax("$Symbol", Term, this, "ParseSymbol", "TypeSymbol");
-		ns.DefineSyntax("$Const",  Term, this, "ParseConst", "TypeConst");
+		NameSpace.DefineSyntax("$Symbol", Term, this, "ParseSymbol", "TypeSymbol");
+		NameSpace.DefineSyntax("$Const",  Term, this, "ParseConst", "TypeConst");
 		
-		ns.DefineSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol");
-		ns.DefineSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl");
-		ns.DefineSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl");
+		//ns.DefineSyntax("$Type", Term, this, "ParseTypeSymbol", "TypeTypeSymbol");
+		NameSpace.DefineSyntax("$Type", Term, this, "ParseMethodDecl", "TypeMethodDecl");
+		NameSpace.DefineSyntax("$Type", Term, this, "ParseVarDecl", "TypeVarDecl");
 
-		ns.DefineSyntax("if", Term, this, "ParseIfNode", "TypeIfNode");
-		ns.DefineSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode");
+		NameSpace.DefineSyntax("if", Term, this, "ParseIfNode", "TypeIfNode");
+		NameSpace.DefineSyntax("return", Term, this, "ParseReturnNode", "TypeReturnNode");
 
-		DefineIntegerMethod(ns);
+		DefineIntegerMethod(NameSpace);
 		
 	}
 	
