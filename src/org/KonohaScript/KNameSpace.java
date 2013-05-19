@@ -114,7 +114,7 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	public ArrayList<KToken> Tokenize(String text, long uline) {
-		return new KTokenizer(this, text, uline).Tokenize();
+		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
 	static final String MacroPrefix = "@$";  // FIXME: use different symbol tables
@@ -228,20 +228,25 @@ public final class KNameSpace implements KonohaParserConst {
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
-//		if(UNode != null) {
-//			TypedNode TNode = TypedNode.Type(KGamma, UNode, null);
-//			TNode.Eval();
-//		}
+		while(UNode != null) {
+			KGamma Gamma = new KGamma(this);
+			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KClass.VoidType, 0);
+			if(TNode != null) {
+//				Builder = GetBuilder();
+				//TNode.Eval();
+			}
+			UNode = UNode.NextNode;
+		}
 	}
 }
 
-class KTokenizer implements KonohaParserConst {
+class KonohaTokenizer implements KonohaParserConst {
 	KNameSpace ns;
 	String SourceText;
 	long CurrentLine;
 	ArrayList<KToken> SourceList;
 
-	KTokenizer(KNameSpace ns, String text, long CurrentLine) {
+	KonohaTokenizer(KNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;

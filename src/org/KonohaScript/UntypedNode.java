@@ -382,7 +382,7 @@ public class UntypedNode implements KonohaParserConst {
 //					return NodeObject2;
 //				}
 				if(NodeObject instanceof UntypedNode) {
-					TypedNode NodeObject2 = KGamma.TypeCheckNode(Gamma, (UntypedNode)NodeObject, TypeInfo, TypeCheckPolicy);
+					TypedNode NodeObject2 = KGamma.TypeCheck(Gamma, (UntypedNode)NodeObject, TypeInfo, TypeCheckPolicy);
 					NodeList.set(Index, NodeObject2);
 					return NodeObject2;
 				}

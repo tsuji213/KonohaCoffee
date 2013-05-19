@@ -20,6 +20,12 @@ import org.KonohaScript.SyntaxTree.*;
 
 public class KGamma {
 	
+	KNameSpace GammaNameSpace; 
+	
+	KGamma(KNameSpace ns) {
+		GammaNameSpace = ns;
+	}
+	
 	KClass GetLocalType(String Symbol) {
 		return null;
 	}
@@ -29,9 +35,8 @@ public class KGamma {
 	}
 
 	
-	
-	public static TypedNode TypeNode(KGamma Gamma, UntypedNode Node, KClass ReqType) {
-		TypedNode TNode;
+	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode Node, KClass ReqType) {
+		TypedNode TNode = null;
 		try {
 			TNode = (TypedNode)Node.Syntax.TypeMethod.invoke(Node.Syntax.TypeObject, Gamma, Node, ReqType);
 		} catch (IllegalArgumentException e) {
@@ -52,30 +57,33 @@ public class KGamma {
 		}
 		return TNode;
 	}
-	
-	public static TypedNode TypeCheckNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
-		TypedNode TNode, TPrevNode = null;
-		KClass NodeTypeInfo = TypeInfo;
-		while(UNode != null) {
-			NodeTypeInfo = (UNode.NextNode != null) ? KClass.VoidType : TypeInfo;
-			TNode = TypeCheckEachNode(Gamma, TypeNode(Gamma, UNode, NodeTypeInfo), NodeTypeInfo, TypeCheckPolicy);
-			if(TPrevNode != null && TPrevNode != TNode) {
-				TPrevNode.LinkNode(TNode);
-			}
-			if(TNode.IsError()) {
-				break;
-			}
-			TPrevNode = TNode;
-			UNode = UNode.NextNode;
-		}
-		return TPrevNode.GetHeadNode();
-	}
 
-	public static TypedNode TypeCheckEachNode(KGamma Gamma, TypedNode Node, KClass ReqType, int TypeCheckPolicy) {
+	public static TypedNode TypeCheckEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
+		TypedNode Node = TypeEachNode(Gamma, UNode, TypeInfo);
 //		if(Node.TypeInfo == null) {
 //			
 //		}
 		return Node;
 	}
+	
+	public static TypedNode TypeCheck(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
+		TypedNode TPrevNode = null;
+		while(UNode != null) {
+			KClass CurrentTypeInfo = (UNode.NextNode != null) ? KClass.VoidType : TypeInfo;
+			TypedNode CurrentTypedNode = TypeCheckEachNode(Gamma, UNode, CurrentTypeInfo, TypeCheckPolicy);
+			if(TPrevNode == null) {
+				TPrevNode = CurrentTypedNode;
+			}
+			else {
+				TPrevNode.LinkNode(CurrentTypedNode);
+			}
+			if(CurrentTypedNode.IsError()) {
+				break;
+			}
+			UNode = UNode.NextNode;
+		}
+		return TPrevNode == null ? null : TPrevNode.GetHeadNode();
+	}
+
 
 }
