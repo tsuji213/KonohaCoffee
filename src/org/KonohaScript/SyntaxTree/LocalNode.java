@@ -7,10 +7,17 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 public class LocalNode extends TypedNode {
 	/* frame[$Index] (or TermToken->text) */
 	int ClassicStackIndex;
+	String FieldName;
 
 	public LocalNode(KClass TypeInfo, KToken SourceToken, int Index) {
 		super(TypeInfo, SourceToken);
 		this.ClassicStackIndex = Index;
+	}
+
+	public LocalNode(KClass TypeInfo, int Index, String FieldName) {
+		super(TypeInfo);
+		this.ClassicStackIndex = Index;
+		this.FieldName = FieldName;
 	}
 
 	@Override
