@@ -1,21 +1,17 @@
 package org.KonohaScript;
 
+import java.util.ArrayList;
 import java.lang.reflect.InvocationTargetException;
 import org.KonohaScript.SyntaxTree.*;
 
-//struct KGammaStack {
-//KGammaStackDecl *varItems;
-//size_t varsize;
-//size_t capacity;
-//size_t allocsize;  // set size if not allocated  (by default on stack)
-//} ;
-//
-//struct KGammaLocalData {
-//khalfflag_t  flag;   khalfflag_t cflag;
-//KClass   *thisClass;
-//kMethod  *currentWorkingMethod;
-//struct KGammaStack    localScope;
-//} ;
+class VarSet {
+	KClass TypeInfo;
+	String Name;
+	VarSet(KClass TypeInfo, String Name) {
+		this.TypeInfo = TypeInfo;
+		this.Name = Name;
+	}
+}
 
 public class KGamma {
 	
@@ -37,9 +33,25 @@ public class KGamma {
 		VarType = ns.KonohaContext.VarType;
 	}
 	
-	KClass GetLocalType(String Symbol) {
+	ArrayList<VarSet> LocalStackList = null;
+	
+	public void AppendLocalType(KClass TypeInfo, String Name) {
+		if(LocalStackList == null) {
+			LocalStackList = new ArrayList<VarSet>();
+		}
+		LocalStackList.add(new VarSet(TypeInfo, Name));
+	}
+	
+	public KClass GetLocalType(String Symbol) {
+		if(LocalStackList != null) {
+			for(int i = LocalStackList.size()-1; i >=0; i--) {
+				VarSet t = LocalStackList.get(i);
+				if(t.Name.equals(Symbol)) return t.TypeInfo;
+			}
+		}
 		return null;
 	}
+	
 	
 	int GetLocalIndex(String Symbol) {
 		return -1;
@@ -59,7 +71,6 @@ public class KGamma {
 //			System.err.println("Syntax" + UNode.Syntax);
 //			System.err.println("Syntax.TypeMethod" + UNode.Syntax.TypeMethod);
 //			System.err.println("Syntax.TypeObject" + UNode.Syntax.TypeObject);
-//			
 			Node = (TypedNode)UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
 		} 
 		catch (IllegalArgumentException e) {

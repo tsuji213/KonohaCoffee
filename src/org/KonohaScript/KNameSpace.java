@@ -30,6 +30,7 @@ import java.util.HashMap;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KNameSpace implements KonohaParserConst {
+
 	public Konoha KonohaContext;
 	KNameSpace ParentNameSpace;
 	ArrayList<KNameSpace> ImportedNameSpaceList;
@@ -117,23 +118,34 @@ public final class KNameSpace implements KonohaParserConst {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
-	static final String MacroPrefix = "@$";  // FIXME: use different symbol tables
+	static final String MacroPrefix     = "@$";  // FIXME: use different symbol tables
+	static final String TopLevelPrefix  = "#";
 	
-	KFunc GetDefinedMacroFunc(String Symbol) {
-		if(DefinedSymbolTable != null) {
-			Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
-			return (object instanceof KFunc) ? (KFunc)object : null;
-		}
-		return null;
-	}
+//	KFunc GetDefinedMacroFunc(String Symbol) {
+//		if(DefinedSymbolTable != null) {
+//			Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
+//			return (object instanceof KFunc) ? (KFunc)object : null;
+//		}
+//		return null;
+//	}
 
-	KFunc GetMacroFunc(String Symbol) {		
+	KFunc GetMacro(String Symbol, boolean TopLevel) {
+		if(TopLevel) {
+			Object o = GetSymbol(MacroPrefix + TopLevelPrefix + Symbol);
+			if(o != null && o instanceof KFunc) {
+				return (KFunc)o;
+			}
+		}
 		Object o = GetSymbol(MacroPrefix + Symbol);
 		return (o instanceof KFunc) ? (KFunc) o : null;
 	}
 
-	public void AddMacroFunc(String Symbol, Object Callee, String MethodName) {
+	public void DefineMacro(String Symbol, Object Callee, String MethodName) {
 		DefineSymbol(MacroPrefix + Symbol, new KFunc(Callee, MethodName, null));
+	}
+
+	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
+		DefineSymbol(MacroPrefix + TopLevelPrefix + Symbol, new KFunc(Callee, MethodName, null));
 	}
 
 	HashMap<String, Object> DefinedSymbolTable;
@@ -163,20 +175,56 @@ public final class KNameSpace implements KonohaParserConst {
 		return (o instanceof KSyntax) ? (KSyntax) o : null;
 	}
 
-	public void AddSyntax(KSyntax Syntax) {
+	public KSyntax GetSyntax(String symbol, boolean TopLevel) {
+		if(TopLevel) {
+			Object o = GetSymbol(TopLevelPrefix + symbol);
+			if(o != null && o instanceof KSyntax) return (KSyntax)o;
+		}
+		Object o = GetSymbol(symbol);
+		return (o instanceof KSyntax) ? (KSyntax) o : null;
+	}
+
+	public void AddSyntax(KSyntax Syntax, boolean TopLevel) {
 		Syntax.PackageNameSpace = this;
-		Syntax.ParentSyntax = GetSyntax(Syntax.SyntaxName);
-		DefineSymbol(Syntax.SyntaxName, Syntax);
+		Syntax.ParentSyntax = GetSyntax(Syntax.SyntaxName, TopLevel);
+		String Key = (TopLevel) ? TopLevelPrefix + Syntax.SyntaxName : Syntax.SyntaxName;
+		DefineSymbol(Key, Syntax);
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+MethodName, "Type"+MethodName));
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), false);
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+ParseMethod, "Type"+TypeMethod));
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
 	}
 
+	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
+	}
+
+	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
+	}
+	
+	// Global Object
+	public KObject CreateGlobalObject(int ClassFlag, String ShortName) {
+		KClass NewClass = new KClass(KonohaContext, null, ClassFlag, ShortName, null);
+		KObject GlobalObject = new KObject(NewClass);
+		NewClass.DefaultNullValue = GlobalObject;
+		return GlobalObject;
+	}
+	
+	public KObject GetGlobalObject() {
+		Object GlobalObject = GetDefinedSymbol("global");
+		if(GlobalObject == null || !(GlobalObject instanceof KObject)) {
+			GlobalObject = CreateGlobalObject(SingletonClass, "*GlobalType*");
+			DefineSymbol("global", GlobalObject);
+		}
+		return (KObject)GlobalObject;
+	}
+
+	
 	public void ImportNameSpace(KNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
 			ImportedNameSpaceList = new ArrayList<KNameSpace>();

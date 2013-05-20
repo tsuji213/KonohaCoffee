@@ -38,7 +38,7 @@ public class KClass {
 	KClass SearchSimilarClass;
 	ArrayList<KMethod> ClassMethodList;
 	KClass SearchSuperMethodClass;
-	Object DefaultNullValue;
+	public Object DefaultNullValue;
 	Object LocalSpec;
 
 	// public ArrayList<String> FieldNames;
@@ -46,8 +46,7 @@ public class KClass {
 
 	public static final ArrayList<KMethod> EmptyMethodList = new ArrayList<KMethod>();
 
-	public KClass(Konoha KonohaContext, KPackage Package, int ClassFlag,
-			String ClassName, Object Spec) {
+	public KClass(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
 		this.ClassFlag = ClassFlag;
 		this.Package = Package;
