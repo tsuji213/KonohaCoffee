@@ -70,18 +70,9 @@ public final class KSyntax implements KonohaParserConst {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
 		this.ParseObject = Callee == null ? this : Callee;
-		if(ParseMethod != null) {
-			this.ParseMethod  = KFunc.LookupMethod(Callee, ParseMethod);
-		}
-		else {
-			this.ParseMethod  = null;
-		}
-		if(TypeMethod != null) {
-			this.TypeMethod  = KFunc.LookupMethod(Callee, TypeMethod);
-		}
-		else {
-			this.TypeMethod  = null;
-		}
+		this.TypeObject = this.ParseObject;
+		this.ParseMethod  = KFunc.LookupMethod(this.ParseObject, ParseMethod);
+		this.TypeMethod  = KFunc.LookupMethod(this.TypeObject, TypeMethod);
 	}
 	
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
@@ -116,6 +107,8 @@ public final class KSyntax implements KonohaParserConst {
 		}
 		return -1;
 	}
+	
+
 	
 }
 
@@ -159,8 +152,7 @@ class CommonSyntax {
 		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, Node.KeyToken, Gamma.GetLocalIndex(Node.KeyToken.ParsedText));
 		}
-		return new ErrorNode(ReqType, Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
+		return Gamma.NewErrorNode(Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
 	}
-
 	
 }

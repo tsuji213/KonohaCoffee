@@ -5,47 +5,11 @@ import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ConstNode extends TypedNode {
-	public Object ConstObject;
-	public long ConstValue;
+	public Object ConstValue;
 
-	public ConstNode(KClass TypeInfo, KToken SourceToken, Object ConstObject) {
+	public ConstNode(KClass TypeInfo, KToken SourceToken, Object ConstValue) {
 		super(TypeInfo, SourceToken);
-		init(ConstObject);
-	}
-
-	public ConstNode(KClass TypeInfo, long ConstValue) {
-		super(TypeInfo);
 		this.ConstValue = ConstValue;
-	}
-
-	public ConstNode(KClass TypeInfo, int ConstValue) {
-		super(TypeInfo);
-		this.ConstValue = ConstValue;
-	}
-
-	public ConstNode(KClass TypeInfo, float ConstValue) {
-		super(TypeInfo);
-		this.ConstValue = Double.doubleToLongBits(ConstValue);
-	}
-
-	public ConstNode(KClass TypeInfo, boolean ConstValue) {
-		super(TypeInfo);
-		this.ConstValue = ConstValue ? 1 : 0;
-	}
-
-	void init(Object Value) {
-		this.ConstObject = null;
-		if (Value instanceof Integer) {
-			this.ConstValue = ((Integer) Value).intValue();
-		} else if (Value instanceof Double) {
-			double val = ((Double) Value).doubleValue();
-			this.ConstValue = Double.doubleToLongBits(val);
-		} else if (Value instanceof Boolean) {
-			boolean val = ((Boolean) Value).booleanValue();
-			this.ConstValue = val ? 1 : 0;
-		} else {
-			this.ConstObject = Value;
-		}
 	}
 
 	@Override

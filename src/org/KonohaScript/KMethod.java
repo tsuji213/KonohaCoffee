@@ -49,6 +49,16 @@ public class KMethod implements KonohaParserConst {
 		this.MethodRef = MethodRef;	
 	}
 	
+	public final KClass GetReturnType(KClass BaseType) {
+		KClass ReturnType = Param.Types[0];
+		return ReturnType;
+	}
+
+	public final KClass GetParamType(KClass BaseType, int ParamIdx) {
+		KClass ParamType = Param.Types[ParamIdx+Param.ReturnSize];
+		return ParamType;
+	}
+
 	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
 		if(MethodName.equals(this.MethodName)) {
 			if(Param.GetParamSize() == ParamSize) {
@@ -58,15 +68,12 @@ public class KMethod implements KonohaParserConst {
 		return false;
 	}
 	
+
+	
+	
 	boolean IsStaticInvocation() {
 		return Modifier.isStatic(MethodRef.getModifiers());
 	}
-
-//	static {
-//		KClass IntClass.AddMethod(flag, "+", Param);
-//		KParam Param = KParam.ParseOf(ns, "int int x, int y");
-//		IntClass.Add(new KMethod(flag, IntClass, "+", Param, KFunc.LookupMethod(this, MethodName));
-//	}
 
 	public Object Eval(Object[] ParamData) {
 		int ParamSize = Param.GetParamSize();
@@ -101,6 +108,8 @@ public class KMethod implements KonohaParserConst {
 		KonohaDebug.P("ParamSize: " + ParamSize);
 		return null;
 	}
+	
+	
 	
 }
 

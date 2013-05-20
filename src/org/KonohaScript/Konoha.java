@@ -202,13 +202,21 @@ public class Konoha implements KonohaParserConst {
 
 	public final KClass VoidType;
 	public final KClass BooleanType;
+	public final KClass IntType;
+	public final KClass StringType;
+	public final KClass VarType;
 	
 	public Konoha(MiniKonoha defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		RootNameSpace = new KNameSpace(this, null);
+		
 		VoidType = RootNameSpace.LookupTypeInfo(Void.class);
 		BooleanType = RootNameSpace.LookupTypeInfo(Boolean.class);
+		IntType = RootNameSpace.LookupTypeInfo(Integer.class);
+		StringType = RootNameSpace.LookupTypeInfo(String.class);
+		VarType = RootNameSpace.LookupTypeInfo(Object.class);
+		
 		defaultSyntax.LoadDefaultSyntax(RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, RootNameSpace);
 	}
@@ -240,14 +248,15 @@ public class Konoha implements KonohaParserConst {
 	}
 
 	public static void main(String[] argc) {
-		MiniKonoha Grammar = new MiniKonoha();
-		Konoha KonohaContext = new Konoha(Grammar);
+		MiniKonoha MiniKonohaGrammar = new MiniKonoha();
+		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
 		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
-		KonohaContext.Eval("a == b + C; D + e == F", 2);
-		KonohaContext.Eval(
-			"int fibo(int n) {\n" +
-			"\tif(n < 3) return 1;\n"+
-			"\treturn fibo(n-1)+fibo(n-2);\n"+
-			"}", 1000);
+		//KonohaContext.Eval("a == b + C; D + e == F", 2);
+		KonohaContext.Eval("1+2*3", 3333);
+//		KonohaContext.Eval(
+//			"int fibo(int n) {\n" +
+//			"\tif(n < 3) return 1;\n"+
+//			"\treturn fibo(n-1)+fibo(n-2);\n"+
+//			"}", 1000);
 	}
 }

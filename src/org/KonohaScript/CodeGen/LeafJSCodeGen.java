@@ -2,7 +2,6 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
@@ -48,10 +47,6 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Program.add(Program);
 	}
 
-	boolean IsUnboxedType(KClass Class) {
-		return IsInt(Class) || IsFloat(Class) || IsBoolean(Class);
-	}
-
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		Visit(Block);
@@ -65,7 +60,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	public boolean Visit(TypedNode Node) {
 		return Node.Evaluate(this);
 	}
-	
+
 	private String PopAndJoin(int n, String delim, String left, String right){
 		StringBuilder builder = new StringBuilder();
 		if(left != null){
@@ -98,34 +93,9 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
-	private static boolean IsFloat(KClass Type) {
-		return false;
-	}
-
-	private static boolean IsInt(KClass Type) {
-		return Type.equals(KClass.IntType);
-	}
-
-	private static boolean IsBoolean(KClass Type) {
-		return Type.equals(KClass.BooleanType);
-	}
-
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		KClass Type = Node.TypeInfo;
-		if (IsUnboxedType(Type)) {
-			if (IsInt(Type)) {
-				push(Integer.toString((int) Node.ConstValue));
-			} else if (IsFloat(Type)) {
-				push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
-			} else if (IsBoolean(Type)) {
-				push(Boolean.toString(Node.ConstValue != 0));
-			}
-		} else if(Node.ConstObject != null){
-			push(Node.ConstObject.toString());
-		} else {
-			push("null");
-		}
+		push(Node.ConstValue.toString());
 		return true;
 	}
 
@@ -171,7 +141,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	public boolean ExitField(FieldNode Node) {
 		String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
-		push("");
+		push(Expr);
 		return true;
 
 	}

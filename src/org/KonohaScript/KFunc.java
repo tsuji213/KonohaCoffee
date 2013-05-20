@@ -34,13 +34,16 @@ public final class KFunc {
 	KFunc  prev;
 	
 	static Method LookupMethod(Object Callee, String MethodName) {
-		Method[] methods = Callee.getClass().getMethods();
-		for(int i = 0; i < methods.length; i++) {
-			if(MethodName.equals(methods[i].getName())) {
-				return methods[i];
+		if(MethodName != null) {
+//			KonohaDebug.P("looking up method : " + Callee.getClass().getSimpleName() + "." + MethodName);
+			Method[] methods = Callee.getClass().getMethods();
+			for(int i = 0; i < methods.length; i++) {
+				if(MethodName.equals(methods[i].getName())) {
+					return methods[i];
+				}
 			}
+			KonohaDebug.P("method not found: " + Callee.getClass().getSimpleName() + "." + MethodName);
 		}
-		KonohaDebug.P("method not found: " + Callee.getClass().getSimpleName() + "." + MethodName);
 		return null; /*throw new KonohaParserException("method not found: " + callee.getClass().getName() + "." + methodName);*/
 	}
 

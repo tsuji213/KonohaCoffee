@@ -114,7 +114,7 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 
 	public ArrayList<KToken> Tokenize(String text, long uline) {
-		return new KTokenizer(this, text, uline).Tokenize();
+		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
 	static final String MacroPrefix = "@$";  // FIXME: use different symbol tables
@@ -169,8 +169,12 @@ public final class KNameSpace implements KonohaParserConst {
 		DefineSymbol(Syntax.SyntaxName, Syntax);
 	}
 
+	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+MethodName, "Type"+MethodName));
+	}
+
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, ParseMethod, TypeMethod));
+		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse"+ParseMethod, "Type"+TypeMethod));
 	}
 
 	public void ImportNameSpace(KNameSpace ns) {
@@ -207,7 +211,7 @@ public final class KNameSpace implements KonohaParserConst {
 		return "(eval:" + (int) uline + ")";
 	}
 
-	public void Message(int Level, KToken Token, String Message) {
+	public String Message(int Level, KToken Token, String Message) {
 		if (!Token.IsErrorToken()) {
 			if (Level == Error) {
 				Message = "(error) " + GetSourcePosition(Token.uline) + " " + Message;
@@ -218,7 +222,9 @@ public final class KNameSpace implements KonohaParserConst {
 				Message = "(info) " + GetSourcePosition(Token.uline) + " " + Message;
 			}
 			System.out.println(Message);
+			return Message;
 		}
+		return Token.GetErrorMessage();
 	}
 		
 	public void Eval(String text, long uline) {
@@ -226,22 +232,27 @@ public final class KNameSpace implements KonohaParserConst {
 		ArrayList<KToken> BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
-		UntypedNode UNode = UntypedNode.ParseNewNode2(this, null, BufferList, next, BufferList.size(), AllowEmpty);
+		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
-//		if(UNode != null) {
-//			TypedNode TNode = TypedNode.Type(KGamma, UNode, null);
-//			TNode.Eval();
-//		}
+		while(UNode != null) {
+			KGamma Gamma = new KGamma(this);
+			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KonohaContext.VoidType, 0);
+			if(TNode != null) {
+//				Builder = GetBuilder();
+				//TNode.Eval();
+			}
+			UNode = UNode.NextNode;
+		}
 	}
 }
 
-class KTokenizer implements KonohaParserConst {
+class KonohaTokenizer implements KonohaParserConst {
 	KNameSpace ns;
 	String SourceText;
 	long CurrentLine;
 	ArrayList<KToken> SourceList;
 
-	KTokenizer(KNameSpace ns, String text, long CurrentLine) {
+	KonohaTokenizer(KNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;

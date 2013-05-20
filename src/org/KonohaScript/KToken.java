@@ -43,27 +43,29 @@ public final class KToken {
 		this.ParsedText = text;
 		this.uline = uline;
 	}
+
+	public String toString() { return ParsedText + "@" + (int)uline; }
 	
 	final static int ErrorTokenFlag = 1;
 	final static int GroupTokenFlag = (1 << 1);
-	int flag;
+	int TokenFlag;
 
 	public boolean IsErrorToken() {
-		return ((flag & ErrorTokenFlag) == ErrorTokenFlag);
+		return ((TokenFlag & ErrorTokenFlag) == ErrorTokenFlag);
 	}
 
 	public boolean IsGroupToken() {
-		return ((flag & GroupTokenFlag) == GroupTokenFlag);
+		return ((TokenFlag & GroupTokenFlag) == GroupTokenFlag);
 	}
-
 
 	public KSyntax ResolvedSyntax;
 	Object ResolvedObject;
 
-	public void SetGroup(KSyntax syntax, ArrayList<KToken> group) {
-		ResolvedSyntax = syntax;
-		ResolvedObject = group;
-		flag |= GroupTokenFlag;
+	public void SetGroup(KSyntax Syntax, ArrayList<KToken> GroupList) {
+		assert(Syntax != null);
+		ResolvedSyntax = Syntax;
+		ResolvedObject = GroupList;
+		TokenFlag |= GroupTokenFlag;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -74,11 +76,16 @@ public final class KToken {
 
 	public String SetErrorMessage(String msg) {
 		ResolvedSyntax = KSyntax.ErrorSyntax;
-		flag |= ErrorTokenFlag;
+		TokenFlag |= ErrorTokenFlag;
 		ResolvedObject = msg;
 		return msg;
 	}
 
+	public String GetErrorMessage() {
+		return (String)ResolvedObject;
+	}
+
+	
 	// Debug
 	private final static String Tab = "  ";
 	void Dump(int Level) {
