@@ -424,13 +424,23 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterDefineClass(DefineClassNode Node) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public boolean ExitDefineClass(DefineClassNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		String Exprs = "";
+		int Size = this.Program.size() - this.CurrentProgramSize;
+		for (int i = 0; i < Size; i = i + 1) {
+			String Expr = this.pop();
+			Exprs = Expr + ";" + Exprs;
+		}
+		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
+		if (Node.TypeInfo.SearchSuperMethodClass != null) {
+			Value = Value + Node.TypeInfo.ShortClassName + " ";
+		}
+		this.push(Value + "{" + Exprs + "}");
+
+		return true;
+
 	}
 }

@@ -37,7 +37,7 @@ public class KClass {
 	KParam ClassParam;
 	KClass SearchSimilarClass;
 	ArrayList<KMethod> ClassMethodList;
-	KClass SearchSuperMethodClass;
+	public KClass SearchSuperMethodClass; // FIXME(ide) where is superclass info?
 	public Object DefaultNullValue;
 	Object LocalSpec;
 
@@ -53,7 +53,7 @@ public class KClass {
 		this.ShortClassName = ClassName;
 		this.SuperClass = null;
 		this.BaseClass = this;
-		this.ClassMethodList = EmptyMethodList;
+		this.ClassMethodList = KClass.EmptyMethodList;
 		this.LocalSpec = Spec;
 	}
 
@@ -99,10 +99,11 @@ public class KClass {
 
 	int CreateMethods(String MethodName) {
 		int Count = 0;
-		Method[] Methods = HostedClassInfo.getMethods();
+		Method[] Methods = this.HostedClassInfo.getMethods();
 		for (int i = 0; i < Methods.length; i++) {
 			if (MethodName.equals(Methods[i].getName())) {
-				ConvertMethod(KonohaContext, Methods[i]);
+				KClass.ConvertMethod(
+						this.KonohaContext, Methods[i]);
 				Count = Count + 1;
 			}
 		}
@@ -110,45 +111,50 @@ public class KClass {
 	}
 
 	public boolean Accept(KClass TypeInfo) {
-		if (this == TypeInfo)
+		if (this == TypeInfo) {
 			return true;
+		}
 		return false;
 	}
 
 	public void AddMethod(KMethod Method) {
-		if (ClassMethodList == EmptyMethodList) {
-			ClassMethodList = new ArrayList<KMethod>();
+		if (this.ClassMethodList == KClass.EmptyMethodList) {
+			this.ClassMethodList = new ArrayList<KMethod>();
 		}
-		ClassMethodList.add(Method);
+		this.ClassMethodList.add(Method);
 	}
 
 	public void DefineMethod(int MethodFlag, String MethodName, KParam Param,
 			Object Callee, String LocalName) {
 		KMethod Method = new KMethod(MethodFlag, this, MethodName, Param,
-				KFunc.LookupMethod(Callee, LocalName));
-		if (ClassMethodList == EmptyMethodList) {
-			ClassMethodList = new ArrayList<KMethod>();
+				KFunc.LookupMethod(
+						Callee, LocalName));
+		if (this.ClassMethodList == KClass.EmptyMethodList) {
+			this.ClassMethodList = new ArrayList<KMethod>();
 		}
-		ClassMethodList.add(Method);
+		this.ClassMethodList.add(Method);
 	}
 
 	public KMethod LookupMethod(String MethodName, int ParamSize) {
-		for (int i = 0; i < ClassMethodList.size(); i++) {
-			KMethod Method = ClassMethodList.get(i);
-			if (Method.Match(MethodName, ParamSize)) {
+		for (int i = 0; i < this.ClassMethodList.size(); i++) {
+			KMethod Method = this.ClassMethodList.get(i);
+			if (Method.Match(
+					MethodName, ParamSize)) {
 				return Method;
 			}
 		}
-		if (SearchSuperMethodClass != null) {
-			KMethod Method = SearchSuperMethodClass.LookupMethod(MethodName,
+		if (this.SearchSuperMethodClass != null) {
+			KMethod Method = this.SearchSuperMethodClass.LookupMethod(
+					MethodName,
 					ParamSize);
 			if (Method != null) {
 				return Method;
 			}
 		}
-		if (HostedClassInfo != null) {
-			if (CreateMethods(MethodName) > 0) {
-				return LookupMethod(MethodName, ParamSize);
+		if (this.HostedClassInfo != null) {
+			if (this.CreateMethods(MethodName) > 0) {
+				return this.LookupMethod(
+						MethodName, ParamSize);
 			}
 		}
 		return null;
