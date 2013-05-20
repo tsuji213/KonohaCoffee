@@ -9,7 +9,7 @@ public class ConstNode extends TypedNode {
 
 	public ConstNode(KClass TypeInfo, KToken SourceToken, Object ConstValue) {
 		super(TypeInfo, SourceToken);
-		init(ConstObject);
+		this.ConstValue = ConstValue;
 	}
 
 	@Override
