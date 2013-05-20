@@ -30,12 +30,12 @@ import java.lang.reflect.Modifier;
 
 public class KMethod implements KonohaParserConst {
 
-	int MethodFlag;
+	public int MethodFlag;
 	public KClass ClassInfo;
 	public String MethodName;
 	// int MethodSymbol;
 	// int CanonicalSymbol;
-	KParam Param;
+	public KParam Param;
 	Method MethodRef;
 
 	// String Source;
@@ -60,10 +60,7 @@ public class KMethod implements KonohaParserConst {
 		return ParamType;
 	}
 
-	public boolean Match(String MethodName, int ParamSize /*
-														 * , int DataSize,
-														 * KClass[] ParamData
-														 */) {
+	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
 		if (MethodName.equals(this.MethodName)) {
 			if (Param.GetParamSize() == ParamSize) {
 				return true;

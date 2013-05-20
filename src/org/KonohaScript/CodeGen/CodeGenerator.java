@@ -6,8 +6,12 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-class CompiledMethod {
+class CompiledMethod extends KMethod {
 	public Object CompiledCode;
+
+	public CompiledMethod(KMethod MethodInfo) {
+		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo, MethodInfo.MethodName, MethodInfo.Param, null);
+	}
 
 	Object Invoke(Object[] Args) {
 		return null;
@@ -16,9 +20,11 @@ class CompiledMethod {
 
 public abstract class CodeGenerator {
 	ArrayList<Local> LocalVals;
+	KMethod MethodInfo;
 
-	CodeGenerator() {
+	CodeGenerator(KMethod MethodInfo) {
 		this.LocalVals = new ArrayList<Local>();
+		this.MethodInfo = MethodInfo;
 	}
 
 	CompiledMethod Compile(TypedNode Block) {
@@ -55,10 +61,18 @@ public abstract class CodeGenerator {
 		return AddLocal(Type, Name);
 	}
 
-	public void Prepare(KClass ReturnType, KMethod Method, ArrayList<Local> ParamTypes) {
+	public void Prepare(KMethod Method) {
+		this.LocalVals.clear();
+		this.MethodInfo = Method;
+		this.AddLocal(Method.ClassInfo, "this");
 	}
 
-	public void Prepare(KClass ReturnType, KMethod Method) {
+	public void Prepare(KMethod Method, ArrayList<Local> params) {
+		this.Prepare(Method);
+		for (int i = 0; i < params.size(); i++) {
+			Local local = params.get(i);
+			this.AddLocal(local.TypeInfo, local.Name);
+		}
 	}
 
 }

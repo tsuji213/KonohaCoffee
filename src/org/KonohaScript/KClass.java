@@ -41,9 +41,6 @@ public class KClass {
 	public Object DefaultNullValue;
 	Object LocalSpec;
 
-	// public ArrayList<String> FieldNames;
-	// public ArrayList<KClass> FieldTypes;
-
 	public static final ArrayList<KMethod> EmptyMethodList = new ArrayList<KMethod>();
 
 	public KClass(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
@@ -65,8 +62,7 @@ public class KClass {
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
 		if (ClassInfo != Object.class) {
-			this.SuperClass = KonohaContext.LookupTypeInfo(ClassInfo
-					.getSuperclass());
+			this.SuperClass = KonohaContext.LookupTypeInfo(ClassInfo.getSuperclass());
 		}
 	}
 
@@ -102,8 +98,7 @@ public class KClass {
 		Method[] Methods = this.HostedClassInfo.getMethods();
 		for (int i = 0; i < Methods.length; i++) {
 			if (MethodName.equals(Methods[i].getName())) {
-				KClass.ConvertMethod(
-						this.KonohaContext, Methods[i]);
+				KClass.ConvertMethod(this.KonohaContext, Methods[i]);
 				Count = Count + 1;
 			}
 		}
@@ -127,8 +122,7 @@ public class KClass {
 	public void DefineMethod(int MethodFlag, String MethodName, KParam Param,
 			Object Callee, String LocalName) {
 		KMethod Method = new KMethod(MethodFlag, this, MethodName, Param,
-				KFunc.LookupMethod(
-						Callee, LocalName));
+				KFunc.LookupMethod(Callee, LocalName));
 		if (this.ClassMethodList == KClass.EmptyMethodList) {
 			this.ClassMethodList = new ArrayList<KMethod>();
 		}
@@ -138,23 +132,19 @@ public class KClass {
 	public KMethod LookupMethod(String MethodName, int ParamSize) {
 		for (int i = 0; i < this.ClassMethodList.size(); i++) {
 			KMethod Method = this.ClassMethodList.get(i);
-			if (Method.Match(
-					MethodName, ParamSize)) {
+			if (Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
 		}
 		if (this.SearchSuperMethodClass != null) {
-			KMethod Method = this.SearchSuperMethodClass.LookupMethod(
-					MethodName,
-					ParamSize);
+			KMethod Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
 			if (Method != null) {
 				return Method;
 			}
 		}
 		if (this.HostedClassInfo != null) {
 			if (this.CreateMethods(MethodName) > 0) {
-				return this.LookupMethod(
-						MethodName, ParamSize);
+				return this.LookupMethod(MethodName, ParamSize);
 			}
 		}
 		return null;
