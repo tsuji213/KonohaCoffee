@@ -28,24 +28,34 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import org.KonohaScript.SyntaxTree.*;
+import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KSyntax implements KonohaParserConst {
 
-	public KNameSpace     PackageNameSpace;
-	public String         SyntaxName;
-	public String toString() { return SyntaxName; }
-	int                   SyntaxFlag;
-	
+	public KNameSpace PackageNameSpace;
+	public String SyntaxName;
+
+	@Override
+	public String toString() {
+		return SyntaxName;
+	}
+
+	int SyntaxFlag;
+
 	public boolean IsBeginTerm() {
 		return ((SyntaxFlag & Term) == Term);
 	}
+
 	public boolean IsBinaryOperator() {
 		return ((SyntaxFlag & BinaryOperator) == BinaryOperator);
 	}
+
 	public boolean IsSuffixOperator() {
 		return ((SyntaxFlag & SuffixOperator) == SuffixOperator);
 	}
+
 	public boolean IsDelim() {
 		return ((SyntaxFlag & Precedence_CStyleDelim) == Precedence_CStyleDelim);
 	}
@@ -53,43 +63,48 @@ public final class KSyntax implements KonohaParserConst {
 	public final static boolean IsFlag(int flag, int flag2) {
 		return ((flag & flag2) == flag2);
 	}
+
 	public boolean IsLeftJoin(KSyntax Right) {
 		int left = this.SyntaxFlag >> PrecedenceShift, right = Right.SyntaxFlag >> PrecedenceShift;
-		//System.err.printf("left=%d,%s, right=%d,%s\n", left, this.SyntaxName, right, Right.SyntaxName);
+		// System.err.printf("left=%d,%s, right=%d,%s\n", left, this.SyntaxName,
+		// right, Right.SyntaxName);
 		return (left < right || (left == right && IsFlag(this.SyntaxFlag, LeftJoin) && IsFlag(Right.SyntaxFlag, LeftJoin)));
 	}
 
-	public Object  ParseObject;
-	public Method  ParseMethod;
-	public Object  TypeObject;
-	public Method  TypeMethod;
+	public Object ParseObject;
+	public Method ParseMethod;
+	public Object TypeObject;
+	public Method TypeMethod;
 	public KSyntax ParentSyntax = null;
-	//KSyntax Pop() { return ParentSyntax; }
-	
+
+	// KSyntax Pop() { return ParentSyntax; }
+
 	public KSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
 		this.ParseObject = Callee == null ? this : Callee;
 		this.TypeObject = this.ParseObject;
-		this.ParseMethod  = KFunc.LookupMethod(this.ParseObject, ParseMethod);
-		this.TypeMethod  = KFunc.LookupMethod(this.TypeObject, TypeMethod);
+		this.ParseMethod = KFunc.LookupMethod(this.ParseObject, ParseMethod);
+		this.TypeMethod = KFunc.LookupMethod(this.TypeObject, TypeMethod);
 	}
-	
+
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
-	public final static KSyntax ErrorSyntax  = new KSyntax("$Error",  Precedence_Error, baseSyntax, "ParseErrorNode", null);
+	public final static KSyntax ErrorSyntax = new KSyntax("$Error", Precedence_Error, baseSyntax, "ParseErrorNode", null);
 	public final static KSyntax IndentSyntax = new KSyntax("$Indent", Precedence_CStyleDelim, baseSyntax, "ParseIndent", null);
-	public final static KSyntax EmptySyntax  = new KSyntax("$Empty",  Precedence_Error, baseSyntax, "ParseValue", null);
-	public final static KSyntax TypeSyntax   = new KSyntax("$Type",   Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
-	public final static KSyntax ConstSyntax  = new KSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KSyntax EmptySyntax = new KSyntax("$Empty", Precedence_Error, baseSyntax, "ParseValue", null);
+	public final static KSyntax TypeSyntax = new KSyntax("$Type", Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
+	public final static KSyntax ConstSyntax = new KSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 	public final static KSyntax MemberSyntax = new KSyntax("$Member", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 	public final static KSyntax ApplyMethodSyntax = new KSyntax("$ApplyMethod", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 
-	public boolean IsError() { return this == ErrorSyntax; }	
-	
+	public boolean IsError() {
+		return this == ErrorSyntax;
+	}
+
 	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		try {
 			System.err.println("invoking.." + ParseMethod);
-			Integer NextId = (Integer)ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
+			Integer NextId = (Integer) ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -107,33 +122,31 @@ public final class KSyntax implements KonohaParserConst {
 		}
 		return -1;
 	}
-	
 
-	
 }
 
 class CommonSyntax {
-	
+
 	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
-//		KToken token = tokens.get(OpIdx);
+		// KToken token = tokens.get(OpIdx);
 		node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
-	
+
 	public TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
 		return null;
 	}
 
 	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
-////		KToken token = tokens.get(OpIdx);
-//		node.Syntax = KSyntax.ErrorSyntax;
+		// // KToken token = tokens.get(OpIdx);
+		// node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
 	public int ParseTypeStatement(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
-////	KToken token = tokens.get(OpIdx);
-//	node.Syntax = KSyntax.ErrorSyntax;
-	return EndIdx;
+		// // KToken token = tokens.get(OpIdx);
+		// node.Syntax = KSyntax.ErrorSyntax;
+		return EndIdx;
 	}
 
 	public int ParseValue(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
@@ -149,10 +162,9 @@ class CommonSyntax {
 
 	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode Node, KClass ReqType) {
 		KClass TypeInfo = Gamma.GetLocalType(Node.KeyToken.ParsedText);
-		if(TypeInfo != null) {
-			return new LocalNode(TypeInfo, Node.KeyToken, Gamma.GetLocalIndex(Node.KeyToken.ParsedText));
+		if (TypeInfo != null) {
+			return new LocalNode(TypeInfo, Node.KeyToken, Node.KeyToken.ParsedText);
 		}
 		return Gamma.NewErrorNode(Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);
 	}
-	
 }

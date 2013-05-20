@@ -280,7 +280,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		TypeInfo = Gamma.GetLocalType(UNode.KeyToken.ParsedText);
 		if(TypeInfo != null) {
-			return new LocalNode(TypeInfo, UNode.KeyToken, -1);
+			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
 		}
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}

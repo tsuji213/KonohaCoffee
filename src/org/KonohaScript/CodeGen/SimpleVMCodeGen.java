@@ -3,6 +3,7 @@ package org.KonohaScript.CodeGen;
 import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
+import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
@@ -31,12 +32,16 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	ArrayList<String> Program;
-	private int CurrentProgramSize;
+	ArrayList<Integer> CurrentProgramSize;
+	KClass ReturnType;
+	KMethod MethodInfo;
 
 	public SimpleVMCodeGen() {
 		super();
 		this.Program = new ArrayList<String>();
-		this.CurrentProgramSize = 0;
+		this.CurrentProgramSize = new ArrayList<Integer>();
+		this.ReturnType = null;
+		this.MethodInfo = null;
 	}
 
 	private String pop() {
@@ -47,8 +52,29 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Program.add(Program);
 	}
 
-	boolean IsUnboxedType(KClass Class) {
-		return false; // Node.TypeInfo
+	private int PopProgramSize() {
+		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
+	}
+
+	private void PushProgramSize() {
+		this.CurrentProgramSize.add(this.Program.size());
+	}
+
+	@Override
+	public void Prepare(KClass ReturnType, KMethod Method) {
+		this.LocalVals.clear();
+		this.ReturnType = ReturnType;
+		this.MethodInfo = Method;
+		this.AddLocal(Method.ClassInfo, "this");
+	}
+
+	@Override
+	public void Prepare(KClass ReturnType, KMethod Method, ArrayList<Local> params) {
+		this.Prepare(ReturnType, Method);
+		for (int i = 0; i < params.size(); i++) {
+			Local local = params.get(i);
+			this.AddLocal(local.TypeInfo, local.Name);
+		}
 	}
 
 	@Override
@@ -56,7 +82,23 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod();
 		assert (this.Program.size() == 1);
-		Mtd.CompiledCode = this.Program.remove(0);
+		String Prog = this.Program.remove(0);
+		if (this.ReturnType != null) {
+			Local thisNode = this.FindLocalVariable("this");
+			String Signature = this.ReturnType.ShortClassName + " " +
+					thisNode.TypeInfo.ShortClassName + "." +
+					this.MethodInfo.MethodName;
+			String Param = "";
+			for (int i = 1; i < this.LocalVals.size(); i++) {
+				Local local = this.GetLocalVariableByIndex(i);
+				if (i != 1) {
+					Param = Param + ", ";
+				}
+				Param = Param + local.TypeInfo.ShortClassName + " " + local.Name;
+			}
+			Prog = Signature + "(" + Param + ")" + "{\n" + Prog + "\n}";
+		}
+		Mtd.CompiledCode = Prog;
 		return Mtd;
 	}
 
@@ -80,32 +122,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
-	// private static boolean IsFloat(KClass Type) {
-	// return false;
-	// }
-	//
-	// private static boolean IsInt(KClass Type) {
-	// return false;
-	// }
-	//
-	// private static boolean IsBoolean(KClass Type) {
-	// return false;
-	// }
-
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		// KClass Type = Node.TypeInfo;
-		// if (IsUnboxedType(Type)) {
-		// if (IsInt(Type)) {
-		// push(Integer.toString((int) Node.ConstValue));
-		// } else if (IsFloat(Type)) {
-		// push(Double.toString(Double.longBitsToDouble(Node.ConstValue)));
-		// } else if (IsBoolean(Type)) {
-		// push(Boolean.toString(Node.ConstValue == 0));
-		// }
-		// } else {
 		this.push(Node.ConstValue.toString());
-		// }
 		return true;
 	}
 
@@ -135,24 +154,26 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLocal(LocalNode Node) {
-		this.AddLocalVarIfNotDefined(Node.SourceToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.FieldName);
 	}
 
 	@Override
 	public boolean ExitLocal(LocalNode Node) {
-		this.push(Node.SourceToken.ParsedText);
+		this.push(Node.FieldName);
 		return true;
 
 	}
 
 	@Override
 	public void EnterField(FieldNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		assert (local != null);
 	}
 
 	@Override
 	public boolean ExitField(FieldNode Node) {
-		String Expr = Node.TermToken.ParsedText;
+		// String Expr = Node.TermToken.ParsedText;
+		// FIXME
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		return true;
 
@@ -177,9 +198,9 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
 		String Params = "";
-		String methodName = "mtd";
+		String methodName = Node.Method.MethodName;
 		int ParamSize = Node.Params.size();
-		for (int i = 0; i < ParamSize; i = i + 1) {
+		for (int i = 0; i < ParamSize - 1; i = i + 1) {
 			String Expr = this.pop();
 			if (i != 0) {
 				Params = "," + Params;
@@ -222,7 +243,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
 	}
 
 	@Override
@@ -235,7 +256,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
 	}
 
 	@Override
@@ -249,18 +270,22 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterBlock(BlockNode Node) {
-		this.CurrentProgramSize = this.Program.size();
+		this.PushProgramSize();
+		System.out.println("EnterBlock" + this.Program.size());
+
 	}
 
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
 		String Exprs = "";
-		int Size = this.Program.size() - this.CurrentProgramSize;
+		int Size = this.Program.size() - this.PopProgramSize();
 		for (int i = 0; i < Size; i = i + 1) {
 			String Expr = this.pop();
 			Exprs = Expr + ";" + Exprs;
 		}
 		this.push("{" + Exprs + "}");
+		System.out.println("ExitBlock" + this.Program.size());
+
 		return true;
 
 	}
@@ -268,6 +293,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public void EnterIf(IfNode Node) {
 		/* do nothing */
+		System.out.println("EnterIf" + this.Program.size());
 	}
 
 	@Override
@@ -276,6 +302,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
 		this.push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
+		System.out.println("ExitIf" + this.Program.size());
 		return true;
 
 	}
@@ -317,12 +344,16 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public void EnterReturn(ReturnNode Node) {
 		/* do nothing */
+		System.out.println("EnterR" + this.Program.size());
+
 	}
 
 	@Override
 	public boolean ExitReturn(ReturnNode Node) {
 		String Expr = this.pop();
 		this.push("return " + Expr);
+		System.out.println("EnterR" + this.Program.size());
+
 		return false;
 
 	}
@@ -429,7 +460,7 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitDefineClass(DefineClassNode Node) {
 		String Exprs = "";
-		int Size = this.Program.size() - this.CurrentProgramSize;
+		int Size = Node.Fields.size();
 		for (int i = 0; i < Size; i = i + 1) {
 			String Expr = this.pop();
 			Exprs = Expr + ";" + Exprs;
@@ -443,4 +474,5 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		return true;
 
 	}
+
 }

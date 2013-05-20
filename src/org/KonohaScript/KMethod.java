@@ -23,54 +23,55 @@
  ***************************************************************************/
 
 package org.KonohaScript;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class KMethod implements KonohaParserConst {
-	
+
 	int MethodFlag;
-	KClass ClassInfo;
-	String MethodName;
-//	int MethodSymbol;
-//	int CanonicalSymbol;
+	public KClass ClassInfo;
+	public String MethodName;
+	// int MethodSymbol;
+	// int CanonicalSymbol;
 	KParam Param;
 	Method MethodRef;
 
-//	String Source;
-//	long uline;
-//	KNameSpace LazyCompileNameSpace;
-	
+	// String Source;
+	// long uline;
+	// KNameSpace LazyCompileNameSpace;
+
 	public KMethod(int MethodFlag, KClass ClassInfo, String MethodName, KParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
 		this.ClassInfo = ClassInfo;
 		this.MethodName = MethodName;
 		this.Param = Param;
-		this.MethodRef = MethodRef;	
+		this.MethodRef = MethodRef;
 	}
-	
+
 	public final KClass GetReturnType(KClass BaseType) {
 		KClass ReturnType = Param.Types[0];
 		return ReturnType;
 	}
 
 	public final KClass GetParamType(KClass BaseType, int ParamIdx) {
-		KClass ParamType = Param.Types[ParamIdx+Param.ReturnSize];
+		KClass ParamType = Param.Types[ParamIdx + Param.ReturnSize];
 		return ParamType;
 	}
 
-	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
-		if(MethodName.equals(this.MethodName)) {
-			if(Param.GetParamSize() == ParamSize) {
+	public boolean Match(String MethodName, int ParamSize /*
+														 * , int DataSize,
+														 * KClass[] ParamData
+														 */) {
+		if (MethodName.equals(this.MethodName)) {
+			if (Param.GetParamSize() == ParamSize) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
 
-	
-	
 	boolean IsStaticInvocation() {
 		return Modifier.isStatic(MethodRef.getModifiers());
 	}
@@ -78,24 +79,27 @@ public class KMethod implements KonohaParserConst {
 	public Object Eval(Object[] ParamData) {
 		int ParamSize = Param.GetParamSize();
 		try {
-			if(IsStaticInvocation()) {
-				switch(ParamSize) {
-				case 0: return MethodRef.invoke(null, ParamData[0]);
-				case 1: return MethodRef.invoke(null, ParamData[0], ParamData[1]);
+			if (IsStaticInvocation()) {
+				switch (ParamSize) {
+				case 0:
+					return MethodRef.invoke(null, ParamData[0]);
+				case 1:
+					return MethodRef.invoke(null, ParamData[0], ParamData[1]);
 				default:
-					return MethodRef.invoke(null, ParamData);  // FIXME
+					return MethodRef.invoke(null, ParamData); // FIXME
 				}
 			}
 			else {
-				switch(ParamSize) {
-				case 0: return MethodRef.invoke(ParamData[0]);
-				case 1: return MethodRef.invoke(ParamData[0], ParamData[1]);
+				switch (ParamSize) {
+				case 0:
+					return MethodRef.invoke(ParamData[0]);
+				case 1:
+					return MethodRef.invoke(ParamData[0], ParamData[1]);
 				default:
-					return MethodRef.invoke(ParamData[0], ParamData);  // FIXME
+					return MethodRef.invoke(ParamData[0], ParamData); // FIXME
 				}
 			}
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -108,8 +112,5 @@ public class KMethod implements KonohaParserConst {
 		KonohaDebug.P("ParamSize: " + ParamSize);
 		return null;
 	}
-	
-	
-	
-}
 
+}

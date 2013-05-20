@@ -18,17 +18,16 @@ public class MethodCallNode extends TypedNode implements CallableNode {
 		this.Params = new ArrayList<TypedNode>();
 	}
 
-	public MethodCallNode(KClass TypeInfo, String string, TypedNode arg1) {
+	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1) {
 		super(TypeInfo);
-		this.Method = null;
+		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 	}
 
-	public MethodCallNode(KClass TypeInfo, String string, TypedNode arg1,
-			TypedNode arg2) {
+	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1, TypedNode arg2) {
 		super(TypeInfo);
-		this.Method = null;
+		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 		this.Params.add(arg2);

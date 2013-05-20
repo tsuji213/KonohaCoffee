@@ -2,6 +2,8 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
+import org.KonohaScript.KClass;
+import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class CompiledMethod {
@@ -9,22 +11,6 @@ class CompiledMethod {
 
 	Object Invoke(Object[] Args) {
 		return null;
-	}
-}
-
-class Local {
-	int Index;
-	String Name;
-
-	public Local(int Index, String Name) {
-		this.Index = Index;
-		this.Name = Name;
-	}
-}
-
-class Param extends Local {
-	public Param(int Index, String Name) {
-		super(Index, Name);
 	}
 }
 
@@ -39,15 +25,40 @@ public abstract class CodeGenerator {
 		return null;
 	}
 
-	Local AddLocalVarIfNotDefined(String Text) {
+	Local FindLocalVariable(String Name) {
 		for (Local l : this.LocalVals) {
-			if (l.Name.compareTo(Text) == 0) {
+			if (l.Name.compareTo(Name) == 0) {
 				return l;
 			}
 		}
-		Local local = new Local(this.LocalVals.size(), Text);
+		return null;
+	}
+
+	Local GetLocalVariableByIndex(int Index) {
+		if (this.LocalVals.size() > Index) {
+			return this.LocalVals.get(Index);
+		}
+		return null;
+	}
+
+	Local AddLocal(KClass Type, String Name) {
+		Local local = new Local(this.LocalVals.size(), Type, Name);
 		this.LocalVals.add(local);
 		return local;
+	}
+
+	Local AddLocalVarIfNotDefined(KClass Type, String Name) {
+		Local local = this.FindLocalVariable(Name);
+		if (local != null) {
+			return local;
+		}
+		return AddLocal(Type, Name);
+	}
+
+	public void Prepare(KClass ReturnType, KMethod Method, ArrayList<Local> ParamTypes) {
+	}
+
+	public void Prepare(KClass ReturnType, KMethod Method) {
 	}
 
 }

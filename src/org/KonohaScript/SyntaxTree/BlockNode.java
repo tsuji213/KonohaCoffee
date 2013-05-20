@@ -27,8 +27,7 @@ public class BlockNode extends TypedNode {
 		this.ExprList.add(Node2);
 	}
 
-	public BlockNode(KClass TypeInfo, TypedNode Node1, TypedNode Node2,
-			TypedNode Node3) {
+	public BlockNode(KClass TypeInfo, TypedNode Node1, TypedNode Node2, TypedNode Node3) {
 		super(TypeInfo);
 		init();
 		this.ExprList.add(Node1);
