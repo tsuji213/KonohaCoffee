@@ -16,9 +16,15 @@ class Local {
 	int Index;
 	String Name;
 
-	public Local(int index, String name) {
-		this.Index = index;
-		this.Name = name;
+	public Local(int Index, String Name) {
+		this.Index = Index;
+		this.Name = Name;
+	}
+}
+
+class Param extends Local {
+	public Param(int Index, String Name) {
+		super(Index, Name);
 	}
 }
 
