@@ -10,8 +10,7 @@ public class AssignNode extends TypedNode {
 	TypedNode Right;
 
 	/* frame[Index] = Right */
-	public AssignNode(KClass TypeInfo, KToken TermToken, int Index,
-			TypedNode Right) {
+	public AssignNode(KClass TypeInfo, KToken TermToken, int Index, TypedNode Right) {
 		super(TypeInfo);
 		this.TermToken = TermToken;
 		this.Index = Index;

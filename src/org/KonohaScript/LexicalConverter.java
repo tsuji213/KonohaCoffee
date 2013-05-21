@@ -16,23 +16,24 @@ public final class LexicalConverter implements KonohaParserConst {
 	}
 
 	KNameSpace ns;
+	
 	public KSyntax GetSyntax(String Symbol) {
-		return ns.GetSyntax(Symbol);
+		return ns.GetSyntax(Symbol, this.TopLevel);
 	}
 	
 	public void ResolveTokenSyntax(KToken Token) {
 		Token.ResolvedObject = ns.GetSymbol(Token.ParsedText);
 		if(Token.ResolvedObject == null) {
-			Token.ResolvedSyntax = ns.GetSyntax("$Symbol");
+			Token.ResolvedSyntax = ns.GetSyntax("$Symbol", this.TopLevel);
 		}
 		else if(Token.ResolvedObject instanceof KClass) {
-			Token.ResolvedSyntax = ns.GetSyntax("$Type");
+			Token.ResolvedSyntax = ns.GetSyntax("$Type", this.TopLevel);
 		}
 		else if(Token.ResolvedObject instanceof KSyntax) {
 			Token.ResolvedSyntax = (KSyntax)Token.ResolvedObject;
 		}
 		else {
-			Token.ResolvedSyntax = KSyntax.ConstSyntax;
+			Token.ResolvedSyntax = ns.GetSyntax("$Const", this.TopLevel);
 		}
 	}
 
@@ -56,7 +57,7 @@ public final class LexicalConverter implements KonohaParserConst {
 		while (c < EndIdx) {
 			KToken Token = SourceList.get(c);
 			if (Token.ResolvedSyntax == null) {
-				KFunc Macro = ns.GetMacroFunc(Token.ParsedText);
+				KFunc Macro = ns.GetMacro(Token.ParsedText, this.TopLevel);
 				//KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+Macro);
 				if (Macro != null) {
 					int nextIdx = Macro.InvokeMacroFunc(this, SourceList, c, EndIdx, BufferList);

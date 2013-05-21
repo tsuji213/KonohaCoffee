@@ -356,6 +356,9 @@ public class UntypedNode implements KonohaParserConst {
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
 			KToken Token = TokenList.get(BeginIdx);
+			if(Token.ResolvedSyntax == null) {
+				System.err.println("(>.<) " + Token.ParsedText + ", ResolvedSyntax " + Token.ResolvedSyntax);
+			}
 			if(Token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
 				SetAt(Index, Token);
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);

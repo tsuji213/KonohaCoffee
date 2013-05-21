@@ -15,8 +15,6 @@ import org.KonohaScript.GrammarSet.MiniKonoha;
 
 /* konoha util */
 
-
-
 // Runtime
 
 // #define kContext_Debug ((khalfflag_t)(1<<0))
@@ -58,11 +56,11 @@ class KSymbolTable implements KonohaParserConst {
 	KKeyIdMap PackageMap;
 
 	ArrayList<String> FileIdList;
-	HashMap<String,Integer> FileIdMap;
-	
+	HashMap<String, Integer> FileIdMap;
+
 	ArrayList<String> SymbolList;
-	HashMap<String,Integer> SymbolMap;
-	
+	HashMap<String, Integer> SymbolMap;
+
 	ArrayList<KParam> ParamList;
 	KParamMap ParamMap;
 	ArrayList<KParam> SignatureList;
@@ -71,7 +69,7 @@ class KSymbolTable implements KonohaParserConst {
 	KSymbolTable() {
 		this.ClassList = new ArrayList<KClass>(64);
 		this.ClassNameMap = new HashMap<String, KClass>();
-		
+
 		this.FileIdList = new ArrayList<String>(16);
 		this.FileIdMap = new HashMap<String, Integer>();
 
@@ -87,28 +85,30 @@ class KSymbolTable implements KonohaParserConst {
 	}
 
 	void Init(Konoha kctx) {
-		KPackage defaultPackage = NewPackage(kctx, "Konoha");
-//		NewClass(kctx, defaultPackage, "void");
+		KPackage defaultPackage = this.NewPackage(
+				kctx, "Konoha");
+		// NewClass(kctx, defaultPackage, "void");
 	}
 
 	long GetFileId(String file, int linenum) {
 		Integer fileid = this.FileIdMap.get(file);
 		if (fileid == null) {
-			int id = FileIdList.size();
-			FileIdList.add(file);
-			FileIdMap.put(file, new Integer(id));
-			return ((long)id << 32) | linenum;
+			int id = this.FileIdList.size();
+			this.FileIdList.add(file);
+			this.FileIdMap.put(
+					file, new Integer(id));
+			return ((long) id << 32) | linenum;
 		}
 		return (fileid.longValue() << 32) | linenum;
 	}
 
 	String GetFileName(long uline) {
-		int id = (int)(uline >> 32);
-		return FileIdList.get(id);
+		int id = (int) (uline >> 32);
+		return this.FileIdList.get(id);
 	}
-	
-	// Symbol 
-	
+
+	// Symbol
+
 	public final static int MaskSymbol(int n, int mask) {
 		return (n << 2) | mask;
 	}
@@ -118,14 +118,14 @@ class KSymbolTable implements KonohaParserConst {
 	}
 
 	public String StringfySymbol(int Symbol) {
-		String key = SymbolList.get(UnmaskSymbol(Symbol));
-		if((Symbol & GetterSymbol) == GetterSymbol) {
+		String key = this.SymbolList.get(KSymbolTable.UnmaskSymbol(Symbol));
+		if ((Symbol & KonohaParserConst.GetterSymbol) == KonohaParserConst.GetterSymbol) {
 			return "Get" + key;
 		}
-		if((Symbol & SetterSymbol) == SetterSymbol) {
+		if ((Symbol & KonohaParserConst.SetterSymbol) == KonohaParserConst.SetterSymbol) {
 			return "Get" + key;
 		}
-		if((Symbol & MetaSymbol) == MetaSymbol) {
+		if ((Symbol & KonohaParserConst.MetaSymbol) == KonohaParserConst.MetaSymbol) {
 			return "\\" + key;
 		}
 		return key;
@@ -134,46 +134,49 @@ class KSymbolTable implements KonohaParserConst {
 	public int GetSymbol(String Symbol, int DefaultValue) {
 		String key = Symbol;
 		int mask = 0;
-		if(Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
-			if(Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
+		if (Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
+			if (Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
 				key = Symbol.substring(3);
-				mask = GetterSymbol;
+				mask = KonohaParserConst.GetterSymbol;
 			}
-			if(Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
+			if (Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
 				key = Symbol.substring(3);
-				mask = SetterSymbol;
+				mask = KonohaParserConst.SetterSymbol;
 			}
 		}
-		if(Symbol.startsWith("\\")) {
-			mask = MetaSymbol;
+		if (Symbol.startsWith("\\")) {
+			mask = KonohaParserConst.MetaSymbol;
 		}
-		Integer id = SymbolMap.get(key);
-		if(id == null) {
-			if(DefaultValue == AllowNewId) {
-				int n = SymbolList.size();
-				SymbolList.add(key);
-				SymbolMap.put(key, new Integer(n));
-				return MaskSymbol(n, mask);
+		Integer id = this.SymbolMap.get(key);
+		if (id == null) {
+			if (DefaultValue == KonohaParserConst.AllowNewId) {
+				int n = this.SymbolList.size();
+				this.SymbolList.add(key);
+				this.SymbolMap.put(
+						key, new Integer(n));
+				return KSymbolTable.MaskSymbol(
+						n, mask);
 			}
 			return DefaultValue;
 		}
-		return MaskSymbol(id.intValue(), mask);
+		return KSymbolTable.MaskSymbol(
+				id.intValue(), mask);
 	}
 
 	public static String CanonicalSymbol(String Symbol) {
-		return Symbol.toLowerCase().replaceAll("_", "");
+		return Symbol.toLowerCase().replaceAll(
+				"_", "");
 	}
 
 	public int GetCanonicalSymbol(String Symbol, int DefaultValue) {
-		return GetSymbol(CanonicalSymbol(Symbol), DefaultValue);
+		return this.GetSymbol(
+				KSymbolTable.CanonicalSymbol(Symbol), DefaultValue);
 	}
-	
-	
-	
+
 	int GetSymbol(String symbol, boolean isnew) {
-		Integer id = SymbolMap.get(symbol);
-		if(id == null && isnew) {
-			
+		Integer id = this.SymbolMap.get(symbol);
+		if (id == null && isnew) {
+
 		}
 		return id;
 	}
@@ -185,13 +188,13 @@ class KSymbolTable implements KonohaParserConst {
 		return p;
 	}
 
-//	KClass NewClass(Konoha kctx, KPackage p, String name) {
-//		int classId = this.ClassList.size();
-//		KClass c = new KClass(kctx, p, classId, name);
-//		this.ClassList.add(c);
-//		this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
-//		return c;
-//	}
+	// KClass NewClass(Konoha kctx, KPackage p, String name) {
+	// int classId = this.ClassList.size();
+	// KClass c = new KClass(kctx, p, classId, name);
+	// this.ClassList.add(c);
+	// this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
+	// return c;
+	// }
 }
 
 public class Konoha implements KonohaParserConst {
@@ -201,45 +204,50 @@ public class Konoha implements KonohaParserConst {
 	KSymbolTable SymbolTable;
 
 	public final KClass VoidType;
+	public final KClass ObjectType;
 	public final KClass BooleanType;
 	public final KClass IntType;
 	public final KClass StringType;
 	public final KClass VarType;
-	
+
 	public Konoha(MiniKonoha defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
-		RootNameSpace = new KNameSpace(this, null);
-		
-		VoidType = RootNameSpace.LookupTypeInfo(Void.class);
-		BooleanType = RootNameSpace.LookupTypeInfo(Boolean.class);
-		IntType = RootNameSpace.LookupTypeInfo(Integer.class);
-		StringType = RootNameSpace.LookupTypeInfo(String.class);
-		VarType = RootNameSpace.LookupTypeInfo(Object.class);
-		
-		defaultSyntax.LoadDefaultSyntax(RootNameSpace);
-		this.DefaultNameSpace = new KNameSpace(this, RootNameSpace);
+		this.RootNameSpace = new KNameSpace(this, null);
+
+		this.VoidType = this.RootNameSpace.LookupTypeInfo(Void.class);
+		this.ObjectType = this.RootNameSpace.LookupTypeInfo(Object.class);
+		this.BooleanType = this.RootNameSpace.LookupTypeInfo(Boolean.class);
+		this.IntType = this.RootNameSpace.LookupTypeInfo(Integer.class);
+		this.StringType = this.RootNameSpace.LookupTypeInfo(String.class);
+		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
+
+		defaultSyntax.LoadDefaultSyntax(this.RootNameSpace);
+		this.DefaultNameSpace = new KNameSpace(this, this.RootNameSpace);
 	}
 
 	final KClass LookupTypeInfo(Class<?> ClassInfo) {
-		KClass TypeInfo = SymbolTable.ClassNameMap.get(ClassInfo.getName());
-		if(TypeInfo == null) {
+		KClass TypeInfo = this.SymbolTable.ClassNameMap.get(ClassInfo.getName());
+		if (TypeInfo == null) {
 			TypeInfo = new KClass(this, ClassInfo);
-			SymbolTable.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
+			this.SymbolTable.ClassNameMap.put(
+					ClassInfo.getName(), TypeInfo);
 		}
 		return TypeInfo;
 	}
-	
-//	public int GetSymbol(String key, boolean isnew) {
-//		return this.SymbolTable.GetSymbol(key, isnew);
-//	}
+
+	// public int GetSymbol(String key, boolean isnew) {
+	// return this.SymbolTable.GetSymbol(key, isnew);
+	// }
 
 	public void Define(String symbol, Object Value) {
-		RootNameSpace.DefineSymbol(symbol, Value);
+		this.RootNameSpace.DefineSymbol(
+				symbol, Value);
 	}
-	
+
 	public void Eval(String text, long uline) {
-		DefaultNameSpace.Eval(text, uline);
+		this.DefaultNameSpace.Eval(
+				text, uline);
 	}
 
 	public void Load(String fileName) {
@@ -250,13 +258,13 @@ public class Konoha implements KonohaParserConst {
 	public static void main(String[] argc) {
 		MiniKonoha MiniKonohaGrammar = new MiniKonoha();
 		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
-		//konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
-		//KonohaContext.Eval("a == b + C; D + e == F", 2);
-		KonohaContext.Eval("1+2*3", 3333);
-//		KonohaContext.Eval(
-//			"int fibo(int n) {\n" +
-//			"\tif(n < 3) return 1;\n"+
-//			"\treturn fibo(n-1)+fibo(n-2);\n"+
-//			"}", 1000);
+		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
+		// KonohaContext.Eval("a == b + C; D + e == F", 2);
+		// KonohaContext.Eval("1+2*3", 3333);
+		KonohaContext.Eval(
+				"int fibo(int n) {\n" +
+						"\tif(n < 3) return 1;\n" +
+						"\treturn fibo(n-1)+fibo(n-2);\n" +
+						"}", 1000);
 	}
 }

@@ -5,16 +5,14 @@ import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class FieldNode extends TypedNode {
-	/* frame[Index][Xindex] (or ($TermToken->text)[Xindex] */
+	/* ($TermToken->text)[Offset] */
 	public KToken TermToken;
-	int Index;
-	public int Xindex;
+	public int Offset;
 
-	public FieldNode(KClass TypeInfo, KToken TermToken, int Index, int Xindex) {
+	public FieldNode(KClass TypeInfo, KToken TermToken, int Offset) {
 		super(TypeInfo);
 		this.TermToken = TermToken;
-		this.Index = Index;
-		this.Xindex = Xindex;
+		this.Offset = Offset;
 	}
 
 	@Override

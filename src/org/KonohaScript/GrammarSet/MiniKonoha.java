@@ -270,7 +270,7 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public TypedNode TypeStringLiteral(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		KToken Token = UNode.KeyToken;
-		return new ConstNode(Gamma.IntType, Token, Token.ParsedText /* FIXME: handling of escape sequence */);
+		return new ConstNode(Gamma.StringType, Token, Token.ParsedText /* FIXME: handling of escape sequence */);
 	}
 
 	public int ParseSymbol(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -278,8 +278,11 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		KToken Token = UNode.KeyToken;
-		return new ConstNode(Gamma.IntType, Token, Token.ParsedText /* FIXME: handling of escape sequence */);
+		TypeInfo = Gamma.GetLocalType(UNode.KeyToken.ParsedText);
+		if(TypeInfo != null) {
+			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
+		}
+		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}
 
 	public int ParseConst(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -288,7 +291,7 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public TypedNode TypeConst(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		KToken Token = UNode.KeyToken;
-		return new ConstNode(Gamma.IntType, Token, Token.ParsedText /* FIXME: handling of escape sequence */);
+		return new ConstNode(Gamma.StringType, Token, Token.ParsedText /* FIXME: handling of resolved object */);
 	}
 
 	public int ParseUniaryOperator(UntypedNode Node, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -305,7 +308,7 @@ public final class MiniKonoha implements KonohaParserConst {
 	}
 
 	public TypedNode TypeMethodCall(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		KonohaDebug.P("(> <) typing method calls: " + UNode);
+		KonohaDebug.P("(>_<) typing method calls: " + UNode);
 		ArrayList<Object> NodeList = UNode.NodeList;
 		assert(NodeList.size() > 1);
 		UntypedNode UntypedBaseNode = (UntypedNode)NodeList.get(0);
@@ -520,6 +523,7 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public TypedNode TypeMethodDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		System.err.println("@@@@@ " + UNode);
+		
 		return new DoneNode(TypeInfo);
 	}
 	
@@ -560,15 +564,15 @@ public final class MiniKonoha implements KonohaParserConst {
 		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
 		
 		// Macro
-		NameSpace.AddMacroFunc("(", this, "OpenParenthesisMacro");
-		NameSpace.AddMacroFunc(")", this, "CloseParenthesisMacro");
-		NameSpace.AddMacroFunc("{", this, "OpenBraceMacro");
-		NameSpace.AddMacroFunc("}", this, "CloseBraceMacro");
-		NameSpace.AddMacroFunc("[", this, "OpenBracketMacro");
-		NameSpace.AddMacroFunc("]", this, "CloseBracketMacro");
-		NameSpace.AddMacroFunc("=", this, "MergeOperatorMacro");
-		NameSpace.AddMacroFunc("&", this, "MergeOperatorMacro");
-		NameSpace.AddMacroFunc("|", this, "MergeOperatorMacro");
+		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
+		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
+		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
+		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
 		//ns.AddSymbol(symbol, constValue);
 
 		NameSpace.DefineSyntax("*", BinaryOperator|Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
@@ -596,8 +600,8 @@ public final class MiniKonoha implements KonohaParserConst {
 		NameSpace.DefineSyntax("$Const",  Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
 		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
-//		NameSpace.DefineSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "FuncCall");
-//		NameSpace.DefineSyntax("{}", 0, this, "ParseEmpty", "TypeEmpty");
+		NameSpace.DefineSyntax("()",      Term|Precedence_CStyleSuffixCall, this, "UNUSED");
+		NameSpace.DefineSyntax("{}",      0, this, "UNUSED");
 		NameSpace.DefineSyntax("$StringLiteral",  Term, this, "StrngLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
 
@@ -607,9 +611,8 @@ public final class MiniKonoha implements KonohaParserConst {
 
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
-
-		DefineIntMethod(NameSpace);
 		
+		DefineIntMethod(NameSpace);
 	}
 	
 	void DefineIntMethod (KNameSpace ns) {
@@ -621,6 +624,7 @@ public final class MiniKonoha implements KonohaParserConst {
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "+", BinaryParam, this, "IntAddInt");
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", UniaryParam, this, "MinusInt");
 		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "-", BinaryParam, this, "IntSubInt");
+		BaseClass.DefineMethod(ImmutableMethod|ConstMethod, "*", BinaryParam, this, "IntMulInt");
 		
 		if(KonohaDebug.UseBuiltInTest) {
 			assert(BaseClass.LookupMethod("+", 0) != null);
@@ -648,6 +652,10 @@ public final class MiniKonoha implements KonohaParserConst {
 
 	public static int IntSubInt(int x, int y) {
 		return x - y;
+	}
+
+	public static int IntMulInt(int x, int y) {
+		return x * y;
 	}
 
 }

@@ -25,27 +25,16 @@ import org.KonohaScript.SyntaxTree.SwitchNode;
 import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.MethodNode;
 
-class JavaMethod extends MethodNode implements Opcodes {
-}
+public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
-public class JVMCodeGenerator extends CodeGenerator implements ASTVisitor {
-	public JVMCodeGenerator() {
+	public KonohaVMCodeGen() {
 		super(null);
 	}
 
 	@Override
-	public CompiledMethod Compile(TypedNode Block) {
-		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
-		return null;
-	}
-
-	@Override
 	public boolean Visit(TypedNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		return Node.Evaluate(this);
 	}
 
 	@Override
