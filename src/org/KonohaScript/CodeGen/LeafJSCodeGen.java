@@ -2,11 +2,13 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
+import org.KonohaScript.KClass;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DoneNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
@@ -34,7 +36,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	private boolean UseLetKeyword = false;
 
 	public LeafJSCodeGen() {
-		super();
+		super(null);
 		this.Program = new ArrayList<String>();
 		this.CurrentProgramSize = 0;
 	}
@@ -50,7 +52,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		Visit(Block);
-		CompiledMethod Mtd = new CompiledMethod();
+		CompiledMethod Mtd = new CompiledMethod(MethodInfo);
 		assert (this.Program.size() == 1);
 		Mtd.CompiledCode = this.Program.remove(0);
 		return Mtd;
@@ -123,7 +125,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLocal(LocalNode Node) {
-		AddLocalVarIfNotDefined(Node.SourceToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterField(FieldNode Node) {
-		AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
 	}
 
 	@Override
@@ -164,18 +166,10 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
-		String Params = "";
 		String methodName = "mtd";
-		int ParamSize = Node.Params.size();
-		for (int i = 0; i < ParamSize; i = i + 1) {
-			String Expr = pop();
-			if (i != 0) {
-				Params = "," + Params;
-			}
-			Params = Expr + Params;
-		}
 		String thisNode = pop();
-		push(thisNode + "." + methodName + PopAndJoin(Node.Params.size(), ", ", "(", ")"));
+		String params = PopAndJoin(Node.Params.size(), ", ", "(", ")");
+		push(thisNode + "." + methodName + params);
 		return true;
 	}
 
@@ -207,7 +201,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
 	}
 
 	@Override
@@ -219,7 +213,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		AddLocalVarIfNotDefined(Node.TermToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
 	}
 
 	@Override
@@ -238,7 +232,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
 		int Size = this.Program.size() - this.CurrentProgramSize;
-		push(PopAndJoin(Size, ";", "{", "}"));
+		push(PopAndJoin(Size, ";\n", "{\n", ";\n}"));
 		return true;
 	}
 
@@ -390,6 +384,18 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	public boolean ExitError(ErrorNode Node) {
 		String Expr = pop();
 		push("throw new Exception(" + Expr + ";");
+		return false;
+	}
+
+	@Override
+	public void EnterDefineClass(DefineClassNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	@Override
+	public boolean ExitDefineClass(DefineClassNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
 }
