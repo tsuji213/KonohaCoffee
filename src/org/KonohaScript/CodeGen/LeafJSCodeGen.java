@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
@@ -29,16 +29,65 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
+class IndentGenerator{
+	private int level = 0;
+	private String currentLevelIndentString = "";
+	private String indentString = "\t";
+
+	public IndentGenerator(){
+	}
+
+	public IndentGenerator(int tabstop){
+		this.indentString = repeat(" ", tabstop);
+	}
+
+	private static String repeat(String str, int n){
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < n; ++i){
+			builder.append(str);
+		}
+		return builder.toString();
+	}
+
+	public void setLevel(int level){
+		if(level < 0) level = 0;
+		if(this.level != level){
+			this.level = level;
+			currentLevelIndentString = repeat(indentString, level);
+		}
+	}
+
+	public void indent(int n){
+		setLevel(level + n);
+	}
+
+	public String get(){
+		return currentLevelIndentString;
+	}
+
+	public String getAndIndent(int diffLevel){
+		String current = currentLevelIndentString;
+		indent(diffLevel);
+		return current;
+	}
+
+	public String indentAndGet(int diffLevel){
+		indent(diffLevel);
+		return currentLevelIndentString;
+	}
+}
+
 public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	ArrayList<String> Program;
-	private int CurrentProgramSize;
+	ArrayList<Integer> CurrentProgramSize;
 
+	IndentGenerator indentGenerator = new IndentGenerator(4);
 	private boolean UseLetKeyword = false;
 
 	public LeafJSCodeGen() {
 		super(null);
 		this.Program = new ArrayList<String>();
-		this.CurrentProgramSize = 0;
+		this.CurrentProgramSize = new ArrayList<Integer>();
 	}
 
 	private String pop() {
@@ -49,12 +98,147 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		this.Program.add(Program);
 	}
 
+	private int PopProgramSize() {
+		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
+	}
+
+	private void PushProgramSize() {
+		this.CurrentProgramSize.add(this.Program.size());
+	}
+
+	private String[] PopN(int n){
+		String[] array = new String[n];
+		for(int i = 0; i < n; ++i){
+			array[i] = pop();
+		}
+		return array;
+	}
+
+	private String[] PopNReverse(int n){
+		String[] array = new String[n];
+		for(int i = 0; i < n; ++i){
+			array[n-i-1] = pop();
+		}
+		return array;
+	}
+
+	private void PopNAndJoin(StringBuilder builder, int n, String delim){
+		if(delim == null){
+			delim = "";
+		}
+		String[] array = PopN(n);
+		for(int i = 0; i < n; ++i){
+			if(i > 0){
+				builder.append(delim);
+			}
+			builder.append(array[i]);
+		}
+	}
+
+	private String PopNAndJoin(int n, String delim){
+		StringBuilder builder = new StringBuilder();
+		PopNAndJoin(builder, n ,delim);
+		return builder.toString();
+	}
+
+	private void PopNWithSuffix(StringBuilder builder, int n, String suffix){
+		if(suffix == null){
+			suffix = "";
+		}
+		String[] array = PopN(n);
+		for(int i = 0; i < n; ++i){
+			builder.append(array[i]);
+			builder.append(suffix);
+		}
+	}
+
+	private String PopNWithSuffix(int n, String suffix){
+		StringBuilder builder = new StringBuilder();
+		PopNWithSuffix(builder, n ,suffix);
+		return builder.toString();
+	}
+
+	private void PopNReverseAndJoin(StringBuilder builder, int n, String delim){
+		if(delim == null){
+			delim = "";
+		}
+		String[] array = PopNReverse(n);
+		for(int i = 0; i < n; ++i){
+			if(i > 0){
+				builder.append(delim);
+			}
+			builder.append(array[i]);
+		}
+	}
+
+	private String PopNReverseAndJoin(int n, String delim){
+		StringBuilder builder = new StringBuilder();
+		PopNReverseAndJoin(builder, n ,delim);
+		return builder.toString();
+	}
+
+	private void PopNReverseWithSuffix(StringBuilder builder, int n, String suffix){
+		if(suffix == null){
+			suffix = "";
+		}
+		String[] array = PopNReverse(n);
+		for(int i = 0; i < n; ++i){
+			builder.append(array[i]);
+			builder.append(suffix);
+		}
+	}
+
+	private String PopNReverseWithSuffix(int n, String suffix){
+		StringBuilder builder = new StringBuilder();
+		PopNReverseWithSuffix(builder, n ,suffix);
+		return builder.toString();
+	}
+
+	@Override
+	public void Prepare(KMethod Method) {
+		this.LocalVals.clear();
+		this.MethodInfo = Method;
+		this.AddLocal(Method.ClassInfo, "this");
+	}
+
+	@Override
+	public void Prepare(KMethod Method, ArrayList<Local> params) {
+		this.Prepare(Method);
+		for (int i = 0; i < params.size(); i++) {
+			Local local = params.get(i);
+			this.AddLocal(local.TypeInfo, local.Name);
+		}
+	}
+
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
-		Visit(Block);
+		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod(MethodInfo);
 		assert (this.Program.size() == 1);
-		Mtd.CompiledCode = this.Program.remove(0);
+		String Source = this.Program.remove(0);
+		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+			Local thisNode = this.FindLocalVariable("this");
+			StringBuilder FuncBuilder = new StringBuilder();
+
+			//FuncBuilder.append(thisNode.TypeInfo.ShortClassName);
+			//FuncBuilder.append(".");
+			String MethodName = this.MethodInfo.MethodName;
+			FuncBuilder.append(MethodName);
+			FuncBuilder.append(" = function(");
+
+			for (int i = 1; i < this.LocalVals.size(); i++) {
+				Local local = this.GetLocalVariableByIndex(i);
+				if (i != 1) {
+					FuncBuilder.append(", ");
+				}
+				FuncBuilder.append(local.Name);
+			}
+			FuncBuilder.append(")");
+			FuncBuilder.append(Source);
+			FuncBuilder.append(";");
+			Source = FuncBuilder.toString();
+		}
+		Mtd.CompiledCode = Source;
 		return Mtd;
 	}
 
@@ -63,22 +247,6 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		return Node.Evaluate(this);
 	}
 
-	private String PopAndJoin(int n, String delim, String left, String right){
-		StringBuilder builder = new StringBuilder();
-		if(left != null){
-			builder.append(left);
-		}
-		for(int i = 0; i < n; i++){
-			if(i > 0 && delim != null){
-				builder.append(delim);
-			}
-			builder.append(pop());
-		}
-		if(right != null){
-			builder.append(right);
-		}
-		return builder.toString();
-	}
 
 	@Override
 	public void EnterDone(DoneNode Node) {
@@ -125,25 +293,28 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLocal(LocalNode Node) {
-		AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
+		AddLocalVarIfNotDefined(Node.TypeInfo, Node.FieldName);
 	}
 
 	@Override
 	public boolean ExitLocal(LocalNode Node) {
-		push(Node.SourceToken.ParsedText);
+		push(Node.FieldName);
 		return true;
 	}
 
 	@Override
 	public void EnterField(FieldNode Node) {
-		AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		assert (local != null);
 	}
 
 	@Override
 	public boolean ExitField(FieldNode Node) {
-		String Expr = Node.TermToken.ParsedText;
+		//String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
-		push(Expr);
+		//push(Expr);
+		// FIXME
+		push(Node.SourceToken.ParsedText);
 		return true;
 
 	}
@@ -164,12 +335,28 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
+	private static String[] binaryOpList = {"+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>"};
+
+	private boolean isMethodBinaryOperator(MethodCallNode Node){
+		String methodName = Node.Method.MethodName;
+		for(String op : binaryOpList){
+			if(op.equals(methodName)) return true;
+		}
+		return false;
+	}
+
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
-		String methodName = "mtd";
-		String thisNode = pop();
-		String params = PopAndJoin(Node.Params.size(), ", ", "(", ")");
-		push(thisNode + "." + methodName + params);
+		String methodName = Node.Method.MethodName;
+		if(isMethodBinaryOperator(Node)){
+			String params = pop();
+			String thisNode = pop();
+			push(thisNode + " " + methodName + " " + params);
+		}else{
+			String params = "(" + PopNReverseAndJoin(Node.Params.size() - 1, ", ") + ")";
+			String thisNode = pop();
+			push(thisNode + "." + methodName + params);
+		}
 		return true;
 	}
 
@@ -226,13 +413,15 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterBlock(BlockNode Node) {
-		this.CurrentProgramSize = this.Program.size();
+		this.PushProgramSize();
+		indentGenerator.indent(1);
 	}
 
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
-		int Size = this.Program.size() - this.CurrentProgramSize;
-		push(PopAndJoin(Size, ";\n", "{\n", ";\n}"));
+		IndentGenerator g = indentGenerator;
+		int Size = this.Program.size() - this.PopProgramSize();
+		push("{\n" + g.get() + PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n" + g.indentAndGet(-1) + "}");
 		return true;
 	}
 
@@ -246,7 +435,11 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		String ElseBlock = pop();
 		String ThenBlock = pop();
 		String CondExpr = pop();
-		push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock + ";");
+		if(Node.ElseNode instanceof BlockNode && ((BlockNode)Node.ElseNode).ExprList.size() > 0){
+			push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
+		}else{
+			push("if (" + CondExpr + ") " + ThenBlock);
+		}
 		return true;
 	}
 
@@ -294,7 +487,6 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		String Expr = pop();
 		push("return " + Expr);
 		return false;
-
 	}
 
 	@Override
@@ -313,7 +505,6 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 			push(Label + ":");
 		}
 		return true;
-
 	}
 
 	@Override
@@ -389,13 +580,22 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterDefineClass(DefineClassNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-
 	}
 
 	@Override
 	public boolean ExitDefineClass(DefineClassNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
+		String Exprs = "";
+		int Size = Node.Fields.size();
+		for (int i = 0; i < Size; i = i + 1) {
+			String Expr = this.pop();
+			Exprs = Expr + ";" + Exprs;
+		}
+		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
+		if (Node.TypeInfo.SearchSuperMethodClass != null) {
+			Value = Value + Node.TypeInfo.ShortClassName + " ";
+		}
+		this.push(Value + "{" + Exprs + "}");
+
+		return true;
 	}
 }
