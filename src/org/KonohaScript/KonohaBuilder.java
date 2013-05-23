@@ -31,8 +31,9 @@ public class KonohaBuilder {
 		
 	}
 	
-	void BuildAtTopLevel(TypedNode Node) {
+	Object EvalAtTopLevel(TypedNode Node) {
 		
+		return null; // return value of eval 
 	}
 	
 	KMethod Build(TypedNode Node, KMethod Method) {

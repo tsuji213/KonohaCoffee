@@ -248,11 +248,6 @@ public final class KNameSpace implements KonohaConst {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
-	// TypedNode Type(KGamma gma, UntypedNode node) {
-	// return node.Syntax.InvokeTypeFunc(gma, node);
-	// }
-
-
 	String GetSourcePosition(long uline) {
 		return "(eval:" + (int) uline + ")";
 	}
@@ -273,7 +268,8 @@ public final class KNameSpace implements KonohaConst {
 		return Token.GetErrorMessage();
 	}
 		
-	public void Eval(String text, long uline) {
+	public Object Eval(String text, long uline) {
+		Object ResultValue = null;
 		System.out.println("Eval: " + text);
 		ArrayList<KToken> BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
@@ -284,19 +280,22 @@ public final class KNameSpace implements KonohaConst {
 			KGamma Gamma = new KGamma(this, null);
 			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = GetBuilder();
-			Builder.BuildAtTopLevel(TNode);
+			ResultValue = Builder.EvalAtTopLevel(TNode);
 			UNode = UNode.NextNode;
 		}
+		return ResultValue;
 	}
-	
 	
 	// Builder 
 	
 	public KonohaBuilder Builder;
 
 	public KonohaBuilder GetBuilder() {
-		if(Builder == null && ParentNameSpace != null) {
-			return ParentNameSpace.GetBuilder();
+		if(Builder == null)  {
+			if(ParentNameSpace != null) {
+				return ParentNameSpace.GetBuilder();
+			}
+			Builder = new KonohaBuilder(); // create default builder
 		}
 		return Builder;
 	}
