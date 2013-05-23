@@ -8,7 +8,11 @@ public final class KonohaDebug {
 //		Exception e = new Exception();
 //		e.printStackTrace();
 	}
-	
+
+	public static void TODO(String msg) {
+		System.out.println("TODO: "+ msg);
+	}
+
 	public static void Indent(int Level, String Tab) {
 		for(int i = 0; i < Level; i++) {
 			System.out.print(Tab);

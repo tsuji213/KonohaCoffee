@@ -34,7 +34,6 @@ public class UntypedNode implements KonohaConst {
 	public KNameSpace         NodeNameSpace;
 	public KSyntax            Syntax;
 	public KToken             KeyToken;
-	public ArrayList<Object>         NodeList;
 	
 	@Override public String toString() {
 		String key = KeyToken.ParsedText + ":" + ((Syntax != null) ? Syntax.SyntaxName : "null");
@@ -72,6 +71,8 @@ public class UntypedNode implements KonohaConst {
 		this.NextNode = Node;
 	}
 	
+	public ArrayList<Object>         NodeList;
+
 	public UntypedNode AddParsedNode(UntypedNode Node) {
 		if(NodeList == null) {
 			NodeList = new ArrayList<Object>();
@@ -103,6 +104,31 @@ public class UntypedNode implements KonohaConst {
 	public void SetAtToken(int Index, KToken Token) {
 		SetAt(Index, Token);
 	}
+
+	public final KClass GetTokenType(int Index, KClass DefType) {
+		KToken Token = (KToken)NodeList.get(Index);
+		if(Token != null && Token.ResolvedObject instanceof KClass) {
+			return (KClass)Token.ResolvedObject;
+		}
+		return DefType;
+	}
+
+	public final String GetTokenString(int Index, String DefString) {
+		KToken Token = (KToken)NodeList.get(Index);
+		if(Token != null) {
+			return Token.ParsedText;
+		}
+		return DefString;
+	}
+
+	public final ArrayList<KToken> GetTokenList(int Index) {
+		KToken Token = (KToken)NodeList.get(Index);
+		if(Token != null && Token.IsGroupToken()) {
+			return Token.GetGroupList();
+		}
+		return new ArrayList<KToken>();
+	}
+
 	
 	// parser 
 	

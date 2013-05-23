@@ -499,6 +499,7 @@ public final class MiniKonoha implements KonohaConst {
 		return null; // TODO
 	}
 	
+	
 	public final static int MethodDeclReturn = 0;
 	public final static int MethodDeclClass  = 1;
 	public final static int MethodDeclName = 2;
@@ -523,8 +524,22 @@ public final class MiniKonoha implements KonohaConst {
 
 	public TypedNode TypeMethodDecl(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
 		System.err.println("@@@@@ " + UNode);
-		
-		return new DoneNode(TypeInfo);
+		KClass BaseType = UNode.GetTokenType(MethodDeclClass, null);
+		if(BaseType == null) {
+			BaseType = UNode.NodeNameSpace.GetGlobalObject().TypeInfo;
+		}
+		String MethodName = UNode.GetTokenString(MethodDeclName, "new");
+		int ParamSize = UNode.NodeList.size() - MethodDeclParam;
+		KClass[] ParamData = new KClass[ParamSize+1];
+		ParamData[0] = UNode.GetTokenType(MethodDeclClass, Gamma.VarType);
+		for(int i = 0; i < ParamSize; i++) {
+			UntypedNode ParamNode = (UntypedNode)UNode.NodeList.get(MethodDeclParam + i);
+			KClass ParamType = ParamNode.GetTokenType(VarDeclType, Gamma.VarType);
+			ParamData[i+1] = ParamType;
+		}
+		KParam Param = new KParam(ParamSize+1, ParamData);
+		KMethod Method = new KMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
+		return new DefNode(TypeInfo, Method);
 	}
 	
 	public int ParseEmpty(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {

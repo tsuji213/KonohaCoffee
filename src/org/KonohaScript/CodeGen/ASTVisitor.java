@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
-import org.KonohaScript.SyntaxTree.DoneNode;
+import org.KonohaScript.SyntaxTree.DefNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -29,9 +29,9 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 public interface ASTVisitor {
 	boolean Visit(TypedNode Node);
 
-	void EnterDone(DoneNode Node);
+	void EnterDone(DefNode Node);
 
-	boolean ExitDone(DoneNode Node);
+	boolean ExitDone(DefNode Node);
 
 	void EnterConst(ConstNode Node);
 

@@ -39,7 +39,6 @@ public final class KNameSpace implements KonohaConst {
 	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = parent;
-
 		if(parent != null) {
 			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
 			for (int i = 0; i < KonohaChar.MAX; i++) {
@@ -282,14 +281,43 @@ public final class KNameSpace implements KonohaConst {
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
-			KGamma Gamma = new KGamma(this);
-			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KonohaContext.VoidType, 0);
-			if(TNode != null) {
-//				Builder = GetBuilder();
-				//TNode.Eval();
-			}
+			KGamma Gamma = new KGamma(this, null);
+			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+			KonohaBuilder Builder = GetBuilder();
+			Builder.BuildAtTopLevel(TNode);
 			UNode = UNode.NextNode;
 		}
+	}
+	
+	
+	// Builder 
+	
+	public KonohaBuilder Builder;
+
+	public KonohaBuilder GetBuilder() {
+		if(Builder == null && ParentNameSpace != null) {
+			return ParentNameSpace.GetBuilder();
+		}
+		return Builder;
+	}
+	
+	public boolean LoadBuilder(String Name) {
+		Class<?> BuilderClass;
+		try {
+			BuilderClass = Class.forName(Name);
+			this.Builder = (KonohaBuilder)BuilderClass.newInstance();
+			return true;
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
 
