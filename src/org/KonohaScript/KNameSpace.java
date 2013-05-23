@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public final class KNameSpace implements KonohaParserConst {
+public final class KNameSpace implements KonohaConst {
 
 	public Konoha KonohaContext;
 	KNameSpace ParentNameSpace;
@@ -293,7 +293,7 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 }
 
-class KonohaTokenizer implements KonohaParserConst {
+class KonohaTokenizer implements KonohaConst {
 	KNameSpace ns;
 	String SourceText;
 	long CurrentLine;

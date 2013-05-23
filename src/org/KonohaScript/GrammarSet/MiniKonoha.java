@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import org.KonohaScript.*;
 import org.KonohaScript.SyntaxTree.*;
 
-public final class MiniKonoha implements KonohaParserConst {
+public final class MiniKonoha implements KonohaConst {
 
 	// Token
 	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {

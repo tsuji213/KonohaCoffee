@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class KMethod implements KonohaParserConst {
+public class KMethod implements KonohaConst {
 
 	public int MethodFlag;
 	public KClass ClassInfo;

@@ -27,7 +27,7 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import org.KonohaScript.SyntaxTree.*;
 
-public class UntypedNode implements KonohaParserConst {	
+public class UntypedNode implements KonohaConst {	
 	UntypedNode               Parent;
 	UntypedNode               PreviousNode;
 	UntypedNode               NextNode;	

@@ -62,7 +62,7 @@ public class KGamma {
 	}
 	
 	public TypedNode NewErrorNode(KToken KeyToken, String Message) {
-		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaParserConst.Error, KeyToken, Message));
+		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaConst.Error, KeyToken, Message));
 	}
 	
 	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {

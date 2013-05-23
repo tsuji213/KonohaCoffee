@@ -2,7 +2,7 @@ package org.KonohaScript;
 
 import java.util.ArrayList;
 
-public final class LexicalConverter implements KonohaParserConst {
+public final class LexicalConverter implements KonohaConst {
 	
 	public boolean TopLevel;
 	public boolean SkipIndent;
