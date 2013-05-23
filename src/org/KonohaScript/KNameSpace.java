@@ -216,14 +216,13 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 	
 	public KObject GetGlobalObject() {
-		Object GlobalObject = GetDefinedSymbol("global");
+		Object GlobalObject = GetDefinedSymbol(GlobalConstName);
 		if(GlobalObject == null || !(GlobalObject instanceof KObject)) {
 			GlobalObject = CreateGlobalObject(SingletonClass, "*GlobalType*");
-			DefineSymbol("global", GlobalObject);
+			DefineSymbol(GlobalConstName, GlobalObject);
 		}
 		return (KObject)GlobalObject;
 	}
-
 	
 	public void ImportNameSpace(KNameSpace ns) {
 		if(ImportedNameSpaceList == null) {

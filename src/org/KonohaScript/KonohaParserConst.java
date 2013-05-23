@@ -46,11 +46,11 @@ public interface KonohaParserConst {
 	//public final static int Warning              = 1<<24;
 
 	
-	
-	
 	public final static int GetterSymbol = 1;
 	public final static int SetterSymbol = 2;
 	public final static int MetaSymbol   = 3;
+
+	
 	
 	public final static int AllowNewId = -1;
 	public final static int NoMatch = -1;
@@ -111,4 +111,7 @@ public interface KonohaParserConst {
 //	TypeCheckPolicy_Creation       = (1 << 6)   /* TypeCheckNodeByName */
 //} TypeCheckPolicy;
 
+	
+	public final static String GlobalConstName = "global";
+	
 }
