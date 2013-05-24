@@ -5,7 +5,7 @@ import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ErrorNode extends TypedNode {
-	String ErrorMessage;
+	public String	ErrorMessage;
 
 	public ErrorNode(KClass TypeInfo, KToken KeyToken, String ErrorMessage) {
 		super(TypeInfo);

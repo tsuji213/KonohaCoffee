@@ -3,8 +3,8 @@ package org.KonohaScript.SyntaxTree;
 import org.KonohaScript.KClass;
 
 public abstract class BinaryNode extends TypedNode {
-	TypedNode Left;
-	TypedNode Right;
+	public TypedNode	Left;
+	public TypedNode	Right;
 
 	BinaryNode(KClass TypeInfo, TypedNode Left, TypedNode Right) {
 		super(TypeInfo);

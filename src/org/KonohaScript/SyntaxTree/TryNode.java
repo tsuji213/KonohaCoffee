@@ -11,10 +11,10 @@ public class TryNode extends TypedNode {
 	 * CatchedExceptions[0] then CatchBlock[0] if HasException ==
 	 * CatchedExceptions[1] then CatchBlock[1] ... FinallyBlock end
 	 */
-	TypedNode TryBlock;
-	ArrayList<TypedNode> TargetException;
-	public ArrayList<TypedNode> CatchBlock;
-	TypedNode FinallyBlock;
+	public TypedNode			TryBlock;
+	public ArrayList<TypedNode>	TargetException;
+	public ArrayList<TypedNode>	CatchBlock;
+	public TypedNode			FinallyBlock;
 
 	public TryNode(KClass TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
 		super(TypeInfo);

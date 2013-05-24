@@ -91,12 +91,12 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 
 	@Override
-	public void EnterDone(DefNode Node) {
+	public void EnterDef(DefNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public boolean ExitDone(DefNode Node) {
+	public boolean ExitDef(DefNode Node) {
 		return true;
 	}
 
