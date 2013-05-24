@@ -41,8 +41,8 @@ public final class KNameSpace implements KonohaConst {
 		this.ParentNameSpace = parent;
 		if(parent != null) {
 			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
-			for (int i = 0; i < KonohaChar.MAX; i++) {
-				if (parent.ImportedTokenMatrix[i] != null) {
+			for(int i = 0; i < KonohaChar.MAX; i++) {
+				if(parent.ImportedTokenMatrix[i] != null) {
 					ImportedTokenMatrix[i] = parent.GetTokenFunc(i).Duplicate();
 				}
 			}
@@ -68,9 +68,9 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	KFunc MergeFunc(KFunc f, KFunc f2) {
-		if (f == null)
+		if(f == null)
 			return f2;
-		if (f2 == null)
+		if(f2 == null)
 			return f;
 		return f.Merge(f2);
 	}
@@ -83,12 +83,12 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	KFunc GetTokenFunc(int kchar) {
-		if (ImportedTokenMatrix == null) {
+		if(ImportedTokenMatrix == null) {
 			return null;
 		}
-		if (ImportedTokenMatrix[kchar] == null) {
+		if(ImportedTokenMatrix[kchar] == null) {
 			KFunc func = null;
-			if (ParentNameSpace != null) {
+			if(ParentNameSpace != null) {
 				func = ParentNameSpace.GetTokenFunc(kchar);
 			}
 			func = MergeFunc(func, GetDefinedTokenFunc(kchar));
@@ -99,13 +99,13 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	public void AddTokenFunc(String keys, Object callee, String name) {
-		if (DefinedTokenMatrix == null) {
+		if(DefinedTokenMatrix == null) {
 			DefinedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
-		if (ImportedTokenMatrix == null) {
+		if(ImportedTokenMatrix == null) {
 			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
-		for (int i = 0; i < keys.length(); i++) {
+		for(int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
 			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
 			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
@@ -159,11 +159,11 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	public void DefineSymbol(String Symbol, Object Value) {
-		if (DefinedSymbolTable == null) {
+		if(DefinedSymbolTable == null) {
 			DefinedSymbolTable = new HashMap<String, Object>();
 		}
 		DefinedSymbolTable.put(Symbol, Value);
-		if (ImportedSymbolTable == null) {
+		if(ImportedSymbolTable == null) {
 			ImportedSymbolTable = new HashMap<String, Object>();
 		}
 		ImportedSymbolTable.put(Symbol, Value);
@@ -228,13 +228,13 @@ public final class KNameSpace implements KonohaConst {
 			ImportedNameSpaceList = new ArrayList<KNameSpace>();
 			ImportedNameSpaceList.add(ns);
 		}
-		if (ImportedTokenMatrix == null) {
+		if(ImportedTokenMatrix == null) {
 			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
 		}
 
 		if(ns.DefinedTokenMatrix != null) {
-			for (int i = 0; i < KonohaChar.MAX; i++) {
-				if (ns.DefinedTokenMatrix[i] != null) {
+			for(int i = 0; i < KonohaChar.MAX; i++) {
+				if(ns.DefinedTokenMatrix[i] != null) {
 					ImportedTokenMatrix[i] = MergeFunc(GetTokenFunc(i), ns.DefinedTokenMatrix[i]);
 				}
 			}
@@ -253,13 +253,13 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	public String Message(int Level, KToken Token, String Message) {
-		if (!Token.IsErrorToken()) {
-			if (Level == Error) {
+		if(!Token.IsErrorToken()) {
+			if(Level == Error) {
 				Message = "(error) " + GetSourcePosition(Token.uline) + " " + Message;
 				Token.SetErrorMessage(Message);
-			} else if (Level == Warning) {
+			} else if(Level == Warning) {
 				Message = "(warning) " + GetSourcePosition(Token.uline) + " " + Message;
-			} else if (Level == Info) {
+			} else if(Level == Info) {
 				Message = "(info) " + GetSourcePosition(Token.uline) + " " + Message;
 			}
 			System.out.println(Message);
@@ -338,9 +338,9 @@ class KonohaTokenizer implements KonohaConst {
 	}
 
 	int StampLine(int StartIdx) {
-		for (int i = StartIdx; i < SourceList.size(); i++) {
+		for(int i = StartIdx; i < SourceList.size(); i++) {
 			KToken token = SourceList.get(i);
-			if (token.ResolvedSyntax == KSyntax.IndentSyntax) {
+			if(token.ResolvedSyntax == KSyntax.IndentSyntax) {
 				CurrentLine = CurrentLine + 1;
 			}
 			token.uline = CurrentLine;
@@ -353,7 +353,7 @@ class KonohaTokenizer implements KonohaConst {
 		int UnusedIdx = SourceList.size();
 		while (FuncStack != null) {
 			int NextIdx = FuncStack.InvokeTokenFunc(ns, SourceText, pos, SourceList);
-			if (NextIdx != -1) {
+			if(NextIdx != -1) {
 				UnusedIdx = StampLine(UnusedIdx);
 				return NextIdx;
 			}
@@ -372,7 +372,7 @@ class KonohaTokenizer implements KonohaConst {
 		while (pos < len) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(SourceText.charAt(pos));
 			int pos2 = DispatchFunc(kchar, pos);
-			if (!(pos < pos2))
+			if(!(pos < pos2))
 				break;
 			pos = pos2;
 		}

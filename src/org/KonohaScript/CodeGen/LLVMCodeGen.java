@@ -45,7 +45,7 @@
 //	@Override
 //	public void Prepare(KMethod Method, ArrayList<Local> params) {
 //		this.Prepare(Method);
-//		for (int i = 0; i < params.size(); i++) {
+//		for(int i = 0; i < params.size(); i++) {
 //			Local local = params.get(i);
 //			this.AddLocal(local.TypeInfo, local.Name);
 //		}
@@ -57,15 +57,15 @@
 //		CompiledMethod Mtd = new CompiledMethod();
 //		assert (this.Program.size() == 1);
 //		String Prog = this.Program.remove(0);
-//		if (this.MethodInfo != null) {
+//		if(this.MethodInfo != null) {
 //			Local thisNode = this.FindLocalVariable("this");
 //			String Signature = this.MethodInfo.GetReturnType(null/* FIXME */).ShortClassName + " " +
 //					thisNode.TypeInfo.ShortClassName + "." +
 //					this.MethodInfo.MethodName;
 //			String Param = "";
-//			for (int i = 1; i < this.LocalVals.size(); i++) {
+//			for(int i = 1; i < this.LocalVals.size(); i++) {
 //				Local local = this.GetLocalVariableByIndex(i);
-//				if (i != 1) {
+//				if(i != 1) {
 //					Param = Param + ", ";
 //				}
 //				Param = Param + local.TypeInfo.ShortClassName + " " + local.Name;

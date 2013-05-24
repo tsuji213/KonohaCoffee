@@ -46,7 +46,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public void Prepare(KMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for (int i = 0; i < params.size(); i++) {
+		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
@@ -58,7 +58,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		CompiledMethod Mtd = new CompiledMethod(MethodInfo);
 		assert (this.getProgramSize() == 1);
 		String Source = pop();
-		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
@@ -68,9 +68,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			FuncBuilder.append(MethodName);
 			FuncBuilder.append(" = function(");
 
-			for (int i = 1; i < this.LocalVals.size(); i++) {
+			for(int i = 1; i < this.LocalVals.size(); i++) {
 				Local local = this.GetLocalVariableByIndex(i);
-				if (i != 1) {
+				if(i != 1) {
 					FuncBuilder.append(", ");
 				}
 				FuncBuilder.append(local.Name);
@@ -268,9 +268,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		String ThenBlock = pop();
 		String CondExpr = pop();
 		if(Node.ElseNode instanceof BlockNode && ((BlockNode)Node.ElseNode).ExprList.size() > 0){
-			push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
+			push("if(" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
 		}else{
-			push("if (" + CondExpr + ") " + ThenBlock);
+			push("if(" + CondExpr + ") " + ThenBlock);
 		}
 		return true;
 	}
@@ -284,7 +284,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitSwitch(SwitchNode Node) {
 		int Size = Node.Labels.size();
 		String Exprs = "";
-		for (int i = 0; i < Size; i = i + 1) {
+		for(int i = 0; i < Size; i = i + 1) {
 			String Label = Node.Labels.get(Size - i);
 			String Block = pop();
 			Exprs = "case " + Label + ":" + Block + Exprs;
@@ -329,9 +329,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitLabel(LabelNode Node) {
 		String Label = Node.Label;
-		if (Label.compareTo("continue") == 0) {
+		if(Label.compareTo("continue") == 0) {
 			push("");
-		} else if (Label.compareTo("continue") == 0) {
+		} else if(Label.compareTo("continue") == 0) {
 			push("");
 		} else {
 			push(Label + ":");
@@ -347,9 +347,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitJump(JumpNode Node) {
 		String Label = Node.Label;
-		if (Label.compareTo("continue") == 0) {
+		if(Label.compareTo("continue") == 0) {
 			push("continue;");
-		} else if (Label.compareTo("continue") == 0) {
+		} else if(Label.compareTo("continue") == 0) {
 			push("break;");
 		} else {
 			push("goto " + Label);
@@ -366,7 +366,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = pop();
 		String CatchBlocks = "";
-		for (int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
+		for(int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
 			String Block = pop();
 			CatchBlocks = "catch() " + Block + CatchBlocks;
 		}
@@ -418,12 +418,12 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitDefineClass(DefineClassNode Node) {
 		String Exprs = "";
 		int Size = Node.Fields.size();
-		for (int i = 0; i < Size; i = i + 1) {
+		for(int i = 0; i < Size; i = i + 1) {
 			String Expr = this.pop();
 			Exprs = Expr + ";" + Exprs;
 		}
 		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
-		if (Node.TypeInfo.SearchSuperMethodClass != null) {
+		if(Node.TypeInfo.SearchSuperMethodClass != null) {
 			Value = Value + Node.TypeInfo.ShortClassName + " ";
 		}
 		this.push(Value + "{" + Exprs + "}");

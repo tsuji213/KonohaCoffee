@@ -42,8 +42,8 @@ public class BlockNode extends TypedNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterBlock(this);
-		for (TypedNode Node : this.ExprList) {
-			if (Visitor.Visit(Node) == false) {
+		for(TypedNode Node : this.ExprList) {
+			if(Visitor.Visit(Node) == false) {
 				break;
 			}
 		}

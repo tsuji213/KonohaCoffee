@@ -64,7 +64,7 @@ public class LeafJSCodeGenTest {
 			CompiledMethod Mtd = G.Compile(Block);
 			assert (Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
-			Check("if (true) { new Object(); } else { return false; }", Program);
+			Check("if(true) { new Object(); } else { return false; }", Program);
 		}
 	}
 
