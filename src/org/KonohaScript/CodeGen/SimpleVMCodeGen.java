@@ -125,7 +125,6 @@ public class SimpleVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitNull(NullNode Node) {
 		this.push("null");
 		return true;
-
 	}
 
 	@Override
@@ -137,7 +136,6 @@ public class SimpleVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitLocal(LocalNode Node) {
 		this.push(Node.FieldName);
 		return true;
-
 	}
 
 	@Override
@@ -152,7 +150,6 @@ public class SimpleVMCodeGen extends SourceCodeGen implements ASTVisitor {
 		// FIXME
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		return true;
-
 	}
 
 	@Override
@@ -163,7 +160,6 @@ public class SimpleVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitBox(BoxNode Node) {
 		/* do nothing */return true;
-
 	}
 
 	@Override
