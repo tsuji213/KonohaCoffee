@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public final class KNameSpace implements KonohaParserConst {
+public final class KNameSpace implements KonohaConst {
 
 	public Konoha KonohaContext;
 	KNameSpace ParentNameSpace;
@@ -39,7 +39,6 @@ public final class KNameSpace implements KonohaParserConst {
 	KNameSpace(Konoha konoha, KNameSpace parent) {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = parent;
-
 		if(parent != null) {
 			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
 			for (int i = 0; i < KonohaChar.MAX; i++) {
@@ -216,14 +215,13 @@ public final class KNameSpace implements KonohaParserConst {
 	}
 	
 	public KObject GetGlobalObject() {
-		Object GlobalObject = GetDefinedSymbol("global");
+		Object GlobalObject = GetDefinedSymbol(GlobalConstName);
 		if(GlobalObject == null || !(GlobalObject instanceof KObject)) {
 			GlobalObject = CreateGlobalObject(SingletonClass, "*GlobalType*");
-			DefineSymbol("global", GlobalObject);
+			DefineSymbol(GlobalConstName, GlobalObject);
 		}
 		return (KObject)GlobalObject;
 	}
-
 	
 	public void ImportNameSpace(KNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
@@ -250,11 +248,6 @@ public final class KNameSpace implements KonohaParserConst {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
-	// TypedNode Type(KGamma gma, UntypedNode node) {
-	// return node.Syntax.InvokeTypeFunc(gma, node);
-	// }
-
-
 	String GetSourcePosition(long uline) {
 		return "(eval:" + (int) uline + ")";
 	}
@@ -275,7 +268,8 @@ public final class KNameSpace implements KonohaParserConst {
 		return Token.GetErrorMessage();
 	}
 		
-	public void Eval(String text, long uline) {
+	public Object Eval(String text, long uline) {
+		Object ResultValue = null;
 		System.out.println("Eval: " + text);
 		ArrayList<KToken> BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
@@ -283,18 +277,50 @@ public final class KNameSpace implements KonohaParserConst {
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
-			KGamma Gamma = new KGamma(this);
-			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, KonohaContext.VoidType, 0);
-			if(TNode != null) {
-//				Builder = GetBuilder();
-				//TNode.Eval();
-			}
+			KGamma Gamma = new KGamma(this, null);
+			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+			KonohaBuilder Builder = GetBuilder();
+			ResultValue = Builder.EvalAtTopLevel(TNode);
 			UNode = UNode.NextNode;
 		}
+		return ResultValue;
+	}
+	
+	// Builder 
+	
+	public KonohaBuilder Builder;
+
+	public KonohaBuilder GetBuilder() {
+		if(Builder == null)  {
+			if(ParentNameSpace != null) {
+				return ParentNameSpace.GetBuilder();
+			}
+			Builder = new KonohaBuilder(); // create default builder
+		}
+		return Builder;
+	}
+	
+	public boolean LoadBuilder(String Name) {
+		Class<?> BuilderClass;
+		try {
+			BuilderClass = Class.forName(Name);
+			this.Builder = (KonohaBuilder)BuilderClass.newInstance();
+			return true;
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
 
-class KonohaTokenizer implements KonohaParserConst {
+class KonohaTokenizer implements KonohaConst {
 	KNameSpace ns;
 	String SourceText;
 	long CurrentLine;

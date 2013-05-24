@@ -48,7 +48,7 @@ class KParamMap {
 	}
 }
 
-class KSymbolTable implements KonohaParserConst {
+class KSymbolTable implements KonohaConst {
 	ArrayList<KClass> ClassList;
 	HashMap<String, KClass> ClassNameMap;
 
@@ -119,13 +119,13 @@ class KSymbolTable implements KonohaParserConst {
 
 	public String StringfySymbol(int Symbol) {
 		String key = this.SymbolList.get(KSymbolTable.UnmaskSymbol(Symbol));
-		if ((Symbol & KonohaParserConst.GetterSymbol) == KonohaParserConst.GetterSymbol) {
+		if ((Symbol & KonohaConst.GetterSymbol) == KonohaConst.GetterSymbol) {
 			return "Get" + key;
 		}
-		if ((Symbol & KonohaParserConst.SetterSymbol) == KonohaParserConst.SetterSymbol) {
+		if ((Symbol & KonohaConst.SetterSymbol) == KonohaConst.SetterSymbol) {
 			return "Get" + key;
 		}
-		if ((Symbol & KonohaParserConst.MetaSymbol) == KonohaParserConst.MetaSymbol) {
+		if ((Symbol & KonohaConst.MetaSymbol) == KonohaConst.MetaSymbol) {
 			return "\\" + key;
 		}
 		return key;
@@ -137,19 +137,19 @@ class KSymbolTable implements KonohaParserConst {
 		if (Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
 			if (Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
 				key = Symbol.substring(3);
-				mask = KonohaParserConst.GetterSymbol;
+				mask = KonohaConst.GetterSymbol;
 			}
 			if (Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
 				key = Symbol.substring(3);
-				mask = KonohaParserConst.SetterSymbol;
+				mask = KonohaConst.SetterSymbol;
 			}
 		}
 		if (Symbol.startsWith("\\")) {
-			mask = KonohaParserConst.MetaSymbol;
+			mask = KonohaConst.MetaSymbol;
 		}
 		Integer id = this.SymbolMap.get(key);
 		if (id == null) {
-			if (DefaultValue == KonohaParserConst.AllowNewId) {
+			if (DefaultValue == KonohaConst.AllowNewId) {
 				int n = this.SymbolList.size();
 				this.SymbolList.add(key);
 				this.SymbolMap.put(
@@ -197,7 +197,7 @@ class KSymbolTable implements KonohaParserConst {
 	// }
 }
 
-public class Konoha implements KonohaParserConst {
+public class Konoha implements KonohaConst {
 
 	KNameSpace RootNameSpace;
 	KNameSpace DefaultNameSpace;

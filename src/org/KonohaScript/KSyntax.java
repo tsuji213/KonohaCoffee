@@ -32,7 +32,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public final class KSyntax implements KonohaParserConst {
+public final class KSyntax implements KonohaConst {
 
 	public KNameSpace PackageNameSpace;
 	public String SyntaxName;

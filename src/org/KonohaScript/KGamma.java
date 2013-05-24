@@ -13,7 +13,7 @@ class VarSet {
 	}
 }
 
-public class KGamma {
+public class KGamma implements KonohaConst {
 	
 	public KNameSpace GammaNameSpace; 
 	
@@ -24,13 +24,28 @@ public class KGamma {
 	public final KClass StringType;
 	public final KClass VarType;
 	
-	KGamma(KNameSpace ns) {
-		GammaNameSpace = ns;
-		VoidType = ns.KonohaContext.VoidType;
-		BooleanType = ns.KonohaContext.BooleanType;
-		IntType = ns.KonohaContext.IntType;
-		StringType = ns.KonohaContext.StringType;
-		VarType = ns.KonohaContext.VarType;
+	KGamma(KNameSpace GammaNameSpace, KMethod Method) {
+		this.GammaNameSpace = GammaNameSpace;
+		this.VoidType = GammaNameSpace.KonohaContext.VoidType;
+		this.BooleanType = GammaNameSpace.KonohaContext.BooleanType;
+		this.IntType = GammaNameSpace.KonohaContext.IntType;
+		this.StringType = GammaNameSpace.KonohaContext.StringType;
+		this.VarType = GammaNameSpace.KonohaContext.VarType;
+		this.Method = Method;
+		if(Method != null) {
+			InitMethod(Method);
+		}
+	}
+
+	public KMethod    Method;
+	public KClass     ReturnType;
+	
+	void InitMethod(KMethod Method) {
+		this.ReturnType = Method.GetReturnType(Method.ClassInfo);
+		if(!Method.Is(StaticMethod)) {
+			AppendLocalType(Method.ClassInfo, "this");
+			KonohaDebug.TODO("Parameters must be appended at KGamma.InitMethod()");
+		}
 	}
 	
 	ArrayList<VarSet> LocalStackList = null;
@@ -62,7 +77,7 @@ public class KGamma {
 	}
 	
 	public TypedNode NewErrorNode(KToken KeyToken, String Message) {
-		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaParserConst.Error, KeyToken, Message));
+		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaConst.Error, KeyToken, Message));
 	}
 	
 	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {

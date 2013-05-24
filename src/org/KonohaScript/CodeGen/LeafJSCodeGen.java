@@ -9,7 +9,7 @@ import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
-import org.KonohaScript.SyntaxTree.DoneNode;
+import org.KonohaScript.SyntaxTree.DefNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -139,12 +139,12 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 
 	@Override
-	public void EnterDone(DoneNode Node) {
+	public void EnterDone(DefNode Node) {
 		/* do nothing */
 	}
 
 	@Override
-	public boolean ExitDone(DoneNode Node) {
+	public boolean ExitDone(DefNode Node) {
 		return true;
 	}
 

@@ -24,13 +24,15 @@
 
 package org.KonohaScript;
 
+import java.util.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class KMethod implements KonohaParserConst {
+import org.KonohaScript.SyntaxTree.TypedNode;
 
-	public int MethodFlag;
+public class KMethod extends KonohaDef implements KonohaConst {
+
 	public KClass ClassInfo;
 	public String MethodName;
 	// int MethodSymbol;
@@ -50,6 +52,11 @@ public class KMethod implements KonohaParserConst {
 		this.MethodRef = MethodRef;
 	}
 
+	public int MethodFlag;
+	public boolean Is(int Flag) {
+		return ((MethodFlag & Flag) == Flag);
+	}
+	
 	public final KClass GetReturnType(KClass BaseType) {
 		KClass ReturnType = Param.Types[0];
 		return ReturnType;
@@ -108,6 +115,32 @@ public class KMethod implements KonohaParserConst {
 		}
 		KonohaDebug.P("ParamSize: " + ParamSize);
 		return null;
+	}
+
+
+	// DoLazyComilation();
+	
+	KNameSpace LazyNameSpace;
+	ArrayList<KToken> SourceList;
+	
+	public KMethod(int MethodFlag, KClass ClassInfo, String MethodName, KParam Param, KNameSpace LazyNameSpace, ArrayList<KToken> SourceList) {
+		this(MethodFlag, ClassInfo, MethodName, Param, null);
+		this.LazyNameSpace = LazyNameSpace;
+		this.SourceList = SourceList;
+	}
+	
+	public KMethod DoCompilation() {
+		if(MethodRef == null) {
+			ArrayList<KToken> BufferList = new ArrayList<KToken>();
+			LazyNameSpace.PreProcess(SourceList, 0, SourceList.size(), BufferList);
+			UntypedNode UNode = UntypedNode.ParseNewNode(LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
+			System.out.println("untyped tree: " + UNode);
+			KGamma Gamma = new KGamma(LazyNameSpace, this);
+			TypedNode TNode = KGamma.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+			KonohaBuilder Builder = LazyNameSpace.GetBuilder();
+			return Builder.Build(TNode, this);
+		}
+		return this;
 	}
 
 }
