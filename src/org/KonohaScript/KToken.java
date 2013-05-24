@@ -91,7 +91,7 @@ public final class KToken {
 	void Dump(int Level) {
 		String Syntax = (ResolvedSyntax == null) ? "null" : ResolvedSyntax.SyntaxName;
 		System.out.println("[" + Syntax + "+" + (int) uline + "] '" + ParsedText + "'");
-		if (IsGroupToken()) {
+		if(IsGroupToken()) {
 			ArrayList<KToken> group = GetGroupList();
 			DumpTokenList(Level + 1, null, group, 0, group.size());
 		}
@@ -103,7 +103,7 @@ public final class KToken {
 			System.out.println("Begin: " + Message);
 			Level++;
 		}
-		for (int i = BeginIdx; i < EndIdx; i++) {
+		for(int i = BeginIdx; i < EndIdx; i++) {
 			KToken Token = TokenList.get(i);
 			KonohaDebug.Indent(Level, Tab);			
 			System.out.print("<"+i +"> "); 

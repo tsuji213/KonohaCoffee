@@ -41,7 +41,7 @@ public class MethodCallNode extends TypedNode implements CallableNode {
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterMethodCall(this);
-		for (TypedNode Node : this.Params) {
+		for(TypedNode Node : this.Params) {
 			Visitor.Visit(Node);
 		}
 		return Visitor.ExitMethodCall(this);

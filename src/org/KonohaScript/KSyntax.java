@@ -162,7 +162,7 @@ class CommonSyntax {
 
 	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode Node, KClass ReqType) {
 		KClass TypeInfo = Gamma.GetLocalType(Node.KeyToken.ParsedText);
-		if (TypeInfo != null) {
+		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, Node.KeyToken, Node.KeyToken.ParsedText);
 		}
 		return Gamma.NewErrorNode(Node.KeyToken, "undefined name: " + Node.KeyToken.ParsedText);

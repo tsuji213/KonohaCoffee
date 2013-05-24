@@ -21,7 +21,7 @@ public class SwitchNode extends TypedNode {
 	public boolean Evaluate(ASTVisitor Visitor) {
 		Visitor.EnterSwitch(this);
 		Visitor.Visit(this.CondExpr);
-		for (TypedNode Node : this.Blocks) {
+		for(TypedNode Node : this.Blocks) {
 			Visitor.Visit(Node);
 		}
 		return Visitor.ExitSwitch(this);
