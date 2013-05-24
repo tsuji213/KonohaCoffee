@@ -77,121 +77,11 @@ class IndentGenerator{
 	}
 }
 
-public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
-	ArrayList<String> Program;
-	ArrayList<Integer> CurrentProgramSize;
-
-	IndentGenerator indentGenerator = new IndentGenerator(4);
+public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	private boolean UseLetKeyword = false;
 
 	public LeafJSCodeGen() {
 		super(null);
-		this.Program = new ArrayList<String>();
-		this.CurrentProgramSize = new ArrayList<Integer>();
-	}
-
-	private String pop() {
-		return this.Program.remove(this.Program.size() - 1);
-	}
-
-	private void push(String Program) {
-		this.Program.add(Program);
-	}
-
-	private int PopProgramSize() {
-		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
-	}
-
-	private void PushProgramSize() {
-		this.CurrentProgramSize.add(this.Program.size());
-	}
-
-	private String[] PopN(int n){
-		String[] array = new String[n];
-		for(int i = 0; i < n; ++i){
-			array[i] = pop();
-		}
-		return array;
-	}
-
-	private String[] PopNReverse(int n){
-		String[] array = new String[n];
-		for(int i = 0; i < n; ++i){
-			array[n-i-1] = pop();
-		}
-		return array;
-	}
-
-	private void PopNAndJoin(StringBuilder builder, int n, String delim){
-		if(delim == null){
-			delim = "";
-		}
-		String[] array = PopN(n);
-		for(int i = 0; i < n; ++i){
-			if(i > 0){
-				builder.append(delim);
-			}
-			builder.append(array[i]);
-		}
-	}
-
-	private String PopNAndJoin(int n, String delim){
-		StringBuilder builder = new StringBuilder();
-		PopNAndJoin(builder, n ,delim);
-		return builder.toString();
-	}
-
-	private void PopNWithSuffix(StringBuilder builder, int n, String suffix){
-		if(suffix == null){
-			suffix = "";
-		}
-		String[] array = PopN(n);
-		for(int i = 0; i < n; ++i){
-			builder.append(array[i]);
-			builder.append(suffix);
-		}
-	}
-
-	private String PopNWithSuffix(int n, String suffix){
-		StringBuilder builder = new StringBuilder();
-		PopNWithSuffix(builder, n ,suffix);
-		return builder.toString();
-	}
-
-	private void PopNReverseAndJoin(StringBuilder builder, int n, String delim){
-		if(delim == null){
-			delim = "";
-		}
-		String[] array = PopNReverse(n);
-		for(int i = 0; i < n; ++i){
-			if(i > 0){
-				builder.append(delim);
-			}
-			builder.append(array[i]);
-		}
-	}
-
-	private String PopNReverseAndJoin(int n, String delim){
-		StringBuilder builder = new StringBuilder();
-		PopNReverseAndJoin(builder, n ,delim);
-		return builder.toString();
-	}
-
-	private void PopNReverseWithSuffix(StringBuilder builder, int n, String suffix){
-		if(suffix == null){
-			suffix = "";
-		}
-		String[] array = PopNReverse(n);
-		for(int i = 0; i < n; ++i){
-			builder.append(array[i]);
-			builder.append(suffix);
-		}
-	}
-
-	private String PopNReverseWithSuffix(int n, String suffix){
-		StringBuilder builder = new StringBuilder();
-		PopNReverseWithSuffix(builder, n ,suffix);
-		return builder.toString();
 	}
 
 	@Override
@@ -214,8 +104,8 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	public CompiledMethod Compile(TypedNode Block) {
 		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod(MethodInfo);
-		assert (this.Program.size() == 1);
-		String Source = this.Program.remove(0);
+		assert (this.getProgramSize() == 1);
+		String Source = pop();
 		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
@@ -335,16 +225,6 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 		/* do nothing */
 	}
 
-	private static String[] binaryOpList = {"+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>"};
-
-	private boolean isMethodBinaryOperator(MethodCallNode Node){
-		String methodName = Node.Method.MethodName;
-		for(String op : binaryOpList){
-			if(op.equals(methodName)) return true;
-		}
-		return false;
-	}
-
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
 		String methodName = Node.Method.MethodName;
@@ -420,7 +300,7 @@ public class LeafJSCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
 		IndentGenerator g = indentGenerator;
-		int Size = this.Program.size() - this.PopProgramSize();
+		int Size = this.getProgramSize() - this.PopProgramSize();
 		push("{\n" + g.get() + PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n" + g.indentAndGet(-1) + "}");
 		return true;
 	}

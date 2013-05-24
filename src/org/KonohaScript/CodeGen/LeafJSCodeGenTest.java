@@ -40,7 +40,7 @@ public class LeafJSCodeGenTest {
 		KMethod GlobalFunction = new KMethod(0, VoidTy, "", Param, null);
 
 		{
-			LeafJSCodeGen G = new LeafJSCodeGen();
+			SourceCodeGen G = new LeafJSCodeGen();
 			G.Prepare(GlobalFunction);
 			TypedNode Block = new BlockNode(VoidTy,
 					new ReturnNode(IntTy,
@@ -52,7 +52,7 @@ public class LeafJSCodeGenTest {
 		}
 
 		{
-			LeafJSCodeGen G = new LeafJSCodeGen();
+			SourceCodeGen G = new LeafJSCodeGen();
 			G.Prepare(GlobalFunction);
 
 			TypedNode Block = new IfNode(VoidTy,
@@ -75,7 +75,7 @@ public class LeafJSCodeGenTest {
 		KClass IntTy = KonohaContext.IntType;
 		KClass StringTy = KonohaContext.StringType;
 
-		LeafJSCodeGen G = new LeafJSCodeGen();
+		SourceCodeGen G = new LeafJSCodeGen();
 
 		KClass[] ParamData1 = new KClass[2];
 		ParamData1[0] = IntTy;
