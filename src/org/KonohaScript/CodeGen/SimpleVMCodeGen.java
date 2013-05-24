@@ -8,8 +8,8 @@ import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefNode;
+import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -29,32 +29,12 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
-	ArrayList<String> Program;
-	ArrayList<Integer> CurrentProgramSize;
+public class SimpleVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	KMethod MethodInfo;
 
 	public SimpleVMCodeGen() {
 		super(null);
-		this.Program = new ArrayList<String>();
-		this.CurrentProgramSize = new ArrayList<Integer>();
 		this.MethodInfo = null;
-	}
-
-	private String pop() {
-		return this.Program.remove(this.Program.size() - 1);
-	}
-
-	private void push(String Program) {
-		this.Program.add(Program);
-	}
-
-	private int PopProgramSize() {
-		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
-	}
-
-	private void PushProgramSize() {
-		this.CurrentProgramSize.add(this.Program.size());
 	}
 
 	@Override
@@ -77,8 +57,8 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	public CompiledMethod Compile(TypedNode Block) {
 		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod(MethodInfo);
-		assert (this.Program.size() == 1);
-		String Source = this.Program.remove(0);
+		assert (this.getProgramSize() == 1);
+		String Source = pop();
 		if (this.MethodInfo != null) {
 			Local thisNode = this.FindLocalVariable("this");
 			String Signature = this.MethodInfo.GetReturnType(null/* FIXME */).ShortClassName + " " +
@@ -193,20 +173,12 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
-		String Params = "";
 		String methodName = Node.Method.MethodName;
-		int ParamSize = Node.Params.size();
-		for (int i = 0; i < ParamSize - 1; i = i + 1) {
-			String Expr = this.pop();
-			if (i != 0) {
-				Params = "," + Params;
-			}
-			Params = Expr + Params;
-		}
+		int ParamSize = Node.Params.size() - 1;
+		String Params = PopNReverseAndJoin(ParamSize, ",");
 		String thisNode = this.pop();
 		this.push(thisNode + "." + methodName + "(" + Params + ")");
 		return true;
-
 	}
 
 	@Override
@@ -220,7 +192,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Left = this.pop();
 		this.push(Left + " && " + Right);
 		return true;
-
 	}
 
 	@Override
@@ -234,7 +205,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Left = this.pop();
 		this.push(Left + " || " + Right);
 		return true;
-
 	}
 
 	@Override
@@ -247,7 +217,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Right = this.pop();
 		this.push(Node.TermToken.ParsedText + " = " + Right);
 		return true;
-
 	}
 
 	@Override
@@ -261,25 +230,25 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Right = this.pop();
 		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
 		return true;
-
 	}
 
 	@Override
 	public void EnterBlock(BlockNode Node) {
 		this.PushProgramSize();
+		indentGenerator.indent(1);
 	}
 
 	@Override
 	public boolean ExitBlock(BlockNode Node) {
-		String Exprs = "";
-		int Size = this.Program.size() - this.PopProgramSize();
-		for (int i = 0; i < Size; i = i + 1) {
-			String Expr = this.pop();
-			Exprs = Expr + ";" + Exprs;
+		int Size = this.getProgramSize() - this.PopProgramSize();
+		IndentGenerator g = indentGenerator;
+		//this.push("{" + PopNReverseWithSuffix(Size, ";") + "}");
+		if(Size > 0){
+			push("{\n" + g.get() + PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n" + g.indentAndGet(-1) + "}");
+		}else{
+			push("{\n" + g.indentAndGet(-1) + "}");
 		}
-		this.push("{" + Exprs + "}");
 		return true;
-
 	}
 
 	@Override
@@ -294,7 +263,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String CondExpr = this.pop();
 		this.push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
 		return true;
-
 	}
 
 	@Override
@@ -328,7 +296,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String CondExpr = this.pop();
 		this.push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
 		return true;
-
 	}
 
 	@Override
@@ -341,7 +308,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Expr = this.pop();
 		this.push("return " + Expr);
 		return false;
-
 	}
 
 	@Override
@@ -360,7 +326,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 			this.push(Label + ":");
 		}
 		return true;
-
 	}
 
 	@Override
@@ -379,7 +344,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 			this.push("goto " + Label);
 		}
 		return false;
-
 	}
 
 	@Override
@@ -398,7 +362,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String TryBlock = this.pop();
 		this.push("try " + TryBlock + "" + CatchBlocks + FinallyBlock);
 		return true;
-
 	}
 
 	@Override
@@ -411,7 +374,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Expr = this.pop();
 		this.push("throw " + Expr + ";");
 		return false;
-
 	}
 
 	@Override
@@ -423,7 +385,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 	public boolean ExitFunction(FunctionNode Node) {
 		// TODO Auto-generated method stub
 		return true;
-
 	}
 
 	@Override
@@ -436,7 +397,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		String Expr = this.pop();
 		this.push("throw new Exception(" + Expr + ";");
 		return false;
-
 	}
 
 	@Override
@@ -458,7 +418,6 @@ public class SimpleVMCodeGen extends CodeGenerator implements ASTVisitor {
 		this.push(Value + "{" + Exprs + "}");
 
 		return true;
-
 	}
 
 }

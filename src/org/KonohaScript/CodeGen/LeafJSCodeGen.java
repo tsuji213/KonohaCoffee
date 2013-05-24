@@ -8,8 +8,8 @@ import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefNode;
+import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -28,54 +28,6 @@ import org.KonohaScript.SyntaxTree.SwitchNode;
 import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
-
-class IndentGenerator{
-	private int level = 0;
-	private String currentLevelIndentString = "";
-	private String indentString = "\t";
-
-	public IndentGenerator(){
-	}
-
-	public IndentGenerator(int tabstop){
-		this.indentString = repeat(" ", tabstop);
-	}
-
-	private static String repeat(String str, int n){
-		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < n; ++i){
-			builder.append(str);
-		}
-		return builder.toString();
-	}
-
-	public void setLevel(int level){
-		if(level < 0) level = 0;
-		if(this.level != level){
-			this.level = level;
-			currentLevelIndentString = repeat(indentString, level);
-		}
-	}
-
-	public void indent(int n){
-		setLevel(level + n);
-	}
-
-	public String get(){
-		return currentLevelIndentString;
-	}
-
-	public String getAndIndent(int diffLevel){
-		String current = currentLevelIndentString;
-		indent(diffLevel);
-		return current;
-	}
-
-	public String indentAndGet(int diffLevel){
-		indent(diffLevel);
-		return currentLevelIndentString;
-	}
-}
 
 public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	private boolean UseLetKeyword = false;

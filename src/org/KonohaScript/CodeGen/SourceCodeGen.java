@@ -5,13 +5,61 @@ import java.util.ArrayList;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.MethodCallNode;
 
+class IndentGenerator{
+	private int level = 0;
+	private String currentLevelIndentString = "";
+	private String indentString = "\t";
+
+	public IndentGenerator(){
+	}
+
+	public IndentGenerator(int tabstop){
+		this.indentString = repeat(" ", tabstop);
+	}
+
+	private static String repeat(String str, int n){
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < n; ++i){
+			builder.append(str);
+		}
+		return builder.toString();
+	}
+
+	public void setLevel(int level){
+		if(level < 0) level = 0;
+		if(this.level != level){
+			this.level = level;
+			currentLevelIndentString = repeat(indentString, level);
+		}
+	}
+
+	public void indent(int n){
+		setLevel(level + n);
+	}
+
+	public String get(){
+		return currentLevelIndentString;
+	}
+
+	public String getAndIndent(int diffLevel){
+		String current = currentLevelIndentString;
+		indent(diffLevel);
+		return current;
+	}
+
+	public String indentAndGet(int diffLevel){
+		indent(diffLevel);
+		return currentLevelIndentString;
+	}
+}
+
 public abstract class SourceCodeGen extends CodeGenerator {
 	private ArrayList<String> Program;
 	private ArrayList<Integer> CurrentProgramSize;
 
 	protected final IndentGenerator indentGenerator = new IndentGenerator(4);
 	private static String[] binaryOpList = {"+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>"};
-	
+
 	public SourceCodeGen() {
 		this(null);
 	}
@@ -28,7 +76,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		}
 		return false;
 	}
-	
+
 	protected int getProgramSize(){
 		return this.Program.size();
 	}
