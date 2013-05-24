@@ -539,6 +539,7 @@ public final class MiniKonoha implements KonohaConst {
 		}
 		KParam Param = new KParam(ParamSize+1, ParamData);
 		KMethod Method = new KMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
+		BaseType.DefineMethod(MethodFlag, MethodName, Param, Callee, LocalName)
 		return new DefNode(TypeInfo, Method);
 	}
 	

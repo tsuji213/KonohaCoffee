@@ -113,16 +113,14 @@ public class KClass {
 	}
 
 	public void AddMethod(KMethod Method) {
-		if (this.ClassMethodList == KClass.EmptyMethodList) {
-			this.ClassMethodList = new ArrayList<KMethod>();
+		if (ClassMethodList == KClass.EmptyMethodList) {
+			ClassMethodList = new ArrayList<KMethod>();
 		}
-		this.ClassMethodList.add(Method);
+		ClassMethodList.add(Method);
 	}
-
-	public void DefineMethod(int MethodFlag, String MethodName, KParam Param,
-			Object Callee, String LocalName) {
-		KMethod Method = new KMethod(MethodFlag, this, MethodName, Param,
-				KFunc.LookupMethod(Callee, LocalName));
+	
+	public void DefineMethod(int MethodFlag, String MethodName, KParam Param, Object Callee, String LocalName) {
+		KMethod Method = new KMethod(MethodFlag, this, MethodName, Param, KFunc.LookupMethod(Callee, LocalName));
 		if (this.ClassMethodList == KClass.EmptyMethodList) {
 			this.ClassMethodList = new ArrayList<KMethod>();
 		}
@@ -130,8 +128,8 @@ public class KClass {
 	}
 
 	public KMethod LookupMethod(String MethodName, int ParamSize) {
-		for (int i = 0; i < this.ClassMethodList.size(); i++) {
-			KMethod Method = this.ClassMethodList.get(i);
+		for (int i = 0; i < ClassMethodList.size(); i++) {
+			KMethod Method = ClassMethodList.get(i);
 			if (Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
@@ -149,9 +147,17 @@ public class KClass {
 		}
 		return null;
 	}
+	
+	public boolean DefineMethod(KMethod Method) {
+		for (int i = 0; i < ClassMethodList.size(); i++) {
+			KMethod Method = ClassMethodList.get(i);
+			if (Method.Match(MethodName, ParamSize)) {
+				return Method;
+			}
+		}
 
-	// public KMethod LookupMethod(String symbol, int ParamSize) {
-	// return null;
-	// }
+		AddMethod(Method);
+	}
+
 
 }

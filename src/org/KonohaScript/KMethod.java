@@ -67,6 +67,10 @@ public class KMethod extends KonohaDef implements KonohaConst {
 		return ParamType;
 	}
 
+	public final boolean Match(KMethod Other) {
+		return (MethodName.equals(Other.MethodName) && Param.Match(Other.Param));
+	}
+	
 	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
 		if (MethodName.equals(this.MethodName)) {
 			if (Param.GetParamSize() == ParamSize) {

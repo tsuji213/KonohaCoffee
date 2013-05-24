@@ -34,6 +34,17 @@ public class KParam {
 
 	public final int GetParamSize() { return Types.length - ReturnSize; };
 	
+	public final boolean Match(KParam Other) {
+		int ParamSize = Other.GetParamSize();
+		if(ParamSize == GetParamSize()) {
+			for(int i = ReturnSize; i < Types.lengt; i++) {
+				if(Types[i] != Other.Types[i]) return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 //	public boolean Accept(int ParamSize, KClass[] Types) {
 //		if(ParamTypes. == ParamSize) {
 //			for(int i = 1; i < ParamSize; i++) {
