@@ -3,66 +3,87 @@ package org.KonohaScript.CodeGen;
 import java.util.ArrayList;
 
 import org.KonohaScript.KMethod;
+import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.BoxNode;
+import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.DefNode;
+import org.KonohaScript.SyntaxTree.DefineClassNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
+import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.JumpNode;
+import org.KonohaScript.SyntaxTree.LabelNode;
+import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.MethodCallNode;
+import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NullNode;
+import org.KonohaScript.SyntaxTree.OrNode;
+import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.SwitchNode;
+import org.KonohaScript.SyntaxTree.ThrowNode;
+import org.KonohaScript.SyntaxTree.TryNode;
+import org.KonohaScript.SyntaxTree.TypedNode;
 
-class IndentGenerator{
-	private int level = 0;
-	private String currentLevelIndentString = "";
-	private String indentString = "\t";
+class IndentGenerator {
+	private int		level						= 0;
+	private String	currentLevelIndentString	= "";
+	private String	indentString				= "\t";
 
-	public IndentGenerator(){
+	public IndentGenerator() {
 	}
 
-	public IndentGenerator(int tabstop){
+	public IndentGenerator(int tabstop) {
 		this.indentString = repeat(" ", tabstop);
 	}
 
-	private static String repeat(String str, int n){
+	private static String repeat(String str, int n) {
 		StringBuilder builder = new StringBuilder();
-		for(int i = 0; i < n; ++i){
+		for (int i = 0; i < n; ++i) {
 			builder.append(str);
 		}
 		return builder.toString();
 	}
 
-	public void setLevel(int level){
-		if(level < 0) level = 0;
-		if(this.level != level){
+	public void setLevel(int level) {
+		if (level < 0)
+			level = 0;
+		if (this.level != level) {
 			this.level = level;
 			currentLevelIndentString = repeat(indentString, level);
 		}
 	}
 
-	public void indent(int n){
+	public void indent(int n) {
 		setLevel(level + n);
 	}
 
-	public String get(){
+	public String get() {
 		return currentLevelIndentString;
 	}
 
-	public String getAndIndent(int diffLevel){
+	public String getAndIndent(int diffLevel) {
 		String current = currentLevelIndentString;
 		indent(diffLevel);
 		return current;
 	}
 
-	public String indentAndGet(int diffLevel){
+	public String indentAndGet(int diffLevel) {
 		indent(diffLevel);
 		return currentLevelIndentString;
 	}
 }
 
-public abstract class SourceCodeGen extends CodeGenerator {
-	private ArrayList<String> Program;
-	private ArrayList<Integer> CurrentProgramSize;
+public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor {
+	private final ArrayList<String>		Program;
+	private final ArrayList<Integer>	CurrentProgramSize;
 
-	protected final IndentGenerator indentGenerator = new IndentGenerator(4);
-	private static String[] binaryOpList = {"+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>"};
+	protected final IndentGenerator		indentGenerator	= new IndentGenerator(4);
+	private static String[]				binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>" };
 
 	public SourceCodeGen() {
 		this(null);
 	}
+
 	public SourceCodeGen(KMethod MethodInfo) {
 		super(MethodInfo);
 		this.Program = new ArrayList<String>();
@@ -71,13 +92,14 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	protected boolean isMethodBinaryOperator(MethodCallNode Node) {
 		String methodName = Node.Method.MethodName;
-		for(String op : binaryOpList){
-			if(op.equals(methodName)) return true;
+		for (String op : binaryOpList) {
+			if (op.equals(methodName))
+				return true;
 		}
 		return false;
 	}
 
-	protected int getProgramSize(){
+	protected int getProgramSize() {
 		return this.Program.size();
 	}
 
@@ -87,23 +109,23 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	private String[] PopN(int n) {
 		String[] array = new String[n];
-		for(int i = 0; i < n; ++i){
+		for (int i = 0; i < n; ++i) {
 			array[i] = pop();
 		}
 		return array;
 	}
 
-	private String PopNAndJoin(int n, String delim) {
-		return PopNAndJoin(new StringBuilder(), n ,delim).toString();
+	protected String PopNAndJoin(int n, String delim) {
+		return PopNAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
 	private StringBuilder PopNAndJoin(StringBuilder builder, int n, String delim) {
-		if(delim == null){
+		if (delim == null) {
 			delim = "";
 		}
 		String[] array = PopN(n);
-		for(int i = 0; i < n; ++i){
-			if(i > 0){
+		for (int i = 0; i < n; ++i) {
+			if (i > 0) {
 				builder.append(delim);
 			}
 			builder.append(array[i]);
@@ -113,23 +135,23 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	private String[] PopNReverse(int n) {
 		String[] array = new String[n];
-		for(int i = 0; i < n; ++i){
-			array[n-i-1] = pop();
+		for (int i = 0; i < n; ++i) {
+			array[n - i - 1] = pop();
 		}
 		return array;
 	}
 
 	protected String PopNReverseAndJoin(int n, String delim) {
-		return PopNReverseAndJoin(new StringBuilder(), n ,delim).toString();
+		return PopNReverseAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
 	protected StringBuilder PopNReverseAndJoin(StringBuilder builder, int n, String delim) {
-		if(delim == null){
+		if (delim == null) {
 			delim = "";
 		}
 		String[] array = PopNReverse(n);
-		for(int i = 0; i < n; ++i){
-			if(i > 0){
+		for (int i = 0; i < n; ++i) {
+			if (i > 0) {
 				builder.append(delim);
 			}
 			builder.append(array[i]);
@@ -138,31 +160,31 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected String PopNReverseWithSuffix(int n, String suffix) {
-		return PopNReverseWithSuffix(new StringBuilder(), n ,suffix).toString();
+		return PopNReverseWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
 	protected StringBuilder PopNReverseWithSuffix(StringBuilder builder, int n, String suffix) {
-		if(suffix == null){
+		if (suffix == null) {
 			suffix = "";
 		}
 		String[] array = PopNReverse(n);
-		for(int i = 0; i < n; ++i){
+		for (int i = 0; i < n; ++i) {
 			builder.append(array[i]);
 			builder.append(suffix);
 		}
 		return builder;
 	}
 
-	private String PopNWithSuffix(int n, String suffix) {
-		return PopNWithSuffix(new StringBuilder(), n ,suffix).toString();
+	protected String PopNWithSuffix(int n, String suffix) {
+		return PopNWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
 	private StringBuilder PopNWithSuffix(StringBuilder builder, int n, String suffix) {
-		if(suffix == null){
+		if (suffix == null) {
 			suffix = "";
 		}
 		String[] array = PopN(n);
-		for(int i = 0; i < n; ++i){
+		for (int i = 0; i < n; ++i) {
 			builder.append(array[i]);
 			builder.append(suffix);
 		}
@@ -181,4 +203,103 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		this.CurrentProgramSize.add(this.Program.size());
 	}
 
+	@Override
+	public boolean Visit(TypedNode Node) {
+		return Node.Evaluate(this);
+	}
+
+	@Override
+	public void EnterDef(DefNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterConst(ConstNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterNew(NewNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterNull(NullNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterBox(BoxNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterMethodCall(MethodCallNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterAnd(AndNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterOr(OrNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterIf(IfNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterSwitch(SwitchNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterLoop(LoopNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterReturn(ReturnNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterLabel(LabelNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterJump(JumpNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterTry(TryNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterThrow(ThrowNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterFunction(FunctionNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterError(ErrorNode Node) {
+		/* do nothing */
+	}
+
+	@Override
+	public void EnterDefineClass(DefineClassNode Node) {
+		/* do nothing */
+	}
 }

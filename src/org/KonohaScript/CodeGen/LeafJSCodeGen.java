@@ -30,7 +30,7 @@ import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
-	private boolean UseLetKeyword = false;
+	private final boolean	UseLetKeyword	= false;
 
 	public LeafJSCodeGen() {
 		super(null);
@@ -62,8 +62,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
-			//FuncBuilder.append(thisNode.TypeInfo.ShortClassName);
-			//FuncBuilder.append(".");
+			// FuncBuilder.append(thisNode.TypeInfo.ShortClassName);
+			// FuncBuilder.append(".");
 			String MethodName = this.MethodInfo.MethodName;
 			FuncBuilder.append(MethodName);
 			FuncBuilder.append(" = function(");
@@ -85,24 +85,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean Visit(TypedNode Node) {
-		return Node.Evaluate(this);
-	}
-
-
-	@Override
-	public void EnterDef(DefNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitDef(DefNode Node) {
 		return true;
-	}
-
-	@Override
-	public void EnterConst(ConstNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -112,19 +96,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterNew(NewNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitNew(NewNode Node) {
 		push("new " + Node.TypeInfo.ShortClassName.toString() + "()");
 		return true;
-	}
-
-	@Override
-	public void EnterNull(NullNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -152,9 +126,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 	@Override
 	public boolean ExitField(FieldNode Node) {
-		//String Expr = Node.TermToken.ParsedText;
+		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
-		//push(Expr);
+		// push(Expr);
 		// FIXME
 		push(Node.SourceToken.ParsedText);
 		return true;
@@ -162,29 +136,20 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterBox(BoxNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitBox(BoxNode Node) {
-		/* do nothing */return true;
-
-	}
-
-	@Override
-	public void EnterMethodCall(MethodCallNode Node) {
 		/* do nothing */
+		return true;
+
 	}
 
 	@Override
 	public boolean ExitMethodCall(MethodCallNode Node) {
 		String methodName = Node.Method.MethodName;
-		if(isMethodBinaryOperator(Node)){
+		if (isMethodBinaryOperator(Node)) {
 			String params = pop();
 			String thisNode = pop();
 			push(thisNode + " " + methodName + " " + params);
-		}else{
+		} else {
 			String params = "(" + PopNReverseAndJoin(Node.Params.size() - 1, ", ") + ")";
 			String thisNode = pop();
 			push(thisNode + "." + methodName + params);
@@ -193,21 +158,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterAnd(AndNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitAnd(AndNode Node) {
 		String Right = pop();
 		String Left = pop();
 		push(Left + " && " + Right);
 		return true;
-	}
-
-	@Override
-	public void EnterOr(OrNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -258,26 +213,16 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterIf(IfNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitIf(IfNode Node) {
 		String ElseBlock = pop();
 		String ThenBlock = pop();
 		String CondExpr = pop();
-		if(Node.ElseNode instanceof BlockNode && ((BlockNode)Node.ElseNode).ExprList.size() > 0){
+		if (Node.ElseNode instanceof BlockNode && ((BlockNode) Node.ElseNode).ExprList.size() > 0) {
 			push("if (" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
-		}else{
+		} else {
 			push("if (" + CondExpr + ") " + ThenBlock);
 		}
 		return true;
-	}
-
-	@Override
-	public void EnterSwitch(SwitchNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -295,11 +240,6 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterLoop(LoopNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitLoop(LoopNode Node) {
 		String LoopBody = pop();
 		String IterExpr = pop();
@@ -310,20 +250,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterReturn(ReturnNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitReturn(ReturnNode Node) {
 		String Expr = pop();
 		push("return " + Expr);
 		return false;
-	}
-
-	@Override
-	public void EnterLabel(LabelNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -340,11 +270,6 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterJump(JumpNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitJump(JumpNode Node) {
 		String Label = Node.Label;
 		if (Label.compareTo("continue") == 0) {
@@ -355,11 +280,6 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			push("goto " + Label);
 		}
 		return false;
-	}
-
-	@Override
-	public void EnterTry(TryNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -376,20 +296,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterThrow(ThrowNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitThrow(ThrowNode Node) {
 		String Expr = pop();
 		push("throw " + Expr + ";");
 		return false;
-	}
-
-	@Override
-	public void EnterFunction(FunctionNode Node) {
-		/* do nothing */
 	}
 
 	@Override
@@ -399,19 +309,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterError(ErrorNode Node) {
-		/* do nothing */
-	}
-
-	@Override
 	public boolean ExitError(ErrorNode Node) {
 		String Expr = pop();
 		push("throw new Exception(" + Expr + ";");
 		return false;
-	}
-
-	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
 	}
 
 	@Override
