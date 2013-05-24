@@ -413,7 +413,7 @@ public final class MiniKonoha implements KonohaConst {
 	}
 
 	public TypedNode TypeIf(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, UNode.NodeNameSpace.KonohaContext.BooleanType, 0);
+		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
 		if(CondNode.IsError()) return CondNode;
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
 		if(ThenNode.IsError()) return ThenNode;
