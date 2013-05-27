@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
+@Deprecated 
 public class BlockNode extends TypedNode {
 	public ArrayList<TypedNode> ExprList;
 

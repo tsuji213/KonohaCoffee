@@ -329,14 +329,14 @@ public final class MiniKonoha implements KonohaConst {
 		KToken KeyToken = UNode.KeyToken;
 		KMethod Method = BaseNode.TypeInfo.LookupMethod(KeyToken.ParsedText, ParamSize);
 		if(Method != null) {
-			MethodCallNode WorkingNode = new MethodCallNode(Method.GetReturnType(BaseNode.TypeInfo), KeyToken, Method);
+			ApplyNode WorkingNode = new ApplyNode(Method.GetReturnType(BaseNode.TypeInfo), KeyToken, Method);
 			WorkingNode.Append(BaseNode);
 			return TypeMethodEachParam(Gamma, BaseNode.TypeInfo, WorkingNode, NodeList);
 		}
 		return Gamma.NewErrorNode(KeyToken, "undefined method: " + KeyToken.ParsedText + " in " + BaseNode.TypeInfo.ShortClassName);
 	}
 
-	private TypedNode TypeMethodEachParam(KGamma Gamma, KClass BaseType, MethodCallNode WorkingNode, ArrayList<Object> NodeList) {
+	private TypedNode TypeMethodEachParam(KGamma Gamma, KClass BaseType, ApplyNode WorkingNode, ArrayList<Object> NodeList) {
 		KMethod Method = WorkingNode.Method;
 		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 1; ParamIdx++) {
 			KClass ParamType = Method.GetParamType(BaseType, ParamIdx);
@@ -540,7 +540,7 @@ public final class MiniKonoha implements KonohaConst {
 		KParam Param = new KParam(ParamSize+1, ParamData);
 		KMethod NewMethod = new KMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
 		BaseType.DefineNewMethod(NewMethod);
-		return new DefNode(TypeInfo, NewMethod);
+		return new DefineNode(TypeInfo, NewMethod);
 	}
 	
 	public int ParseEmpty(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {

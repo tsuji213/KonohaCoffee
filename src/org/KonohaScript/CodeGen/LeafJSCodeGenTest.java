@@ -23,7 +23,7 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	@Override
 	Object testIf() {
 		return "var AddOne = function(n) {\n" +
-		"    if (n < 3) {\n" +
+		"    if(n < 3) {\n" +
 		"        return 1;\n" +
 		"    } else {\n" +
 		"        return 2;\n" +
@@ -40,7 +40,7 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	@Override
 	Object testFibo() {
 		return "var fibo = function(n) {\n" + 
-		       "    if (n < 3) {\n" + 
+		       "    if(n < 3) {\n" + 
 		       "        return 1;\n" + 
 		       "    };\n" + 
 		       "    return this.fibo(n - 1) + this.fibo(n - 2);\n" + 

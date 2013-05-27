@@ -33,7 +33,7 @@ import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
@@ -44,7 +44,7 @@ import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.MethodCallNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -79,7 +79,7 @@ class ValueList extends ArrayList<Value> {
 	public static ValueList unshift(ValueList oldList, Value Val) {
 		ArrayList<Value> newList = new ArrayList<Value>();
 		newList.add(Val);
-		for (int i = 0; i < oldList.size(); i++) {
+		for(int i = 0; i < oldList.size(); i++) {
 			newList.add(oldList.get(i));
 		}
 		return (ValueList) newList;
@@ -235,7 +235,7 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	@Override
 	public void Prepare(KMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for (int i = 0; i < params.size(); i++) {
+		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
@@ -324,11 +324,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterDef(DefNode Node) {
+	public void EnterDef(DefineNode Node) {
 	}
 
 	@Override
-	public boolean ExitDef(DefNode Node) {
+	public boolean ExitDef(DefineNode Node) {
 		return true;
 	}
 
@@ -465,11 +465,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterMethodCall(MethodCallNode Node) {
+	public void EnterMethodCall(ApplyNode Node) {
 	}
 
 	@Override
-	public boolean ExitMethodCall(MethodCallNode Node) {
+	public boolean ExitMethodCall(ApplyNode Node) {
 		KMethod Mtd = Node.Method;
 		ValueList P = Eval.Get();
 		Value Method = Eval.LoadConst(Mtd);
