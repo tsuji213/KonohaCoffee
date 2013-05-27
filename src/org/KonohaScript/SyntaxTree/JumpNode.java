@@ -1,13 +1,13 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class JumpNode extends TypedNode {
 	public String Label;
 
 	/* goto Label */
-	public JumpNode(KClass TypeInfo, String Label) {
+	public JumpNode(KonohaType TypeInfo, String Label) {
 		super(TypeInfo);
 		this.Label = Label;
 	}

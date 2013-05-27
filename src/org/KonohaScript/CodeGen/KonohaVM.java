@@ -1,7 +1,7 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KNameSpace;
 
 /****************************************************************************
@@ -90,7 +90,7 @@ public class KonohaVM {
 class OPLoadConst extends KonohaIR {
 	int					Dst;
 	int					Value;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_LoadConst	= 3;
 
 	@Override
@@ -102,7 +102,7 @@ class OPLoadConst extends KonohaIR {
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
 		int Value = this.Value;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -111,7 +111,7 @@ class OPLoadConst extends KonohaIR {
 class OPMove extends KonohaIR {
 	int					Dst;
 	int					Src;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_Move	= 3;
 
 	@Override
@@ -123,7 +123,7 @@ class OPMove extends KonohaIR {
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
 		int Src = this.Src;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -133,7 +133,7 @@ class OPLoadField extends KonohaIR {
 	int					Dst;
 	int					Src;
 	int					Offset;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_LoadField	= 4;
 
 	@Override
@@ -146,7 +146,7 @@ class OPLoadField extends KonohaIR {
 		int Dst = this.Dst;
 		int Src = this.Src;
 		int Offset = this.Offset;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -156,7 +156,7 @@ class OPStoreField extends KonohaIR {
 	int					Dst;
 	int					Offset;
 	int					Src;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_StoreField	= 4;
 
 	@Override
@@ -169,7 +169,7 @@ class OPStoreField extends KonohaIR {
 		int Dst = this.Dst;
 		int Offset = this.Offset;
 		int Src = this.Src;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -177,7 +177,7 @@ class OPStoreField extends KonohaIR {
 // #define OPCODE_New 4
 class OPNew extends KonohaIR {
 	int					Dst;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_New	= 2;
 
 	@Override
@@ -188,7 +188,7 @@ class OPNew extends KonohaIR {
 	@Override
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -196,7 +196,7 @@ class OPNew extends KonohaIR {
 // #define OPCODE_Null 5
 class OPNull extends KonohaIR {
 	int					Dst;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_Null	= 2;
 
 	@Override
@@ -207,7 +207,7 @@ class OPNull extends KonohaIR {
 	@Override
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -216,7 +216,7 @@ class OPNull extends KonohaIR {
 class OPBox extends KonohaIR {
 	int					Dst;
 	int					Src;
-	KClass				TypeInfo;
+	KonohaType				TypeInfo;
 	static final int	OPFIELDSIZE_Box	= 3;
 
 	public OPBox(KonohaIR e) {
@@ -231,7 +231,7 @@ class OPBox extends KonohaIR {
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
 		int Src = this.Src;
-		KClass TypeInfo = this.TypeInfo;
+		KonohaType TypeInfo = this.TypeInfo;
 		return VMState.Exit;
 	}
 }
@@ -240,8 +240,8 @@ class OPBox extends KonohaIR {
 class OPLookup extends KonohaIR {
 	int					Dst;
 	KNameSpace			NS;
-	KMethod				Mtd;
-	KClass				ThisType;
+	KonohaMethod				Mtd;
+	KonohaType				ThisType;
 	static final int	OPFIELDSIZE_Lookup	= 4;
 
 	@Override
@@ -253,8 +253,8 @@ class OPLookup extends KonohaIR {
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
 		KNameSpace NS = this.NS;
-		KMethod Mtd = this.Mtd;
-		KClass ThisType = this.ThisType;
+		KonohaMethod Mtd = this.Mtd;
+		KonohaType ThisType = this.ThisType;
 		return VMState.Exit;
 	}
 }
@@ -263,8 +263,8 @@ class OPLookup extends KonohaIR {
 class OPCall extends KonohaIR {
 	int					Dst;
 	KNameSpace			NS;
-	KMethod				Mtd;
-	KClass				ThisType;
+	KonohaMethod				Mtd;
+	KonohaType				ThisType;
 	static final int	OPFIELDSIZE_Call	= 4;
 
 	@Override
@@ -276,8 +276,8 @@ class OPCall extends KonohaIR {
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
 		KNameSpace NS = this.NS;
-		KMethod Mtd = this.Mtd;
-		KClass ThisType = this.ThisType;
+		KonohaMethod Mtd = this.Mtd;
+		KonohaType ThisType = this.ThisType;
 		return VMState.Exit;
 	}
 }

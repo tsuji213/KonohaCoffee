@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -35,14 +35,14 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
 	@Override
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
 		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);

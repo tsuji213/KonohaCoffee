@@ -1,11 +1,11 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class OrNode extends BinaryNode {
 
-	public OrNode(KClass TypeInfo, TypedNode Left, TypedNode Right) {
+	public OrNode(KonohaType TypeInfo, TypedNode Left, TypedNode Right) {
 		super(TypeInfo, Left, Right);
 	}
 

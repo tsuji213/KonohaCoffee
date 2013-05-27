@@ -2,30 +2,30 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ApplyNode extends TypedNode implements CallableNode {
-	public KMethod Method;
+	public KonohaMethod Method;
 	public ArrayList<TypedNode> Params; /* [this, arg1, arg2, ...] */
 
 	/* call self.Method(arg1, arg2, ...) */
-	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method) {
 		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 	}
 
-	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1) {
 		super(TypeInfo);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 	}
 
-	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1, TypedNode arg2) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1, TypedNode arg2) {
 		super(TypeInfo);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();

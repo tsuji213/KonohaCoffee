@@ -2,11 +2,11 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class SwitchNode extends TypedNode {
-	public SwitchNode(KClass TypeInfo) {
+	public SwitchNode(KonohaType TypeInfo) {
 		super(TypeInfo);
 	}
 

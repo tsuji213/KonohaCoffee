@@ -1,11 +1,11 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class NullNode extends TypedNode {
 
-	public NullNode(KClass TypeInfo) {
+	public NullNode(KonohaType TypeInfo) {
 		super(TypeInfo);
 	}
 
