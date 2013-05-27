@@ -1,6 +1,6 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KNameSpace;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaType;
 
@@ -282,7 +282,7 @@ class OPBox extends KonohaIR {
 // #define OPCODE_Lookup 7
 class OPLookup extends KonohaIR {
 	int				Dst;
-	KNameSpace		NS;
+	KonohaNameSpace		NS;
 	KonohaMethod	Mtd;
 	KonohaType		ThisType;
 
@@ -298,7 +298,7 @@ class OPLookup extends KonohaIR {
 	@Override
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
-		KNameSpace NS = this.NS;
+		KonohaNameSpace NS = this.NS;
 		KonohaMethod Mtd = this.Mtd;
 		KonohaType ThisType = this.ThisType;
 		/* do nothing */
@@ -310,7 +310,7 @@ class OPLookup extends KonohaIR {
 // #define OPCODE_Call 8
 class OPCall extends KonohaIR {
 	int				Dst;
-	KNameSpace		NS;
+	KonohaNameSpace		NS;
 	KonohaMethod	Mtd;
 	KonohaType		ThisType;
 
@@ -326,7 +326,7 @@ class OPCall extends KonohaIR {
 	@Override
 	VMState exec(Object[] Regs, Object[] Stack) {
 		int Dst = this.Dst;
-		KNameSpace NS = this.NS;
+		KonohaNameSpace NS = this.NS;
 		KonohaMethod Mtd = this.Mtd;
 		KonohaType ThisType = this.ThisType;
 		/* do nothing */

@@ -14,7 +14,7 @@ public class KonohaParam {
 		System.arraycopy(ParamData, 0, this.Types, 0, DataSize);
 	}
 
-	public static KonohaParam ParseOf(KNameSpace ns, String TypeList) {
+	public static KonohaParam ParseOf(KonohaNameSpace ns, String TypeList) {
 		ArrayList<KonohaToken> BufferList = ns.Tokenize(TypeList, 0);
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);

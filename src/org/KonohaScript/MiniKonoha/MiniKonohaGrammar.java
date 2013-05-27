@@ -32,7 +32,7 @@ import org.KonohaScript.SyntaxTree.*;
 public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaConst {
 
 	// Token
-	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isWhitespace(ch)) {
@@ -42,7 +42,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return pos;
 	}
 
-	public int IndentToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int IndentToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		int LineStart = pos + 1;
 		pos = pos + 1;
 		for(; pos < SourceText.length(); pos++) {
@@ -57,13 +57,13 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return pos;
 	}
 	
-	public int SingleSymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int SingleSymbolToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		KonohaToken Token = new KonohaToken(SourceText.substring(pos, pos + 1));
 		ParsedTokenList.add(Token);
 		return pos + 1;
 	}
 
-	public int SymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int SymbolToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		int start = pos;
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
@@ -76,7 +76,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return pos;
 	}
 
-	public int MemberToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int MemberToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		int start = pos + 1;
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
@@ -90,7 +90,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return pos;
 	}
 
-	public int NumberLiteralToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int NumberLiteralToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		int start = pos;
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
@@ -104,7 +104,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return pos;
 	}
 
-	public int StringLiteralToken(KNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
+	public int StringLiteralToken(KonohaNameSpace ns, String SourceText, int pos, ArrayList<KonohaToken> ParsedTokenList) {
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
@@ -563,7 +563,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return null;
 	}
 
-	public void LoadDefaultSyntax(KNameSpace NameSpace) {
+	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 		NameSpace.DefineSymbol("void",    NameSpace.KonohaContext.VoidType); // FIXME
 		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
 		NameSpace.DefineSymbol("int",     NameSpace.KonohaContext.IntType);
@@ -631,7 +631,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		DefineIntMethod(NameSpace);
 	}
 	
-	void DefineIntMethod (KNameSpace ns) {
+	void DefineIntMethod (KonohaNameSpace ns) {
 		KonohaType BaseClass = ns.LookupTypeInfo(Integer.class);
 		KonohaParam BinaryParam = KonohaParam.ParseOf(ns, "int int x");
 		KonohaParam UniaryParam = KonohaParam.ParseOf(ns, "int");

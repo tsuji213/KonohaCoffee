@@ -29,14 +29,14 @@ import java.util.HashMap;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public final class KNameSpace implements KonohaConst {
+public final class KonohaNameSpace implements KonohaConst {
 
 	public Konoha KonohaContext;
-	KNameSpace ParentNameSpace;
-	ArrayList<KNameSpace> ImportedNameSpaceList;
+	KonohaNameSpace ParentNameSpace;
+	ArrayList<KonohaNameSpace> ImportedNameSpaceList;
 
 	@SuppressWarnings("unchecked")
-	KNameSpace(Konoha konoha, KNameSpace parent) {
+	KonohaNameSpace(Konoha konoha, KonohaNameSpace parent) {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = parent;
 		if(parent != null) {
@@ -223,9 +223,9 @@ public final class KNameSpace implements KonohaConst {
 		return (KonohaObject)GlobalObject;
 	}
 	
-	public void ImportNameSpace(KNameSpace ns) {
+	public void ImportNameSpace(KonohaNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
-			ImportedNameSpaceList = new ArrayList<KNameSpace>();
+			ImportedNameSpaceList = new ArrayList<KonohaNameSpace>();
 			ImportedNameSpaceList.add(ns);
 		}
 		if(ImportedTokenMatrix == null) {
@@ -321,12 +321,12 @@ public final class KNameSpace implements KonohaConst {
 }
 
 class KonohaTokenizer implements KonohaConst {
-	KNameSpace ns;
+	KonohaNameSpace ns;
 	String SourceText;
 	long CurrentLine;
 	ArrayList<KonohaToken> SourceList;
 
-	KonohaTokenizer(KNameSpace ns, String text, long CurrentLine) {
+	KonohaTokenizer(KonohaNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;
