@@ -3,9 +3,12 @@ package org.KonohaScript.CodeGen;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.KonohaScript.Konoha;
+import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -183,13 +186,22 @@ class NotSupportedCodeError extends RuntimeException {
 	}
 }
 
-public class ASTInterpreter extends CodeGenerator {
+public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	ArrayList<Object>		Evaled;
 	ArrayList<String>		Labels;
 	HashMap<String, Object>	LocalVariable;
 
+	public ASTInterpreter() {
+		super(null);
+		this.Init();
+	}
+
 	public ASTInterpreter(KonohaMethod MethodInfo) {
 		super(MethodInfo);
+		this.Init();
+	}
+
+	void Init() {
 		this.Evaled = new ArrayList<Object>();
 		this.Labels = new ArrayList<String>();
 		this.LocalVariable = new HashMap<String, Object>();
@@ -219,7 +231,9 @@ public class ASTInterpreter extends CodeGenerator {
 	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
-		this.AddLocal(Method.ClassInfo, "this");
+		if (Method != null) {
+			this.AddLocal(Method.ClassInfo, "this");
+		}
 	}
 
 	@Override
@@ -490,4 +504,22 @@ public class ASTInterpreter extends CodeGenerator {
 		// return false;
 	}
 
+	@Override
+	public Object EvalAtTopLevel(TypedNode Node) {
+		this.Prepare(null);
+		this.Visit(Node);
+		Object Ret = this.Pop();
+		System.out.println("EvalAtTopLevel::::::" + Ret.toString());
+		return Ret;
+	}
+
+	@Override
+	public KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
+		this.Prepare(Method);
+		return this.Compile(Node);
+	}
+
+	public static void main(String[] args) {
+		new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter").Eval("1+2", 0);
+	}
 }
