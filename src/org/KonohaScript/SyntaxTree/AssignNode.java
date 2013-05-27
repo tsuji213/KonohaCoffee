@@ -5,15 +5,13 @@ import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AssignNode extends TypedNode {
-	public KToken TermToken;
-	int Index;
-	TypedNode Right;
+	public KToken		TermToken;
+	public TypedNode	Right;
 
 	/* frame[Index] = Right */
-	public AssignNode(KClass TypeInfo, KToken TermToken, int Index, TypedNode Right) {
+	public AssignNode(KClass TypeInfo, KToken TermToken, TypedNode Right) {
 		super(TypeInfo);
 		this.TermToken = TermToken;
-		this.Index = Index;
 		this.Right = Right;
 	}
 

@@ -8,8 +8,8 @@
 //import org.KonohaScript.SyntaxTree.BlockNode;
 //import org.KonohaScript.SyntaxTree.BoxNode;
 //import org.KonohaScript.SyntaxTree.ConstNode;
+//import org.KonohaScript.SyntaxTree.DefNode;
 //import org.KonohaScript.SyntaxTree.DefineClassNode;
-//import org.KonohaScript.SyntaxTree.DoneNode;
 //import org.KonohaScript.SyntaxTree.ErrorNode;
 //import org.KonohaScript.SyntaxTree.FieldNode;
 //import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -28,6 +28,7 @@
 //import org.KonohaScript.SyntaxTree.ThrowNode;
 //import org.KonohaScript.SyntaxTree.TryNode;
 //import org.KonohaScript.SyntaxTree.TypedNode;
+//import org.jllvm.LLVMValue;
 //
 //public class LLVMCodeGen extends CodeGenerator implements ASTVisitor {
 //
@@ -59,9 +60,7 @@
 //		String Prog = this.Program.remove(0);
 //		if(this.MethodInfo != null) {
 //			Local thisNode = this.FindLocalVariable("this");
-//			String Signature = this.MethodInfo.GetReturnType(null/* FIXME */).ShortClassName + " " +
-//					thisNode.TypeInfo.ShortClassName + "." +
-//					this.MethodInfo.MethodName;
+//			String Signature = this.MethodInfo.GetReturnType(null/* FIXME */).ShortClassName + " " + thisNode.TypeInfo.ShortClassName + "." + this.MethodInfo.MethodName;
 //			String Param = "";
 //			for(int i = 1; i < this.LocalVals.size(); i++) {
 //				Local local = this.GetLocalVariableByIndex(i);
@@ -82,11 +81,11 @@
 //	}
 //
 //	@Override
-//	public void EnterDone(DoneNode Node) {
+//	public void EnterDef(DefNode Node) {
 //	}
 //
 //	@Override
-//	public boolean ExitDone(DoneNode Node) {
+//	public boolean ExitDef(DefNode Node) {
 //		return true;
 //	}
 //
@@ -165,7 +164,11 @@
 //	@Override
 //	public void EnterMethodCall(MethodCallNode Node) {
 //		// TODO Auto-generated method stub
-//
+//		if(Node.Param.size() == 1 && Node.TypeInfo == BoolType) {
+//			// not Expr
+//			LLVMValue expr = pop();
+//			push(LLVMIRBuilder.CreateNot(expr));
+//		}
 //	}
 //
 //	@Override
@@ -366,4 +369,4 @@
 //		return true;
 //	}
 //
-//}
+// }
