@@ -15,7 +15,7 @@ class VarSet {
 
 public class TypeEnv implements KonohaConst {
 	
-	public KNameSpace GammaNameSpace; 
+	public KonohaNameSpace GammaNameSpace; 
 	
 	/* for convinient short cut */
 	public final KonohaType VoidType;
@@ -24,7 +24,7 @@ public class TypeEnv implements KonohaConst {
 	public final KonohaType StringType;
 	public final KonohaType VarType;
 	
-	TypeEnv(KNameSpace GammaNameSpace, KonohaMethod Method) {
+	TypeEnv(KonohaNameSpace GammaNameSpace, KonohaMethod Method) {
 		this.GammaNameSpace = GammaNameSpace;
 		this.VoidType = GammaNameSpace.KonohaContext.VoidType;
 		this.BooleanType = GammaNameSpace.KonohaContext.BooleanType;

@@ -1,6 +1,5 @@
 package org.KonohaScript.SyntaxTree;
 
-
 public interface NodeVisitor {
 	boolean Visit(TypedNode Node);
 
@@ -28,10 +27,6 @@ public interface NodeVisitor {
 
 	boolean ExitField(GetterNode Node);
 
-	void EnterBox(BoxNode Node);
-
-	boolean ExitBox(BoxNode Node);
-
 	void EnterApply(ApplyNode Node);
 
 	boolean ExitApply(ApplyNode Node);
@@ -51,10 +46,6 @@ public interface NodeVisitor {
 	void EnterLet(LetNode Node);
 
 	boolean ExitLet(LetNode Node);
-
-	void EnterBlock(BlockNode Node);
-
-	boolean ExitBlock(BlockNode Node);
 
 	void EnterIf(IfNode Node);
 
@@ -96,7 +87,4 @@ public interface NodeVisitor {
 
 	boolean ExitError(ErrorNode Node);
 
-	void EnterDefineClass(DefineClassNode Node);
-
-	boolean ExitDefineClass(DefineClassNode Node);
 }

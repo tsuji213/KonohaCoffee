@@ -24,7 +24,8 @@
 			<fileset dir="bin" includes="**/*.class" />
 			<zipfileset src="third-party/asm-all-4.0.jar" />
 			<manifest>
-				<attribute name="Main-Class" value="org.KonohaScript.KShell" />
+				<attribute name="Main-Class" value="org.KonohaScript.KonohaShell" />
+
 			</manifest>
 		</jar>
 	</target>

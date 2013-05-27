@@ -124,10 +124,10 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	// DoLazyComilation();
 	
-	KNameSpace LazyNameSpace;
+	KonohaNameSpace LazyNameSpace;
 	ArrayList<KonohaToken> SourceList;
 	
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;

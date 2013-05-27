@@ -25,20 +25,17 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaToken;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
@@ -60,10 +57,12 @@ class BasicBlock extends KonohaIR {
 	String						label;				/* for debug */
 
 	public BasicBlock() {
+		super(null);
 		this.label = "";
 	}
 
 	public BasicBlock(String label) {
+		super(null);
 		this.label = label;
 	}
 
@@ -136,8 +135,9 @@ class KonohaIRBuilder {
 	}
 
 	public KonohaIR LogicalAnd(KonohaIR l, KonohaIR r, BlockInfo mergeBB) {
-		// TODO Auto-generated method stub
-		return null;
+		KonohaIR ir = null;
+		l.GetParent();
+		return ir;
 
 	}
 
@@ -148,8 +148,7 @@ class KonohaIRBuilder {
 	}
 
 	public KonohaIR Box(KonohaIR e, KonohaType typeInfo) {
-		return new OPBox(e);
-
+		return null;
 	}
 
 	public KonohaIR LoadConst(Object constValue) {
@@ -162,7 +161,7 @@ class KonohaIRBuilder {
 		return null;
 	}
 
-	public KonohaIR LoadField(KonohaIR obj, int offset) {
+	public KonohaIR LoadField(KonohaIR Base, String fieldName) {
 		// TODO Auto-generated method stub
 		return null;
 
@@ -340,15 +339,6 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 	}
 
 	@Override
-	public void EnterBox(BoxNode Node) {
-	}
-
-	@Override
-	public boolean ExitBox(BoxNode Node) {
-		return true;
-	}
-
-	@Override
 	public void EnterApply(ApplyNode Node) {
 	}
 
@@ -377,7 +367,8 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		// FIXME
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
@@ -393,15 +384,6 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		return true;
-	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) {
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
 		return true;
 	}
 
@@ -494,15 +476,6 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 	public boolean ExitError(ErrorNode Node) {
 		return false;
 	}
-
-	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
-	}
-
-	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) {
-		return true;
-	}
 }
 
 public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
@@ -578,8 +551,8 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public void EnterAnd(AndNode Node) {
-		this.pushBlock(new BlockInfo(Node.Left, new BasicBlock("head")));
-		this.pushBlock(new BlockInfo(Node.Right, new BasicBlock("then")));
+		this.pushBlock(new BlockInfo(Node.LeftNode, new BasicBlock("head")));
+		this.pushBlock(new BlockInfo(Node.RightNode, new BasicBlock("then")));
 		this.pushBlock(new BlockInfo(null, new BasicBlock("merge")));
 	}
 
@@ -594,8 +567,8 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public void EnterOr(OrNode Node) {
-		this.pushBlock(new BlockInfo(Node.Left, new BasicBlock("head")));
-		this.pushBlock(new BlockInfo(Node.Right, new BasicBlock("then")));
+		this.pushBlock(new BlockInfo(Node.LeftNode, new BasicBlock("head")));
+		this.pushBlock(new BlockInfo(Node.RightNode, new BasicBlock("then")));
 		this.pushBlock(new BlockInfo(null, new BasicBlock("merge")));
 	}
 
@@ -613,31 +586,9 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		KonohaIR R = this.Builder.Get(0);
 		this.Builder.Assign(local, R);
-		return true;
-	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) {
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		IRList Evaled = this.Builder.Get();
-		this.Builder.NewBlock(Evaled);
-		return true;
-	}
-
-	@Override
-	public void EnterBox(BoxNode Node) {
-	}
-
-	@Override
-	public boolean ExitBox(BoxNode Node) {
-		KonohaIR E = this.Builder.Get(0);
-		this.Builder.Box(E, Node.TypeInfo);
 		return true;
 	}
 
@@ -649,17 +600,6 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 	public boolean ExitConst(ConstNode Node) {
 		Object ConstValue = Node.ConstValue;
 		this.Builder.LoadConst(ConstValue);
-		return true;
-	}
-
-	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
-	}
-
-	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) {
-		IRList Field = this.Builder.Get();
-		this.Builder.DefClass(Node.TypeInfo, Field);
 		return true;
 	}
 
@@ -690,10 +630,10 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public boolean ExitField(GetterNode Node) {
-		KonohaToken TermToken = Node.TermToken;
-		int Offset = Node.Offset;
-		KonohaIR Obj = this.Builder.Local(TermToken.ParsedText);
-		this.Builder.LoadField(Obj, Offset);
+		KonohaToken TermToken = Node.SourceToken;
+		String FieldName = TermToken.ParsedText;
+		KonohaIR Base = this.Builder.Get(0);
+		this.Builder.LoadField(Base, FieldName);
 		return true;
 	}
 

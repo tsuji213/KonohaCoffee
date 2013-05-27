@@ -199,8 +199,8 @@ class KSymbolTable implements KonohaConst {
 
 public class Konoha implements KonohaConst {
 
-	KNameSpace RootNameSpace;
-	KNameSpace DefaultNameSpace;
+	KonohaNameSpace RootNameSpace;
+	KonohaNameSpace DefaultNameSpace;
 	KSymbolTable SymbolTable;
 
 	public final KonohaType VoidType;
@@ -213,7 +213,7 @@ public class Konoha implements KonohaConst {
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
-		this.RootNameSpace = new KNameSpace(this, null);
+		this.RootNameSpace = new KonohaNameSpace(this, null);
 
 		this.VoidType = this.RootNameSpace.LookupTypeInfo(Void.class);
 		this.ObjectType = this.RootNameSpace.LookupTypeInfo(Object.class);
@@ -223,7 +223,7 @@ public class Konoha implements KonohaConst {
 		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
-		this.DefaultNameSpace = new KNameSpace(this, this.RootNameSpace);
+		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
 		if(BuilderClassName != null) {
 			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 		}

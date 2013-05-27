@@ -31,7 +31,7 @@ public class UntypedNode implements KonohaConst {
 	UntypedNode               Parent;
 	UntypedNode               PreviousNode;
 	UntypedNode               NextNode;	
-	public KNameSpace         NodeNameSpace;
+	public KonohaNameSpace         NodeNameSpace;
 	public KonohaSyntax            Syntax;
 	public KonohaToken             KeyToken;
 	
@@ -60,7 +60,7 @@ public class UntypedNode implements KonohaConst {
 		return sb.toString();
 	}
 		
-	public UntypedNode(KNameSpace ns, KonohaToken KeyToken) {
+	public UntypedNode(KonohaNameSpace ns, KonohaToken KeyToken) {
 		this.NodeNameSpace = ns;
 		this.KeyToken = KeyToken;
 		this.Syntax = KeyToken.ResolvedSyntax;
@@ -144,7 +144,7 @@ public class UntypedNode implements KonohaConst {
 		return NoMatch;
 	}
 	
-	public static UntypedNode NewNullNode(KNameSpace ns, ArrayList<KonohaToken> TokenList, int BeginIdx) {
+	public static UntypedNode NewNullNode(KonohaNameSpace ns, ArrayList<KonohaToken> TokenList, int BeginIdx) {
 		KonohaToken EmptyToken = new KonohaToken("");
 		EmptyToken.uline = TokenList.get(BeginIdx-1).uline;
 		EmptyToken.ResolvedSyntax = KonohaSyntax.EmptySyntax;
@@ -178,7 +178,7 @@ public class UntypedNode implements KonohaConst {
 	/* 1 + 2 * 3 */
 	/* 1 * 2 + 3 */
 	
-	public static UntypedNode BinaryNode(KNameSpace ns, UntypedNode LeftNode, KonohaToken KeyToken, UntypedNode RightNode)
+	public static UntypedNode BinaryNode(KonohaNameSpace ns, UntypedNode LeftNode, KonohaToken KeyToken, UntypedNode RightNode)
 	{
 		if(RightNode.Syntax.IsBinaryOperator()) {
 			if(KeyToken.ResolvedSyntax.IsLeftJoin(RightNode.Syntax)) {
@@ -210,7 +210,7 @@ public class UntypedNode implements KonohaConst {
 		}
 	}
 	
-	public static UntypedNode ParseNewNode(KNameSpace ns, UntypedNode PrevNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public static UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		UntypedNode LeftNode = null;
 		//KToken.DumpTokenList(0, "ParseNewNode", TokenList, BeginIdx, EndIdx);
 		while(BeginIdx < EndIdx) {
@@ -259,7 +259,7 @@ public class UntypedNode implements KonohaConst {
 		return LeftNode;
 	}
 
-	public static UntypedNode ParseGroup(KNameSpace ns, KonohaToken GroupToken, int ParseOption) {
+	public static UntypedNode ParseGroup(KonohaNameSpace ns, KonohaToken GroupToken, int ParseOption) {
 		ArrayList<KonohaToken> GroupList = GroupToken.GetGroupList();
 		return ParseNewNode(ns, null, GroupList, 1, GroupList.size() -1 , ParseOption);
 	}
