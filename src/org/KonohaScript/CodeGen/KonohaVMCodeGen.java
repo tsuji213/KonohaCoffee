@@ -292,10 +292,6 @@ class LocalVariableCollector extends CodeGenerator {
 	}
 
 	@Override
-	public void EnterDefine(DefineNode Node) {
-	}
-
-	@Override
 	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
@@ -482,6 +478,12 @@ class LocalVariableCollector extends CodeGenerator {
 	@Override
 	public boolean ExitError(ErrorNode Node) {
 		return false;
+	}
+
+	@Override
+	public void EnterDefine(DefineNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
 	}
 }
 
