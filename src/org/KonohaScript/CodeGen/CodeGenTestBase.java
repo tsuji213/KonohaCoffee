@@ -68,7 +68,7 @@ public class CodeGenTestBase {
 	public final KClass			StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
-		if (Expected != Actual) {
+		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
 			System.out.println("Test Failed!!" + TestName);
 			System.out.println("---  Actual:---");
 			System.out.println(Actual);
@@ -109,7 +109,7 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new MethodCallNode(this.VoidTy, null, intAdd, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 1))));
 		CompiledMethod Mtd = Builder.Compile(Block);
-		this.Check("AddOne", Tester.testReturnConst(), Mtd.CompiledCode);
+		this.Check("AddOne", Tester.testAddOne(), Mtd.CompiledCode);
 	}
 
 	public void testIf(CodeGeneratorTester Tester) {
@@ -137,7 +137,7 @@ public class CodeGenTestBase {
 		/* */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 3)));
 
 		CompiledMethod Mtd = Builder.Compile(Block);
-		this.Check("AddOne", Tester.testReturnConst(), Mtd.CompiledCode);
+		this.Check("If", Tester.testIf(), Mtd.CompiledCode);
 	}
 
 	public void testTopLevelExpr(CodeGeneratorTester Tester) {
@@ -154,7 +154,7 @@ public class CodeGenTestBase {
 		CompiledMethod Mtd = Builder.Compile(Block);
 		assert (Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("", Tester.testTopLevelExpr(), Program);
+		this.Check("TopLevelExpr", Tester.testTopLevelExpr(), Program);
 	}
 
 	void testMethodCall(CodeGeneratorTester Tester) {
@@ -195,7 +195,7 @@ public class CodeGenTestBase {
 		CompiledMethod Mtd = Builder.Compile(Block1);
 		assert (Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("", Tester.testMethodCall(), Program);
+		this.Check("MethodCall", Tester.testMethodCall(), Program);
 	}
 
 	void testFibo(CodeGeneratorTester Tester) {
@@ -238,7 +238,7 @@ public class CodeGenTestBase {
 			CompiledMethod Mtd = Builder.Compile(Block2);
 			assert (Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
-			this.Check("", "int void.fibo(int n) {" + "if(n < 3) {" + "return 1;" + "} else {" + "}" + "return void.fibo(n-1) + void.fibo(n-2);\n" + "}", Program);
+			this.Check("Fibo", Tester.testFibo(), Program);
 		}
 	}
 
