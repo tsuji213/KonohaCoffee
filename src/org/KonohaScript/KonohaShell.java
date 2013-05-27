@@ -29,23 +29,23 @@ class KConsole {
 	}
 }
 
-public class KShell {
+public class KonohaShell {
 
 	Konoha	ShellContext;
 	boolean	IsInteractiveMode;
 
-	public KShell() {
+	public KonohaShell() {
 		this.ShellContext = new Konoha(new MiniKonohaGrammar(), null);
 		this.IsInteractiveMode = false;
 	}
 
-	boolean ProcessSource(String source) {
-		this.ShellContext.Eval(source, 0);
+	boolean ProcessSource(String Source) {
+		this.ShellContext.Eval(Source, 0);
 		return true;
 	}
 
-	boolean ProcessFile(String fileName) {
-		File f = new File(fileName);
+	boolean ProcessFile(String FileName) {
+		File f = new File(FileName);
 		byte[] b = new byte[(int) f.length()];
 		FileInputStream fi;
 		try {
@@ -94,7 +94,7 @@ public class KShell {
 	}
 
 	public static void main(String[] origArgs) {
-		KShell shell = new KShell();
+		KonohaShell shell = new KonohaShell();
 		String[] args = shell.ProcessOptions(origArgs);
 		if (args == null) {
 			return;
@@ -143,7 +143,7 @@ public class KShell {
 		KConsole console = new KConsole();
 		console.println("Konoha version 3.0");
 		while (true) {
-			console.print("Konoha>");
+			console.print(">>>");
 			String source = "";
 			Scanner s = new Scanner(console.stdin);
 			int level = 0;

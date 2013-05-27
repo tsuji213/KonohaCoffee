@@ -2,14 +2,14 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-class CompiledMethod extends KMethod {
+class CompiledMethod extends KonohaMethod {
 	public Object CompiledCode;
 
-	public CompiledMethod(KMethod MethodInfo) {
+	public CompiledMethod(KonohaMethod MethodInfo) {
 		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo, MethodInfo.MethodName, MethodInfo.Param, null);
 	}
 
@@ -20,9 +20,9 @@ class CompiledMethod extends KMethod {
 
 public abstract class CodeGenerator {
 	ArrayList<Local> LocalVals;
-	KMethod MethodInfo;
+	KonohaMethod MethodInfo;
 
-	CodeGenerator(KMethod MethodInfo) {
+	CodeGenerator(KonohaMethod MethodInfo) {
 		this.LocalVals = new ArrayList<Local>();
 		this.MethodInfo = MethodInfo;
 	}
@@ -47,13 +47,13 @@ public abstract class CodeGenerator {
 		return null;
 	}
 
-	Local AddLocal(KClass Type, String Name) {
+	Local AddLocal(KonohaType Type, String Name) {
 		Local local = new Local(this.LocalVals.size(), Type, Name);
 		this.LocalVals.add(local);
 		return local;
 	}
 
-	Local AddLocalVarIfNotDefined(KClass Type, String Name) {
+	Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
 		Local local = this.FindLocalVariable(Name);
 		if(local != null) {
 			return local;
@@ -61,13 +61,13 @@ public abstract class CodeGenerator {
 		return AddLocal(Type, Name);
 	}
 
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);

@@ -40,7 +40,7 @@ public final class KNameSpace implements KonohaConst {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = parent;
 		if(parent != null) {
-			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+			ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 			for(int i = 0; i < KonohaChar.MAX; i++) {
 				if(parent.ImportedTokenMatrix[i] != null) {
 					ImportedTokenMatrix[i] = parent.GetTokenFunc(i).Duplicate();
@@ -53,7 +53,7 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	// class
-	public final KClass LookupTypeInfo(String ClassName) {
+	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
 			return KonohaContext.LookupTypeInfo(Class.forName(ClassName));
 
@@ -63,11 +63,11 @@ public final class KNameSpace implements KonohaConst {
 		return null;
 	}
 
-	public final KClass LookupTypeInfo(Class<?> ClassInfo) {
+	public final KonohaType LookupTypeInfo(Class<?> ClassInfo) {
 		return KonohaContext.LookupTypeInfo(ClassInfo);
 	}
 
-	KFunc MergeFunc(KFunc f, KFunc f2) {
+	KonohaFunc MergeFunc(KonohaFunc f, KonohaFunc f2) {
 		if(f == null)
 			return f2;
 		if(f2 == null)
@@ -75,19 +75,19 @@ public final class KNameSpace implements KonohaConst {
 		return f.Merge(f2);
 	}
 
-	KFunc[] DefinedTokenMatrix;
-	KFunc[] ImportedTokenMatrix;
+	KonohaFunc[] DefinedTokenMatrix;
+	KonohaFunc[] ImportedTokenMatrix;
 
-	KFunc GetDefinedTokenFunc(int kchar) {
+	KonohaFunc GetDefinedTokenFunc(int kchar) {
 		return (DefinedTokenMatrix != null) ? DefinedTokenMatrix[kchar] : null;
 	}
 
-	KFunc GetTokenFunc(int kchar) {
+	KonohaFunc GetTokenFunc(int kchar) {
 		if(ImportedTokenMatrix == null) {
 			return null;
 		}
 		if(ImportedTokenMatrix[kchar] == null) {
-			KFunc func = null;
+			KonohaFunc func = null;
 			if(ParentNameSpace != null) {
 				func = ParentNameSpace.GetTokenFunc(kchar);
 			}
@@ -100,20 +100,20 @@ public final class KNameSpace implements KonohaConst {
 
 	public void AddTokenFunc(String keys, Object callee, String name) {
 		if(DefinedTokenMatrix == null) {
-			DefinedTokenMatrix = new KFunc[KonohaChar.MAX];
+			DefinedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
 		if(ImportedTokenMatrix == null) {
-			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+			ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
 		for(int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
-			DefinedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
-			ImportedTokenMatrix[kchar] = KFunc.NewFunc(callee, name, GetTokenFunc(kchar));
+			DefinedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, DefinedTokenMatrix[kchar]);
+			ImportedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, GetTokenFunc(kchar));
 			//KonohaDebug.P("key="+kchar+", " + name + ", " + GetTokenFunc(kchar));
 		}
 	}
 
-	public ArrayList<KToken> Tokenize(String text, long uline) {
+	public ArrayList<KonohaToken> Tokenize(String text, long uline) {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
@@ -128,23 +128,23 @@ public final class KNameSpace implements KonohaConst {
 //		return null;
 //	}
 
-	KFunc GetMacro(String Symbol, boolean TopLevel) {
+	KonohaFunc GetMacro(String Symbol, boolean TopLevel) {
 		if(TopLevel) {
 			Object o = GetSymbol(MacroPrefix + TopLevelPrefix + Symbol);
-			if(o != null && o instanceof KFunc) {
-				return (KFunc)o;
+			if(o != null && o instanceof KonohaFunc) {
+				return (KonohaFunc)o;
 			}
 		}
 		Object o = GetSymbol(MacroPrefix + Symbol);
-		return (o instanceof KFunc) ? (KFunc) o : null;
+		return (o instanceof KonohaFunc) ? (KonohaFunc) o : null;
 	}
 
 	public void DefineMacro(String Symbol, Object Callee, String MethodName) {
-		DefineSymbol(MacroPrefix + Symbol, new KFunc(Callee, MethodName, null));
+		DefineSymbol(MacroPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
 	}
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
-		DefineSymbol(MacroPrefix + TopLevelPrefix + Symbol, new KFunc(Callee, MethodName, null));
+		DefineSymbol(MacroPrefix + TopLevelPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
 	}
 
 	HashMap<String, Object> DefinedSymbolTable;
@@ -169,21 +169,21 @@ public final class KNameSpace implements KonohaConst {
 		ImportedSymbolTable.put(Symbol, Value);
 	}
 
-	public KSyntax GetSyntax(String symbol) {
+	public KonohaSyntax GetSyntax(String symbol) {
 		Object o = GetSymbol(symbol);
-		return (o instanceof KSyntax) ? (KSyntax) o : null;
+		return (o instanceof KonohaSyntax) ? (KonohaSyntax) o : null;
 	}
 
-	public KSyntax GetSyntax(String symbol, boolean TopLevel) {
+	public KonohaSyntax GetSyntax(String symbol, boolean TopLevel) {
 		if(TopLevel) {
 			Object o = GetSymbol(TopLevelPrefix + symbol);
-			if(o != null && o instanceof KSyntax) return (KSyntax)o;
+			if(o != null && o instanceof KonohaSyntax) return (KonohaSyntax)o;
 		}
 		Object o = GetSymbol(symbol);
-		return (o instanceof KSyntax) ? (KSyntax) o : null;
+		return (o instanceof KonohaSyntax) ? (KonohaSyntax) o : null;
 	}
 
-	public void AddSyntax(KSyntax Syntax, boolean TopLevel) {
+	public void AddSyntax(KonohaSyntax Syntax, boolean TopLevel) {
 		Syntax.PackageNameSpace = this;
 		Syntax.ParentSyntax = GetSyntax(Syntax.SyntaxName, TopLevel);
 		String Key = (TopLevel) ? TopLevelPrefix + Syntax.SyntaxName : Syntax.SyntaxName;
@@ -191,36 +191,36 @@ public final class KNameSpace implements KonohaConst {
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), false);
+		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), false);
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
+		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
 	}
 
 	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
+		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
 	}
 
 	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
+		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
 	}
 	
 	// Global Object
-	public KObject CreateGlobalObject(int ClassFlag, String ShortName) {
-		KClass NewClass = new KClass(KonohaContext, null, ClassFlag, ShortName, null);
-		KObject GlobalObject = new KObject(NewClass);
+	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {
+		KonohaType NewClass = new KonohaType(KonohaContext, null, ClassFlag, ShortName, null);
+		KonohaObject GlobalObject = new KonohaObject(NewClass);
 		NewClass.DefaultNullValue = GlobalObject;
 		return GlobalObject;
 	}
 	
-	public KObject GetGlobalObject() {
+	public KonohaObject GetGlobalObject() {
 		Object GlobalObject = GetDefinedSymbol(GlobalConstName);
-		if(GlobalObject == null || !(GlobalObject instanceof KObject)) {
+		if(GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
 			GlobalObject = CreateGlobalObject(SingletonClass, "*GlobalType*");
 			DefineSymbol(GlobalConstName, GlobalObject);
 		}
-		return (KObject)GlobalObject;
+		return (KonohaObject)GlobalObject;
 	}
 	
 	public void ImportNameSpace(KNameSpace ns) {
@@ -229,7 +229,7 @@ public final class KNameSpace implements KonohaConst {
 			ImportedNameSpaceList.add(ns);
 		}
 		if(ImportedTokenMatrix == null) {
-			ImportedTokenMatrix = new KFunc[KonohaChar.MAX];
+			ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
 
 		if(ns.DefinedTokenMatrix != null) {
@@ -244,7 +244,7 @@ public final class KNameSpace implements KonohaConst {
 		// }
 	}
 
-	public int PreProcess(ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int PreProcess(ArrayList<KonohaToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
@@ -252,7 +252,7 @@ public final class KNameSpace implements KonohaConst {
 		return "(eval:" + (int) uline + ")";
 	}
 
-	public String Message(int Level, KToken Token, String Message) {
+	public String Message(int Level, KonohaToken Token, String Message) {
 		if(!Token.IsErrorToken()) {
 			if(Level == Error) {
 				Message = "(error) " + GetSourcePosition(Token.uline) + " " + Message;
@@ -271,14 +271,14 @@ public final class KNameSpace implements KonohaConst {
 	public Object Eval(String text, long uline) {
 		Object ResultValue = null;
 		System.out.println("Eval: " + text);
-		ArrayList<KToken> BufferList = Tokenize(text, uline);
+		ArrayList<KonohaToken> BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
-			KGamma Gamma = new KGamma(this, null);
-			TypedNode TNode = KGamma.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+			TypeEnv Gamma = new TypeEnv(this, null);
+			TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = GetBuilder();
 			ResultValue = Builder.EvalAtTopLevel(TNode);
 			UNode = UNode.NextNode;
@@ -324,23 +324,23 @@ class KonohaTokenizer implements KonohaConst {
 	KNameSpace ns;
 	String SourceText;
 	long CurrentLine;
-	ArrayList<KToken> SourceList;
+	ArrayList<KonohaToken> SourceList;
 
 	KonohaTokenizer(KNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;
-		this.SourceList = new ArrayList<KToken>();
+		this.SourceList = new ArrayList<KonohaToken>();
 	}
 
-	int TokenizeFirstToken(ArrayList<KToken> tokenList) {
+	int TokenizeFirstToken(ArrayList<KonohaToken> tokenList) {
 		return 0;
 	}
 
 	int StampLine(int StartIdx) {
 		for(int i = StartIdx; i < SourceList.size(); i++) {
-			KToken token = SourceList.get(i);
-			if(token.ResolvedSyntax == KSyntax.IndentSyntax) {
+			KonohaToken token = SourceList.get(i);
+			if(token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
 				CurrentLine = CurrentLine + 1;
 			}
 			token.uline = CurrentLine;
@@ -349,7 +349,7 @@ class KonohaTokenizer implements KonohaConst {
 	}
 	
 	int DispatchFunc(int KonohaChar, int pos) {
-		KFunc FuncStack = ns.GetTokenFunc(KonohaChar);
+		KonohaFunc FuncStack = ns.GetTokenFunc(KonohaChar);
 		int UnusedIdx = SourceList.size();
 		while (FuncStack != null) {
 			int NextIdx = FuncStack.InvokeTokenFunc(ns, SourceText, pos, SourceList);
@@ -359,14 +359,14 @@ class KonohaTokenizer implements KonohaConst {
 			}
 			FuncStack = FuncStack.Pop();
 		}
-		KToken Token = new KToken(SourceText.substring(pos));
+		KonohaToken Token = new KonohaToken(SourceText.substring(pos));
 		Token.uline = CurrentLine;
 		SourceList.add(Token);
 		ns.Message(Error, Token, "undefined token: " + Token.ParsedText);
 		return SourceText.length();
 	}
 
-	ArrayList<KToken> Tokenize() {
+	ArrayList<KonohaToken> Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
 		while (pos < len) {

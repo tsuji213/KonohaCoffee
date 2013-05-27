@@ -1,13 +1,13 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 
 public class Local {
 	String Name;
-	KClass TypeInfo;
+	KonohaType TypeInfo;
 	int Index;
 
-	public Local(int Index, KClass TypeInfo, String Name) {
+	public Local(int Index, KonohaType TypeInfo, String Name) {
 		this.Index = Index;
 		this.TypeInfo = TypeInfo;
 		this.Name = Name;
@@ -15,7 +15,7 @@ public class Local {
 }
 
 class Param extends Local {
-	public Param(int Index, KClass TypeInfo, String Name) {
+	public Param(int Index, KonohaType TypeInfo, String Name) {
 		super(Index, TypeInfo, Name);
 	}
 }

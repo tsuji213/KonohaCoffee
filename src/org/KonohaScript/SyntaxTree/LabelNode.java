@@ -1,13 +1,13 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LabelNode extends TypedNode {
 	public String Label;
 
 	/* Label: */
-	public LabelNode(KClass TypeInfo, String Label) {
+	public LabelNode(KonohaType TypeInfo, String Label) {
 		super(TypeInfo);
 		this.Label = Label;
 	}

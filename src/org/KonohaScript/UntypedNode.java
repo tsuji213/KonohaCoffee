@@ -32,8 +32,8 @@ public class UntypedNode implements KonohaConst {
 	UntypedNode               PreviousNode;
 	UntypedNode               NextNode;	
 	public KNameSpace         NodeNameSpace;
-	public KSyntax            Syntax;
-	public KToken             KeyToken;
+	public KonohaSyntax            Syntax;
+	public KonohaToken             KeyToken;
 	
 	@Override public String toString() {
 		String key = KeyToken.ParsedText + ":" + ((Syntax != null) ? Syntax.SyntaxName : "null");
@@ -60,7 +60,7 @@ public class UntypedNode implements KonohaConst {
 		return sb.toString();
 	}
 		
-	public UntypedNode(KNameSpace ns, KToken KeyToken) {
+	public UntypedNode(KNameSpace ns, KonohaToken KeyToken) {
 		this.NodeNameSpace = ns;
 		this.KeyToken = KeyToken;
 		this.Syntax = KeyToken.ResolvedSyntax;
@@ -101,59 +101,59 @@ public class UntypedNode implements KonohaConst {
 		return Node;
 	}
 
-	public void SetAtToken(int Index, KToken Token) {
+	public void SetAtToken(int Index, KonohaToken Token) {
 		SetAt(Index, Token);
 	}
 
-	public final KClass GetTokenType(int Index, KClass DefType) {
-		KToken Token = (KToken)NodeList.get(Index);
-		if(Token != null && Token.ResolvedObject instanceof KClass) {
-			return (KClass)Token.ResolvedObject;
+	public final KonohaType GetTokenType(int Index, KonohaType DefType) {
+		KonohaToken Token = (KonohaToken)NodeList.get(Index);
+		if(Token != null && Token.ResolvedObject instanceof KonohaType) {
+			return (KonohaType)Token.ResolvedObject;
 		}
 		return DefType;
 	}
 
 	public final String GetTokenString(int Index, String DefString) {
-		KToken Token = (KToken)NodeList.get(Index);
+		KonohaToken Token = (KonohaToken)NodeList.get(Index);
 		if(Token != null) {
 			return Token.ParsedText;
 		}
 		return DefString;
 	}
 
-	public final ArrayList<KToken> GetTokenList(int Index) {
-		KToken Token = (KToken)NodeList.get(Index);
+	public final ArrayList<KonohaToken> GetTokenList(int Index) {
+		KonohaToken Token = (KonohaToken)NodeList.get(Index);
 		if(Token != null && Token.IsGroupToken()) {
 			return Token.GetGroupList();
 		}
-		return new ArrayList<KToken>();
+		return new ArrayList<KonohaToken>();
 	}
 
 	
 	// parser 
 	
-	public int ReportError(KToken Token, String Message, int ParseOption) {
+	public int ReportError(KonohaToken Token, String Message, int ParseOption) {
 		if((ParseOption & HasNextPattern) != HasNextPattern) {
 			if(Token != null) {
 				KeyToken = Token;
 			}
 			NodeNameSpace.Message(Error, KeyToken, Message);
-			this.Syntax = KSyntax.ErrorSyntax;
+			this.Syntax = KonohaSyntax.ErrorSyntax;
 			this.NodeList = null;
 		}
 		return NoMatch;
 	}
 	
-	public static UntypedNode NewNullNode(KNameSpace ns, ArrayList<KToken> TokenList, int BeginIdx) {
-		KToken EmptyToken = new KToken("");
+	public static UntypedNode NewNullNode(KNameSpace ns, ArrayList<KonohaToken> TokenList, int BeginIdx) {
+		KonohaToken EmptyToken = new KonohaToken("");
 		EmptyToken.uline = TokenList.get(BeginIdx-1).uline;
-		EmptyToken.ResolvedSyntax = KSyntax.EmptySyntax;
+		EmptyToken.ResolvedSyntax = KonohaSyntax.EmptySyntax;
 		return new UntypedNode(ns, EmptyToken);
 	}
 	
-	public int ParseByKeyToken(KToken KeyToken, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx) {
+	public int ParseByKeyToken(KonohaToken KeyToken, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx) {
 		this.KeyToken = KeyToken;
-		KSyntax Syntax = KeyToken.ResolvedSyntax;
+		KonohaSyntax Syntax = KeyToken.ResolvedSyntax;
 		while(Syntax != null) {
 			this.Syntax = Syntax;
 			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
@@ -162,7 +162,7 @@ public class UntypedNode implements KonohaConst {
 				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":"+Syntax.ParseMethod);
 				return NextIdx;
 			}
-			if(this.Syntax == KSyntax.ErrorSyntax) {
+			if(this.Syntax == KonohaSyntax.ErrorSyntax) {
 				return EndIdx;
 			}
 			this.NodeList = null;
@@ -178,7 +178,7 @@ public class UntypedNode implements KonohaConst {
 	/* 1 + 2 * 3 */
 	/* 1 * 2 + 3 */
 	
-	public static UntypedNode BinaryNode(KNameSpace ns, UntypedNode LeftNode, KToken KeyToken, UntypedNode RightNode)
+	public static UntypedNode BinaryNode(KNameSpace ns, UntypedNode LeftNode, KonohaToken KeyToken, UntypedNode RightNode)
 	{
 		if(RightNode.Syntax.IsBinaryOperator()) {
 			if(KeyToken.ResolvedSyntax.IsLeftJoin(RightNode.Syntax)) {
@@ -199,24 +199,24 @@ public class UntypedNode implements KonohaConst {
 		return NewNode;
 	}
 	
-	int ReportExpectedAfter(ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, String NextSyntax, int ParseOption) {
+	int ReportExpectedAfter(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, String NextSyntax, int ParseOption) {
 		System.out.printf("ReportExpectedAfter: NoMatch BeginIdx=%d,  EndIdx=%d Option=%d\n", BeginIdx, EndIdx, ParseOption);
 		if((ParseOption & AllowEmpty) == AllowEmpty) {
 			return BeginIdx;
 		}
 		else {
-			KToken Token = TokenList.get(BeginIdx-1);
+			KonohaToken Token = TokenList.get(BeginIdx-1);
 			return ReportError(Token, NextSyntax + " is expected after " + Token.ParsedText, ParseOption);
 		}
 	}
 	
-	public static UntypedNode ParseNewNode(KNameSpace ns, UntypedNode PrevNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public static UntypedNode ParseNewNode(KNameSpace ns, UntypedNode PrevNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		UntypedNode LeftNode = null;
 		//KToken.DumpTokenList(0, "ParseNewNode", TokenList, BeginIdx, EndIdx);
 		while(BeginIdx < EndIdx) {
 			int NextIdx = BeginIdx;
-			KToken KeyToken = TokenList.get(NextIdx);
-			KSyntax Syntax = KeyToken.ResolvedSyntax;
+			KonohaToken KeyToken = TokenList.get(NextIdx);
+			KonohaSyntax Syntax = KeyToken.ResolvedSyntax;
 			//KonohaDebug.P("nextIdx="+NextIdx+",Syntax="+Syntax);
 			if(LeftNode == null) {
 				if(Syntax.IsDelim()) {  // A ; B
@@ -259,8 +259,8 @@ public class UntypedNode implements KonohaConst {
 		return LeftNode;
 	}
 
-	public static UntypedNode ParseGroup(KNameSpace ns, KToken GroupToken, int ParseOption) {
-		ArrayList<KToken> GroupList = GroupToken.GetGroupList();
+	public static UntypedNode ParseGroup(KNameSpace ns, KonohaToken GroupToken, int ParseOption) {
+		ArrayList<KonohaToken> GroupList = GroupToken.GetGroupList();
 		return ParseNewNode(ns, null, GroupList, 1, GroupList.size() -1 , ParseOption);
 	}
 	
@@ -274,11 +274,11 @@ public class UntypedNode implements KonohaConst {
 		return this;
 	}
 	
-	public void AppendTokenList(String delim, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public void AppendTokenList(String delim, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		assert(this.NodeList.size() == 1);
 		int start = BeginIdx;
 		for(int i = BeginIdx; i < EndIdx; i++) {
-			KToken Token = TokenList.get(i);
+			KonohaToken Token = TokenList.get(i);
 			if(Token.EqualsText(delim)) {
 				AddParsedNode(ParseNewNode(NodeNameSpace, null, TokenList, start, i, ParseOption));
 				start = i + 1;
@@ -299,10 +299,10 @@ public class UntypedNode implements KonohaConst {
 		return ((ParseOption & HasNextPattern) == HasNextPattern);
 	}
 	
-	public static int FindDelim(ArrayList<KToken> TokenList, int BeginIdx, int EndIdx) {
+	public static int FindDelim(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx) {
 		int NextIdx = EndIdx;
 		for(int i = BeginIdx+1; i < EndIdx; i++) {
-			KToken Token = TokenList.get(i);
+			KonohaToken Token = TokenList.get(i);
 			if(Token.ResolvedSyntax.IsDelim()) {
 				NextIdx = i;
 				break;
@@ -311,11 +311,11 @@ public class UntypedNode implements KonohaConst {
 		return NextIdx;
 	}
 	
-	public final static int SkipIndent(ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public final static int SkipIndent(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if((ParseOption & SkipIndent) == SkipIndent) {
 			while(BeginIdx < EndIdx) {
-				KToken Token = TokenList.get(BeginIdx);
-				if(Token.ResolvedObject != KSyntax.IndentSyntax) break;
+				KonohaToken Token = TokenList.get(BeginIdx);
+				if(Token.ResolvedObject != KonohaSyntax.IndentSyntax) break;
 				BeginIdx++;
 			}
 		}
@@ -323,11 +323,11 @@ public class UntypedNode implements KonohaConst {
 	}
 	
 	// Matcher	
-	public int MatchCond(int Index, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int MatchCond(int Index, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
-			KToken GroupToken = TokenList.get(BeginIdx);
+			KonohaToken GroupToken = TokenList.get(BeginIdx);
 			if(GroupToken.ResolvedSyntax.equals("()")) {
 				SetAtNode(Index, ParseGroup(NodeNameSpace, GroupToken, ParseOption));
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
@@ -336,12 +336,12 @@ public class UntypedNode implements KonohaConst {
 		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, "(", ParseOption);
 	}
 
-	public int MatchExpression(int Index, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, String OptionalDelim, int ParseOption) {
+	public int MatchExpression(int Index, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, String OptionalDelim, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		int NextIdx = EndIdx;
 		for(int i = BeginIdx; i < EndIdx; i++) {
-			KToken Token = TokenList.get(i);
+			KonohaToken Token = TokenList.get(i);
 			if(Token.ResolvedSyntax.IsDelim() || (OptionalDelim != null && Token.ParsedText.equals(OptionalDelim))) {
 				NextIdx = i;
 			}
@@ -350,11 +350,11 @@ public class UntypedNode implements KonohaConst {
 		return NextIdx+1;
 	}
 	
-	public int MatchSingleBlock(int Index, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int MatchSingleBlock(int Index, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
-			KToken Token = TokenList.get(BeginIdx);
+			KonohaToken Token = TokenList.get(BeginIdx);
 			if(Token.ResolvedSyntax.equals("{}")) {
 				SetAtNode(Index, ParseGroup(NodeNameSpace, Token, AllowEmpty|CreateNullNode));
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
@@ -364,11 +364,11 @@ public class UntypedNode implements KonohaConst {
 		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, "{", ParseOption);
 	}
 	
-	public int MatchKeyword(int Index, String Symbol, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int MatchKeyword(int Index, String Symbol, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
-			KToken Token = TokenList.get(BeginIdx);
+			KonohaToken Token = TokenList.get(BeginIdx);
 			if(Token.EqualsText(Symbol)) {
 				SetAt(Index, Token);
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
@@ -377,11 +377,11 @@ public class UntypedNode implements KonohaConst {
 		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, Symbol, ParseOption);
 	}
 
-	public int MatchSyntax(int Index, String SyntaxName, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int MatchSyntax(int Index, String SyntaxName, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
-			KToken Token = TokenList.get(BeginIdx);
+			KonohaToken Token = TokenList.get(BeginIdx);
 			if(Token.ResolvedSyntax == null) {
 				System.err.println("(>.<) " + Token.ParsedText + ", ResolvedSyntax " + Token.ResolvedSyntax);
 			}
@@ -393,7 +393,7 @@ public class UntypedNode implements KonohaConst {
 		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, SyntaxName, ParseOption);
 	}
 
-	public final TypedNode TypeNodeAt(int Index, KGamma Gamma, KClass TypeInfo, int TypeCheckPolicy) {
+	public final TypedNode TypeNodeAt(int Index, TypeEnv Gamma, KonohaType TypeInfo, int TypeCheckPolicy) {
 		if(NodeList != null) {
 			if(Index < NodeList.size()) {
 				Object NodeObject = NodeList.get(Index);
@@ -405,7 +405,7 @@ public class UntypedNode implements KonohaConst {
 //					return NodeObject2;
 //				}
 				if(NodeObject instanceof UntypedNode) {
-					TypedNode NodeObject2 = KGamma.TypeCheck(Gamma, (UntypedNode)NodeObject, TypeInfo, TypeCheckPolicy);
+					TypedNode NodeObject2 = TypeEnv.TypeCheck(Gamma, (UntypedNode)NodeObject, TypeInfo, TypeCheckPolicy);
 					NodeList.set(Index, NodeObject2);
 					return NodeObject2;
 				}

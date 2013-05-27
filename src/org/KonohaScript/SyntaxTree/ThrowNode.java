@@ -1,11 +1,11 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ThrowNode extends UnaryNode {
 	/* THROW ExceptionExpr */
-	public ThrowNode(KClass TypeInfo, TypedNode Expr) {
+	public ThrowNode(KonohaType TypeInfo, TypedNode Expr) {
 		super(TypeInfo, Expr);
 	}
 

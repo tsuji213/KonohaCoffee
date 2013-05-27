@@ -1,11 +1,11 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 
 public abstract class UnaryNode extends TypedNode {
 	public TypedNode	Expr;
 
-	UnaryNode(KClass TypeInfo, TypedNode Expr) {
+	UnaryNode(KonohaType TypeInfo, TypedNode Expr) {
 		super(TypeInfo);
 		this.Expr = Expr;
 	}

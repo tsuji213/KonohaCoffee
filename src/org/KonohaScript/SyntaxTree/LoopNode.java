@@ -1,10 +1,10 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LoopNode extends TypedNode {
-	public LoopNode(KClass TypeInfo) {
+	public LoopNode(KonohaType TypeInfo) {
 		super(TypeInfo);
 	}
 

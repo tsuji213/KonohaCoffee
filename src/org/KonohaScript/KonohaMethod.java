@@ -31,20 +31,20 @@ import java.lang.reflect.Modifier;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class KMethod extends KonohaDef implements KonohaConst {
+public class KonohaMethod extends KonohaDef implements KonohaConst {
 
-	public KClass ClassInfo;
+	public KonohaType ClassInfo;
 	public String MethodName;
 	// int MethodSymbol;
 	// int CanonicalSymbol;
-	public KParam Param;
+	public KonohaParam Param;
 	Method MethodRef;
 
 	// String Source;
 	// long uline;
 	// KNameSpace LazyCompileNameSpace;
 
-	public KMethod(int MethodFlag, KClass ClassInfo, String MethodName, KParam Param, Method MethodRef) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
 		this.ClassInfo = ClassInfo;
 		this.MethodName = MethodName;
@@ -57,17 +57,17 @@ public class KMethod extends KonohaDef implements KonohaConst {
 		return ((MethodFlag & Flag) == Flag);
 	}
 	
-	public final KClass GetReturnType(KClass BaseType) {
-		KClass ReturnType = Param.Types[0];
+	public final KonohaType GetReturnType(KonohaType BaseType) {
+		KonohaType ReturnType = Param.Types[0];
 		return ReturnType;
 	}
 
-	public final KClass GetParamType(KClass BaseType, int ParamIdx) {
-		KClass ParamType = Param.Types[ParamIdx + Param.ReturnSize];
+	public final KonohaType GetParamType(KonohaType BaseType, int ParamIdx) {
+		KonohaType ParamType = Param.Types[ParamIdx + Param.ReturnSize];
 		return ParamType;
 	}
 
-	public final boolean Match(KMethod Other) {
+	public final boolean Match(KonohaMethod Other) {
 		return (MethodName.equals(Other.MethodName) && Param.Match(Other.Param));
 	}
 	
@@ -125,22 +125,22 @@ public class KMethod extends KonohaDef implements KonohaConst {
 	// DoLazyComilation();
 	
 	KNameSpace LazyNameSpace;
-	ArrayList<KToken> SourceList;
+	ArrayList<KonohaToken> SourceList;
 	
-	public KMethod(int MethodFlag, KClass ClassInfo, String MethodName, KParam Param, KNameSpace LazyNameSpace, ArrayList<KToken> SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
 	}
 	
-	public KMethod DoCompilation() {
+	public KonohaMethod DoCompilation() {
 		if(MethodRef == null) {
-			ArrayList<KToken> BufferList = new ArrayList<KToken>();
+			ArrayList<KonohaToken> BufferList = new ArrayList<KonohaToken>();
 			LazyNameSpace.PreProcess(SourceList, 0, SourceList.size(), BufferList);
 			UntypedNode UNode = UntypedNode.ParseNewNode(LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
-			KGamma Gamma = new KGamma(LazyNameSpace, this);
-			TypedNode TNode = KGamma.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+			TypeEnv Gamma = new TypeEnv(LazyNameSpace, this);
+			TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = LazyNameSpace.GetBuilder();
 			return Builder.Build(TNode, this);
 		}

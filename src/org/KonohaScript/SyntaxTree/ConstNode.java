@@ -1,13 +1,13 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ConstNode extends TypedNode {
 	public Object ConstValue;
 
-	public ConstNode(KClass TypeInfo, KToken SourceToken, Object ConstValue) {
+	public ConstNode(KonohaType TypeInfo, KonohaToken SourceToken, Object ConstValue) {
 		super(TypeInfo, SourceToken);
 		this.ConstValue = ConstValue;
 	}

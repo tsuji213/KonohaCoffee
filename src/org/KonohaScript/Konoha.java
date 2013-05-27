@@ -49,8 +49,8 @@ class KParamMap {
 }
 
 class KSymbolTable implements KonohaConst {
-	ArrayList<KClass> ClassList;
-	HashMap<String, KClass> ClassNameMap;
+	ArrayList<KonohaType> ClassList;
+	HashMap<String, KonohaType> ClassNameMap;
 
 	ArrayList<KPackage> PackageList;
 	KKeyIdMap PackageMap;
@@ -61,14 +61,14 @@ class KSymbolTable implements KonohaConst {
 	ArrayList<String> SymbolList;
 	HashMap<String, Integer> SymbolMap;
 
-	ArrayList<KParam> ParamList;
+	ArrayList<KonohaParam> ParamList;
 	KParamMap ParamMap;
-	ArrayList<KParam> SignatureList;
+	ArrayList<KonohaParam> SignatureList;
 	KParamMap SignatureMap;
 
 	KSymbolTable() {
-		this.ClassList = new ArrayList<KClass>(64);
-		this.ClassNameMap = new HashMap<String, KClass>();
+		this.ClassList = new ArrayList<KonohaType>(64);
+		this.ClassNameMap = new HashMap<String, KonohaType>();
 
 		this.FileIdList = new ArrayList<String>(16);
 		this.FileIdMap = new HashMap<String, Integer>();
@@ -77,8 +77,8 @@ class KSymbolTable implements KonohaConst {
 		this.SymbolMap = new HashMap<String, Integer>();
 
 		this.PackageList = new ArrayList<KPackage>(16);
-		this.ParamList = new ArrayList<KParam>(64);
-		this.SignatureList = new ArrayList<KParam>(64);
+		this.ParamList = new ArrayList<KonohaParam>(64);
+		this.SignatureList = new ArrayList<KonohaParam>(64);
 		this.PackageMap = new KKeyIdMap();
 		this.ParamMap = new KParamMap();
 		this.SignatureMap = new KParamMap();
@@ -203,12 +203,12 @@ public class Konoha implements KonohaConst {
 	KNameSpace DefaultNameSpace;
 	KSymbolTable SymbolTable;
 
-	public final KClass VoidType;
-	public final KClass ObjectType;
-	public final KClass BooleanType;
-	public final KClass IntType;
-	public final KClass StringType;
-	public final KClass VarType;
+	public final KonohaType VoidType;
+	public final KonohaType ObjectType;
+	public final KonohaType BooleanType;
+	public final KonohaType IntType;
+	public final KonohaType StringType;
+	public final KonohaType VarType;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new KSymbolTable();
@@ -229,10 +229,10 @@ public class Konoha implements KonohaConst {
 		}
 	}
 
-	final KClass LookupTypeInfo(Class<?> ClassInfo) {
-		KClass TypeInfo = this.SymbolTable.ClassNameMap.get(ClassInfo.getName());
+	final KonohaType LookupTypeInfo(Class<?> ClassInfo) {
+		KonohaType TypeInfo = this.SymbolTable.ClassNameMap.get(ClassInfo.getName());
 		if(TypeInfo == null) {
-			TypeInfo = new KClass(this, ClassInfo);
+			TypeInfo = new KonohaType(this, ClassInfo);
 			this.SymbolTable.ClassNameMap.put(
 					ClassInfo.getName(), TypeInfo);
 		}
