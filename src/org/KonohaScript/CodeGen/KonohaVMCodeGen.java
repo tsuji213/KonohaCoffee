@@ -25,9 +25,9 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaToken;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -57,10 +57,12 @@ class BasicBlock extends KonohaIR {
 	String						label;				/* for debug */
 
 	public BasicBlock() {
+		super(null);
 		this.label = "";
 	}
 
 	public BasicBlock(String label) {
+		super(null);
 		this.label = label;
 	}
 
@@ -133,8 +135,9 @@ class KonohaIRBuilder {
 	}
 
 	public KonohaIR LogicalAnd(KonohaIR l, KonohaIR r, BlockInfo mergeBB) {
-		// TODO Auto-generated method stub
-		return null;
+		KonohaIR ir = null;
+		l.GetParent();
+		return ir;
 
 	}
 
@@ -145,8 +148,7 @@ class KonohaIRBuilder {
 	}
 
 	public KonohaIR Box(KonohaIR e, KonohaType typeInfo) {
-		return new OPBox(e);
-
+		return null;
 	}
 
 	public KonohaIR LoadConst(Object constValue) {
