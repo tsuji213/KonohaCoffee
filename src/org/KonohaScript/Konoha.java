@@ -11,7 +11,7 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.KonohaScript.GrammarSet.MiniKonoha;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
 /* konoha util */
 
@@ -210,7 +210,7 @@ public class Konoha implements KonohaConst {
 	public final KClass StringType;
 	public final KClass VarType;
 
-	public Konoha(MiniKonoha defaultSyntax) {
+	public Konoha(MiniKonohaGrammar defaultSyntax) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		this.RootNameSpace = new KNameSpace(this, null);
@@ -256,7 +256,7 @@ public class Konoha implements KonohaConst {
 	}
 
 	public static void main(String[] argc) {
-		MiniKonoha MiniKonohaGrammar = new MiniKonoha();
+		MiniKonohaGrammar MiniKonohaGrammar = new MiniKonohaGrammar();
 		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
 		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
 		// KonohaContext.Eval("a == b + C; D + e == F", 2);

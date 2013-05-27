@@ -6,12 +6,12 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.KParam;
 import org.KonohaScript.Konoha;
-import org.KonohaScript.GrammarSet.MiniKonoha;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
-import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -59,7 +59,7 @@ abstract class CodeGeneratorTester {
 
 public class CodeGenTestBase {
 
-	public static final Konoha	KonohaContext	= new Konoha(new MiniKonoha());
+	public static final Konoha	KonohaContext	= new Konoha(new MiniKonohaGrammar());
 	public final KClass			VoidTy			= KonohaContext.VoidType;
 	public final KClass			ObjectTy		= KonohaContext.ObjectType;
 	public final KClass			BooleanTy		= KonohaContext.BooleanType;
@@ -184,12 +184,8 @@ public class CodeGenTestBase {
 
 		KMethod GlobalFunction = new KMethod(0, this.VoidTy, "", Param, null);
 
-		TypedNode Block1 = new BlockNode(this.VoidTy, new ApplyNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new ApplyNode(this.StringTy, null, toString, new NullNode(this.IntTy), new ApplyNode(
-				this.IntTy,
-				null,
-				Fibo,
-				new NullNode(this.VoidTy/* FIXME */),
-				new ConstNode(this.IntTy, null, 36)))));
+		TypedNode Block1 = new BlockNode(this.VoidTy, new ApplyNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new ApplyNode(this.StringTy, null, toString, new NullNode(this.IntTy), new ApplyNode(this.IntTy, null, Fibo, new NullNode(
+				this.VoidTy/* FIXME */), new ConstNode(this.IntTy, null, 36)))));
 		Builder.Prepare(GlobalFunction);
 		CompiledMethod Mtd = Builder.Compile(Block1);
 		assert (Mtd.CompiledCode instanceof String);
@@ -216,20 +212,16 @@ public class CodeGenTestBase {
 		KMethod intSub = new KMethod(0, this.IntTy, "-", Param1, null);
 		KMethod intLt = new KMethod(0, this.BooleanTy, "<", Param3, null);
 
-		TypedNode Block2 = new BlockNode(this.VoidTy, new IfNode(this.VoidTy,
-		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
-		/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
-		/* else */new BlockNode(this.VoidTy)), new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(
-				this.IntTy,
-				null,
-				intSub,
-				new LocalNode(this.IntTy, null, "n"),
-				new ConstNode(this.IntTy, null, 1))), new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(
-				this.IntTy,
-				null,
-				intSub,
-				new LocalNode(this.IntTy, null, "n"),
-				new ConstNode(this.IntTy, null, 2))))));
+		TypedNode Block2 = new BlockNode(
+				this.VoidTy,
+				new IfNode(this.VoidTy,
+				/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
+				/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
+				/* else */new BlockNode(this.VoidTy)),
+				new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(this.IntTy, null, intSub, new LocalNode(this.IntTy, null, "n"), new ConstNode(
+						this.IntTy,
+						null,
+						1))), new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(this.IntTy, null, intSub, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 2))))));
 		{
 			ArrayList<Local> Params = new ArrayList<Local>();
 			Params.add(new Param(0, this.IntTy, "n"));
