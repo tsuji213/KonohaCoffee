@@ -32,8 +32,6 @@ import org.jllvm.*;
 import org.jllvm.bindings.LLVMRealPredicate;
 import org.jllvm.bindings.LLVMIntPredicate;
 
-import sun.font.CreatedFontTracker;
-
 public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 	private LLVMBuilder builder;
 	private Stack<LLVMBasicBlock> bblockStack;
@@ -156,41 +154,24 @@ public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 	}
 
 	@Override
-	public boolean ExitApply(ApplyNode Node) { //TODO
-//		String methodName = Node.Method.MethodName;
-//		if (this.isMethodBinaryOperator(Node)) {
-//			String params = this.pop();
-//			String thisNode = this.pop();
-//			this.push(thisNode + " " + methodName + " " + params);
-//		} else {
-//			String params = "("
-//					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
-//					+ ")";
-//			String thisNode = this.pop();
-//			this.push(thisNode + "." + methodName + params);
-//		}
+	public boolean ExitApply(ApplyNode Node) { //TODO: support unary operator
+		String methodName = Node.Method.MethodName;
+		LLVMValue retValue = null;
+		if (this.isMethodBinaryOperator(Node)) {
+			LLVMValue rightValue = this.valueStack.pop();
+			LLVMValue leftValue = this.valueStack.pop();
+			retValue = this.builder.createBinaryOpInstruction(methodName, leftValue, rightValue, "bopRet");
+		} else {
+			int size = Node.Params.size();
+			LLVMValue[] params = new LLVMValue[size];
+			for (int i = size - 1; i > -1; i--) {
+				params[i] = this.valueStack.pop();
+			}
+			retValue = this.builder.createCallInstruction(methodName, params, "methodRet");
+		}
+		this.valueStack.push(retValue);
 		return true;
 	}
-
-//	@Override
-//	public boolean ExitMethodCall(MethodCallNode Node) { //TODO: support unary operator
-//		String methodName = Node.Method.MethodName;
-//		LLVMValue retValue = null;
-//		if (this.isMethodBinaryOperator(Node)) {
-//			LLVMValue rightValue = this.valueStack.pop();
-//			LLVMValue leftValue = this.valueStack.pop();
-//			retValue = this.builder.createBinaryOpInstruction(methodName, leftValue, rightValue, "bopRet");
-//		} else {
-//			int size = Node.Params.size();
-//			LLVMValue[] params = new LLVMValue[size];
-//			for (int i = size - 1; i > -1; i--) {
-//				params[i] = this.valueStack.pop();
-//			}
-//			retValue = this.builder.createCallInstruction(methodName, params, "methodRet");
-//		}
-//		this.valueStack.push(retValue);
-//		return true;
-//	}
 
 	@Override
 	public boolean ExitAnd(AndNode Node) { //TODO: 
@@ -346,7 +327,7 @@ public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 
 }
 
-class LLVMBuilder {
+class LLVMBuilder { //TODO: support basic block
 	private final int intLength = 64;
 	
 	private LLVMModule module;
@@ -355,6 +336,7 @@ class LLVMBuilder {
 	private LLVMFunction currentFunc;
 	
 	private HashMap<String, Integer> argMap;
+	private HashMap<String, LLVMFunction> definedFucnNameMap;
 	
 	public LLVMBuilder() {
 		System.loadLibrary("jllvm");	
@@ -362,6 +344,7 @@ class LLVMBuilder {
 		builder = new LLVMInstructionBuilder();
 		currentFunc = null;
 		argMap = new HashMap<String, Integer>();
+		definedFucnNameMap = new HashMap<String, LLVMFunction>();
 		
 		defineEmbeddedMethod();
 	}
@@ -395,6 +378,7 @@ class LLVMBuilder {
 		LLVMFunctionType funcType = new LLVMFunctionType(retType, argsType, isVarArg);
 		LLVMFunction func = new LLVMFunction(this.module, funcName, funcType);	
 		changeCurrentFunction(func);
+		definedFucnNameMap.put(funcName, func);
 		
 		return func;
 	}
@@ -419,9 +403,9 @@ class LLVMBuilder {
 		if (typeName.equals("Integer")) {
 			long intValue = (Integer)value;
 			return LLVMConstantInteger.constantInteger((LLVMIntegerType)type, intValue, false);
-//		} else if (typeName.equals("Float")) {	//FIXME
-//			double floatValue = (Double)value;
-//			return new LLVMConstantReal(new LLVMFloatType(), floatValue);
+		} else if (typeName.equals("Float")) {	//FIXME
+			double floatValue = (Double)value;
+			return new LLVMConstantReal(new LLVMFloatType(), floatValue);
 		} else if (typeName.equals("Boolean")) {
 			boolean boolValue = (Boolean)value;
 			return new LLVMConstantBoolean(boolValue);
@@ -550,8 +534,16 @@ class LLVMBuilder {
 	}
 	
 	public LLVMValue createCallInstruction(String funcName, LLVMValue[] args, String retName) {
+		temporaryDefineMethod(funcName);
 		LLVMFunction func = module.getNamedFunction(funcName);
 		return new LLVMCallInstruction(builder, func, args, retName);
+	}
+	
+	private void temporaryDefineMethod(String funcName) {	//TODO: this is a temporary method. future removed
+		if (funcName.equals("fibo")) {
+			LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
+			createFunction("fibo", new LLVMIntegerType(intLength), argsType);
+		}
 	}
 	
 	//TODO: support array
@@ -569,17 +561,17 @@ class LLVMBuilder {
 	
 	private void defineMethod_p() { //FIXME
 		// define puts function
-		LLVMType[] argsType_printf = {new LLVMPointerType(new LLVMIntegerType(8), 0)};
-		createVariableFunction("printf", new LLVMIntegerType(32), argsType_printf);
+//		LLVMType[] argsType_printf = {new LLVMPointerType(new LLVMIntegerType(8), 0)};
+//		createVariableFunction("printf", new LLVMIntegerType(32), argsType_printf);
 		
 		//define p method
 		LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
 		createFunction("p", new LLVMVoidType(), argsType_p);
-		createBasicBlock("bblock");
-		LLVMArgument arg = currentFunc.getParameter(1);
-		LLVMValue strValue = createLocalVariable(arg, "str");
-		
-		LLVMValue format = createLocalVariable(new LLVMConstantString("%s\n", true), "format");
+//		createBasicBlock("bblock");
+//		LLVMArgument arg = currentFunc.getParameter(1);
+//		LLVMValue strValue = createLocalVariable(arg, "str");
+//		
+//		LLVMValue format = createLocalVariable(new LLVMConstantString("%s\n", true), "format");
 		//new LLVMGetElementPointerInstruction(builder, format, format, "format");
 	}
 	
@@ -590,7 +582,7 @@ class LLVMBuilder {
 	
 	private void defineMethod_$getVoidNull() {
 		LLVMType[] argsType = {new LLVMIntegerType(intLength)};
-		createFunction("$getVoidNull", new LLVMVoidType(), argsType);
+		LLVMFunction definedFunc = createFunction("$getVoidNull", new LLVMVoidType(), argsType);
 		createBasicBlock("bblock");
 		createReturnInstruction(null);
 	}

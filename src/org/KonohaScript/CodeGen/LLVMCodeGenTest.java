@@ -8,14 +8,12 @@ public class LLVMCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testReturnConst() {
-		//return "var f1 = function(n) {\n" + "  return 1;\n" + "}";
 		return "func1(void)\n" +"{\n" +"  return 1;\n" + "}";
 	}
 
 	@Override
 	Object testAddOne() {
-		//return "var AddOne = function(n) {\n" + "  return n + 1;\n" + "}";
-		return "int AddOne(n)\n" + "b{\n" + "  return n + 1;\n" + "}";
+		return "int AddOne(n)\n" + "{\n" + "  return n + 1;\n" + "}";
 	}
 
 	@Override
@@ -30,7 +28,7 @@ public class LLVMCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testFibo() {
-		return "var fibo = function(n) {" + "if(n < 3) {" + "  return 1;" + "} else {" + "}" + "return fibo(n-1) + fibo(n-2);\n" + "}";
+		return "int fibo(n)\n" + "{\n" + "  if(n < 3) {\n" + "    return 1;" + "\n  } else {\n" + "\n  }\n" + "  return fibo(n-1) + fibo(n-2);\n" + "}";
 	}
 
 	@Override
