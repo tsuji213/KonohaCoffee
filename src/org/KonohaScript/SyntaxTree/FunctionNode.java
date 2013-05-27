@@ -2,9 +2,8 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
 
 public class FunctionNode extends TypedNode implements CallableNode {
 	/* [Method, DefaultObject, [Env1, Env2, ...., EnvN] */
@@ -13,10 +12,10 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	 * return Env1 + Env2 + Param1 + Param2; } (10, 20); } }
 	 */
 	public ArrayList<TypedNode>	EnvList;
-	public KMethod				Mtd;
+	public KonohaMethod				Mtd;
 
-	public FunctionNode(KClass TypeInfo, KMethod Mtd) {
-		super(TypeInfo);
+	public FunctionNode(KonohaType TypeInfo, KonohaMethod Mtd) {
+		super(TypeInfo, null/*FIXME*/);
 		this.Mtd = Mtd;
 		this.EnvList = new ArrayList<TypedNode>();
 	}
@@ -27,7 +26,7 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterFunction(this);
 		return Visitor.ExitFunction(this);
 	}

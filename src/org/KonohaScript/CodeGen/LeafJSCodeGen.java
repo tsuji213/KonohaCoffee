@@ -3,19 +3,16 @@ package org.KonohaScript.CodeGen;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
@@ -23,6 +20,7 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -31,7 +29,7 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
+public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	private final boolean	UseLetKeyword	= false;
 
 	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
@@ -67,27 +65,27 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	Local AddLocal(KClass Type, String Name) {
+	Local AddLocal(KonohaType Type, String Name) {
 		AddLocalVariableRenameRule(Name);
 		return super.AddLocal(Type, Name);
 	};
 
-	@Override Local AddLocalVarIfNotDefined(KClass Type, String Name) {
+	@Override Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
 		AddLocalVariableRenameRule(Name);
 		return super.AddLocalVarIfNotDefined(Type, Name);
 	};
 
 	@Override
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
 	@Override
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for(int i = 0; i < params.size(); i++) {
+		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
@@ -99,7 +97,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
 		assert (this.getProgramSize() == 1);
 		String Source = this.pop();
-		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
@@ -110,9 +108,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			FuncBuilder.append(MethodName);
 			FuncBuilder.append(" = function(");
 
-			for(int i = 1; i < this.LocalVals.size(); i++) {
+			for (int i = 1; i < this.LocalVals.size(); i++) {
 				Local local = this.GetLocalVariableByIndex(i);
-				if(i != 1) {
+				if (i != 1) {
 					FuncBuilder.append(", ");
 				}
 				FuncBuilder.append(local.Name);
@@ -161,13 +159,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+	public void EnterField(GetterNode Node) {
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -178,21 +176,16 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitBox(BoxNode Node) {
-		/* do nothing */
-		return true;
-
-	}
-
-	@Override
 	public boolean ExitApply(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
-		if(this.isMethodBinaryOperator(Node)) {
+		if (this.isMethodBinaryOperator(Node)) {
 			String params = this.pop();
 			String thisNode = this.pop();
 			this.push(thisNode + " " + methodName + " " + params);
 		} else {
-			String params = "(" + this.PopNReverseAndJoin(Node.Params.size() - 1, ", ") + ")";
+			String params = "("
+					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
+					+ ")";
 			String thisNode = this.pop();
 			this.push(thisNode + "." + methodName + params);
 		}
@@ -217,53 +210,56 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
 		String Right = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ") + Node.TermToken.ParsedText + " = " + Right);
+		this.push((this.UseLetKeyword ? "let " : "var ")
+				+ Node.SourceToken.ParsedText + " = " + Right);
 		return true;
 	}
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
 		String Block = this.pop();
 		String Right = this.pop();
-		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
+		this.push(Node.VarToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
 
-	@Override
-	public void EnterBlock(BlockNode Node) {
-		this.PushProgramSize();
-		this.indentGenerator.indent(1);
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		IndentGenerator g = this.indentGenerator;
-		int Size = this.getProgramSize() - this.PopProgramSize();
-		this.push("{\n" + g.get() + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n" + g.indentAndGet(-1) + "}");
-		return true;
-	}
+	// @Override
+	// public void EnterBlock(BlockNode Node) {
+	// this.PushProgramSize();
+	// this.indentGenerator.indent(1);
+	// }
+	//
+	// @Override
+	// public boolean ExitBlock(BlockNode Node) {
+	// IndentGenerator g = this.indentGenerator;
+	// int Size = this.getProgramSize() - this.PopProgramSize();
+	// this.push("{\n" + g.get()
+	// + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n"
+	// + g.indentAndGet(-1) + "}");
+	// return true;
+	// }
 
 	@Override
 	public boolean ExitIf(IfNode Node) {
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
-		if(Node.ElseNode != null) {
-			this.push("if(" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
-		} else {
-			this.push("if(" + CondExpr + ") " + ThenBlock);
+		String source = "if(" + CondExpr + ") " + ThenBlock;
+		if (Node.ElseNode.NextNode != null) {
+			source = source + " else " + ElseBlock;
 		}
+		this.push(source);
 		return true;
 	}
 
@@ -271,7 +267,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	public boolean ExitSwitch(SwitchNode Node) {
 		int Size = Node.Labels.size();
 		String Exprs = "";
-		for(int i = 0; i < Size; i = i + 1) {
+		for (int i = 0; i < Size; i = i + 1) {
 			String Label = Node.Labels.get(Size - i);
 			String Block = this.pop();
 			Exprs = "case " + Label + ":" + Block + Exprs;
@@ -301,9 +297,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitLabel(LabelNode Node) {
 		String Label = Node.Label;
-		if(Label.compareTo("continue") == 0) {
+		if (Label.compareTo("continue") == 0) {
 			this.push("");
-		} else if(Label.compareTo("continue") == 0) {
+		} else if (Label.compareTo("continue") == 0) {
 			this.push("");
 		} else {
 			this.push(Label + ":");
@@ -314,9 +310,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitJump(JumpNode Node) {
 		String Label = Node.Label;
-		if(Label.compareTo("continue") == 0) {
+		if (Label.compareTo("continue") == 0) {
 			this.push("continue;");
-		} else if(Label.compareTo("continue") == 0) {
+		} else if (Label.compareTo("continue") == 0) {
 			this.push("break;");
 		} else {
 			this.push("goto " + Label);
@@ -327,9 +323,12 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = this.pop();
-		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
+		String CatchBlocks = this.PopNReverseWithPrefix(
+			Node.CatchBlock.size(),
+			"catch() ");
 		String TryBlock = this.pop();
-		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
+		this.push("try " + TryBlock + "" + CatchBlocks + "finally "
+				+ FinallyBlock);
 		return true;
 	}
 
@@ -353,15 +352,4 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		return false;
 	}
 
-	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) {
-		String Exprs = this.PopNReverseWithSuffix(Node.Fields.size(), ";");
-		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
-		if(Node.TypeInfo.SearchSuperMethodClass != null) {
-			Value = Value + Node.TypeInfo.ShortClassName + " ";
-		}
-		this.push(Value + "{" + Exprs + "}");
-
-		return true;
-	}
 }

@@ -2,8 +2,7 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class TryNode extends TypedNode {
 	/*
@@ -16,8 +15,8 @@ public class TryNode extends TypedNode {
 	public ArrayList<TypedNode>	CatchBlock;
 	public TypedNode			FinallyBlock;
 
-	public TryNode(KClass TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
-		super(TypeInfo);
+	public TryNode(KonohaType TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
+		super(TypeInfo, null/*fixme*/);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
 		this.CatchBlock = new ArrayList<TypedNode>();
@@ -25,7 +24,7 @@ public class TryNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterTry(this);
 		Visitor.Visit(this.TryBlock);
 		Visitor.Visit(FinallyBlock);

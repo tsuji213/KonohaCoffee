@@ -2,12 +2,11 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class SwitchNode extends TypedNode {
-	public SwitchNode(KClass TypeInfo) {
-		super(TypeInfo);
+	public SwitchNode(KonohaType TypeInfo) {
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	/*
@@ -18,7 +17,7 @@ public class SwitchNode extends TypedNode {
 	public ArrayList<TypedNode>	Blocks;
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterSwitch(this);
 		Visitor.Visit(this.CondExpr);
 		for(TypedNode Node : this.Blocks) {

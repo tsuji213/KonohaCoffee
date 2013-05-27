@@ -1,19 +1,18 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class LabelNode extends TypedNode {
 	public String Label;
 
 	/* Label: */
-	public LabelNode(KClass TypeInfo, String Label) {
-		super(TypeInfo);
+	public LabelNode(KonohaType TypeInfo, String Label) {
+		super(TypeInfo, null/*fixme*/);
 		this.Label = Label;
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterLabel(this);
 		return Visitor.ExitLabel(this);
 	}

@@ -1,11 +1,10 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class LoopNode extends TypedNode {
-	public LoopNode(KClass TypeInfo) {
-		super(TypeInfo);
+	public LoopNode(KonohaType TypeInfo) {
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	/* while CondExpr then { LoopBlock; IterationExpr } */
@@ -14,7 +13,7 @@ public class LoopNode extends TypedNode {
 	public TypedNode	IterationExpr;
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterLoop(this);
 		Visitor.Visit(this.CondExpr);
 		Visitor.Visit(this.LoopBody);

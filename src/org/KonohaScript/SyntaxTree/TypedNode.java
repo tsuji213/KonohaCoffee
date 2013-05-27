@@ -24,12 +24,11 @@
 
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KToken;
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaToken;
+import org.KonohaScript.KonohaType;
 
 class NotSupportedNodeError extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+	private static final long	serialVersionUID	= 1L;
 
 	NotSupportedNodeError() {
 		super();
@@ -38,50 +37,51 @@ class NotSupportedNodeError extends RuntimeException {
 
 public abstract class TypedNode {
 
-	TypedNode ParentNode = null;
-	TypedNode PreviousNode = null;
-	TypedNode NextNode = null;
+	TypedNode			ParentNode		= null;
+	TypedNode			PreviousNode	= null;
+	public TypedNode	NextNode		= null;
+
+	public KonohaType	TypeInfo;
+	public KonohaToken	SourceToken;
 
 	public final TypedNode GetHeadNode() {
 		TypedNode Node = this;
-		while(Node.PreviousNode != null) {
+		while (Node.PreviousNode != null) {
 			Node = Node.ParentNode;
 		}
 		return Node;
 	}
 
+	public TypedNode Next(TypedNode Node) {
+		TypedNode LastNode = this.GetTailNode();
+		LastNode.LinkNode(Node);
+		return Node;
+	}
+
 	public final TypedNode GetTailNode() {
 		TypedNode Node = this;
-		while(Node.NextNode != null) {
+		while (Node.NextNode != null) {
 			Node = Node.NextNode;
 		}
 		return Node;
 	}
-	
+
 	public final void LinkNode(TypedNode Node) {
 		Node.PreviousNode = this;
 		this.NextNode = Node;
 	}
 
-	public TypedNode(KClass TypeInfo) {
-		this.TypeInfo = TypeInfo;
-		this.SourceToken = null;
-	}
-
-	public TypedNode(KClass TypeInfo, KToken SourceToken) {
+	public TypedNode(KonohaType TypeInfo, KonohaToken SourceToken) {
 		this.TypeInfo = TypeInfo;
 		this.SourceToken = SourceToken;
 	}
 
-	public KClass TypeInfo;
-	public KToken SourceToken;
-	
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		throw new NotSupportedNodeError();
 	}
 
 	public final boolean IsError() {
 		return (this instanceof ErrorNode);
 	}
-	
+
 }

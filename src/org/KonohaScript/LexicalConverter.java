@@ -8,29 +8,29 @@ public final class LexicalConverter implements KonohaConst {
 	public boolean SkipIndent;
 	int LastIndent;
 	
-	public LexicalConverter(KNameSpace ns, boolean TopLevel, boolean SkipIndent) {
+	public LexicalConverter(KonohaNameSpace ns, boolean TopLevel, boolean SkipIndent) {
 		this.ns = ns;
 		this.TopLevel = TopLevel;
 		this.SkipIndent = SkipIndent;
 		LastIndent = 0;
 	}
 
-	KNameSpace ns;
+	KonohaNameSpace ns;
 	
-	public KSyntax GetSyntax(String Symbol) {
+	public KonohaSyntax GetSyntax(String Symbol) {
 		return ns.GetSyntax(Symbol, this.TopLevel);
 	}
 	
-	public void ResolveTokenSyntax(KToken Token) {
+	public void ResolveTokenSyntax(KonohaToken Token) {
 		Token.ResolvedObject = ns.GetSymbol(Token.ParsedText);
 		if(Token.ResolvedObject == null) {
 			Token.ResolvedSyntax = ns.GetSyntax("$Symbol", this.TopLevel);
 		}
-		else if(Token.ResolvedObject instanceof KClass) {
+		else if(Token.ResolvedObject instanceof KonohaType) {
 			Token.ResolvedSyntax = ns.GetSyntax("$Type", this.TopLevel);
 		}
-		else if(Token.ResolvedObject instanceof KSyntax) {
-			Token.ResolvedSyntax = (KSyntax)Token.ResolvedObject;
+		else if(Token.ResolvedObject instanceof KonohaSyntax) {
+			Token.ResolvedSyntax = (KonohaSyntax)Token.ResolvedObject;
 		}
 		else {
 			Token.ResolvedSyntax = ns.GetSyntax("$Const", this.TopLevel);
@@ -52,12 +52,12 @@ public final class LexicalConverter implements KonohaConst {
 		return indent;
 	}
 	
-	public int Do(ArrayList<KToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KToken> BufferList) {
+	public int Do(ArrayList<KonohaToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
 		int c = BeginIdx;
 		while (c < EndIdx) {
-			KToken Token = SourceList.get(c);
+			KonohaToken Token = SourceList.get(c);
 			if(Token.ResolvedSyntax == null) {
-				KFunc Macro = ns.GetMacro(Token.ParsedText, this.TopLevel);
+				KonohaFunc Macro = ns.GetMacro(Token.ParsedText, this.TopLevel);
 				//KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+Macro);
 				if(Macro != null) {
 					int nextIdx = Macro.InvokeMacroFunc(this, SourceList, c, EndIdx, BufferList);
@@ -71,7 +71,7 @@ public final class LexicalConverter implements KonohaConst {
 			}
 			assert (Token.ResolvedSyntax != null);
 			c = c + 1;
-			if(Token.ResolvedSyntax == KSyntax.IndentSyntax) {
+			if(Token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
 				if(this.SkipIndent) continue;
 				LastIndent = Indent(Token.ParsedText);
 			}

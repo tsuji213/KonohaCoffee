@@ -1,27 +1,26 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 
 public class LetNode extends TypedNode {
-	public KToken		TermToken;
-	public TypedNode	Right;
-	public TypedNode	Block;
+	public KonohaToken  VarToken;
+	public TypedNode	ValueNode;
+	public TypedNode	BlockNode;
 
 	/* let frame[Index] = Right in Block end */
-	public LetNode(KClass TypeInfo, KToken TermToken, TypedNode Right, BlockNode Block) {
-		super(TypeInfo);
-		this.TermToken = TermToken;
-		this.Right = Right;
-		this.Block = Block;
+	public LetNode(KonohaType TypeInfo, KonohaToken VarToken, TypedNode Right, TypedNode Block) {
+		super(TypeInfo, VarToken);
+		this.VarToken = VarToken;
+		this.ValueNode = Right;
+		this.BlockNode = Block;
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterLet(this);
-		Visitor.Visit(this.Right);
-		Visitor.Visit(this.Block);
+		Visitor.Visit(this.ValueNode);
+		Visitor.Visit(this.BlockNode);
 		return Visitor.ExitLet(this);
 	}
 }

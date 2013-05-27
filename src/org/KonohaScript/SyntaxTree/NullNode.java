@@ -1,16 +1,15 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class NullNode extends TypedNode {
 
-	public NullNode(KClass TypeInfo) {
-		super(TypeInfo);
+	public NullNode(KonohaType TypeInfo) {
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterNull(this);
 		return Visitor.ExitNull(this);
 	}

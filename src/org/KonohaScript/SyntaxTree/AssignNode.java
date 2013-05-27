@@ -1,22 +1,16 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 
-public class AssignNode extends TypedNode {
-	public KToken		TermToken;
-	public TypedNode	Right;
+public class AssignNode extends BinaryNode {
 
-	/* frame[Index] = Right */
-	public AssignNode(KClass TypeInfo, KToken TermToken, TypedNode Right) {
-		super(TypeInfo);
-		this.TermToken = TermToken;
-		this.Right = Right;
+	public AssignNode(KonohaType TypeInfo, KonohaToken TermToken, TypedNode Left, TypedNode Right) {
+		super(TypeInfo, TermToken, Left, Right);
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterAssign(this);
 		return Visitor.ExitAssign(this);
 	}
