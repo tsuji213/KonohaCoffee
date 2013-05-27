@@ -33,7 +33,7 @@ public final class MiniKonoha implements KonohaConst {
 
 	// Token
 	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
-		for (; pos < SourceText.length(); pos++) {
+		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isWhitespace(ch)) {
 				break;
@@ -45,7 +45,7 @@ public final class MiniKonoha implements KonohaConst {
 	public int IndentToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int LineStart = pos + 1;
 		pos = pos + 1;
-		for (; pos < SourceText.length(); pos++) {
+		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isWhitespace(ch)) {
 				break;
@@ -65,7 +65,7 @@ public final class MiniKonoha implements KonohaConst {
 
 	public int SymbolToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int start = pos;
-		for (; pos < SourceText.length(); pos++) {
+		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
 				break;
@@ -78,7 +78,7 @@ public final class MiniKonoha implements KonohaConst {
 
 	public int MemberToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int start = pos + 1;
-		for (; pos < SourceText.length(); pos++) {
+		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
 				break;
@@ -92,7 +92,7 @@ public final class MiniKonoha implements KonohaConst {
 
 	public int NumberLiteralToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {
 		int start = pos;
-		for (; pos < SourceText.length(); pos++) {
+		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
 			if(!Character.isDigit(ch)) {
 				break;
@@ -110,13 +110,13 @@ public final class MiniKonoha implements KonohaConst {
 		pos = start;
 		while (pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
-			if (ch == '"' && prev == '\\') {
+			if(ch == '"' && prev == '\\') {
 				KToken token = new KToken(SourceText.substring(start, pos - start));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
-			if (ch == '\n') {
+			if(ch == '\n') {
 				KToken token = new KToken(SourceText.substring(start, pos - start));
 				ns.Message(Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
@@ -136,7 +136,7 @@ public final class MiniKonoha implements KonohaConst {
 		GroupList.add(BeginToken);
 		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
-		if (!LastToken.EqualsText(")")) { // ERROR
+		if(!LastToken.EqualsText(")")) { // ERROR
 			LastToken.SetErrorMessage("must close )");
 		}
 		else {
@@ -162,7 +162,7 @@ public final class MiniKonoha implements KonohaConst {
 		GroupList.add(BeginToken);
 		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
-		if (!LastToken.EqualsText("}")) { // ERROR
+		if(!LastToken.EqualsText("}")) { // ERROR
 			LastToken.SetErrorMessage("must close }");
 		}
 		else {
@@ -212,7 +212,7 @@ public final class MiniKonoha implements KonohaConst {
 		GroupList.add(BeginToken);
 		int nextIdx = Lexer.Do(SourceList, BeginIdx + 1, EndIdx, GroupList);
 		KToken LastToken = GroupList.get(GroupList.size()-1);
-		if (!LastToken.EqualsText("]")) { // ERROR
+		if(!LastToken.EqualsText("]")) { // ERROR
 			LastToken.SetErrorMessage("must close ]");
 		}
 		else {
@@ -413,7 +413,7 @@ public final class MiniKonoha implements KonohaConst {
 	}
 
 	public TypedNode TypeIf(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
-		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, UNode.NodeNameSpace.KonohaContext.BooleanType, 0);
+		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
 		if(CondNode.IsError()) return CondNode;
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
 		if(ThenNode.IsError()) return ThenNode;
@@ -450,7 +450,7 @@ public final class MiniKonoha implements KonohaConst {
 		UNode.SetAtToken(VarDeclType, TypeToken);
 		int NextIdx = UNode.MatchSyntax(VarDeclName, "$Symbol", TokenList, SymbolIdx, EndIdx, TermRequired);
 		//System.out.printf("SymbolIdx=%d,  NextIdx=%d, EndIdx=%d\n", SymbolIdx, NextIdx, EndIdx);
-		if (NextIdx == NoMatch) return EndIdx;
+		if(NextIdx == NoMatch) return EndIdx;
 		if(NextIdx == EndIdx) {
 			UNode.SetAtToken(VarDeclValue, null);
 			UNode.SetAtToken(VarDeclScope, null);
@@ -538,8 +538,9 @@ public final class MiniKonoha implements KonohaConst {
 			ParamData[i+1] = ParamType;
 		}
 		KParam Param = new KParam(ParamSize+1, ParamData);
-		KMethod Method = new KMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
-		return new DefNode(TypeInfo, Method);
+		KMethod NewMethod = new KMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
+		BaseType.DefineNewMethod(NewMethod);
+		return new DefNode(TypeInfo, NewMethod);
 	}
 	
 	public int ParseEmpty(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {

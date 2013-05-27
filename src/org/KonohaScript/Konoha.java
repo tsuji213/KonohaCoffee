@@ -92,7 +92,7 @@ class KSymbolTable implements KonohaConst {
 
 	long GetFileId(String file, int linenum) {
 		Integer fileid = this.FileIdMap.get(file);
-		if (fileid == null) {
+		if(fileid == null) {
 			int id = this.FileIdList.size();
 			this.FileIdList.add(file);
 			this.FileIdMap.put(
@@ -119,13 +119,13 @@ class KSymbolTable implements KonohaConst {
 
 	public String StringfySymbol(int Symbol) {
 		String key = this.SymbolList.get(KSymbolTable.UnmaskSymbol(Symbol));
-		if ((Symbol & KonohaConst.GetterSymbol) == KonohaConst.GetterSymbol) {
+		if((Symbol & KonohaConst.GetterSymbol) == KonohaConst.GetterSymbol) {
 			return "Get" + key;
 		}
-		if ((Symbol & KonohaConst.SetterSymbol) == KonohaConst.SetterSymbol) {
+		if((Symbol & KonohaConst.SetterSymbol) == KonohaConst.SetterSymbol) {
 			return "Get" + key;
 		}
-		if ((Symbol & KonohaConst.MetaSymbol) == KonohaConst.MetaSymbol) {
+		if((Symbol & KonohaConst.MetaSymbol) == KonohaConst.MetaSymbol) {
 			return "\\" + key;
 		}
 		return key;
@@ -134,22 +134,22 @@ class KSymbolTable implements KonohaConst {
 	public int GetSymbol(String Symbol, int DefaultValue) {
 		String key = Symbol;
 		int mask = 0;
-		if (Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
-			if (Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
+		if(Symbol.length() >= 3 && Symbol.charAt(1) == 'e' && Symbol.charAt(2) == 't') {
+			if(Symbol.charAt(0) == 'g' && Symbol.charAt(0) == 'G') {
 				key = Symbol.substring(3);
 				mask = KonohaConst.GetterSymbol;
 			}
-			if (Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
+			if(Symbol.charAt(0) == 's' && Symbol.charAt(0) == 'S') {
 				key = Symbol.substring(3);
 				mask = KonohaConst.SetterSymbol;
 			}
 		}
-		if (Symbol.startsWith("\\")) {
+		if(Symbol.startsWith("\\")) {
 			mask = KonohaConst.MetaSymbol;
 		}
 		Integer id = this.SymbolMap.get(key);
-		if (id == null) {
-			if (DefaultValue == KonohaConst.AllowNewId) {
+		if(id == null) {
+			if(DefaultValue == KonohaConst.AllowNewId) {
 				int n = this.SymbolList.size();
 				this.SymbolList.add(key);
 				this.SymbolMap.put(
@@ -175,7 +175,7 @@ class KSymbolTable implements KonohaConst {
 
 	int GetSymbol(String symbol, boolean isnew) {
 		Integer id = this.SymbolMap.get(symbol);
-		if (id == null && isnew) {
+		if(id == null && isnew) {
 
 		}
 		return id;
@@ -228,7 +228,7 @@ public class Konoha implements KonohaConst {
 
 	final KClass LookupTypeInfo(Class<?> ClassInfo) {
 		KClass TypeInfo = this.SymbolTable.ClassNameMap.get(ClassInfo.getName());
-		if (TypeInfo == null) {
+		if(TypeInfo == null) {
 			TypeInfo = new KClass(this, ClassInfo);
 			this.SymbolTable.ClassNameMap.put(
 					ClassInfo.getName(), TypeInfo);

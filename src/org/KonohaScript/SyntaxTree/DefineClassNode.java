@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import org.KonohaScript.KClass;
 
 public class DefineClassNode extends TypedNode implements CallableNode {
-	public ArrayList<FieldNode> Fields;
+	public ArrayList<TypedNode>	Fields;
 
 	public DefineClassNode(KClass TypeInfo) {
 		super(TypeInfo);
-		this.Fields = new ArrayList<FieldNode>();
+		this.Fields = new ArrayList<TypedNode>();
 	}
 
 	@Override
 	public void Append(TypedNode Expr) {
-		FieldNode node = (FieldNode) Expr;
-		this.Fields.add(node);
+		assert (Expr instanceof FieldNode);
+		this.Fields.add(Expr);
 	}
 
 }

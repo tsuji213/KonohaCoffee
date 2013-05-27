@@ -9,9 +9,9 @@ public class LoopNode extends TypedNode {
 	}
 
 	/* while CondExpr then { LoopBlock; IterationExpr } */
-	TypedNode CondExpr;
-	TypedNode LoopBody;
-	TypedNode IterationExpr;
+	public TypedNode	CondExpr;
+	public TypedNode	LoopBody;
+	public TypedNode	IterationExpr;
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {

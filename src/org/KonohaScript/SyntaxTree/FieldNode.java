@@ -6,8 +6,8 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class FieldNode extends TypedNode {
 	/* ($TermToken->text)[Offset] */
-	public KToken TermToken;
-	public int Offset;
+	public KToken	TermToken;
+	public int		Offset;
 
 	public FieldNode(KClass TypeInfo, KToken TermToken, int Offset) {
 		super(TypeInfo);
