@@ -4,25 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.MethodCallNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -36,7 +34,7 @@ import org.jllvm.bindings.LLVMIntPredicate;
 
 import sun.font.CreatedFontTracker;
 
-public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
+public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 	private LLVMBuilder builder;
 	private Stack<LLVMBasicBlock> bblockStack;
 	private Stack<LLVMValue> valueStack;
@@ -49,14 +47,14 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
 	@Override 
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
 		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
@@ -97,7 +95,7 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitDef(DefNode Node) { //TODO:
+	public boolean ExitDefine(DefineNode Node) { //TODO:
 		return true;
 	}
 
@@ -141,13 +139,13 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {  
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+	public void EnterField(GetterNode Node) {
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) { //TODO: 
+	public boolean ExitField(GetterNode Node) { //TODO: 
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -158,31 +156,41 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitBox(BoxNode Node) {
-		/* do nothing */
-		return true;
-
-	}
-
-	@Override
-	public boolean ExitMethodCall(MethodCallNode Node) { //TODO: support unary operator
-		String methodName = Node.Method.MethodName;
-		LLVMValue retValue = null;
-		if (this.isMethodBinaryOperator(Node)) {
-			LLVMValue rightValue = this.valueStack.pop();
-			LLVMValue leftValue = this.valueStack.pop();
-			retValue = this.builder.createBinaryOpInstruction(methodName, leftValue, rightValue, "bopRet");
-		} else {
-			int size = Node.Params.size();
-			LLVMValue[] params = new LLVMValue[size];
-			for (int i = size - 1; i > -1; i--) {
-				params[i] = this.valueStack.pop();
-			}
-			retValue = this.builder.createCallInstruction(methodName, params, "methodRet");
-		}
-		this.valueStack.push(retValue);
+	public boolean ExitApply(ApplyNode Node) { //TODO
+//		String methodName = Node.Method.MethodName;
+//		if (this.isMethodBinaryOperator(Node)) {
+//			String params = this.pop();
+//			String thisNode = this.pop();
+//			this.push(thisNode + " " + methodName + " " + params);
+//		} else {
+//			String params = "("
+//					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
+//					+ ")";
+//			String thisNode = this.pop();
+//			this.push(thisNode + "." + methodName + params);
+//		}
 		return true;
 	}
+
+//	@Override
+//	public boolean ExitMethodCall(MethodCallNode Node) { //TODO: support unary operator
+//		String methodName = Node.Method.MethodName;
+//		LLVMValue retValue = null;
+//		if (this.isMethodBinaryOperator(Node)) {
+//			LLVMValue rightValue = this.valueStack.pop();
+//			LLVMValue leftValue = this.valueStack.pop();
+//			retValue = this.builder.createBinaryOpInstruction(methodName, leftValue, rightValue, "bopRet");
+//		} else {
+//			int size = Node.Params.size();
+//			LLVMValue[] params = new LLVMValue[size];
+//			for (int i = size - 1; i > -1; i--) {
+//				params[i] = this.valueStack.pop();
+//			}
+//			retValue = this.builder.createCallInstruction(methodName, params, "methodRet");
+//		}
+//		this.valueStack.push(retValue);
+//		return true;
+//	}
 
 	@Override
 	public boolean ExitAnd(AndNode Node) { //TODO: 
@@ -224,25 +232,14 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 //		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) { 
-		this.builder.createBasicBlock("bblock");
-	}
 	
 	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		this.bblockStack.add(this.builder.getCurrentBBlock());
-		return true;
-	}
-	
-	@Override
-	public void EnterIf(IfNode Node) {
+	public void EnterIf(IfNode Node) { //FIXME
 		this.bblockStack.add(this.builder.getCurrentBBlock());
 	}
 	
 	@Override
-	public boolean ExitIf(IfNode Node) { 
+	public boolean ExitIf(IfNode Node) { //FIXME
 		LLVMBasicBlock elseBlock = this.bblockStack.pop();
 		LLVMBasicBlock thenBlock = this.bblockStack.pop();
 		LLVMBasicBlock currentBlock = this.bblockStack.pop();
@@ -345,23 +342,6 @@ public class LLVMCodeGen extends SourceCodeGen implements ASTVisitor {
 //		String Expr = this.pop();
 //		this.push("throw new Exception(" + Expr + ";");
 		return false;
-	}
-
-	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) { //TODO: 
-//		String Exprs = "";
-//		int Size = Node.Fields.size();
-//		for (int i = 0; i < Size; i = i + 1) {
-//			String Expr = this.pop();
-//			Exprs = Expr + ";" + Exprs;
-//		}
-//		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
-//		if (Node.TypeInfo.SearchSuperMethodClass != null) {
-//			Value = Value + Node.TypeInfo.ShortClassName + " ";
-//		}
-//		this.push(Value + "{" + Exprs + "}");
-
-		return true;
 	}
 
 }
