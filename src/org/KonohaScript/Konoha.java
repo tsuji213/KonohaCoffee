@@ -210,7 +210,7 @@ public class Konoha implements KonohaConst {
 	public final KClass StringType;
 	public final KClass VarType;
 
-	public Konoha(MiniKonohaGrammar defaultSyntax) {
+	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		this.RootNameSpace = new KNameSpace(this, null);
@@ -222,8 +222,9 @@ public class Konoha implements KonohaConst {
 		this.StringType = this.RootNameSpace.LookupTypeInfo(String.class);
 		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
 
-		defaultSyntax.LoadDefaultSyntax(this.RootNameSpace);
+		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, this.RootNameSpace);
+		this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 	}
 
 	final KClass LookupTypeInfo(Class<?> ClassInfo) {
