@@ -6,7 +6,7 @@ import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -14,7 +14,7 @@ import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.MethodCallNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -90,7 +90,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		this.CurrentProgramSize = new ArrayList<Integer>();
 	}
 
-	protected boolean isMethodBinaryOperator(MethodCallNode Node) {
+	protected boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
 		for (String op : binaryOpList) {
 			if (op.equals(methodName))
@@ -215,7 +215,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	}
 
 	@Override
-	public void EnterDef(DefNode Node) {
+	public void EnterDef(DefineNode Node) {
 		/* do nothing */
 	}
 
@@ -240,7 +240,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	}
 
 	@Override
-	public void EnterMethodCall(MethodCallNode Node) {
+	public void EnterMethodCall(ApplyNode Node) {
 		/* do nothing */
 	}
 
