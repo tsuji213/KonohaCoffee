@@ -1,8 +1,10 @@
 package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -29,9 +31,48 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 public class LeafJSCodeGen extends SourceCodeGen {
 	private final boolean	UseLetKeyword	= false;
 
+	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
+
 	public LeafJSCodeGen() {
 		super(null);
 	}
+
+	private void AddLocalVariableRenameRule(String Name){
+		int nameUsedTimes = 0;
+		int N = LocalVariableRenameTables.size();
+		if(!LocalVariableRenameTables.get(N - 1).containsKey(Name)){
+			for(int i = 0; i < N - 1; ++i){
+				if(LocalVariableRenameTables.get(i).containsKey(Name)){
+					nameUsedTimes++;
+				}
+			}
+			LocalVariableRenameTables.get(N - 1).put(Name, nameUsedTimes);
+		}
+	}
+
+	private String GetRenamedLocalName(String originalName){
+		int N = LocalVariableRenameTables.size();
+		for(int i = N - 1; i >= 0; --i){
+			HashMap<String, Integer> map = LocalVariableRenameTables.get(i);
+			if(map.containsKey(originalName)){
+				if(map.get(originalName) > 0){
+					return originalName + map.get(originalName);
+				}
+			}
+		}
+		return originalName;
+	}
+
+	@Override
+	Local AddLocal(KonohaType Type, String Name) {
+		AddLocalVariableRenameRule(Name);
+		return super.AddLocal(Type, Name);
+	};
+
+	@Override Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
+		AddLocalVariableRenameRule(Name);
+		return super.AddLocalVarIfNotDefined(Type, Name);
+	};
 
 	@Override
 	public void Prepare(KonohaMethod Method) {
@@ -84,13 +125,6 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	public boolean ExitDefine(DefineNode Node) {
-		// String Exprs = this.PopNReverseWithSuffix(Node.Fields.size(), ";");
-		// String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
-		// if (Node.TypeInfo.SearchSuperMethodClass != null) {
-		// Value = Value + Node.TypeInfo.ShortClassName + " ";
-		// }
-		// this.push(Value + "{" + Exprs + "}");
-
 		return true;
 	}
 
