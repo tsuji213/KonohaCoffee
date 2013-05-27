@@ -20,7 +20,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -32,7 +31,7 @@ import org.jllvm.*;
 import org.jllvm.bindings.LLVMRealPredicate;
 import org.jllvm.bindings.LLVMIntPredicate;
 
-public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
+public class LLVMCodeGen extends SourceCodeGen {
 	private LLVMBuilder builder;
 	private Stack<LLVMBasicBlock> bblockStack;
 	private Stack<LLVMValue> valueStack;
@@ -137,13 +136,13 @@ public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 	}
 
 	@Override
-	public void EnterField(GetterNode Node) {
+	public void EnterGetter(GetterNode Node) {
 		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(GetterNode Node) { //TODO: 
+	public boolean ExitGetter(GetterNode Node) { //TODO: 
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -324,7 +323,6 @@ public class LLVMCodeGen extends SourceCodeGen implements NodeVisitor {
 //		this.push("throw new Exception(" + Expr + ";");
 		return false;
 	}
-
 }
 
 class LLVMBuilder { //TODO: support basic block
