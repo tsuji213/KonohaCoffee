@@ -258,8 +258,13 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean ExitDefine(DefineNode Node) {
-		throw new NotSupportedCodeError();
-		// return true;
+		if (Node.DefInfo instanceof KonohaMethod) {
+			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
+			Mtd.DoCompilation();
+		} else {
+			throw new NotSupportedCodeError();
+		}
+		return true;
 	}
 
 	@Override
@@ -520,6 +525,8 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	public static void main(String[] args) {
-		new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter").Eval("1+2", 0);
+		Konoha konoha = new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
+		konoha.Eval("a + 1", 0);
+		// konoha.Eval("int add(int x) { return x + 1; }", 0);
 	}
 }
