@@ -6,11 +6,13 @@ import java.util.HashMap;
 import org.KonohaScript.KClass;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -31,13 +33,13 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	private final boolean	UseLetKeyword	= false;
-	
+
 	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
 
 	public LeafJSCodeGen() {
 		super(null);
 	}
-	
+
 	private void AddLocalVariableRenameRule(String Name){
 		int nameUsedTimes = 0;
 		int N = LocalVariableRenameTables.size();
@@ -50,7 +52,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			LocalVariableRenameTables.get(N - 1).put(Name, nameUsedTimes);
 		}
 	}
-	
+
 	private String GetRenamedLocalName(String originalName){
 		int N = LocalVariableRenameTables.size();
 		for(int i = N - 1; i >= 0; --i){
@@ -63,13 +65,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		}
 		return originalName;
 	}
-	
+
 	@Override
 	Local AddLocal(KClass Type, String Name) {
 		AddLocalVariableRenameRule(Name);
 		return super.AddLocal(Type, Name);
 	};
-	
+
 	@Override Local AddLocalVarIfNotDefined(KClass Type, String Name) {
 		AddLocalVariableRenameRule(Name);
 		return super.AddLocalVarIfNotDefined(Type, Name);
@@ -125,7 +127,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitDef(DefineNode Node) {
+	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
 
@@ -183,7 +185,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitMethodCall(ApplyNode Node) {
+	public boolean ExitApply(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
 		if(this.isMethodBinaryOperator(Node)) {
 			String params = this.pop();
@@ -257,7 +259,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
-		if(Node.ElseNode instanceof BlockNode && ((BlockNode) Node.ElseNode).ExprList.size() > 0) {
+		if(Node.ElseNode != null) {
 			this.push("if(" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
 		} else {
 			this.push("if(" + CondExpr + ") " + ThenBlock);

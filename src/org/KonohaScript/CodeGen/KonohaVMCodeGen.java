@@ -324,11 +324,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterDef(DefineNode Node) {
+	public void EnterDefine(DefineNode Node) {
 	}
 
 	@Override
-	public boolean ExitDef(DefineNode Node) {
+	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
 
@@ -465,11 +465,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterMethodCall(ApplyNode Node) {
+	public void EnterApply(ApplyNode Node) {
 	}
 
 	@Override
-	public boolean ExitMethodCall(ApplyNode Node) {
+	public boolean ExitApply(ApplyNode Node) {
 		KMethod Mtd = Node.Method;
 		ValueList P = Eval.Get();
 		Value Method = Eval.LoadConst(Mtd);

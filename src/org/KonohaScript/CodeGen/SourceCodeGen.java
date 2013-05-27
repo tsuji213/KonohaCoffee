@@ -215,7 +215,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	}
 
 	@Override
-	public void EnterDef(DefineNode Node) {
+	public void EnterDefine(DefineNode Node) {
 		/* do nothing */
 	}
 
@@ -240,7 +240,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	}
 
 	@Override
-	public void EnterMethodCall(ApplyNode Node) {
+	public void EnterApply(ApplyNode Node) {
 		/* do nothing */
 	}
 
