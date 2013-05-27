@@ -43,7 +43,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -136,9 +135,12 @@ class KonohaIRBuilder {
 
 	public KonohaIR LogicalAnd(KonohaIR l, KonohaIR r, BlockInfo mergeBB) {
 		KonohaIR ir = null;
-		l.GetParent();
+		BasicBlock HeadBB = l.GetParent();
+		BasicBlock ThenBB = r.GetParent();
+		BasicBlock MergeBB = mergeBB.Block;
+		HeadBB.Append(new OPJumpF(HeadBB, ThenBB, l));
+		HeadBB.Append(new OPJump(HeadBB, MergeBB));
 		return ir;
-
 	}
 
 	public KonohaIR LogicalOr(KonohaIR l, KonohaIR r) {
@@ -173,7 +175,12 @@ class KonohaIRBuilder {
 
 	}
 
-	public void Assign(Local local, KonohaIR r) {
+	public void Assign(KonohaIR l, KonohaIR r) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void Assign(Local l, KonohaIR r) {
 		// TODO Auto-generated method stub
 
 	}
@@ -258,7 +265,7 @@ class BlockInfo {
 	}
 }
 
-class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
+class LocalVariableCollector extends CodeGenerator {
 	public LocalVariableCollector() {
 		super(null);
 	}
@@ -326,11 +333,11 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 	}
 
 	@Override
-	public void EnterField(GetterNode Node) {
+	public void EnterGetter(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(GetterNode Node) {
+	public boolean ExitGetter(GetterNode Node) {
 		return true;
 	}
 
@@ -475,12 +482,10 @@ class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public void EnterDefine(DefineNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 }
 
-public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
+public class KonohaVMCodeGen extends CodeGenerator {
 	ArrayList<Integer>		Values;
 	int						stacktop;
 	KonohaIRBuilder			Builder;
@@ -588,9 +593,9 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
-		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
+		KonohaIR L = this.Builder.Get(0);
 		KonohaIR R = this.Builder.Get(0);
-		this.Builder.Assign(local, R);
+		this.Builder.Assign(L, R);
 		return true;
 	}
 
@@ -627,11 +632,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 	}
 
 	@Override
-	public void EnterField(GetterNode Node) {
+	public void EnterGetter(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(GetterNode Node) {
+	public boolean ExitGetter(GetterNode Node) {
 		KonohaToken TermToken = Node.SourceToken;
 		String FieldName = TermToken.ParsedText;
 		KonohaIR Base = this.Builder.Get(0);

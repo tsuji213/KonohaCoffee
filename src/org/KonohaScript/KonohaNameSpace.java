@@ -295,7 +295,7 @@ public final class KonohaNameSpace implements KonohaConst {
 			if(ParentNameSpace != null) {
 				return ParentNameSpace.GetBuilder();
 			}
-			Builder = new KonohaBuilder(); // create default builder
+			Builder = (KonohaBuilder) new DefaultKonohaBuilder(); // create default builder
 		}
 		return Builder;
 	}

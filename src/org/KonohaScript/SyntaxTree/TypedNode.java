@@ -76,9 +76,7 @@ public abstract class TypedNode {
 		this.SourceToken = SourceToken;
 	}
 
-	public boolean Evaluate(NodeVisitor Visitor) {
-		throw new NotSupportedNodeError();
-	}
+	public abstract boolean Evaluate(NodeVisitor Visitor);
 
 	public final boolean IsError() {
 		return (this instanceof ErrorNode);

@@ -20,7 +20,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -29,7 +28,7 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
+public class LeafJSCodeGen extends SourceCodeGen {
 	private final boolean	UseLetKeyword	= false;
 
 	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
@@ -159,13 +158,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	}
 
 	@Override
-	public void EnterField(GetterNode Node) {
+	public void EnterGetter(GetterNode Node) {
 		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(GetterNode Node) {
+	public boolean ExitGetter(GetterNode Node) {
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
