@@ -60,7 +60,6 @@ abstract class CodeGeneratorTester {
 public class CodeGenTestBase {
 
 	public static final Konoha	KonohaContext	= new Konoha(new MiniKonoha());
-
 	public final KClass			VoidTy			= KonohaContext.VoidType;
 	public final KClass			ObjectTy		= KonohaContext.ObjectType;
 	public final KClass			BooleanTy		= KonohaContext.BooleanType;
