@@ -20,12 +20,12 @@ public class KParam {
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		KClass[] ParamData = new KClass[KParam.MAX];
 		int i, DataSize = 0;
-		for (i = next; i < BufferList.size(); i++) {
+		for(i = next; i < BufferList.size(); i++) {
 			KToken Token = BufferList.get(i);
-			if (Token.ResolvedObject instanceof KClass) {
+			if(Token.ResolvedObject instanceof KClass) {
 				ParamData[DataSize] = (KClass) Token.ResolvedObject;
 				DataSize++;
-				if (DataSize == KParam.MAX)
+				if(DataSize == KParam.MAX)
 					break;
 			}
 		}
@@ -38,10 +38,9 @@ public class KParam {
 
 	public final boolean Match(KParam Other) {
 		int ParamSize = Other.GetParamSize();
-		if (ParamSize == this.GetParamSize()) {
-			for (int i = this.ReturnSize; i < this.Types.length; i++) {
-				if (this.Types[i] != Other.Types[i])
-					return false;
+		if(ParamSize == GetParamSize()) {
+			for(int i = ReturnSize; i < Types.length; i++) {
+				if(Types[i] != Other.Types[i]) return false;
 			}
 			return true;
 		}

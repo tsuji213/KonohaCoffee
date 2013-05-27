@@ -11,7 +11,7 @@ import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
-import org.KonohaScript.SyntaxTree.MethodCallNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -106,7 +106,7 @@ public class CodeGenTestBase {
 		Params.add(new Param(0, this.IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
-		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new MethodCallNode(this.VoidTy, null, intAdd, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 1))));
+		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ApplyNode(this.VoidTy, null, intAdd, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 1))));
 		CompiledMethod Mtd = Builder.Compile(Block);
 		this.Check("AddOne", Tester.testAddOne(), Mtd.CompiledCode);
 	}
@@ -130,7 +130,7 @@ public class CodeGenTestBase {
 		Builder.Prepare(func1, Params);
 
 		TypedNode Block = new BlockNode(this.VoidTy, new IfNode(this.VoidTy,
-		/* cond */new MethodCallNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
+		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
 		/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
 		/* else */new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 2)))),
 		/* */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 3)));
@@ -184,7 +184,7 @@ public class CodeGenTestBase {
 
 		KMethod GlobalFunction = new KMethod(0, this.VoidTy, "", Param, null);
 
-		TypedNode Block1 = new BlockNode(this.VoidTy, new MethodCallNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new MethodCallNode(this.StringTy, null, toString, new NullNode(this.IntTy), new MethodCallNode(
+		TypedNode Block1 = new BlockNode(this.VoidTy, new ApplyNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new ApplyNode(this.StringTy, null, toString, new NullNode(this.IntTy), new ApplyNode(
 				this.IntTy,
 				null,
 				Fibo,
@@ -217,14 +217,14 @@ public class CodeGenTestBase {
 		KMethod intLt = new KMethod(0, this.BooleanTy, "<", Param3, null);
 
 		TypedNode Block2 = new BlockNode(this.VoidTy, new IfNode(this.VoidTy,
-		/* cond */new MethodCallNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
+		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
 		/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
-		/* else */new BlockNode(this.VoidTy)), new ReturnNode(this.IntTy, new MethodCallNode(this.IntTy, null, intAdd, new MethodCallNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new MethodCallNode(
+		/* else */new BlockNode(this.VoidTy)), new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(
 				this.IntTy,
 				null,
 				intSub,
 				new LocalNode(this.IntTy, null, "n"),
-				new ConstNode(this.IntTy, null, 1))), new MethodCallNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new MethodCallNode(
+				new ConstNode(this.IntTy, null, 1))), new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(
 				this.IntTy,
 				null,
 				intSub,

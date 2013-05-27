@@ -7,25 +7,25 @@ import org.KonohaScript.KMethod;
 import org.KonohaScript.KToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
-public class MethodCallNode extends TypedNode implements CallableNode {
+public class ApplyNode extends TypedNode implements CallableNode {
 	public KMethod Method;
 	public ArrayList<TypedNode> Params; /* [this, arg1, arg2, ...] */
 
 	/* call self.Method(arg1, arg2, ...) */
-	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method) {
+	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method) {
 		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 	}
 
-	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1) {
+	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1) {
 		super(TypeInfo);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 	}
 
-	public MethodCallNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1, TypedNode arg2) {
+	public ApplyNode(KClass TypeInfo, KToken KeyToken, KMethod Method, TypedNode arg1, TypedNode arg2) {
 		super(TypeInfo);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
