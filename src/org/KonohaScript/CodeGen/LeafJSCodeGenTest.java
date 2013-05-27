@@ -23,13 +23,13 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	@Override
 	Object testIf() {
 		return "var AddOne = function(n) {\n" +
-		"    if (n < 3) {\n" +
-		"        return 1;\n" +
-		"    } else {\n" +
-		"        return 2;\n" +
-		"    };\n" +
-		"    return 3;\n" +
-		"};";
+		       "    if (n < 3) {\n" +
+		       "        return 1;\n" +
+		       "    } else {\n" +
+		       "        return 2;\n" +
+		       "    };\n" +
+		       "    return 3;\n" +
+		       "};";
 	}
 
 	@Override
