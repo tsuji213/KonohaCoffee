@@ -14,7 +14,7 @@ public class DefineNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(ASTVisitor Visitor) {
-		Visitor.EnterDef(this);
-		return Visitor.ExitDef(this);
+		Visitor.EnterDefine(this);
+		return Visitor.ExitDefine(this);
 	}
 }
