@@ -219,6 +219,9 @@ class OPBox extends KonohaIR {
 	KClass				TypeInfo;
 	static final int	OPFIELDSIZE_Box	= 3;
 
+	public OPBox(KonohaIR e) {
+	}
+
 	@Override
 	void dump() {
 		KonohaIR.dump3("Box", "int", this.Dst, "int", this.Src, "KClass", this.TypeInfo);

@@ -29,9 +29,9 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 public interface ASTVisitor {
 	boolean Visit(TypedNode Node);
 
-	void EnterDef(DefineNode Node);
+	void EnterDefine(DefineNode Node);
 
-	boolean ExitDef(DefineNode Node);
+	boolean ExitDefine(DefineNode Node);
 
 	void EnterConst(ConstNode Node);
 
@@ -57,9 +57,9 @@ public interface ASTVisitor {
 
 	boolean ExitBox(BoxNode Node);
 
-	void EnterMethodCall(ApplyNode Node);
+	void EnterApply(ApplyNode Node);
 
-	boolean ExitMethodCall(ApplyNode Node);
+	boolean ExitApply(ApplyNode Node);
 
 	void EnterAnd(AndNode Node);
 

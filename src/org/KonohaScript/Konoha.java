@@ -11,7 +11,7 @@ package org.KonohaScript;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.KonohaScript.GrammarSet.MiniKonoha;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
 /* konoha util */
 
@@ -210,7 +210,7 @@ public class Konoha implements KonohaConst {
 	public final KClass StringType;
 	public final KClass VarType;
 
-	public Konoha(MiniKonoha defaultSyntax) {
+	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new KSymbolTable();
 		this.SymbolTable.Init(this);
 		this.RootNameSpace = new KNameSpace(this, null);
@@ -222,8 +222,11 @@ public class Konoha implements KonohaConst {
 		this.StringType = this.RootNameSpace.LookupTypeInfo(String.class);
 		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
 
-		defaultSyntax.LoadDefaultSyntax(this.RootNameSpace);
+		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, this.RootNameSpace);
+		if(BuilderClassName != null) {
+			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
+		}
 	}
 
 	final KClass LookupTypeInfo(Class<?> ClassInfo) {
@@ -256,8 +259,8 @@ public class Konoha implements KonohaConst {
 	}
 
 	public static void main(String[] argc) {
-		MiniKonoha MiniKonohaGrammar = new MiniKonoha();
-		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
+		MiniKonohaGrammar MiniKonohaGrammar = new MiniKonohaGrammar();
+		Konoha KonohaContext = new Konoha(MiniKonohaGrammar, null);
 		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
 		// KonohaContext.Eval("a == b + C; D + e == F", 2);
 		// KonohaContext.Eval("1+2*3", 3333);

@@ -22,14 +22,14 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript.GrammarSet;
+package org.KonohaScript.MiniKonoha;
 
 import java.util.ArrayList;
 
 import org.KonohaScript.*;
 import org.KonohaScript.SyntaxTree.*;
 
-public final class MiniKonoha implements KonohaConst {
+public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaConst {
 
 	// Token
 	public int WhiteSpaceToken(KNameSpace ns, String SourceText, int pos, ArrayList<KToken> ParsedTokenList) {

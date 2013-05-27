@@ -3,6 +3,7 @@ package org.KonohaScript.SyntaxTree;
 import org.KonohaScript.KClass;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
+@Deprecated
 public class BoxNode extends UnaryNode {
 	public BoxNode(KClass TypeInfo, TypedNode Expr) {
 		super(TypeInfo, Expr);
