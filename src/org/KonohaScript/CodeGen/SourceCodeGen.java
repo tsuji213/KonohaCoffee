@@ -4,17 +4,15 @@ import java.util.ArrayList;
 
 import org.KonohaScript.KMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -49,27 +47,27 @@ class IndentGenerator {
 			level = 0;
 		if (this.level != level) {
 			this.level = level;
-			currentLevelIndentString = repeat(indentString, level);
+			this.currentLevelIndentString = repeat(this.indentString, level);
 		}
 	}
 
 	public void indent(int n) {
-		setLevel(level + n);
+		this.setLevel(this.level + n);
 	}
 
 	public String get() {
-		return currentLevelIndentString;
+		return this.currentLevelIndentString;
 	}
 
 	public String getAndIndent(int diffLevel) {
-		String current = currentLevelIndentString;
-		indent(diffLevel);
+		String current = this.currentLevelIndentString;
+		this.indent(diffLevel);
 		return current;
 	}
 
 	public String indentAndGet(int diffLevel) {
-		indent(diffLevel);
-		return currentLevelIndentString;
+		this.indent(diffLevel);
+		return this.currentLevelIndentString;
 	}
 }
 
@@ -110,15 +108,15 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	protected String[] PopN(int n) {
 		String[] array = new String[n];
 		for (int i = 0; i < n; ++i) {
-			array[i] = pop();
+			array[i] = this.pop();
 		}
 		return array;
 	}
-	
+
 	protected String[] PopNReverse(int n) {
 		String[] array = new String[n];
 		for (int i = 0; i < n; ++i) {
-			array[n - i - 1] = pop();
+			array[n - i - 1] = this.pop();
 		}
 		return array;
 	}
@@ -133,7 +131,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		if (delim == null) {
 			delim = "";
 		}
-		String[] array = reverse ? PopNReverse(n) : PopN(n);
+		String[] array = reverse ? this.PopNReverse(n) : this.PopN(n);
 		for (int i = 0; i < n; ++i) {
 			if (i > 0) {
 				builder.append(delim);
@@ -144,59 +142,59 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		}
 		return builder;
 	}
-	
+
 	protected String PopNWithModifier(int n, boolean reverse, String prefix, String suffix, String delim) {
-		return PopNWithModifier(new StringBuilder(), n, reverse, prefix, suffix, delim).toString();
+		return this.PopNWithModifier(new StringBuilder(), n, reverse, prefix, suffix, delim).toString();
 	}
-	
+
 	protected String PopNAndJoin(int n, String delim) {
-		return PopNAndJoin(new StringBuilder(), n, delim).toString();
+		return this.PopNAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
 	protected StringBuilder PopNAndJoin(StringBuilder builder, int n, String delim) {
-		return PopNWithModifier(builder, n, false, null, null, delim);
+		return this.PopNWithModifier(builder, n, false, null, null, delim);
 	}
 
 	protected String PopNReverseAndJoin(int n, String delim) {
-		return PopNReverseAndJoin(new StringBuilder(), n, delim).toString();
+		return this.PopNReverseAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
 	protected StringBuilder PopNReverseAndJoin(StringBuilder builder, int n, String delim) {
-		return PopNWithModifier(builder, n, true, null, null, delim);
+		return this.PopNWithModifier(builder, n, true, null, null, delim);
 	}
 
 	protected String PopNReverseWithSuffix(int n, String suffix) {
-		return PopNReverseWithSuffix(new StringBuilder(), n, suffix).toString();
+		return this.PopNReverseWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
 	protected StringBuilder PopNReverseWithSuffix(StringBuilder builder, int n, String suffix) {
-		return PopNWithModifier(builder, n, true, null, suffix, null);
+		return this.PopNWithModifier(builder, n, true, null, suffix, null);
 	}
 
 	protected String PopNWithSuffix(int n, String suffix) {
-		return PopNWithSuffix(new StringBuilder(), n, suffix).toString();
+		return this.PopNWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
 	protected StringBuilder PopNWithSuffix(StringBuilder builder, int n, String suffix) {
-		return PopNWithModifier(builder, n, false, null, suffix, null);
+		return this.PopNWithModifier(builder, n, false, null, suffix, null);
 	}
 
 	protected String PopNReverseWithPrefix(int n, String prefix) {
-		return PopNReverseWithPrefix(new StringBuilder(), n, prefix).toString();
+		return this.PopNReverseWithPrefix(new StringBuilder(), n, prefix).toString();
 	}
 
 	protected StringBuilder PopNReverseWithPrefix(StringBuilder builder, int n, String prefix) {
-		return PopNWithModifier(builder, n, true, prefix, null, null);
+		return this.PopNWithModifier(builder, n, true, prefix, null, null);
 	}
 
 	protected String PopNWithPrefix(int n, String prefix) {
-		return PopNWithSuffix(new StringBuilder(), n, prefix).toString();
+		return this.PopNWithSuffix(new StringBuilder(), n, prefix).toString();
 	}
 
 	protected StringBuilder PopNWithPrefix(StringBuilder builder, int n, String prefix) {
-		return PopNWithModifier(builder, n, false, prefix, null, null);
+		return this.PopNWithModifier(builder, n, false, prefix, null, null);
 	}
-	
+
 	protected int PopProgramSize() {
 		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
 	}
@@ -231,11 +229,6 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 
 	@Override
 	public void EnterNull(NullNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterBox(BoxNode Node) {
 		/* do nothing */
 	}
 
@@ -304,8 +297,4 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		/* do nothing */
 	}
 
-	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
-		/* do nothing */
-	}
 }

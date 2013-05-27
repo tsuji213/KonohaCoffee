@@ -1,11 +1,10 @@
 package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
@@ -16,7 +15,6 @@ import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -53,10 +51,6 @@ public interface ASTVisitor {
 
 	boolean ExitField(FieldNode Node);
 
-	void EnterBox(BoxNode Node);
-
-	boolean ExitBox(BoxNode Node);
-
 	void EnterApply(ApplyNode Node);
 
 	boolean ExitApply(ApplyNode Node);
@@ -76,10 +70,6 @@ public interface ASTVisitor {
 	void EnterLet(LetNode Node);
 
 	boolean ExitLet(LetNode Node);
-
-	void EnterBlock(BlockNode Node);
-
-	boolean ExitBlock(BlockNode Node);
 
 	void EnterIf(IfNode Node);
 
@@ -121,7 +111,8 @@ public interface ASTVisitor {
 
 	boolean ExitError(ErrorNode Node);
 
-	void EnterDefineClass(DefineClassNode Node);
+	void EnterBlock(BlockNode Node);
 
-	boolean ExitDefineClass(DefineClassNode Node);
+	boolean ExitBlock(BlockNode Node);
+
 }

@@ -32,9 +32,7 @@ import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
-import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
@@ -339,15 +337,6 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterBox(BoxNode Node) {
-	}
-
-	@Override
-	public boolean ExitBox(BoxNode Node) {
-		return true;
-	}
-
-	@Override
 	public void EnterApply(ApplyNode Node) {
 	}
 
@@ -392,15 +381,6 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		return true;
-	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) {
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
 		return true;
 	}
 
@@ -495,13 +475,17 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
+	public void EnterBlock(BlockNode Node) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) {
-		return true;
+	public boolean ExitBlock(BlockNode Node) {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
 }
 
 public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
@@ -619,28 +603,6 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterBlock(BlockNode Node) {
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		IRList Evaled = this.Builder.Get();
-		this.Builder.NewBlock(Evaled);
-		return true;
-	}
-
-	@Override
-	public void EnterBox(BoxNode Node) {
-	}
-
-	@Override
-	public boolean ExitBox(BoxNode Node) {
-		KonohaIR E = this.Builder.Get(0);
-		this.Builder.Box(E, Node.TypeInfo);
-		return true;
-	}
-
-	@Override
 	public void EnterConst(ConstNode Node) {
 	}
 
@@ -648,17 +610,6 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	public boolean ExitConst(ConstNode Node) {
 		Object ConstValue = Node.ConstValue;
 		this.Builder.LoadConst(ConstValue);
-		return true;
-	}
-
-	@Override
-	public void EnterDefineClass(DefineClassNode Node) {
-	}
-
-	@Override
-	public boolean ExitDefineClass(DefineClassNode Node) {
-		IRList Field = this.Builder.Get();
-		this.Builder.DefClass(Node.TypeInfo, Field);
 		return true;
 	}
 
@@ -881,6 +832,18 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 		// TypedNode FinallyBlock = Node.FinallyBlock;
 		/* BasicBlock TryBB = Eval.Get(0); */
 		return true;
+	}
+
+	@Override
+	public void EnterBlock(BlockNode Node) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean ExitBlock(BlockNode Node) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

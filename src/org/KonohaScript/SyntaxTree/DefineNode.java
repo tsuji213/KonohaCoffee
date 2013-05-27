@@ -5,8 +5,9 @@ import org.KonohaScript.KonohaDef;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class DefineNode extends TypedNode {
-	
-	public KonohaDef DefInfo;
+
+	public KonohaDef	DefInfo;
+
 	public DefineNode(KClass TypeInfo, KonohaDef DefInfo) {
 		super(TypeInfo);
 		this.DefInfo = DefInfo;
