@@ -29,12 +29,13 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.KToken;
 import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
@@ -44,7 +45,6 @@ import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -87,7 +87,7 @@ class IRList extends ArrayList<KonohaIR> {
 	public static IRList unshift(IRList oldList, KonohaIR Val) {
 		ArrayList<KonohaIR> newList = new ArrayList<KonohaIR>();
 		newList.add(Val);
-		for(int i = 0; i < oldList.size(); i++) {
+		for (int i = 0; i < oldList.size(); i++) {
 			newList.add(oldList.get(i));
 		}
 		return (IRList) newList;
@@ -278,18 +278,18 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	@Override
 	public void Prepare(KMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for(int i = 0; i < params.size(); i++) {
+		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
 
 	@Override
-	public void EnterDef(DefNode Node) {
+	public void EnterDefine(DefineNode Node) {
 	}
 
 	@Override
-	public boolean ExitDef(DefNode Node) {
+	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
 
@@ -348,11 +348,11 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterMethodCall(MethodCallNode Node) {
+	public void EnterApply(ApplyNode Node) {
 	}
 
 	@Override
-	public boolean ExitMethodCall(MethodCallNode Node) {
+	public boolean ExitApply(ApplyNode Node) {
 		return true;
 	}
 
@@ -663,11 +663,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterDef(DefineNode Node) {
+	public void EnterDefine(DefineNode Node) {
 	}
 
 	@Override
-	public boolean ExitDef(DefineNode Node) {
+	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
 
@@ -803,11 +803,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterMethodCall(ApplyNode Node) {
+	public void EnterApply(ApplyNode Node) {
 	}
 
 	@Override
-	public boolean ExitMethodCall(ApplyNode Node) {
+	public boolean ExitApply(ApplyNode Node) {
 		KMethod Mtd = Node.Method;
 		IRList P = this.Builder.Get();
 		KonohaIR Method = this.Builder.LoadConst(Mtd);

@@ -86,7 +86,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitDef(DefineNode Node) {
+	public boolean ExitDefine(DefineNode Node) {
 		return true;
 	}
 
@@ -144,7 +144,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public boolean ExitMethodCall(ApplyNode Node) {
+	public boolean ExitApply(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
 		if(this.isMethodBinaryOperator(Node)) {
 			String params = this.pop();
