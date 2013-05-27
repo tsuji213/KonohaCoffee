@@ -37,7 +37,7 @@ public class KParam {
 	public final boolean Match(KParam Other) {
 		int ParamSize = Other.GetParamSize();
 		if(ParamSize == GetParamSize()) {
-			for(int i = ReturnSize; i < Types.lengt; i++) {
+			for(int i = ReturnSize; i < Types.length; i++) {
 				if(Types[i] != Other.Types[i]) return false;
 			}
 			return true;
