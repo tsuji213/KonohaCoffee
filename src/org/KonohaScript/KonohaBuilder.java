@@ -23,22 +23,28 @@
  ***************************************************************************/
 
 package org.KonohaScript;
-import org.KonohaScript.SyntaxTree.*;
 
-public class KonohaBuilder {
-	
-	KonohaBuilder() {
-		
+import org.KonohaScript.SyntaxTree.TypedNode;
+
+public interface KonohaBuilder {
+
+	Object EvalAtTopLevel(TypedNode Node);
+
+	KonohaMethod Build(TypedNode Node, KonohaMethod Method);
+
+}
+
+class DefaultKonohaBuilder {
+	public DefaultKonohaBuilder() {
 	}
-	
+
 	Object EvalAtTopLevel(TypedNode Node) {
-		
-		return null; // return value of eval 
+		return null; // return value of eval
 	}
-	
+
 	KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
 		// Set.MethodRef HERE
 		return Method;
 	}
-	
+
 }

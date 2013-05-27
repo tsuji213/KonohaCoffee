@@ -3,6 +3,17 @@ package org.KonohaScript.SyntaxTree;
 import java.util.ArrayList;
 
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.SyntaxTree.NodeVisitor.TryNodeAcceptor;
+
+class DefaultTryNodeAcceptor implements TryNodeAcceptor {
+	@Override
+	public boolean Eval(TryNode Node, NodeVisitor Visitor) {
+		Visitor.EnterTry(Node);
+		Visitor.Visit(Node.TryBlock);
+		Visitor.Visit(Node.FinallyBlock);
+		return Visitor.ExitTry(Node);
+	}
+}
 
 public class TryNode extends TypedNode {
 	/*
@@ -15,8 +26,9 @@ public class TryNode extends TypedNode {
 	public ArrayList<TypedNode>	CatchBlock;
 	public TypedNode			FinallyBlock;
 
-	public TryNode(KonohaType TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
-		super(TypeInfo, null/*fixme*/);
+	public TryNode(KonohaType TypeInfo, TypedNode TryBlock,
+			TypedNode FinallyBlock) {
+		super(TypeInfo, null/* fixme */);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
 		this.CatchBlock = new ArrayList<TypedNode>();
@@ -25,9 +37,6 @@ public class TryNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		Visitor.EnterTry(this);
-		Visitor.Visit(this.TryBlock);
-		Visitor.Visit(FinallyBlock);
-		return Visitor.ExitTry(this);
+		return Visitor.TryNodeAcceptor.Eval(this, Visitor);
 	}
 }

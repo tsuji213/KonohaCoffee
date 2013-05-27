@@ -1,6 +1,16 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.SyntaxTree.NodeVisitor.ThrowNodeAcceptor;
+
+class DefaultThrowNodeAcceptor implements ThrowNodeAcceptor {
+	@Override
+	public boolean Eval(ThrowNode Node, NodeVisitor Visitor) {
+		Visitor.EnterThrow(Node);
+		Visitor.Visit(Node.Expr);
+		return Visitor.ExitThrow(Node);
+	}
+}
 
 public class ThrowNode extends UnaryNode {
 	/* THROW ExceptionExpr */
@@ -10,8 +20,6 @@ public class ThrowNode extends UnaryNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		Visitor.EnterThrow(this);
-		Visitor.Visit(this.Expr);
-		return Visitor.ExitThrow(this);
+		return Visitor.ThrowNodeAcceptor.Eval(this, Visitor);
 	}
 }
