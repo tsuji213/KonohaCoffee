@@ -540,7 +540,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		KonohaParam Param = new KonohaParam(ParamSize+1, ParamData);
 		KonohaMethod NewMethod = new KonohaMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, UNode.GetTokenList(MethodDeclBlock));
 		BaseType.DefineNewMethod(NewMethod);
-		return new DefineNode(TypeInfo, NewMethod);
+		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
 	
 	public int ParseEmpty(UntypedNode UNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
