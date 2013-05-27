@@ -2,9 +2,9 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
-import org.KonohaScript.KParam;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaParam;
 import org.KonohaScript.Konoha;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -60,11 +60,11 @@ abstract class CodeGeneratorTester {
 public class CodeGenTestBase {
 
 	public static final Konoha	KonohaContext	= new Konoha(new MiniKonohaGrammar(), null);
-	public final KClass			VoidTy			= KonohaContext.VoidType;
-	public final KClass			ObjectTy		= KonohaContext.ObjectType;
-	public final KClass			BooleanTy		= KonohaContext.BooleanType;
-	public final KClass			IntTy			= KonohaContext.IntType;
-	public final KClass			StringTy		= KonohaContext.StringType;
+	public final KonohaType			VoidTy			= KonohaContext.VoidType;
+	public final KonohaType			ObjectTy		= KonohaContext.ObjectType;
+	public final KonohaType			BooleanTy		= KonohaContext.BooleanType;
+	public final KonohaType			IntTy			= KonohaContext.IntType;
+	public final KonohaType			StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
 		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
@@ -78,10 +78,10 @@ public class CodeGenTestBase {
 
 	public void testReturnConst(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreteCodeGen();
-		KClass[] ParamData1 = new KClass[1];
+		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
-		KParam Param1 = new KParam(1, ParamData1);
-		KMethod func1 = new KMethod(0, this.VoidTy, "func1", Param1, null);
+		KonohaParam Param1 = new KonohaParam(1, ParamData1);
+		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "func1", Param1, null);
 		Builder.Prepare(func1);
 		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 1)));
 		CompiledMethod Mtd = Builder.Compile(Block);
@@ -90,17 +90,17 @@ public class CodeGenTestBase {
 
 	public void testAddOne(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreteCodeGen();
-		KClass[] ParamData1 = new KClass[1];
+		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
-		KParam Param1 = new KParam(1, ParamData1);
-		KMethod func1 = new KMethod(0, this.VoidTy, "AddOne", Param1, null);
+		KonohaParam Param1 = new KonohaParam(1, ParamData1);
+		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "AddOne", Param1, null);
 
-		KClass[] ParamData2 = new KClass[2];
+		KonohaType[] ParamData2 = new KonohaType[2];
 		ParamData2[0] = this.IntTy;
 		ParamData2[1] = this.IntTy;
-		KParam Param2 = new KParam(2, ParamData2);
+		KonohaParam Param2 = new KonohaParam(2, ParamData2);
 
-		KMethod intAdd = new KMethod(0, this.IntTy, "+", Param2, null);
+		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", Param2, null);
 
 		ArrayList<Local> Params = new ArrayList<Local>();
 		Params.add(new Param(0, this.IntTy, "n"));
@@ -113,17 +113,17 @@ public class CodeGenTestBase {
 
 	public void testIf(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreteCodeGen();
-		KClass[] ParamData1 = new KClass[1];
+		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
-		KParam Param1 = new KParam(1, ParamData1);
-		KMethod func1 = new KMethod(0, this.VoidTy, "AddOne", Param1, null);
+		KonohaParam Param1 = new KonohaParam(1, ParamData1);
+		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "AddOne", Param1, null);
 
-		KClass[] ParamData2 = new KClass[2];
+		KonohaType[] ParamData2 = new KonohaType[2];
 		ParamData2[0] = this.BooleanTy;
 		ParamData2[1] = this.IntTy;
-		KParam Param2 = new KParam(2, ParamData2);
+		KonohaParam Param2 = new KonohaParam(2, ParamData2);
 
-		KMethod intLt = new KMethod(0, this.BooleanTy, "<", Param2, null);
+		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param2, null);
 
 		ArrayList<Local> Params = new ArrayList<Local>();
 		Params.add(new Param(0, this.IntTy, "n"));
@@ -140,11 +140,11 @@ public class CodeGenTestBase {
 	}
 
 	public void testTopLevelExpr(CodeGeneratorTester Tester) {
-		KClass[] ParamData = new KClass[1];
+		KonohaType[] ParamData = new KonohaType[1];
 		ParamData[0] = this.VoidTy;
-		KParam Param = new KParam(1, ParamData);
+		KonohaParam Param = new KonohaParam(1, ParamData);
 
-		KMethod GlobalFunction = new KMethod(0, this.VoidTy, "", Param, null);
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
 
 		CodeGenerator Builder = Tester.CreteCodeGen();
 		Builder.Prepare(GlobalFunction);
@@ -159,30 +159,30 @@ public class CodeGenTestBase {
 	void testMethodCall(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreteCodeGen();
 
-		KClass[] ParamData1 = new KClass[2];
+		KonohaType[] ParamData1 = new KonohaType[2];
 		ParamData1[0] = this.IntTy;
 		ParamData1[1] = this.IntTy;
-		KParam Param1 = new KParam(2, ParamData1);
+		KonohaParam Param1 = new KonohaParam(2, ParamData1);
 
-		KClass[] ParamData2 = new KClass[2];
+		KonohaType[] ParamData2 = new KonohaType[2];
 		ParamData2[0] = this.VoidTy;
 		ParamData2[1] = this.StringTy;
-		KParam Param2 = new KParam(2, ParamData2);
+		KonohaParam Param2 = new KonohaParam(2, ParamData2);
 
-		KClass[] ParamData4 = new KClass[1];
+		KonohaType[] ParamData4 = new KonohaType[1];
 		ParamData4[0] = this.StringTy;
-		KParam Param4 = new KParam(1, ParamData4);
+		KonohaParam Param4 = new KonohaParam(1, ParamData4);
 
-		KMethod Fibo = new KMethod(0, this.VoidTy, "fibo", Param1, null);
-		KMethod p = new KMethod(0, this.VoidTy, "p", Param2, null);
+		KonohaMethod Fibo = new KonohaMethod(0, this.VoidTy, "fibo", Param1, null);
+		KonohaMethod p = new KonohaMethod(0, this.VoidTy, "p", Param2, null);
 
-		KMethod toString = new KMethod(0, this.IntTy, "toString", Param4, null);
+		KonohaMethod toString = new KonohaMethod(0, this.IntTy, "toString", Param4, null);
 
-		KClass[] ParamData = new KClass[1];
+		KonohaType[] ParamData = new KonohaType[1];
 		ParamData[0] = this.VoidTy;
-		KParam Param = new KParam(1, ParamData);
+		KonohaParam Param = new KonohaParam(1, ParamData);
 
-		KMethod GlobalFunction = new KMethod(0, this.VoidTy, "", Param, null);
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
 
 		TypedNode Block1 = new BlockNode(this.VoidTy, new ApplyNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new ApplyNode(this.StringTy, null, toString, new NullNode(this.IntTy), new ApplyNode(this.IntTy, null, Fibo, new NullNode(
 				this.VoidTy/* FIXME */), new ConstNode(this.IntTy, null, 36)))));
@@ -196,21 +196,21 @@ public class CodeGenTestBase {
 	void testFibo(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreteCodeGen();
 
-		KClass[] ParamData1 = new KClass[2];
+		KonohaType[] ParamData1 = new KonohaType[2];
 		ParamData1[0] = this.IntTy;
 		ParamData1[1] = this.IntTy;
-		KParam Param1 = new KParam(2, ParamData1);
+		KonohaParam Param1 = new KonohaParam(2, ParamData1);
 
-		KClass[] ParamData3 = new KClass[2];
+		KonohaType[] ParamData3 = new KonohaType[2];
 		ParamData3[0] = this.BooleanTy;
 		ParamData3[1] = this.IntTy;
-		KParam Param3 = new KParam(2, ParamData3);
+		KonohaParam Param3 = new KonohaParam(2, ParamData3);
 
-		KMethod Fibo = new KMethod(0, this.VoidTy, "fibo", Param1, null);
+		KonohaMethod Fibo = new KonohaMethod(0, this.VoidTy, "fibo", Param1, null);
 
-		KMethod intAdd = new KMethod(0, this.IntTy, "+", Param1, null);
-		KMethod intSub = new KMethod(0, this.IntTy, "-", Param1, null);
-		KMethod intLt = new KMethod(0, this.BooleanTy, "<", Param3, null);
+		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", Param1, null);
+		KonohaMethod intSub = new KonohaMethod(0, this.IntTy, "-", Param1, null);
+		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param3, null);
 
 		TypedNode Block2 = new BlockNode(
 				this.VoidTy,

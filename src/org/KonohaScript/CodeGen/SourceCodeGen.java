@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KMethod;
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.BoxNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
@@ -84,7 +84,7 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		this(null);
 	}
 
-	public SourceCodeGen(KMethod MethodInfo) {
+	public SourceCodeGen(KonohaMethod MethodInfo) {
 		super(MethodInfo);
 		this.Program = new ArrayList<String>();
 		this.CurrentProgramSize = new ArrayList<Integer>();

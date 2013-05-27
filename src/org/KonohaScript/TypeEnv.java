@@ -5,26 +5,26 @@ import java.lang.reflect.InvocationTargetException;
 import org.KonohaScript.SyntaxTree.*;
 
 class VarSet {
-	KClass TypeInfo;
+	KonohaType TypeInfo;
 	String Name;
-	VarSet(KClass TypeInfo, String Name) {
+	VarSet(KonohaType TypeInfo, String Name) {
 		this.TypeInfo = TypeInfo;
 		this.Name = Name;
 	}
 }
 
-public class KGamma implements KonohaConst {
+public class TypeEnv implements KonohaConst {
 	
 	public KNameSpace GammaNameSpace; 
 	
 	/* for convinient short cut */
-	public final KClass VoidType;
-	public final KClass BooleanType;
-	public final KClass IntType;
-	public final KClass StringType;
-	public final KClass VarType;
+	public final KonohaType VoidType;
+	public final KonohaType BooleanType;
+	public final KonohaType IntType;
+	public final KonohaType StringType;
+	public final KonohaType VarType;
 	
-	KGamma(KNameSpace GammaNameSpace, KMethod Method) {
+	TypeEnv(KNameSpace GammaNameSpace, KonohaMethod Method) {
 		this.GammaNameSpace = GammaNameSpace;
 		this.VoidType = GammaNameSpace.KonohaContext.VoidType;
 		this.BooleanType = GammaNameSpace.KonohaContext.BooleanType;
@@ -37,10 +37,10 @@ public class KGamma implements KonohaConst {
 		}
 	}
 
-	public KMethod    Method;
-	public KClass     ReturnType;
+	public KonohaMethod    Method;
+	public KonohaType     ReturnType;
 	
-	void InitMethod(KMethod Method) {
+	void InitMethod(KonohaMethod Method) {
 		this.ReturnType = Method.GetReturnType(Method.ClassInfo);
 		if(!Method.Is(StaticMethod)) {
 			AppendLocalType(Method.ClassInfo, "this");
@@ -50,14 +50,14 @@ public class KGamma implements KonohaConst {
 	
 	ArrayList<VarSet> LocalStackList = null;
 	
-	public void AppendLocalType(KClass TypeInfo, String Name) {
+	public void AppendLocalType(KonohaType TypeInfo, String Name) {
 		if(LocalStackList == null) {
 			LocalStackList = new ArrayList<VarSet>();
 		}
 		LocalStackList.add(new VarSet(TypeInfo, Name));
 	}
 	
-	public KClass GetLocalType(String Symbol) {
+	public KonohaType GetLocalType(String Symbol) {
 		if(LocalStackList != null) {
 			for(int i = LocalStackList.size()-1; i >=0; i--) {
 				VarSet t = LocalStackList.get(i);
@@ -72,15 +72,15 @@ public class KGamma implements KonohaConst {
 		return -1;
 	}
 	
-	public TypedNode GetDefaultTypedNode(KClass TypeInfo) {
+	public TypedNode GetDefaultTypedNode(KonohaType TypeInfo) {
 		return null;  // TODO
 	}
 	
-	public TypedNode NewErrorNode(KToken KeyToken, String Message) {
+	public TypedNode NewErrorNode(KonohaToken KeyToken, String Message) {
 		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaConst.Error, KeyToken, Message));
 	}
 	
-	public static TypedNode TypeEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo) {
+	public static TypedNode TypeEachNode(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode Node = null;
 		try {
 //			System.err.println("Syntax" + UNode.Syntax);
@@ -109,7 +109,7 @@ public class KGamma implements KonohaConst {
 		return Node;
 	}
 
-	public static TypedNode TypeCheckEachNode(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
+	public static TypedNode TypeCheckEachNode(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo, int TypeCheckPolicy) {
 		TypedNode Node = TypeEachNode(Gamma, UNode, TypeInfo);
 //		if(Node.TypeInfo == null) {
 //			
@@ -117,10 +117,10 @@ public class KGamma implements KonohaConst {
 		return Node;
 	}
 	
-	public static TypedNode TypeCheck(KGamma Gamma, UntypedNode UNode, KClass TypeInfo, int TypeCheckPolicy) {
+	public static TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo, int TypeCheckPolicy) {
 		TypedNode TPrevNode = null;
 		while(UNode != null) {
-			KClass CurrentTypeInfo = (UNode.NextNode != null) ? Gamma.VoidType : TypeInfo;
+			KonohaType CurrentTypeInfo = (UNode.NextNode != null) ? Gamma.VoidType : TypeInfo;
 			TypedNode CurrentTypedNode = TypeCheckEachNode(Gamma, UNode, CurrentTypeInfo, TypeCheckPolicy);
 			if(TPrevNode == null) {
 				TPrevNode = CurrentTypedNode;

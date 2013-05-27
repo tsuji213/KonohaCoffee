@@ -26,10 +26,10 @@ package org.KonohaScript;
 
 import java.util.HashMap;
 
-public class KObject {
-	public KClass TypeInfo;
+public class KonohaObject {
+	public KonohaType TypeInfo;
 	public HashMap<String, Object> prototypes;
-	KObject(KClass TypeInfo) {
+	KonohaObject(KonohaType TypeInfo) {
 		this.TypeInfo = TypeInfo;
 		this.prototypes = null;
 	}

@@ -25,9 +25,9 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KMethod;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -146,7 +146,7 @@ class KonohaIRBuilder {
 
 	}
 
-	public KonohaIR Box(KonohaIR e, KClass typeInfo) {
+	public KonohaIR Box(KonohaIR e, KonohaType typeInfo) {
 		return new OPBox(e);
 
 	}
@@ -178,7 +178,7 @@ class KonohaIRBuilder {
 
 	}
 
-	public void DefClass(KClass typeInfo, IRList field) {
+	public void DefClass(KonohaType typeInfo, IRList field) {
 		// TODO Auto-generated method stub
 
 	}
@@ -234,7 +234,7 @@ class KonohaIRBuilder {
 
 	}
 
-	public void Alloc(KClass typeInfo) {
+	public void Alloc(KonohaType typeInfo) {
 		// TODO Auto-generated method stub
 
 	}
@@ -269,14 +269,14 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
 	@Override
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
 		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
@@ -531,14 +531,14 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void Prepare(KMethod Method) {
+	public void Prepare(KonohaMethod Method) {
 		this.MethodInfo = Method;
 		this.AddLocal(Method.ClassInfo, "this");
 		this.localinfo.Prepare(Method);
 	}
 
 	@Override
-	public void Prepare(KMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
 		for (int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
@@ -689,7 +689,7 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitField(FieldNode Node) {
-		KToken TermToken = Node.TermToken;
+		KonohaToken TermToken = Node.TermToken;
 		int Offset = Node.Offset;
 		KonohaIR Obj = this.Builder.Local(TermToken.ParsedText);
 		this.Builder.LoadField(Obj, Offset);
@@ -702,10 +702,10 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitFunction(FunctionNode Node) {
-		KMethod Mtd = Node.Mtd;
+		KonohaMethod Mtd = Node.Mtd;
 		IRList Param = this.Builder.Get();
 		KonohaIR Method = this.Builder.LoadConst(Mtd);
-		KMethod FuncNew = null;
+		KonohaMethod FuncNew = null;
 		KonohaIR FuncMtd = this.Builder.LoadConst(FuncNew);
 		Param = IRList.unshift(Param, Method);
 		this.Builder.Call(FuncMtd, Param);
@@ -808,7 +808,7 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitApply(ApplyNode Node) {
-		KMethod Mtd = Node.Method;
+		KonohaMethod Mtd = Node.Method;
 		IRList P = this.Builder.Get();
 		KonohaIR Method = this.Builder.LoadConst(Mtd);
 		this.Builder.Call(Method, P);

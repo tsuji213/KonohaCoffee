@@ -2,7 +2,7 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 @Deprecated 
@@ -10,25 +10,25 @@ public class BlockNode extends TypedNode {
 	public ArrayList<TypedNode> ExprList;
 
 	/* [Expr1, Expr2, ... ] */
-	public BlockNode(KClass TypeInfo) {
+	public BlockNode(KonohaType TypeInfo) {
 		super(TypeInfo);
 		this.ExprList = new ArrayList<TypedNode>();
 	}
 
-	public BlockNode(KClass TypeInfo, TypedNode Node1) {
+	public BlockNode(KonohaType TypeInfo, TypedNode Node1) {
 		super(TypeInfo);
 		init();
 		this.ExprList.add(Node1);
 	}
 
-	public BlockNode(KClass TypeInfo, TypedNode Node1, TypedNode Node2) {
+	public BlockNode(KonohaType TypeInfo, TypedNode Node1, TypedNode Node2) {
 		super(TypeInfo);
 		init();
 		this.ExprList.add(Node1);
 		this.ExprList.add(Node2);
 	}
 
-	public BlockNode(KClass TypeInfo, TypedNode Node1, TypedNode Node2, TypedNode Node3) {
+	public BlockNode(KonohaType TypeInfo, TypedNode Node1, TypedNode Node2, TypedNode Node3) {
 		super(TypeInfo);
 		init();
 		this.ExprList.add(Node1);

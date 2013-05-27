@@ -1,14 +1,14 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LocalNode extends TypedNode {
 	/* TermToken->text */
 	public String FieldName;
 
-	public LocalNode(KClass TypeInfo, KToken SourceToken, String FieldName) {
+	public LocalNode(KonohaType TypeInfo, KonohaToken SourceToken, String FieldName) {
 		super(TypeInfo, SourceToken);
 		this.FieldName = FieldName;
 	}

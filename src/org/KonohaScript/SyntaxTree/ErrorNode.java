@@ -1,13 +1,13 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ErrorNode extends TypedNode {
 	public String	ErrorMessage;
 
-	public ErrorNode(KClass TypeInfo, KToken KeyToken, String ErrorMessage) {
+	public ErrorNode(KonohaType TypeInfo, KonohaToken KeyToken, String ErrorMessage) {
 		super(TypeInfo);
 		this.ErrorMessage = KeyToken.SetErrorMessage(ErrorMessage);
 	}

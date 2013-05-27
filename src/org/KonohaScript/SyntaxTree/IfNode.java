@@ -1,6 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class IfNode extends TypedNode {
@@ -9,7 +9,7 @@ public class IfNode extends TypedNode {
 	public TypedNode ElseNode;
 
 	/* If CondExpr then ThenBlock else ElseBlock */
-	public IfNode(KClass TypeInfo, TypedNode CondExpr, TypedNode ThenBlock, TypedNode ElseNode) {
+	public IfNode(KonohaType TypeInfo, TypedNode CondExpr, TypedNode ThenBlock, TypedNode ElseNode) {
 		super(TypeInfo);
 		this.CondExpr = CondExpr;
 		this.ThenNode = ThenBlock;

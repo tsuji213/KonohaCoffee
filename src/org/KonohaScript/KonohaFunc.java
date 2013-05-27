@@ -28,10 +28,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public final class KFunc {
+public final class KonohaFunc {
 	Object callee;
 	Method method;
-	KFunc  prev;
+	KonohaFunc  prev;
 	
 	static Method LookupMethod(Object Callee, String MethodName) {
 		if(MethodName != null) {
@@ -47,13 +47,13 @@ public final class KFunc {
 		return null; /*throw new KonohaParserException("method not found: " + callee.getClass().getName() + "." + methodName);*/
 	}
 
-	KFunc(Object callee, Method method, KFunc prev) {
+	KonohaFunc(Object callee, Method method, KonohaFunc prev) {
 		this.callee = callee;
 		this.method = method;
 		this.prev = prev;
 	}
 
-	KFunc(Object callee, String methodName, KFunc prev) {
+	KonohaFunc(Object callee, String methodName, KonohaFunc prev) {
 		this(callee, LookupMethod(callee, methodName), prev);
 	}
 
@@ -66,32 +66,32 @@ public final class KFunc {
 		}
 	}
 	
-	static KFunc NewFunc(Object callee, String methodName, KFunc prev) {
+	static KonohaFunc NewFunc(Object callee, String methodName, KonohaFunc prev) {
 		Method method = LookupMethod(callee, methodName);
 		if(prev != null && EqualsMethod(prev.method, method)) {
 			return prev;
 		}
-		return new KFunc(callee, method, prev);
+		return new KonohaFunc(callee, method, prev);
 	}
 
-	KFunc Pop() {
+	KonohaFunc Pop() {
 		return this.prev;
 	}
 
-	KFunc Duplicate() {
+	KonohaFunc Duplicate() {
 		if(prev == null) {
-			return new KFunc(callee, method, null);
+			return new KonohaFunc(callee, method, null);
 		}
 		else {
-			return new KFunc(callee, method, prev.Duplicate());
+			return new KonohaFunc(callee, method, prev.Duplicate());
 		}
 	}
 
-	KFunc Merge(KFunc other) {
+	KonohaFunc Merge(KonohaFunc other) {
 		return other.Duplicate().prev = this.Duplicate();
 	}
 
-	int InvokeTokenFunc(KNameSpace ns, String source, int pos, ArrayList<KToken> bufferToken) {
+	int InvokeTokenFunc(KNameSpace ns, String source, int pos, ArrayList<KonohaToken> bufferToken) {
 		try {
 			//KonohaDebug.P("invoking: " + method + ", pos: " + pos + " < " + source.length());
 			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
@@ -110,7 +110,7 @@ public final class KFunc {
 		return 0;
 	}
 
-	int InvokeMacroFunc(LexicalConverter lex,  ArrayList<KToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KToken> bufferToken) {
+	int InvokeMacroFunc(LexicalConverter lex,  ArrayList<KonohaToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> bufferToken) {
 		try {
 			Integer next = (Integer)method.invoke(callee, lex, tokenList, BeginIdx, EndIdx, bufferToken);
 			return next.intValue();

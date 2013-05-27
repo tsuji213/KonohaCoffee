@@ -27,37 +27,37 @@ package org.KonohaScript;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class KClass {
+public class KonohaType {
 	Konoha KonohaContext;
 	KPackage Package;
 	int ClassFlag;
 	public String ShortClassName;
-	KClass BaseClass;
-	KClass SuperClass;
-	KParam ClassParam;
-	KClass SearchSimilarClass;
-	ArrayList<KMethod> ClassMethodList;
-	public KClass SearchSuperMethodClass; // FIXME(ide) where is superclass info?
+	KonohaType BaseClass;
+	KonohaType SuperClass;
+	KonohaParam ClassParam;
+	KonohaType SearchSimilarClass;
+	ArrayList<KonohaMethod> ClassMethodList;
+	public KonohaType SearchSuperMethodClass; // FIXME(ide) where is superclass info?
 	public Object DefaultNullValue;
 	Object LocalSpec;
 
-	public static final ArrayList<KMethod> EmptyMethodList = new ArrayList<KMethod>();
+	public static final ArrayList<KonohaMethod> EmptyMethodList = new ArrayList<KonohaMethod>();
 
-	public KClass(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
+	public KonohaType(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
 		this.ClassFlag = ClassFlag;
 		this.Package = Package;
 		this.ShortClassName = ClassName;
 		this.SuperClass = null;
 		this.BaseClass = this;
-		this.ClassMethodList = KClass.EmptyMethodList;
+		this.ClassMethodList = KonohaType.EmptyMethodList;
 		this.LocalSpec = Spec;
 	}
 
 	// Java Implementation Only
 	Class<?> HostedClassInfo = null;
 
-	public KClass(Konoha KonohaContext, Class<?> ClassInfo) {
+	public KonohaType(Konoha KonohaContext, Class<?> ClassInfo) {
 		this(KonohaContext, null, 0, ClassInfo.getSimpleName(), null);
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
@@ -79,16 +79,16 @@ public class KClass {
 	// }
 	// }
 
-	static KMethod ConvertMethod(Konoha KonohaContext, Method Method) {
-		KClass ThisType = KonohaContext.LookupTypeInfo(Method.getClass());
+	static KonohaMethod ConvertMethod(Konoha KonohaContext, Method Method) {
+		KonohaType ThisType = KonohaContext.LookupTypeInfo(Method.getClass());
 		Class<?>[] ParamTypes = Method.getParameterTypes();
-		KClass[] ParamData = new KClass[ParamTypes.length + 1];
+		KonohaType[] ParamData = new KonohaType[ParamTypes.length + 1];
 		ParamData[0] = KonohaContext.LookupTypeInfo(Method.getReturnType());
 		for(int i = 0; i < ParamTypes.length; i++) {
 			ParamData[i + 1] = KonohaContext.LookupTypeInfo(ParamTypes[i]);
 		}
-		KParam Param = new KParam(ParamData.length, ParamData);
-		KMethod Mtd = new KMethod(0, ThisType, Method.getName(), Param, Method);
+		KonohaParam Param = new KonohaParam(ParamData.length, ParamData);
+		KonohaMethod Mtd = new KonohaMethod(0, ThisType, Method.getName(), Param, Method);
 		ThisType.AddMethod(Mtd);
 		return Mtd;
 	}
@@ -98,44 +98,44 @@ public class KClass {
 		Method[] Methods = this.HostedClassInfo.getMethods();
 		for(int i = 0; i < Methods.length; i++) {
 			if(MethodName.equals(Methods[i].getName())) {
-				KClass.ConvertMethod(this.KonohaContext, Methods[i]);
+				KonohaType.ConvertMethod(this.KonohaContext, Methods[i]);
 				Count = Count + 1;
 			}
 		}
 		return Count;
 	}
 
-	public boolean Accept(KClass TypeInfo) {
+	public boolean Accept(KonohaType TypeInfo) {
 		if(this == TypeInfo) {
 			return true;
 		}
 		return false;
 	}
 
-	public void AddMethod(KMethod Method) {
-		if(ClassMethodList == KClass.EmptyMethodList) {
-			ClassMethodList = new ArrayList<KMethod>();
+	public void AddMethod(KonohaMethod Method) {
+		if(ClassMethodList == KonohaType.EmptyMethodList) {
+			ClassMethodList = new ArrayList<KonohaMethod>();
 		}
 		ClassMethodList.add(Method);
 	}
 	
-	public void DefineMethod(int MethodFlag, String MethodName, KParam Param, Object Callee, String LocalName) {
-		KMethod Method = new KMethod(MethodFlag, this, MethodName, Param, KFunc.LookupMethod(Callee, LocalName));
-		if(this.ClassMethodList == KClass.EmptyMethodList) {
-			this.ClassMethodList = new ArrayList<KMethod>();
+	public void DefineMethod(int MethodFlag, String MethodName, KonohaParam Param, Object Callee, String LocalName) {
+		KonohaMethod Method = new KonohaMethod(MethodFlag, this, MethodName, Param, KonohaFunc.LookupMethod(Callee, LocalName));
+		if(this.ClassMethodList == KonohaType.EmptyMethodList) {
+			this.ClassMethodList = new ArrayList<KonohaMethod>();
 		}
 		this.ClassMethodList.add(Method);
 	}
 
-	public KMethod LookupMethod(String MethodName, int ParamSize) {
+	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
 		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KMethod Method = ClassMethodList.get(i);
+			KonohaMethod Method = ClassMethodList.get(i);
 			if(Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
 		}
 		if(this.SearchSuperMethodClass != null) {
-			KMethod Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
+			KonohaMethod Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
 			if(Method != null) {
 				return Method;
 			}
@@ -148,9 +148,9 @@ public class KClass {
 		return null;
 	}
 	
-	public boolean DefineNewMethod(KMethod NewMethod) {
+	public boolean DefineNewMethod(KonohaMethod NewMethod) {
 		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KMethod DefinedMethod = ClassMethodList.get(i);
+			KonohaMethod DefinedMethod = ClassMethodList.get(i);
 			if(NewMethod.Match(DefinedMethod)) {
 				return false;
 			}

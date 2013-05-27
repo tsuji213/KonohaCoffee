@@ -36,7 +36,7 @@ public class KonohaBuilder {
 		return null; // return value of eval 
 	}
 	
-	KMethod Build(TypedNode Node, KMethod Method) {
+	KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
 		// Set.MethodRef HERE
 		return Method;
 	}

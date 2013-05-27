@@ -32,7 +32,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public final class KSyntax implements KonohaConst {
+public final class KonohaSyntax implements KonohaConst {
 
 	public KNameSpace PackageNameSpace;
 	public String SyntaxName;
@@ -64,7 +64,7 @@ public final class KSyntax implements KonohaConst {
 		return ((flag & flag2) == flag2);
 	}
 
-	public boolean IsLeftJoin(KSyntax Right) {
+	public boolean IsLeftJoin(KonohaSyntax Right) {
 		int left = this.SyntaxFlag >> PrecedenceShift, right = Right.SyntaxFlag >> PrecedenceShift;
 		// System.err.printf("left=%d,%s, right=%d,%s\n", left, this.SyntaxName,
 		// right, Right.SyntaxName);
@@ -75,33 +75,33 @@ public final class KSyntax implements KonohaConst {
 	public Method ParseMethod;
 	public Object TypeObject;
 	public Method TypeMethod;
-	public KSyntax ParentSyntax = null;
+	public KonohaSyntax ParentSyntax = null;
 
 	// KSyntax Pop() { return ParentSyntax; }
 
-	public KSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
+	public KonohaSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
 		this.SyntaxName = SyntaxName;
 		this.SyntaxFlag = flag;
 		this.ParseObject = Callee == null ? this : Callee;
 		this.TypeObject = this.ParseObject;
-		this.ParseMethod = KFunc.LookupMethod(this.ParseObject, ParseMethod);
-		this.TypeMethod = KFunc.LookupMethod(this.TypeObject, TypeMethod);
+		this.ParseMethod = KonohaFunc.LookupMethod(this.ParseObject, ParseMethod);
+		this.TypeMethod = KonohaFunc.LookupMethod(this.TypeObject, TypeMethod);
 	}
 
 	private final static CommonSyntax baseSyntax = new CommonSyntax();
-	public final static KSyntax ErrorSyntax = new KSyntax("$Error", Precedence_Error, baseSyntax, "ParseErrorNode", null);
-	public final static KSyntax IndentSyntax = new KSyntax("$Indent", Precedence_CStyleDelim, baseSyntax, "ParseIndent", null);
-	public final static KSyntax EmptySyntax = new KSyntax("$Empty", Precedence_Error, baseSyntax, "ParseValue", null);
-	public final static KSyntax TypeSyntax = new KSyntax("$Type", Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
-	public final static KSyntax ConstSyntax = new KSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
-	public final static KSyntax MemberSyntax = new KSyntax("$Member", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
-	public final static KSyntax ApplyMethodSyntax = new KSyntax("$ApplyMethod", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KonohaSyntax ErrorSyntax = new KonohaSyntax("$Error", Precedence_Error, baseSyntax, "ParseErrorNode", null);
+	public final static KonohaSyntax IndentSyntax = new KonohaSyntax("$Indent", Precedence_CStyleDelim, baseSyntax, "ParseIndent", null);
+	public final static KonohaSyntax EmptySyntax = new KonohaSyntax("$Empty", Precedence_Error, baseSyntax, "ParseValue", null);
+	public final static KonohaSyntax TypeSyntax = new KonohaSyntax("$Type", Precedence_CStyleValue, baseSyntax, "ParseIndent", null);
+	public final static KonohaSyntax ConstSyntax = new KonohaSyntax("$Const", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KonohaSyntax MemberSyntax = new KonohaSyntax("$Member", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
+	public final static KonohaSyntax ApplyMethodSyntax = new KonohaSyntax("$ApplyMethod", Precedence_CStyleValue, baseSyntax, "ParseValue", null);
 
 	public boolean IsError() {
 		return this == ErrorSyntax;
 	}
 
-	int InvokeParseFunc(UntypedNode UNode, ArrayList<KToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	int InvokeParseFunc(UntypedNode UNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		try {
 			System.err.println("invoking.." + ParseMethod);
 			Integer NextId = (Integer) ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
@@ -127,41 +127,41 @@ public final class KSyntax implements KonohaConst {
 
 class CommonSyntax {
 
-	public int ParseErrorNode(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseErrorNode(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// KToken token = tokens.get(OpIdx);
-		node.Syntax = KSyntax.ErrorSyntax;
+		node.Syntax = KonohaSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
-	public TypedNode TypeErrorNode(KGamma gma, UntypedNode node) {
+	public TypedNode TypeErrorNode(TypeEnv gma, UntypedNode node) {
 		return null;
 	}
 
-	public int ParseIndent(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseIndent(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// // KToken token = tokens.get(OpIdx);
 		// node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
-	public int ParseTypeStatement(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseTypeStatement(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// // KToken token = tokens.get(OpIdx);
 		// node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
-	public int ParseValue(UntypedNode node, ArrayList<KToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
-		KToken Token = tokens.get(OpIdx);
+	public int ParseValue(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+		KonohaToken Token = tokens.get(OpIdx);
 		return EndIdx;
 	}
 
-	public TypedNode TypeValue(KGamma Gamma, UntypedNode Node, KClass ReqType) {
-		KToken KeyToken = Node.KeyToken;
-		KClass TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
+	public TypedNode TypeValue(TypeEnv Gamma, UntypedNode Node, KonohaType ReqType) {
+		KonohaToken KeyToken = Node.KeyToken;
+		KonohaType TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
 		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
 	}
 
-	public TypedNode TypeSymbol(KGamma Gamma, UntypedNode Node, KClass ReqType) {
-		KClass TypeInfo = Gamma.GetLocalType(Node.KeyToken.ParsedText);
+	public TypedNode TypeSymbol(TypeEnv Gamma, UntypedNode Node, KonohaType ReqType) {
+		KonohaType TypeInfo = Gamma.GetLocalType(Node.KeyToken.ParsedText);
 		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, Node.KeyToken, Node.KeyToken.ParsedText);
 		}

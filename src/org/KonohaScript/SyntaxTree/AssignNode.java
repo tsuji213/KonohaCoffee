@@ -1,15 +1,15 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KClass;
-import org.KonohaScript.KToken;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AssignNode extends TypedNode {
-	public KToken		TermToken;
+	public KonohaToken		TermToken;
 	public TypedNode	Right;
 
 	/* frame[Index] = Right */
-	public AssignNode(KClass TypeInfo, KToken TermToken, TypedNode Right) {
+	public AssignNode(KonohaType TypeInfo, KonohaToken TermToken, TypedNode Right) {
 		super(TypeInfo);
 		this.TermToken = TermToken;
 		this.Right = Right;
