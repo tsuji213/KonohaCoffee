@@ -1,7 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ThrowNode extends UnaryNode {
 	/* THROW ExceptionExpr */
@@ -10,7 +9,7 @@ public class ThrowNode extends UnaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterThrow(this);
 		Visitor.Visit(this.Expr);
 		return Visitor.ExitThrow(this);

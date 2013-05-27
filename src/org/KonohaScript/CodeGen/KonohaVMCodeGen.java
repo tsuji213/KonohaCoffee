@@ -31,12 +31,11 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
@@ -44,6 +43,7 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -161,7 +161,7 @@ class KonohaIRBuilder {
 		return null;
 	}
 
-	public KonohaIR LoadField(KonohaIR obj, int offset) {
+	public KonohaIR LoadField(KonohaIR Base, String fieldName) {
 		// TODO Auto-generated method stub
 		return null;
 
@@ -258,7 +258,7 @@ class BlockInfo {
 	}
 }
 
-class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
+class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 	public LocalVariableCollector() {
 		super(null);
 	}
@@ -330,11 +330,11 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
+	public void EnterField(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		return true;
 	}
 
@@ -367,7 +367,8 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		// FIXME
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
@@ -378,7 +379,7 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocal(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocal(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
@@ -475,22 +476,9 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	public boolean ExitError(ErrorNode Node) {
 		return false;
 	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }
 
-public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
+public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 	ArrayList<Integer>		Values;
 	int						stacktop;
 	KonohaIRBuilder			Builder;
@@ -563,8 +551,8 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterAnd(AndNode Node) {
-		this.pushBlock(new BlockInfo(Node.Left, new BasicBlock("head")));
-		this.pushBlock(new BlockInfo(Node.Right, new BasicBlock("then")));
+		this.pushBlock(new BlockInfo(Node.LeftNode, new BasicBlock("head")));
+		this.pushBlock(new BlockInfo(Node.RightNode, new BasicBlock("then")));
 		this.pushBlock(new BlockInfo(null, new BasicBlock("merge")));
 	}
 
@@ -579,8 +567,8 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterOr(OrNode Node) {
-		this.pushBlock(new BlockInfo(Node.Left, new BasicBlock("head")));
-		this.pushBlock(new BlockInfo(Node.Right, new BasicBlock("then")));
+		this.pushBlock(new BlockInfo(Node.LeftNode, new BasicBlock("head")));
+		this.pushBlock(new BlockInfo(Node.RightNode, new BasicBlock("then")));
 		this.pushBlock(new BlockInfo(null, new BasicBlock("merge")));
 	}
 
@@ -598,7 +586,7 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		KonohaIR R = this.Builder.Get(0);
 		this.Builder.Assign(local, R);
 		return true;
@@ -637,15 +625,15 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
+	public void EnterField(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
-		KonohaToken TermToken = Node.TermToken;
-		int Offset = Node.Offset;
-		KonohaIR Obj = this.Builder.Local(TermToken.ParsedText);
-		this.Builder.LoadField(Obj, Offset);
+	public boolean ExitField(GetterNode Node) {
+		KonohaToken TermToken = Node.SourceToken;
+		String FieldName = TermToken.ParsedText;
+		KonohaIR Base = this.Builder.Get(0);
+		this.Builder.LoadField(Base, FieldName);
 		return true;
 	}
 
@@ -705,12 +693,12 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.VarToken.ParsedText);
 		KonohaIR R = this.Builder.Get(0);
 		BasicBlock B = (BasicBlock) this.Builder.Get(1);
 		this.Builder.Assign(local, R);
@@ -834,18 +822,6 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 		// TypedNode FinallyBlock = Node.FinallyBlock;
 		/* BasicBlock TryBB = Eval.Get(0); */
 		return true;
-	}
-
-	@Override
-	public void EnterBlock(BlockNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

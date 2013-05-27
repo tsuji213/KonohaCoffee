@@ -6,12 +6,11 @@ import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
@@ -19,6 +18,7 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -27,7 +27,7 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
+public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	private final boolean	UseLetKeyword	= false;
 
 	public LeafJSCodeGen() {
@@ -125,13 +125,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+	public void EnterField(GetterNode Node) {
+		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -149,7 +149,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			String thisNode = this.pop();
 			this.push(thisNode + " " + methodName + " " + params);
 		} else {
-			String params = "(" + this.PopNReverseAndJoin(Node.Params.size() - 1, ", ") + ")";
+			String params = "("
+					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
+					+ ")";
 			String thisNode = this.pop();
 			this.push(thisNode + "." + methodName + params);
 		}
@@ -174,53 +176,56 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 	@Override
 	public void EnterAssign(AssignNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
 		String Right = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ") + Node.TermToken.ParsedText + " = " + Right);
+		this.push((this.UseLetKeyword ? "let " : "var ")
+				+ Node.SourceToken.ParsedText + " = " + Right);
 		return true;
 	}
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
 		String Block = this.pop();
 		String Right = this.pop();
-		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
+		this.push(Node.VarToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
 
-	@Override
-	public void EnterBlock(BlockNode Node) {
-		this.PushProgramSize();
-		this.indentGenerator.indent(1);
-	}
-
-	@Override
-	public boolean ExitBlock(BlockNode Node) {
-		IndentGenerator g = this.indentGenerator;
-		int Size = this.getProgramSize() - this.PopProgramSize();
-		this.push("{\n" + g.get() + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n" + g.indentAndGet(-1) + "}");
-		return true;
-	}
+	// @Override
+	// public void EnterBlock(BlockNode Node) {
+	// this.PushProgramSize();
+	// this.indentGenerator.indent(1);
+	// }
+	//
+	// @Override
+	// public boolean ExitBlock(BlockNode Node) {
+	// IndentGenerator g = this.indentGenerator;
+	// int Size = this.getProgramSize() - this.PopProgramSize();
+	// this.push("{\n" + g.get()
+	// + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n"
+	// + g.indentAndGet(-1) + "}");
+	// return true;
+	// }
 
 	@Override
 	public boolean ExitIf(IfNode Node) {
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
-		if (Node.ElseNode instanceof BlockNode && ((BlockNode) Node.ElseNode).ExprList.size() > 0) {
-			this.push("if(" + CondExpr + ") " + ThenBlock + " else " + ElseBlock);
-		} else {
-			this.push("if(" + CondExpr + ") " + ThenBlock);
+		String source = "if(" + CondExpr + ") " + ThenBlock;
+		if (Node.ElseNode.NextNode != null) {
+			source = source + " else " + ElseBlock;
 		}
+		this.push(source);
 		return true;
 	}
 
@@ -284,9 +289,12 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = this.pop();
-		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
+		String CatchBlocks = this.PopNReverseWithPrefix(
+			Node.CatchBlock.size(),
+			"catch() ");
 		String TryBlock = this.pop();
-		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
+		this.push("try " + TryBlock + "" + CatchBlocks + "finally "
+				+ FinallyBlock);
 		return true;
 	}
 
