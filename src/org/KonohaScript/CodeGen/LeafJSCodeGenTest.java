@@ -8,17 +8,28 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testReturnConst() {
-		return "var f1 = function(n) {\n" + "  return 1;\n" + "}";
+		return "var func1 = function() {\n" + 
+		       "    return 1;\n" + 
+		       "};";
 	}
 
 	@Override
 	Object testAddOne() {
-		return "var AddOne = function(n) {\n" + "  return n + 1;\n" + "}";
+		return "var AddOne = function(n) {\n" + 
+		       "    return n + 1;\n" + 
+		       "};";
 	}
 
 	@Override
 	Object testIf() {
-		return null;
+		return "var AddOne = function(n) {\n" +
+		"    if (n < 3) {\n" +
+		"        return 1;\n" +
+		"    } else {\n" +
+		"        return 2;\n" +
+		"    };\n" +
+		"    return 3;\n" +
+		"};";
 	}
 
 	@Override
@@ -28,7 +39,12 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testFibo() {
-		return "var fibo = function(n) {" + "if(n < 3) {" + "  return 1;" + "} else {" + "}" + "return fibo(n-1) + fibo(n-2);\n" + "}";
+		return "var fibo = function(n) {\n" + 
+		       "    if (n < 3) {\n" + 
+		       "        return 1;\n" + 
+		       "    };\n" + 
+		       "    return this.fibo(n - 1) + this.fibo(n - 2);\n" + 
+		       "};";
 	}
 
 	@Override

@@ -65,6 +65,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 			// FuncBuilder.append(thisNode.TypeInfo.ShortClassName);
 			// FuncBuilder.append(".");
 			String MethodName = this.MethodInfo.MethodName;
+			FuncBuilder.append("var ");
 			FuncBuilder.append(MethodName);
 			FuncBuilder.append(" = function(");
 
@@ -75,7 +76,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 				}
 				FuncBuilder.append(local.Name);
 			}
-			FuncBuilder.append(")");
+			FuncBuilder.append(") ");
 			FuncBuilder.append(Source);
 			FuncBuilder.append(";");
 			Source = FuncBuilder.toString();
@@ -285,13 +286,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = this.pop();
-		String CatchBlocks = "";
-		for (int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
-			String Block = this.pop();
-			CatchBlocks = "catch() " + Block + CatchBlocks;
-		}
+		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
 		String TryBlock = this.pop();
-		this.push("try " + TryBlock + "" + CatchBlocks + FinallyBlock);
+		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
 		return true;
 	}
 
@@ -311,18 +308,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	@Override
 	public boolean ExitError(ErrorNode Node) {
 		String Expr = this.pop();
-		this.push("throw new Exception(" + Expr + ";");
+		this.push("throw new Exception(" + Expr + ");");
 		return false;
 	}
 
 	@Override
 	public boolean ExitDefineClass(DefineClassNode Node) {
-		String Exprs = "";
-		int Size = Node.Fields.size();
-		for (int i = 0; i < Size; i = i + 1) {
-			String Expr = this.pop();
-			Exprs = Expr + ";" + Exprs;
-		}
+		String Exprs = this.PopNReverseWithSuffix(Node.Fields.size(), ";");
 		String Value = "class + " + Node.TypeInfo.ShortClassName + " ";
 		if (Node.TypeInfo.SearchSuperMethodClass != null) {
 			Value = Value + Node.TypeInfo.ShortClassName + " ";
