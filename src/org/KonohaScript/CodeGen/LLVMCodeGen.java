@@ -344,7 +344,7 @@ class LLVMBuilder { //TODO: support basic block
 		argMap = new HashMap<String, Integer>();
 		definedFucnNameMap = new HashMap<String, LLVMFunction>();
 		
-		defineEmbeddedMethod();
+		//defineEmbeddedMethod();
 	}
 	
 	public void dump() {
@@ -541,6 +541,12 @@ class LLVMBuilder { //TODO: support basic block
 		if (funcName.equals("fibo")) {
 			LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
 			createFunction("fibo", new LLVMIntegerType(intLength), argsType);
+		} else if (funcName.equals("p")) {
+			LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
+			createFunction("p", new LLVMVoidType(), argsType_p);
+		} else if (funcName.equals("toString")) {	
+			LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
+			createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);
 		}
 	}
 	
