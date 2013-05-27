@@ -2,10 +2,9 @@ package org.KonohaScript.SyntaxTree;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
+import org.KonohaScript.KonohaType;
 
 public class ApplyNode extends TypedNode implements CallableNode {
 	public KonohaMethod Method;
@@ -19,14 +18,14 @@ public class ApplyNode extends TypedNode implements CallableNode {
 	}
 
 	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1) {
-		super(TypeInfo);
+		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 	}
 
 	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1, TypedNode arg2) {
-		super(TypeInfo);
+		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
@@ -39,7 +38,7 @@ public class ApplyNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterApply(this);
 		for(TypedNode Node : this.Params) {
 			Visitor.Visit(Node);

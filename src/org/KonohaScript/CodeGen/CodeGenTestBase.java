@@ -2,13 +2,12 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaType;
+import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaParam;
-import org.KonohaScript.Konoha;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.ApplyNode;
-import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -59,12 +58,14 @@ abstract class CodeGeneratorTester {
 
 public class CodeGenTestBase {
 
-	public static final Konoha	KonohaContext	= new Konoha(new MiniKonohaGrammar(), null);
-	public final KonohaType			VoidTy			= KonohaContext.VoidType;
-	public final KonohaType			ObjectTy		= KonohaContext.ObjectType;
-	public final KonohaType			BooleanTy		= KonohaContext.BooleanType;
-	public final KonohaType			IntTy			= KonohaContext.IntType;
-	public final KonohaType			StringTy		= KonohaContext.StringType;
+	public static final Konoha	KonohaContext	= new Konoha(
+														new MiniKonohaGrammar(),
+														null);
+	public final KonohaType		VoidTy			= KonohaContext.VoidType;
+	public final KonohaType		ObjectTy		= KonohaContext.ObjectType;
+	public final KonohaType		BooleanTy		= KonohaContext.BooleanType;
+	public final KonohaType		IntTy			= KonohaContext.IntType;
+	public final KonohaType		StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
 		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
@@ -81,9 +82,17 @@ public class CodeGenTestBase {
 		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1);
-		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "func1", Param1, null);
+		KonohaMethod func1 = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"func1",
+				Param1,
+				null);
 		Builder.Prepare(func1);
-		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 1)));
+		TypedNode Block = new ReturnNode(this.IntTy, new ConstNode(
+				this.IntTy,
+				null,
+				1));
 		CompiledMethod Mtd = Builder.Compile(Block);
 		this.Check("ReturnConstInt", Tester.testReturnConst(), Mtd.CompiledCode);
 	}
@@ -93,7 +102,12 @@ public class CodeGenTestBase {
 		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1);
-		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "AddOne", Param1, null);
+		KonohaMethod func1 = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"AddOne",
+				Param1,
+				null);
 
 		KonohaType[] ParamData2 = new KonohaType[2];
 		ParamData2[0] = this.IntTy;
@@ -106,7 +120,12 @@ public class CodeGenTestBase {
 		Params.add(new Param(0, this.IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
-		TypedNode Block = new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ApplyNode(this.VoidTy, null, intAdd, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 1))));
+		TypedNode Block = new ReturnNode(this.IntTy, new ApplyNode(
+				this.VoidTy,
+				null,
+				intAdd,
+				new LocalNode(this.IntTy, null, "n"),
+				new ConstNode(this.IntTy, null, 1)));
 		CompiledMethod Mtd = Builder.Compile(Block);
 		this.Check("AddOne", Tester.testAddOne(), Mtd.CompiledCode);
 	}
@@ -116,23 +135,45 @@ public class CodeGenTestBase {
 		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1);
-		KonohaMethod func1 = new KonohaMethod(0, this.VoidTy, "AddOne", Param1, null);
+		KonohaMethod func1 = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"AddOne",
+				Param1,
+				null);
 
 		KonohaType[] ParamData2 = new KonohaType[2];
 		ParamData2[0] = this.BooleanTy;
 		ParamData2[1] = this.IntTy;
 		KonohaParam Param2 = new KonohaParam(2, ParamData2);
 
-		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param2, null);
+		KonohaMethod intLt = new KonohaMethod(
+				0,
+				this.BooleanTy,
+				"<",
+				Param2,
+				null);
 
 		ArrayList<Local> Params = new ArrayList<Local>();
 		Params.add(new Param(0, this.IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
-		TypedNode Block = new BlockNode(this.VoidTy, new IfNode(this.VoidTy,
-		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
-		/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
-		/* else */new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 2)))),
+		TypedNode Block = new IfNode(
+				this.VoidTy,
+				/* cond */new ApplyNode(
+						this.BooleanTy,
+						null,
+						intLt,
+						new LocalNode(this.IntTy, null, "n"),
+						new ConstNode(this.IntTy, null, 3)),
+				/* then */new ReturnNode(this.VoidTy, new ConstNode(
+						this.IntTy,
+						null,
+						1)),
+				/* else */new ReturnNode(this.IntTy, new ConstNode(
+						this.IntTy,
+						null,
+						2))).Next(
 		/* */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 3)));
 
 		CompiledMethod Mtd = Builder.Compile(Block);
@@ -144,12 +185,23 @@ public class CodeGenTestBase {
 		ParamData[0] = this.VoidTy;
 		KonohaParam Param = new KonohaParam(1, ParamData);
 
-		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+		KonohaMethod GlobalFunction = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"",
+				Param,
+				null);
 
 		CodeGenerator Builder = Tester.CreteCodeGen();
 		Builder.Prepare(GlobalFunction);
 
-		TypedNode Block = new IfNode(this.VoidTy, new ConstNode(this.BooleanTy, null, true), new BlockNode(this.VoidTy, new NewNode(this.ObjectTy)), new BlockNode(this.VoidTy, new ReturnNode(this.IntTy, new ConstNode(this.BooleanTy, null, false))));
+		TypedNode Block = new IfNode(this.VoidTy,
+		/* cond */new ConstNode(this.BooleanTy, null, true),
+		/* then */new NewNode(this.ObjectTy),
+		/* else */new ReturnNode(this.IntTy, new ConstNode(
+				this.BooleanTy,
+				null,
+				false)));
 		CompiledMethod Mtd = Builder.Compile(Block);
 		assert (Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
@@ -173,19 +225,44 @@ public class CodeGenTestBase {
 		ParamData4[0] = this.StringTy;
 		KonohaParam Param4 = new KonohaParam(1, ParamData4);
 
-		KonohaMethod Fibo = new KonohaMethod(0, this.VoidTy, "fibo", Param1, null);
+		KonohaMethod Fibo = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"fibo",
+				Param1,
+				null);
 		KonohaMethod p = new KonohaMethod(0, this.VoidTy, "p", Param2, null);
 
-		KonohaMethod toString = new KonohaMethod(0, this.IntTy, "toString", Param4, null);
+		KonohaMethod toString = new KonohaMethod(
+				0,
+				this.IntTy,
+				"toString",
+				Param4,
+				null);
 
 		KonohaType[] ParamData = new KonohaType[1];
 		ParamData[0] = this.VoidTy;
 		KonohaParam Param = new KonohaParam(1, ParamData);
 
-		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+		KonohaMethod GlobalFunction = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"",
+				Param,
+				null);
 
-		TypedNode Block1 = new BlockNode(this.VoidTy, new ApplyNode(this.VoidTy, null, p, new NullNode(this.VoidTy/* FIXME */), new ApplyNode(this.StringTy, null, toString, new NullNode(this.IntTy), new ApplyNode(this.IntTy, null, Fibo, new NullNode(
-				this.VoidTy/* FIXME */), new ConstNode(this.IntTy, null, 36)))));
+		TypedNode Block1 = new ApplyNode(this.VoidTy, null, p, new NullNode(
+				this.VoidTy/* FIXME */), new ApplyNode(
+				this.StringTy,
+				null,
+				toString,
+				new NullNode(this.IntTy),
+				new ApplyNode(
+						this.IntTy,
+						null,
+						Fibo,
+						new NullNode(this.VoidTy/* FIXME */),
+						new ConstNode(this.IntTy, null, 36))));
 		Builder.Prepare(GlobalFunction);
 		CompiledMethod Mtd = Builder.Compile(Block1);
 		assert (Mtd.CompiledCode instanceof String);
@@ -206,22 +283,51 @@ public class CodeGenTestBase {
 		ParamData3[1] = this.IntTy;
 		KonohaParam Param3 = new KonohaParam(2, ParamData3);
 
-		KonohaMethod Fibo = new KonohaMethod(0, this.VoidTy, "fibo", Param1, null);
+		KonohaMethod Fibo = new KonohaMethod(
+				0,
+				this.VoidTy,
+				"fibo",
+				Param1,
+				null);
 
 		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", Param1, null);
 		KonohaMethod intSub = new KonohaMethod(0, this.IntTy, "-", Param1, null);
-		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param3, null);
+		KonohaMethod intLt = new KonohaMethod(
+				0,
+				this.BooleanTy,
+				"<",
+				Param3,
+				null);
 
-		TypedNode Block2 = new BlockNode(
+		TypedNode Block2 = new IfNode(this.VoidTy,
+		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(
+				this.IntTy,
+				null,
+				"n"), new ConstNode(this.IntTy, null, 3)),
+		/* then */new ReturnNode(
 				this.VoidTy,
-				new IfNode(this.VoidTy,
-				/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 3)),
-				/* then */new BlockNode(this.VoidTy, new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1))),
-				/* else */new BlockNode(this.VoidTy)),
-				new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(this.IntTy, null, intSub, new LocalNode(this.IntTy, null, "n"), new ConstNode(
+				new ConstNode(this.IntTy, null, 1)),
+		/* else */null).Next(new ReturnNode(this.IntTy, new ApplyNode(
+				this.IntTy,
+				null,
+				intAdd,
+				new ApplyNode(this.IntTy, null, Fibo, new LocalNode(
+						this.VoidTy,
+						null,
+						"this"), new ApplyNode(
 						this.IntTy,
 						null,
-						1))), new ApplyNode(this.IntTy, null, Fibo, new LocalNode(this.VoidTy, null, "this"), new ApplyNode(this.IntTy, null, intSub, new LocalNode(this.IntTy, null, "n"), new ConstNode(this.IntTy, null, 2))))));
+						intSub,
+						new LocalNode(this.IntTy, null, "n"),
+						new ConstNode(this.IntTy, null, 1))), new ApplyNode(
+						this.IntTy,
+						null,
+						Fibo,
+						new LocalNode(this.VoidTy, null, "this"),
+						new ApplyNode(this.IntTy, null, intSub, new LocalNode(
+								this.IntTy,
+								null,
+								"n"), new ConstNode(this.IntTy, null, 2))))));
 		{
 			ArrayList<Local> Params = new ArrayList<Local>();
 			Params.add(new Param(0, this.IntTy, "n"));

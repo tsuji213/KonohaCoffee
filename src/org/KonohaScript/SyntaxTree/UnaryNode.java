@@ -6,7 +6,7 @@ public abstract class UnaryNode extends TypedNode {
 	public TypedNode	Expr;
 
 	UnaryNode(KonohaType TypeInfo, TypedNode Expr) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 		this.Expr = Expr;
 	}
 }

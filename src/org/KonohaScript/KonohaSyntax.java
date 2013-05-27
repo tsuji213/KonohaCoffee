@@ -34,7 +34,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaSyntax implements KonohaConst {
 
-	public KNameSpace PackageNameSpace;
+	public KonohaNameSpace PackageNameSpace;
 	public String SyntaxName;
 
 	@Override

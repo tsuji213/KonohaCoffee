@@ -3,7 +3,7 @@ package org.KonohaScript;
 public class KonohaGrammar {
 
 	
-	public void LoadDefaultSyntax(KNameSpace NameSpace) {
+	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 
 	}
 	
