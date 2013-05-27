@@ -34,15 +34,17 @@ public interface KonohaBuilder {
 
 }
 
-class DefaultKonohaBuilder {
+class DefaultKonohaBuilder implements KonohaBuilder {
 	public DefaultKonohaBuilder() {
 	}
 
-	Object EvalAtTopLevel(TypedNode Node) {
+	@Override
+	public Object EvalAtTopLevel(TypedNode Node) {
 		return null; // return value of eval
 	}
 
-	KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
+	@Override
+	public KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
 		// Set.MethodRef HERE
 		return Method;
 	}

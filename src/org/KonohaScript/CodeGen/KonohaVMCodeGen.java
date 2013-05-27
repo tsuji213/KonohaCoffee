@@ -482,8 +482,6 @@ class LocalVariableCollector extends CodeGenerator {
 
 	@Override
 	public void EnterDefine(DefineNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 }
 
