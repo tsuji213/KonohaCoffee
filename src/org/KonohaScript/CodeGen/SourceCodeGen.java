@@ -107,33 +107,15 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		return this.Program.remove(this.Program.size() - 1);
 	}
 
-	private String[] PopN(int n) {
+	protected String[] PopN(int n) {
 		String[] array = new String[n];
 		for (int i = 0; i < n; ++i) {
 			array[i] = pop();
 		}
 		return array;
 	}
-
-	protected String PopNAndJoin(int n, String delim) {
-		return PopNAndJoin(new StringBuilder(), n, delim).toString();
-	}
-
-	private StringBuilder PopNAndJoin(StringBuilder builder, int n, String delim) {
-		if (delim == null) {
-			delim = "";
-		}
-		String[] array = PopN(n);
-		for (int i = 0; i < n; ++i) {
-			if (i > 0) {
-				builder.append(delim);
-			}
-			builder.append(array[i]);
-		}
-		return builder;
-	}
-
-	private String[] PopNReverse(int n) {
+	
+	protected String[] PopNReverse(int n) {
 		String[] array = new String[n];
 		for (int i = 0; i < n; ++i) {
 			array[n - i - 1] = pop();
@@ -141,22 +123,46 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 		return array;
 	}
 
+	protected StringBuilder PopNWithModifier(StringBuilder builder, int n, boolean reverse, String prefix, String suffix, String delim) {
+		if (prefix == null) {
+			prefix = "";
+		}
+		if (suffix == null) {
+			suffix = "";
+		}
+		if (delim == null) {
+			delim = "";
+		}
+		String[] array = reverse ? PopNReverse(n) : PopN(n);
+		for (int i = 0; i < n; ++i) {
+			if (i > 0) {
+				builder.append(delim);
+			}
+			builder.append(prefix);
+			builder.append(array[i]);
+			builder.append(suffix);
+		}
+		return builder;
+	}
+	
+	protected String PopNWithModifier(int n, boolean reverse, String prefix, String suffix, String delim) {
+		return PopNWithModifier(new StringBuilder(), n, reverse, prefix, suffix, delim).toString();
+	}
+	
+	protected String PopNAndJoin(int n, String delim) {
+		return PopNAndJoin(new StringBuilder(), n, delim).toString();
+	}
+
+	protected StringBuilder PopNAndJoin(StringBuilder builder, int n, String delim) {
+		return PopNWithModifier(builder, n, false, null, null, delim);
+	}
+
 	protected String PopNReverseAndJoin(int n, String delim) {
 		return PopNReverseAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
 	protected StringBuilder PopNReverseAndJoin(StringBuilder builder, int n, String delim) {
-		if (delim == null) {
-			delim = "";
-		}
-		String[] array = PopNReverse(n);
-		for (int i = 0; i < n; ++i) {
-			if (i > 0) {
-				builder.append(delim);
-			}
-			builder.append(array[i]);
-		}
-		return builder;
+		return PopNWithModifier(builder, n, true, null, null, delim);
 	}
 
 	protected String PopNReverseWithSuffix(int n, String suffix) {
@@ -164,33 +170,33 @@ public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor 
 	}
 
 	protected StringBuilder PopNReverseWithSuffix(StringBuilder builder, int n, String suffix) {
-		if (suffix == null) {
-			suffix = "";
-		}
-		String[] array = PopNReverse(n);
-		for (int i = 0; i < n; ++i) {
-			builder.append(array[i]);
-			builder.append(suffix);
-		}
-		return builder;
+		return PopNWithModifier(builder, n, true, null, suffix, null);
 	}
 
 	protected String PopNWithSuffix(int n, String suffix) {
 		return PopNWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
-	private StringBuilder PopNWithSuffix(StringBuilder builder, int n, String suffix) {
-		if (suffix == null) {
-			suffix = "";
-		}
-		String[] array = PopN(n);
-		for (int i = 0; i < n; ++i) {
-			builder.append(array[i]);
-			builder.append(suffix);
-		}
-		return builder;
+	protected StringBuilder PopNWithSuffix(StringBuilder builder, int n, String suffix) {
+		return PopNWithModifier(builder, n, false, null, suffix, null);
 	}
 
+	protected String PopNReverseWithPrefix(int n, String prefix) {
+		return PopNReverseWithPrefix(new StringBuilder(), n, prefix).toString();
+	}
+
+	protected StringBuilder PopNReverseWithPrefix(StringBuilder builder, int n, String prefix) {
+		return PopNWithModifier(builder, n, true, prefix, null, null);
+	}
+
+	protected String PopNWithPrefix(int n, String prefix) {
+		return PopNWithSuffix(new StringBuilder(), n, prefix).toString();
+	}
+
+	protected StringBuilder PopNWithPrefix(StringBuilder builder, int n, String prefix) {
+		return PopNWithModifier(builder, n, false, prefix, null, null);
+	}
+	
 	protected int PopProgramSize() {
 		return this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
 	}
