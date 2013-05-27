@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.KonohaScript.GrammarSet.MiniKonoha;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
 class KConsole {
 	public final InputStream	stdin	= System.in;
@@ -35,7 +35,7 @@ public class KShell {
 	boolean	IsInteractiveMode;
 
 	public KShell() {
-		this.ShellContext = new Konoha(new MiniKonoha());
+		this.ShellContext = new Konoha(new MiniKonohaGrammar());
 		this.IsInteractiveMode = false;
 	}
 

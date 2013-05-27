@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.KonohaScript.KClass;
 
+@Deprecated
 public class DefineClassNode extends TypedNode implements CallableNode {
 	public ArrayList<TypedNode>	Fields;
 

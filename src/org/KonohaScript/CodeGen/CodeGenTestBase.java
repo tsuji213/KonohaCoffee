@@ -6,7 +6,7 @@ import org.KonohaScript.KClass;
 import org.KonohaScript.KMethod;
 import org.KonohaScript.KParam;
 import org.KonohaScript.Konoha;
-import org.KonohaScript.GrammarSet.MiniKonoha;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.BlockNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
@@ -59,7 +59,7 @@ abstract class CodeGeneratorTester {
 
 public class CodeGenTestBase {
 
-	public static final Konoha	KonohaContext	= new Konoha(new MiniKonoha());
+	public static final Konoha	KonohaContext	= new Konoha(new MiniKonohaGrammar());
 
 	public final KClass			VoidTy			= KonohaContext.VoidType;
 	public final KClass			ObjectTy		= KonohaContext.ObjectType;
