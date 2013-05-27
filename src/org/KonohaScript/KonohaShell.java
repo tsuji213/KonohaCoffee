@@ -80,6 +80,9 @@ public class KonohaShell {
 			}
 			if (arg.equals("-i")) {
 				this.IsInteractiveMode = true;
+			} else if (arg.startsWith("-arch=")) {
+				String BuilderName = arg.substring("-arch=".length());
+				this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
 			} else {
 				Args.add(arg);
 			}
