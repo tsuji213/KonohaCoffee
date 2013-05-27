@@ -26,7 +26,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 class NotSupportedNodeError extends RuntimeException {
 	private static final long serialVersionUID = 1L;
@@ -71,7 +70,7 @@ public abstract class TypedNode {
 	public KonohaType TypeInfo;
 	public KonohaToken SourceToken;
 	
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		throw new NotSupportedNodeError();
 	}
 

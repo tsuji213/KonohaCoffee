@@ -1,7 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class NewNode extends TypedNode {
 
@@ -10,7 +9,7 @@ public class NewNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterNew(this);
 		return Visitor.ExitNew(this);
 	}

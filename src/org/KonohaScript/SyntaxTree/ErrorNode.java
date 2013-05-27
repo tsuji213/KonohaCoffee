@@ -2,7 +2,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ErrorNode extends TypedNode {
 	public String	ErrorMessage;
@@ -13,7 +12,7 @@ public class ErrorNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterError(this);
 		return Visitor.ExitError(this);
 	}

@@ -21,6 +21,7 @@ import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -29,7 +30,7 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
+public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	private final boolean	UseLetKeyword	= false;
 
 	public LeafJSCodeGen() {

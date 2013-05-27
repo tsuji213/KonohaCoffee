@@ -2,7 +2,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class OrNode extends BinaryNode {
 
@@ -11,7 +10,7 @@ public class OrNode extends BinaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterOr(this);
 		Visitor.Visit(this.LeftNode);
 		Visitor.Visit(this.RightNode);

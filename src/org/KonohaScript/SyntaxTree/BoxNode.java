@@ -1,7 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 @Deprecated
 public class BoxNode extends UnaryNode {
@@ -10,7 +9,7 @@ public class BoxNode extends UnaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterBox(this);
 		Visitor.Visit(this.Expr);
 		return Visitor.ExitBox(this);

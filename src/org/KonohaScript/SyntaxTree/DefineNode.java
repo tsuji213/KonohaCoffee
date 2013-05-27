@@ -3,7 +3,6 @@ package org.KonohaScript.SyntaxTree;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaDef;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class DefineNode extends TypedNode {
 	
@@ -14,7 +13,7 @@ public class DefineNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterDefine(this);
 		return Visitor.ExitDefine(this);
 	}

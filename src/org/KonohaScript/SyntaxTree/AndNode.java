@@ -2,7 +2,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AndNode extends BinaryNode {
 	public AndNode(KonohaType TypeInfo, KonohaToken KeyToken, TypedNode Left, TypedNode Right) {
@@ -10,7 +9,7 @@ public class AndNode extends BinaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterAnd(this);
 		Visitor.Visit(this.LeftNode);
 		Visitor.Visit(this.RightNode);

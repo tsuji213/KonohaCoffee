@@ -46,6 +46,7 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -258,7 +259,7 @@ class BlockInfo {
 	}
 }
 
-class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
+class LocalVariableCollector extends CodeGenerator implements NodeVisitor {
 	public LocalVariableCollector() {
 		super(null);
 	}
@@ -504,7 +505,7 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 }
 
-public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
+public class KonohaVMCodeGen extends CodeGenerator implements NodeVisitor {
 	ArrayList<Integer>		Values;
 	int						stacktop;
 	KonohaIRBuilder			Builder;

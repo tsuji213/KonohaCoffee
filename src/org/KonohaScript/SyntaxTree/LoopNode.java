@@ -1,7 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LoopNode extends TypedNode {
 	public LoopNode(KonohaType TypeInfo) {
@@ -14,7 +13,7 @@ public class LoopNode extends TypedNode {
 	public TypedNode	IterationExpr;
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterLoop(this);
 		Visitor.Visit(this.CondExpr);
 		Visitor.Visit(this.LoopBody);

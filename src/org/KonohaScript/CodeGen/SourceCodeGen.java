@@ -16,6 +16,7 @@ import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -73,7 +74,7 @@ class IndentGenerator {
 	}
 }
 
-public abstract class SourceCodeGen extends CodeGenerator implements ASTVisitor {
+public abstract class SourceCodeGen extends CodeGenerator implements NodeVisitor {
 	private final ArrayList<String>		Program;
 	private final ArrayList<Integer>	CurrentProgramSize;
 

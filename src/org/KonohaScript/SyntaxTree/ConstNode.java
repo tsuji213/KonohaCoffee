@@ -2,7 +2,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ConstNode extends TypedNode {
 	public Object ConstValue;
@@ -13,7 +12,7 @@ public class ConstNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterConst(this);
 		return Visitor.ExitConst(this);
 	}

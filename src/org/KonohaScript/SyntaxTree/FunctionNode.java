@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class FunctionNode extends TypedNode implements CallableNode {
 	/* [Method, DefaultObject, [Env1, Env2, ...., EnvN] */
@@ -27,7 +26,7 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterFunction(this);
 		return Visitor.ExitFunction(this);
 	}

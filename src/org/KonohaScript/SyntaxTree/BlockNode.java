@@ -3,7 +3,6 @@ package org.KonohaScript.SyntaxTree;
 import java.util.ArrayList;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 @Deprecated 
 public class BlockNode extends TypedNode {
@@ -41,7 +40,7 @@ public class BlockNode extends TypedNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterBlock(this);
 		for(TypedNode Node : this.ExprList) {
 			if(Visitor.Visit(Node) == false) {

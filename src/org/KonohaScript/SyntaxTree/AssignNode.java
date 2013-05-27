@@ -2,7 +2,6 @@ package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class AssignNode extends BinaryNode {
 
@@ -11,7 +10,7 @@ public class AssignNode extends BinaryNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterAssign(this);
 		return Visitor.ExitAssign(this);
 	}

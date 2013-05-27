@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaToken;
-import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class ApplyNode extends TypedNode implements CallableNode {
 	public KonohaMethod Method;
@@ -39,7 +38,7 @@ public class ApplyNode extends TypedNode implements CallableNode {
 	}
 
 	@Override
-	public boolean Evaluate(ASTVisitor Visitor) {
+	public boolean Evaluate(NodeVisitor Visitor) {
 		Visitor.EnterApply(this);
 		for(TypedNode Node : this.Params) {
 			Visitor.Visit(Node);
