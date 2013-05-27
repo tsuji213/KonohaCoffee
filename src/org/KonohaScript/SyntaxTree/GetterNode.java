@@ -4,15 +4,12 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaToken;
 import org.KonohaScript.CodeGen.ASTVisitor;
 
-public class FieldNode extends TypedNode {
-	/* ($TermToken->text)[Offset] */
-	public KonohaToken	TermToken;
-	public int		Offset;
-
-	public FieldNode(KonohaType TypeInfo, KonohaToken TermToken, int Offset) {
-		super(TypeInfo);
-		this.TermToken = TermToken;
-		this.Offset = Offset;
+public class GetterNode extends TypedNode {
+	public TypedNode     BaseNode;
+	
+	public GetterNode(KonohaType TypeInfo, KonohaToken FieldToken, TypedNode BaseNode) {
+		super(TypeInfo, FieldToken);
+		this.BaseNode = BaseNode;
 	}
 
 	@Override

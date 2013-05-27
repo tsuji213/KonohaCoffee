@@ -37,7 +37,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
@@ -330,11 +330,11 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
+	public void EnterField(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		return true;
 	}
 
@@ -387,7 +387,7 @@ class LocalVariableCollector extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocal(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocal(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
@@ -684,11 +684,11 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
+	public void EnterField(GetterNode Node) {
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		KonohaToken TermToken = Node.TermToken;
 		int Offset = Node.Offset;
 		KonohaIR Obj = this.Builder.Local(TermToken.ParsedText);
@@ -752,12 +752,12 @@ public class KonohaVMCodeGen extends CodeGenerator implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
+		Local local = this.FindLocalVariable(Node.VarToken.ParsedText);
 		KonohaIR R = this.Builder.Get(0);
 		BasicBlock B = (BasicBlock) this.Builder.Get(1);
 		this.Builder.Assign(local, R);

@@ -7,7 +7,7 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class SwitchNode extends TypedNode {
 	public SwitchNode(KonohaType TypeInfo) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	/*

@@ -19,14 +19,14 @@ public class ApplyNode extends TypedNode implements CallableNode {
 	}
 
 	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1) {
-		super(TypeInfo);
+		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);
 	}
 
 	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1, TypedNode arg2) {
-		super(TypeInfo);
+		super(TypeInfo, KeyToken);
 		this.Method = Method;
 		this.Params = new ArrayList<TypedNode>();
 		this.Params.add(arg1);

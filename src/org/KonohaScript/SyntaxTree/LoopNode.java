@@ -5,7 +5,7 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 
 public class LoopNode extends TypedNode {
 	public LoopNode(KonohaType TypeInfo) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	/* while CondExpr then { LoopBlock; IterationExpr } */

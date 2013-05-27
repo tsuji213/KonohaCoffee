@@ -63,11 +63,6 @@ public abstract class TypedNode {
 		this.NextNode = Node;
 	}
 
-	public TypedNode(KonohaType TypeInfo) {
-		this.TypeInfo = TypeInfo;
-		this.SourceToken = null;
-	}
-
 	public TypedNode(KonohaType TypeInfo, KonohaToken SourceToken) {
 		this.TypeInfo = TypeInfo;
 		this.SourceToken = SourceToken;

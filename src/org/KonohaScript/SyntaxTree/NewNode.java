@@ -6,7 +6,7 @@ import org.KonohaScript.CodeGen.ASTVisitor;
 public class NewNode extends TypedNode {
 
 	public NewNode(KonohaType TypeInfo) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 	}
 
 	@Override

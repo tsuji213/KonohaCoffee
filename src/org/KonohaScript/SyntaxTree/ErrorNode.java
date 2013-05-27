@@ -8,7 +8,7 @@ public class ErrorNode extends TypedNode {
 	public String	ErrorMessage;
 
 	public ErrorNode(KonohaType TypeInfo, KonohaToken KeyToken, String ErrorMessage) {
-		super(TypeInfo);
+		super(TypeInfo, KeyToken);
 		this.ErrorMessage = KeyToken.SetErrorMessage(ErrorMessage);
 	}
 

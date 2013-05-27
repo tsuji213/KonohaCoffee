@@ -11,7 +11,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
@@ -120,13 +120,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 	}
 
 	@Override
-	public void EnterField(FieldNode Node) {
+	public void EnterField(GetterNode Node) {
 		Local local = this.FindLocalVariable(Node.TermToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(FieldNode Node) {
+	public boolean ExitField(GetterNode Node) {
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -188,14 +188,14 @@ public class LeafJSCodeGen extends SourceCodeGen implements ASTVisitor {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
 		String Block = this.pop();
 		String Right = this.pop();
-		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
+		this.push(Node.VarToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
 

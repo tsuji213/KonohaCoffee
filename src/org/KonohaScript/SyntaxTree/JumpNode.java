@@ -8,7 +8,7 @@ public class JumpNode extends TypedNode {
 
 	/* goto Label */
 	public JumpNode(KonohaType TypeInfo, String Label) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 		this.Label = Label;
 	}
 

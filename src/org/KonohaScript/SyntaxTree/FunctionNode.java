@@ -16,7 +16,7 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	public KonohaMethod				Mtd;
 
 	public FunctionNode(KonohaType TypeInfo, KonohaMethod Mtd) {
-		super(TypeInfo);
+		super(TypeInfo, null/*FIXME*/);
 		this.Mtd = Mtd;
 		this.EnvList = new ArrayList<TypedNode>();
 	}

@@ -8,7 +8,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineClassNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FieldNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.FunctionNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
@@ -49,9 +49,9 @@ public interface ASTVisitor {
 
 	boolean ExitLocal(LocalNode Node);
 
-	void EnterField(FieldNode Node);
+	void EnterField(GetterNode Node);
 
-	boolean ExitField(FieldNode Node);
+	boolean ExitField(GetterNode Node);
 
 	void EnterBox(BoxNode Node);
 

@@ -17,7 +17,7 @@ public class TryNode extends TypedNode {
 	public TypedNode			FinallyBlock;
 
 	public TryNode(KonohaType TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
 		this.CatchBlock = new ArrayList<TypedNode>();

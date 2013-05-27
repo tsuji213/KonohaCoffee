@@ -10,7 +10,7 @@ public class IfNode extends TypedNode {
 
 	/* If CondExpr then ThenBlock else ElseBlock */
 	public IfNode(KonohaType TypeInfo, TypedNode CondExpr, TypedNode ThenBlock, TypedNode ElseNode) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 		this.CondExpr = CondExpr;
 		this.ThenNode = ThenBlock;
 		this.ElseNode = ElseNode;

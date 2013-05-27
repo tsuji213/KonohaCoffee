@@ -8,7 +8,7 @@ public class LabelNode extends TypedNode {
 
 	/* Label: */
 	public LabelNode(KonohaType TypeInfo, String Label) {
-		super(TypeInfo);
+		super(TypeInfo, null/*fixme*/);
 		this.Label = Label;
 	}
 

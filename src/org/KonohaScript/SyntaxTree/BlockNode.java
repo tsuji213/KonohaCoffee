@@ -11,25 +11,25 @@ public class BlockNode extends TypedNode {
 
 	/* [Expr1, Expr2, ... ] */
 	public BlockNode(KonohaType TypeInfo) {
-		super(TypeInfo);
+		super(TypeInfo, null);
 		this.ExprList = new ArrayList<TypedNode>();
 	}
 
 	public BlockNode(KonohaType TypeInfo, TypedNode Node1) {
-		super(TypeInfo);
+		super(TypeInfo, null);
 		init();
 		this.ExprList.add(Node1);
 	}
 
 	public BlockNode(KonohaType TypeInfo, TypedNode Node1, TypedNode Node2) {
-		super(TypeInfo);
+		super(TypeInfo, null);
 		init();
 		this.ExprList.add(Node1);
 		this.ExprList.add(Node2);
 	}
 
 	public BlockNode(KonohaType TypeInfo, TypedNode Node1, TypedNode Node2, TypedNode Node3) {
-		super(TypeInfo);
+		super(TypeInfo, null);
 		init();
 		this.ExprList.add(Node1);
 		this.ExprList.add(Node2);
