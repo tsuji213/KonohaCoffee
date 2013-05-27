@@ -35,7 +35,7 @@ public class KShell {
 	boolean	IsInteractiveMode;
 
 	public KShell() {
-		this.ShellContext = new Konoha(new MiniKonohaGrammar());
+		this.ShellContext = new Konoha(new MiniKonohaGrammar(), null);
 		this.IsInteractiveMode = false;
 	}
 

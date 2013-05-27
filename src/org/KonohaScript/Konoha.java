@@ -224,7 +224,9 @@ public class Konoha implements KonohaConst {
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KNameSpace(this, this.RootNameSpace);
-		this.DefaultNameSpace.LoadBuilder(BuilderClassName);
+		if(BuilderClassName != null) {
+			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
+		}
 	}
 
 	final KClass LookupTypeInfo(Class<?> ClassInfo) {
@@ -258,7 +260,7 @@ public class Konoha implements KonohaConst {
 
 	public static void main(String[] argc) {
 		MiniKonohaGrammar MiniKonohaGrammar = new MiniKonohaGrammar();
-		Konoha KonohaContext = new Konoha(MiniKonohaGrammar);
+		Konoha KonohaContext = new Konoha(MiniKonohaGrammar, null);
 		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
 		// KonohaContext.Eval("a == b + C; D + e == F", 2);
 		// KonohaContext.Eval("1+2*3", 3333);
