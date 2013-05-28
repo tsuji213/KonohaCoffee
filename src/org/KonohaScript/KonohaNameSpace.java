@@ -351,7 +351,7 @@ class KonohaTokenizer implements KonohaConst {
 	int DispatchFunc(int KonohaChar, int pos) {
 		KonohaFunc FuncStack = ns.GetTokenFunc(KonohaChar);
 		int UnusedIdx = SourceList.size();
-		while (FuncStack != null) {
+		while(FuncStack != null) {
 			int NextIdx = FuncStack.InvokeTokenFunc(ns, SourceText, pos, SourceList);
 			if(NextIdx != -1) {
 				UnusedIdx = StampLine(UnusedIdx);
@@ -369,7 +369,7 @@ class KonohaTokenizer implements KonohaConst {
 	ArrayList<KonohaToken> Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
-		while (pos < len) {
+		while(pos < len) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(SourceText.charAt(pos));
 			int pos2 = DispatchFunc(kchar, pos);
 			if(!(pos < pos2))

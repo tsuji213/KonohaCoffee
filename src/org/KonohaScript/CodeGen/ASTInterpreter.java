@@ -123,7 +123,7 @@ class InterpreterLoopNodeAcceptor implements LoopNodeAcceptor {
 	public boolean Invoke(LoopNode Node, NodeVisitor Visitor) {
 		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
 		Visitor.EnterLoop(Node);
-		while (true) {
+		while(true) {
 			Visitor.Visit(Node.CondExpr);
 			if(thisVisitor.Pop() == Boolean.FALSE) {
 				break;

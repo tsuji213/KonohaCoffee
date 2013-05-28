@@ -46,7 +46,7 @@ public abstract class TypedNode {
 
 	public final TypedNode GetHeadNode() {
 		TypedNode Node = this;
-		while (Node.PreviousNode != null) {
+		while(Node.PreviousNode != null) {
 			Node = Node.PreviousNode;
 		}
 		return Node;
@@ -60,7 +60,7 @@ public abstract class TypedNode {
 
 	public final TypedNode GetTailNode() {
 		TypedNode Node = this;
-		while (Node.NextNode != null) {
+		while(Node.NextNode != null) {
 			Node = Node.NextNode;
 		}
 		return this;

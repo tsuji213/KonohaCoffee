@@ -54,7 +54,7 @@ public final class LexicalConverter implements KonohaConst {
 
 	public int Do(ArrayList<KonohaToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
 		int c = BeginIdx;
-		while (c < EndIdx) {
+		while(c < EndIdx) {
 			KonohaToken Token = SourceList.get(c);
 			if(Token.ResolvedSyntax == null) {
 				KonohaFunc Macro = ns.GetMacro(Token.ParsedText, this.TopLevel);

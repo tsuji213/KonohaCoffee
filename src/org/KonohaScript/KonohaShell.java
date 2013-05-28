@@ -117,7 +117,7 @@ public class KonohaShell {
 		int start = source.indexOf(begin);
 		if(start >= 0) {
 			int i = start;
-			while (i < source.length()) {
+			while(i < source.length()) {
 				level = level + 1;
 				// System.out.println("start = " + start + ",i = " + i +":inc");
 				i = source.indexOf(begin, i + 1);
@@ -130,7 +130,7 @@ public class KonohaShell {
 		int end = source.indexOf(terminator);
 		if(end >= 0) {
 			int i = end;
-			while (i < source.length()) {
+			while(i < source.length()) {
 				level = level - 1;
 				// System.out.println("end = " + end + ",i = " + i + ":dec");
 				i = source.indexOf(end, i + 1);
@@ -145,13 +145,13 @@ public class KonohaShell {
 	private void ProcessConsole() {
 		KConsole console = new KConsole();
 		console.println("Konoha version 3.0");
-		while (true) {
+		while(true) {
 			console.print(">>>");
 			String source = "";
 			Scanner s = new Scanner(console.stdin);
 			int level = 0;
 
-			while (s.hasNext()) {
+			while(s.hasNext()) {
 				String line = s.next();
 				source = source + line + "\n";
 				level = level + Count("(", ")", line);

@@ -301,7 +301,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		String LoopBody = this.pop();
 		String IterExpr = this.pop();
 		String CondExpr = this.pop();
-		this.push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
 		return true;
 
 	}

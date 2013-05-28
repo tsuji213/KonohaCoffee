@@ -67,7 +67,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 				break;
 			}
 		}
-		KonohaToken Token = new KonohaToken((LineStart < pos) ? SourceText.substring(LineStart, pos) : "");
+		String Text = "";
+		if(LineStart < pos) {
+			Text = SourceText.substring(LineStart, pos);
+		}
+		KonohaToken Token = new KonohaToken(Text);
 		Token.ResolvedSyntax = KonohaSyntax.IndentSyntax;
 		ParsedTokenList.add(Token);
 		return pos;
@@ -124,7 +128,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
-		while (pos < SourceText.length()) {
+		while(pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
 			if(ch == '"' && prev != '\\') {
 				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
@@ -291,13 +295,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeStringLiteral(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaToken Token = UNode.KeyToken;
-		return new ConstNode(Gamma.StringType, Token, Token.ParsedText /*
-																		 * FIXME:
-																		 * handling
-																		 * of
-																		 * escape
-																		 * sequence
-																		 */);
+		/* FIXME: handling of escape sequence */
+		return new ConstNode(Gamma.StringType, Token, Token.ParsedText);
 	}
 
 	public int ParseSymbol(UntypedNode Node, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -318,13 +317,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeConst(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaToken Token = UNode.KeyToken;
-		return new ConstNode(Gamma.StringType, Token, Token.ParsedText /*
-																		 * FIXME:
-																		 * handling
-																		 * of
-																		 * resolved
-																		 * object
-																		 */);
+		/* FIXME: handling of resolved object */
+		return new ConstNode(Gamma.StringType, Token, Token.ParsedText);
 	}
 
 	public int ParseUniaryOperator(UntypedNode Node, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -582,13 +576,15 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		String MethodName = UNode.GetTokenString(MethodDeclName, "new");
 		int ParamSize = UNode.NodeList.size() - MethodDeclParam;
 		KonohaType[] ParamData = new KonohaType[ParamSize + 1];
+		String[] ArgNames = new String[ParamSize + 1];
 		ParamData[0] = UNode.GetTokenType(MethodDeclClass, Gamma.VarType);
 		for(int i = 0; i < ParamSize; i++) {
 			UntypedNode ParamNode = (UntypedNode) UNode.NodeList.get(MethodDeclParam + i);
 			KonohaType ParamType = ParamNode.GetTokenType(VarDeclType, Gamma.VarType);
 			ParamData[i + 1] = ParamType;
+			ArgNames[i] = ParamNode.GetTokenString(VarDeclName, "");
 		}
-		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData);
+		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData, ArgNames);
 		KonohaMethod NewMethod = new KonohaMethod(
 				0,
 				BaseType,

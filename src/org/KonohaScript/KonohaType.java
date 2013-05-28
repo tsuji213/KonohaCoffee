@@ -28,20 +28,21 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class KonohaType {
-	Konoha KonohaContext;
-	KPackage Package;
-	int ClassFlag;
-	public String ShortClassName;
-	KonohaType BaseClass;
-	KonohaType SuperClass;
-	KonohaParam ClassParam;
-	KonohaType SearchSimilarClass;
-	ArrayList<KonohaMethod> ClassMethodList;
-	public KonohaType SearchSuperMethodClass; // FIXME(ide) where is superclass info?
-	public Object DefaultNullValue;
-	Object LocalSpec;
+	Konoha										KonohaContext;
+	KPackage									Package;
+	int											ClassFlag;
+	public String								ShortClassName;
+	KonohaType									BaseClass;
+	KonohaType									SuperClass;
+	KonohaParam									ClassParam;
+	KonohaType									SearchSimilarClass;
+	ArrayList<KonohaMethod>						ClassMethodList;
+	public KonohaType							SearchSuperMethodClass;
+	// FIXME(ide) where is superclass info?
+	public Object								DefaultNullValue;
+	Object										LocalSpec;
 
-	public static final ArrayList<KonohaMethod> EmptyMethodList = new ArrayList<KonohaMethod>();
+	public static final ArrayList<KonohaMethod>	EmptyMethodList	= new ArrayList<KonohaMethod>();
 
 	public KonohaType(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
@@ -55,7 +56,7 @@ public class KonohaType {
 	}
 
 	// Java Implementation Only
-	Class<?> HostedClassInfo = null;
+	Class<?>	HostedClassInfo	= null;
 
 	public KonohaType(Konoha KonohaContext, Class<?> ClassInfo) {
 		this(KonohaContext, null, 0, ClassInfo.getSimpleName(), null);
@@ -83,11 +84,13 @@ public class KonohaType {
 		KonohaType ThisType = KonohaContext.LookupTypeInfo(Method.getClass());
 		Class<?>[] ParamTypes = Method.getParameterTypes();
 		KonohaType[] ParamData = new KonohaType[ParamTypes.length + 1];
+		String[] ArgNames = new String[ParamTypes.length + 1];
 		ParamData[0] = KonohaContext.LookupTypeInfo(Method.getReturnType());
 		for(int i = 0; i < ParamTypes.length; i++) {
 			ParamData[i + 1] = KonohaContext.LookupTypeInfo(ParamTypes[i]);
+			ArgNames[i] = "arg" + i;
 		}
-		KonohaParam Param = new KonohaParam(ParamData.length, ParamData);
+		KonohaParam Param = new KonohaParam(ParamData.length, ParamData, ArgNames);
 		KonohaMethod Mtd = new KonohaMethod(0, ThisType, Method.getName(), Param, Method);
 		ThisType.AddMethod(Mtd);
 		return Mtd;
@@ -113,10 +116,10 @@ public class KonohaType {
 	}
 
 	public void AddMethod(KonohaMethod Method) {
-		if(ClassMethodList == KonohaType.EmptyMethodList) {
-			ClassMethodList = new ArrayList<KonohaMethod>();
+		if(this.ClassMethodList == KonohaType.EmptyMethodList) {
+			this.ClassMethodList = new ArrayList<KonohaMethod>();
 		}
-		ClassMethodList.add(Method);
+		this.ClassMethodList.add(Method);
 	}
 
 	public void DefineMethod(int MethodFlag, String MethodName, KonohaParam Param, Object Callee, String LocalName) {
@@ -128,8 +131,8 @@ public class KonohaType {
 	}
 
 	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
-		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KonohaMethod Method = ClassMethodList.get(i);
+		for(int i = 0; i < this.ClassMethodList.size(); i++) {
+			KonohaMethod Method = this.ClassMethodList.get(i);
 			if(Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
@@ -149,15 +152,14 @@ public class KonohaType {
 	}
 
 	public boolean DefineNewMethod(KonohaMethod NewMethod) {
-		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KonohaMethod DefinedMethod = ClassMethodList.get(i);
+		for(int i = 0; i < this.ClassMethodList.size(); i++) {
+			KonohaMethod DefinedMethod = this.ClassMethodList.get(i);
 			if(NewMethod.Match(DefinedMethod)) {
 				return false;
 			}
 		}
-		AddMethod(NewMethod);
+		this.AddMethod(NewMethod);
 		return true;
 	}
-
 
 }
