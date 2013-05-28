@@ -30,11 +30,11 @@ import org.KonohaScript.SyntaxTree.*;
 public class UntypedNode implements KonohaConst {	
 	UntypedNode               Parent;
 	UntypedNode               PreviousNode;
-	UntypedNode               NextNode;	
+	UntypedNode               NextNode;
 	public KonohaNameSpace         NodeNameSpace;
 	public KonohaSyntax            Syntax;
 	public KonohaToken             KeyToken;
-	
+
 	@Override public String toString() {
 		String key = KeyToken.ParsedText + ":" + ((Syntax != null) ? Syntax.SyntaxName : "null");
 		StringBuilder sb = new StringBuilder();
@@ -65,12 +65,12 @@ public class UntypedNode implements KonohaConst {
 		this.KeyToken = KeyToken;
 		this.Syntax = KeyToken.ResolvedSyntax;
 	}
-	
+
 	public void LinkNode(UntypedNode Node) {
 		Node.PreviousNode = this;
 		this.NextNode = Node;
 	}
-	
+
 	public ArrayList<Object>         NodeList;
 
 	public UntypedNode AddParsedNode(UntypedNode Node) {
@@ -95,7 +95,7 @@ public class UntypedNode implements KonohaConst {
 			NodeList.add(Value);
 		}
 	}
-	
+
 	public UntypedNode SetAtNode(int Index, UntypedNode Node) {
 		SetAt(Index, Node);
 		return Node;
@@ -129,9 +129,9 @@ public class UntypedNode implements KonohaConst {
 		return new ArrayList<KonohaToken>();
 	}
 
-	
+
 	// parser 
-	
+
 	public int ReportError(KonohaToken Token, String Message, int ParseOption) {
 		if((ParseOption & HasNextPattern) != HasNextPattern) {
 			if(Token != null) {
@@ -143,14 +143,14 @@ public class UntypedNode implements KonohaConst {
 		}
 		return NoMatch;
 	}
-	
+
 	public static UntypedNode NewNullNode(KonohaNameSpace ns, ArrayList<KonohaToken> TokenList, int BeginIdx) {
 		KonohaToken EmptyToken = new KonohaToken("");
 		EmptyToken.uline = TokenList.get(BeginIdx-1).uline;
 		EmptyToken.ResolvedSyntax = KonohaSyntax.EmptySyntax;
 		return new UntypedNode(ns, EmptyToken);
 	}
-	
+
 	public int ParseByKeyToken(KonohaToken KeyToken, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx) {
 		this.KeyToken = KeyToken;
 		KonohaSyntax Syntax = KeyToken.ResolvedSyntax;
@@ -177,7 +177,7 @@ public class UntypedNode implements KonohaConst {
 
 	/* 1 + 2 * 3 */
 	/* 1 * 2 + 3 */
-	
+
 	public static UntypedNode BinaryNode(KonohaNameSpace ns, UntypedNode LeftNode, KonohaToken KeyToken, UntypedNode RightNode)
 	{
 		if(RightNode.Syntax.IsBinaryOperator()) {
@@ -198,7 +198,7 @@ public class UntypedNode implements KonohaConst {
 		}		
 		return NewNode;
 	}
-	
+
 	int ReportExpectedAfter(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, String NextSyntax, int ParseOption) {
 		System.out.printf("ReportExpectedAfter: NoMatch BeginIdx=%d,  EndIdx=%d Option=%d\n", BeginIdx, EndIdx, ParseOption);
 		if((ParseOption & AllowEmpty) == AllowEmpty) {
@@ -209,7 +209,7 @@ public class UntypedNode implements KonohaConst {
 			return ReportError(Token, NextSyntax + " is expected after " + Token.ParsedText, ParseOption);
 		}
 	}
-	
+
 	public static UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		UntypedNode LeftNode = null;
 		//KToken.DumpTokenList(0, "ParseNewNode", TokenList, BeginIdx, EndIdx);
@@ -263,7 +263,7 @@ public class UntypedNode implements KonohaConst {
 		ArrayList<KonohaToken> GroupList = GroupToken.GetGroupList();
 		return ParseNewNode(ns, null, GroupList, 1, GroupList.size() -1 , ParseOption);
 	}
-	
+
 	public UntypedNode GetSuffixBodyNode() {
 		if(NodeList == null) return null;
 		if(NodeList.size() == 1) return this;
@@ -273,7 +273,7 @@ public class UntypedNode implements KonohaConst {
 		SetAtNode(0, ChildNode);
 		return this;
 	}
-	
+
 	public void AppendTokenList(String delim, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		assert(this.NodeList.size() == 1);
 		int start = BeginIdx;
@@ -290,7 +290,7 @@ public class UntypedNode implements KonohaConst {
 	}
 
 	// Utils
-	
+
 	public final static boolean IsAllowEmpty(int ParseOption) {
 		return ((ParseOption & AllowEmpty) == AllowEmpty);
 	}
@@ -298,7 +298,7 @@ public class UntypedNode implements KonohaConst {
 	public final static boolean IsAllowNoMatch(int ParseOption) {
 		return ((ParseOption & HasNextPattern) == HasNextPattern);
 	}
-	
+
 	public static int FindDelim(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx) {
 		int NextIdx = EndIdx;
 		for(int i = BeginIdx+1; i < EndIdx; i++) {
@@ -310,7 +310,7 @@ public class UntypedNode implements KonohaConst {
 		}
 		return NextIdx;
 	}
-	
+
 	public final static int SkipIndent(ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if((ParseOption & SkipIndent) == SkipIndent) {
 			while(BeginIdx < EndIdx) {
@@ -321,7 +321,7 @@ public class UntypedNode implements KonohaConst {
 		}
 		return BeginIdx;
 	}
-	
+
 	// Matcher	
 	public int MatchCond(int Index, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
@@ -349,7 +349,7 @@ public class UntypedNode implements KonohaConst {
 		SetAtNode(Index, ParseNewNode(NodeNameSpace, null, TokenList, BeginIdx, NextIdx, ParseOption));
 		return NextIdx+1;
 	}
-	
+
 	public int MatchSingleBlock(int Index, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
@@ -363,7 +363,7 @@ public class UntypedNode implements KonohaConst {
 		}
 		return ReportExpectedAfter(TokenList, BeginIdx, EndIdx, "{", ParseOption);
 	}
-	
+
 	public int MatchKeyword(int Index, String Symbol, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(BeginIdx == -1) return -1;
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
@@ -413,5 +413,5 @@ public class UntypedNode implements KonohaConst {
 		}
 		return new ErrorNode(TypeInfo, KeyToken, "syntax tree error: " + Index);
 	}
-	
+
 }

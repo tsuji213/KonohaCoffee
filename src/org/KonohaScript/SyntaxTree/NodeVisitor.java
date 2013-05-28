@@ -3,6 +3,8 @@ package org.KonohaScript.SyntaxTree;
 interface INodeVisitor {
 	boolean Visit(TypedNode Node);
 
+	boolean VisitList(TypedNode valueNode);
+
 	void EnterDefine(DefineNode Node);
 
 	boolean ExitDefine(DefineNode Node);
@@ -90,87 +92,87 @@ interface INodeVisitor {
 
 public abstract class NodeVisitor implements INodeVisitor {
 	public interface AndNodeAcceptor {
-		boolean Eval(AndNode Node, NodeVisitor Visitor);
+		boolean Invoke(AndNode Node, NodeVisitor Visitor);
 	}
 
 	public interface ApplyNodeAcceptor {
-		boolean Eval(ApplyNode Node, NodeVisitor Visitor);
+		boolean Invoke(ApplyNode Node, NodeVisitor Visitor);
 	}
 
 	public interface AssignNodeAcceptor {
-		boolean Eval(AssignNode Node, NodeVisitor Visitor);
+		boolean Invoke(AssignNode Node, NodeVisitor Visitor);
 	}
 
 	public interface ConstNodeAcceptor {
-		boolean Eval(ConstNode Node, NodeVisitor Visitor);
+		boolean Invoke(ConstNode Node, NodeVisitor Visitor);
 	}
 
 	public interface DefineNodeAcceptor {
-		boolean Eval(DefineNode Node, NodeVisitor Visitor);
+		boolean Invoke(DefineNode Node, NodeVisitor Visitor);
 	}
 
 	public interface ErrorNodeAcceptor {
-		boolean Eval(ErrorNode Node, NodeVisitor Visitor);
+		boolean Invoke(ErrorNode Node, NodeVisitor Visitor);
 	}
 
 	public interface FunctionNodeAcceptor {
-		boolean Eval(FunctionNode Node, NodeVisitor Visitor);
+		boolean Invoke(FunctionNode Node, NodeVisitor Visitor);
 	}
 
 	public interface GetterNodeAcceptor {
-		boolean Eval(GetterNode Node, NodeVisitor Visitor);
+		boolean Invoke(GetterNode Node, NodeVisitor Visitor);
 	}
 
 	public interface IfNodeAcceptor {
-		boolean Eval(IfNode Node, NodeVisitor Visitor);
+		boolean Invoke(IfNode Node, NodeVisitor Visitor);
 	}
 
 	public interface JumpNodeAcceptor {
-		boolean Eval(JumpNode Node, NodeVisitor Visitor);
+		boolean Invoke(JumpNode Node, NodeVisitor Visitor);
 	}
 
 	public interface LabelNodeAcceptor {
-		boolean Eval(LabelNode Node, NodeVisitor Visitor);
+		boolean Invoke(LabelNode Node, NodeVisitor Visitor);
 	}
 
 	public interface LetNodeAcceptor {
-		boolean Eval(LetNode Node, NodeVisitor Visitor);
+		boolean Invoke(LetNode Node, NodeVisitor Visitor);
 	}
 
 	public interface LocalNodeAcceptor {
-		boolean Eval(LocalNode Node, NodeVisitor Visitor);
+		boolean Invoke(LocalNode Node, NodeVisitor Visitor);
 	}
 
 	public interface LoopNodeAcceptor {
-		boolean Eval(LoopNode Node, NodeVisitor Visitor);
+		boolean Invoke(LoopNode Node, NodeVisitor Visitor);
 	}
 
 	public interface NewNodeAcceptor {
-		boolean Eval(NewNode Node, NodeVisitor Visitor);
+		boolean Invoke(NewNode Node, NodeVisitor Visitor);
 	}
 
 	public interface NullNodeAcceptor {
-		boolean Eval(NullNode Node, NodeVisitor Visitor);
+		boolean Invoke(NullNode Node, NodeVisitor Visitor);
 	}
 
 	public interface OrNodeAcceptor {
-		boolean Eval(OrNode Node, NodeVisitor Visitor);
+		boolean Invoke(OrNode Node, NodeVisitor Visitor);
 	}
 
 	public interface ReturnNodeAcceptor {
-		boolean Eval(ReturnNode Node, NodeVisitor Visitor);
+		boolean Invoke(ReturnNode Node, NodeVisitor Visitor);
 	}
 
 	public interface SwitchNodeAcceptor {
-		boolean Eval(SwitchNode Node, NodeVisitor Visitor);
+		boolean Invoke(SwitchNode Node, NodeVisitor Visitor);
 	}
 
 	public interface ThrowNodeAcceptor {
-		boolean Eval(ThrowNode Node, NodeVisitor Visitor);
+		boolean Invoke(ThrowNode Node, NodeVisitor Visitor);
 	}
 
 	public interface TryNodeAcceptor {
-		boolean Eval(TryNode Node, NodeVisitor Visitor);
+		boolean Invoke(TryNode Node, NodeVisitor Visitor);
 	}
 
 	public AndNodeAcceptor		AndNodeAcceptor			= new DefaultAndNodeAcceptor();
@@ -195,4 +197,19 @@ public abstract class NodeVisitor implements INodeVisitor {
 	public ThrowNodeAcceptor	ThrowNodeAcceptor		= new DefaultThrowNodeAcceptor();
 	public TryNodeAcceptor		TryNodeAcceptor			= new DefaultTryNodeAcceptor();
 
+	@Override
+	public boolean VisitList(TypedNode Node) {
+		boolean Ret = false;
+		while(true) {
+			Ret = this.Visit(Node);
+			if(Ret == false) {
+				break;
+			}
+			if(Node.NextNode == null) {
+				break;
+			}
+			Node = Node.NextNode;
+		}
+		return Ret;
+	}
 }

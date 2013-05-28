@@ -5,11 +5,11 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.LoopNodeAcceptor;
 
 class DefaultLoopNodeAcceptor implements LoopNodeAcceptor {
 	@Override
-	public boolean Eval(LoopNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(LoopNode Node, NodeVisitor Visitor) {
 		Visitor.EnterLoop(Node);
 		Visitor.Visit(Node.CondExpr);
-		Visitor.Visit(Node.LoopBody);
 		Visitor.Visit(Node.IterationExpr);
+		Visitor.VisitList(Node.LoopBody);
 		return Visitor.ExitLoop(Node);
 	}
 }
@@ -27,7 +27,7 @@ public class LoopNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.LoopNodeAcceptor.Eval(this, Visitor);
+		return Visitor.LoopNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

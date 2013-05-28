@@ -7,11 +7,11 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.SwitchNodeAcceptor;
 
 class DefaultSwitchNodeAcceptor implements SwitchNodeAcceptor {
 	@Override
-	public boolean Eval(SwitchNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
 		Visitor.EnterSwitch(Node);
 		Visitor.Visit(Node.CondExpr);
-		for (TypedNode Block : Node.Blocks) {
-			Visitor.Visit(Block);
+		for(TypedNode Block : Node.Blocks) {
+			Visitor.VisitList(Block);
 		}
 		return Visitor.ExitSwitch(Node);
 	}
@@ -31,7 +31,7 @@ public class SwitchNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.SwitchNodeAcceptor.Eval(this, Visitor);
+		return Visitor.SwitchNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

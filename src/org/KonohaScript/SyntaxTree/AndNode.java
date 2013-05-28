@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.AndNodeAcceptor;
 
 class DefaultAndNodeAcceptor implements AndNodeAcceptor {
 	@Override
-	public boolean Eval(AndNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(AndNode Node, NodeVisitor Visitor) {
 		Visitor.EnterAnd(Node);
 		Visitor.Visit(Node.LeftNode);
 		Visitor.Visit(Node.RightNode);
@@ -22,6 +22,6 @@ public class AndNode extends BinaryNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.AndNodeAcceptor.Eval(this, Visitor);
+		return Visitor.AndNodeAcceptor.Invoke(this, Visitor);
 	}
 }

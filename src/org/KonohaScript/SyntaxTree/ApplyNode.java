@@ -9,9 +9,9 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.ApplyNodeAcceptor;
 
 class DefaultApplyNodeAcceptor implements ApplyNodeAcceptor {
 	@Override
-	public boolean Eval(ApplyNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(ApplyNode Node, NodeVisitor Visitor) {
 		Visitor.EnterApply(Node);
-		for (TypedNode Element : Node.Params) {
+		for(TypedNode Element : Node.Params) {
 			Visitor.Visit(Element);
 		}
 		return Visitor.ExitApply(Node);
@@ -54,7 +54,7 @@ public class ApplyNode extends TypedNode implements CallableNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.ApplyNodeAcceptor.Eval(this, Visitor);
+		return Visitor.ApplyNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

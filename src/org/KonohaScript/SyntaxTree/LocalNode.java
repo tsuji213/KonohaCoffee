@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.LocalNodeAcceptor;
 
 class DefaultLocalNodeAcceptor implements LocalNodeAcceptor {
 	@Override
-	public boolean Eval(LocalNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(LocalNode Node, NodeVisitor Visitor) {
 		Visitor.EnterLocal(Node);
 		return Visitor.ExitLocal(Node);
 	}
@@ -24,7 +24,7 @@ public class LocalNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.LocalNodeAcceptor.Eval(this, Visitor);
+		return Visitor.LocalNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

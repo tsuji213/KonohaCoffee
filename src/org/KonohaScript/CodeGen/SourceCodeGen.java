@@ -37,16 +37,16 @@ class IndentGenerator {
 
 	private static String repeat(String str, int n) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < n; ++i) {
+		for(int i = 0; i < n; ++i) {
 			builder.append(str);
 		}
 		return builder.toString();
 	}
 
 	public void setLevel(int level) {
-		if (level < 0)
+		if(level < 0)
 			level = 0;
-		if (this.level != level) {
+		if(this.level != level) {
 			this.level = level;
 			this.currentLevelIndentString = repeat(this.indentString, level);
 		}
@@ -80,7 +80,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	private static String[]				binaryOpList	= { "+", "-", "*", "/",
 			"<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<",
 			">>"										};
-	
+
 	public SourceCodeGen() {
 		this(null);
 	}
@@ -92,7 +92,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		
 		this.IfNodeAcceptor = new IfNodeAcceptor() {
 			@Override
-			public boolean Eval(IfNode Node, NodeVisitor Visitor) {
+			public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
 				SourceCodeGen Gen = (SourceCodeGen)Visitor;
 				Gen.EnterIf(Node);
 				Gen.Visit(Node.CondExpr);
@@ -126,8 +126,8 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	protected boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
-		for (String op : binaryOpList) {
-			if (op.equals(methodName))
+		for(String op : binaryOpList) {
+			if(op.equals(methodName))
 				return true;
 		}
 		return false;
@@ -143,7 +143,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	protected String[] PopN(int n) {
 		String[] array = new String[n];
-		for (int i = 0; i < n; ++i) {
+		for(int i = 0; i < n; ++i) {
 			array[i] = this.pop();
 		}
 		return array;
@@ -151,7 +151,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	protected String[] PopNReverse(int n) {
 		String[] array = new String[n];
-		for (int i = 0; i < n; ++i) {
+		for(int i = 0; i < n; ++i) {
 			array[n - i - 1] = this.pop();
 		}
 		return array;
@@ -159,18 +159,18 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	protected StringBuilder PopNWithModifier(StringBuilder builder, int n,
 			boolean reverse, String prefix, String suffix, String delim) {
-		if (prefix == null) {
+		if(prefix == null) {
 			prefix = "";
 		}
-		if (suffix == null) {
+		if(suffix == null) {
 			suffix = "";
 		}
-		if (delim == null) {
+		if(delim == null) {
 			delim = "";
 		}
 		String[] array = reverse ? this.PopNReverse(n) : this.PopN(n);
-		for (int i = 0; i < n; ++i) {
-			if (i > 0) {
+		for(int i = 0; i < n; ++i) {
+			if(i > 0) {
 				builder.append(delim);
 			}
 			builder.append(prefix);
@@ -265,7 +265,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	public boolean Visit(TypedNode Node) {
 		return Node.Evaluate(this);
 	}
-	
+
 	protected boolean VisitBlock(TypedNode Node){
 		return Node.Evaluate(this);
 	}

@@ -5,7 +5,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.NullNodeAcceptor;
 
 class DefaultNullNodeAcceptor implements NullNodeAcceptor {
 	@Override
-	public boolean Eval(NullNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(NullNode Node, NodeVisitor Visitor) {
 		Visitor.EnterNull(Node);
 		return Visitor.ExitNull(Node);
 	}
@@ -19,7 +19,7 @@ public class NullNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.NullNodeAcceptor.Eval(this, Visitor);
+		return Visitor.NullNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

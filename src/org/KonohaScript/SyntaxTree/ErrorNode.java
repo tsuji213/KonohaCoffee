@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.ErrorNodeAcceptor;
 
 class DefaultErrorNodeAcceptor implements ErrorNodeAcceptor {
 	@Override
-	public boolean Eval(ErrorNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(ErrorNode Node, NodeVisitor Visitor) {
 		Visitor.EnterError(Node);
 		return Visitor.ExitError(Node);
 	}
@@ -23,7 +23,7 @@ public class ErrorNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.ErrorNodeAcceptor.Eval(this, Visitor);
+		return Visitor.ErrorNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

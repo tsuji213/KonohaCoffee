@@ -7,7 +7,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.DefineNodeAcceptor;
 
 class DefaultDefineNodeAcceptor implements DefineNodeAcceptor {
 	@Override
-	public boolean Eval(DefineNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(DefineNode Node, NodeVisitor Visitor) {
 		Visitor.EnterDefine(Node);
 		return Visitor.ExitDefine(Node);
 	}
@@ -25,7 +25,7 @@ public class DefineNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.DefineNodeAcceptor.Eval(this, Visitor);
+		return Visitor.DefineNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

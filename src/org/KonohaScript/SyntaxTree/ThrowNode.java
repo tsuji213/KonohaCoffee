@@ -5,7 +5,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.ThrowNodeAcceptor;
 
 class DefaultThrowNodeAcceptor implements ThrowNodeAcceptor {
 	@Override
-	public boolean Eval(ThrowNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(ThrowNode Node, NodeVisitor Visitor) {
 		Visitor.EnterThrow(Node);
 		Visitor.Visit(Node.Expr);
 		return Visitor.ExitThrow(Node);
@@ -20,6 +20,6 @@ public class ThrowNode extends UnaryNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.ThrowNodeAcceptor.Eval(this, Visitor);
+		return Visitor.ThrowNodeAcceptor.Invoke(this, Visitor);
 	}
 }
