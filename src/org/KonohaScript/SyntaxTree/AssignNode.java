@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.AssignNodeAcceptor;
 
 class DefaultAssignNodeAcceptor implements AssignNodeAcceptor {
 	@Override
-	public boolean Eval(AssignNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(AssignNode Node, NodeVisitor Visitor) {
 		Visitor.EnterAssign(Node);
 		Visitor.Visit(Node.LeftNode);
 		Visitor.Visit(Node.RightNode);
@@ -23,6 +23,6 @@ public class AssignNode extends BinaryNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.AssignNodeAcceptor.Eval(this, Visitor);
+		return Visitor.AssignNodeAcceptor.Invoke(this, Visitor);
 	}
 }

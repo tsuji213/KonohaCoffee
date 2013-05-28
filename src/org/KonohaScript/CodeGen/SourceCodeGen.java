@@ -92,7 +92,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		
 		this.IfNodeAcceptor = new IfNodeAcceptor() {
 			@Override
-			public boolean Eval(IfNode Node, NodeVisitor Visitor) {
+			public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
 				SourceCodeGen Gen = (SourceCodeGen)Visitor;
 				Gen.EnterIf(Node);
 				Gen.Visit(Node.CondExpr);

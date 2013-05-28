@@ -5,7 +5,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.NewNodeAcceptor;
 
 class DefaultNewNodeAcceptor implements NewNodeAcceptor {
 	@Override
-	public boolean Eval(NewNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(NewNode Node, NodeVisitor Visitor) {
 		Visitor.EnterNew(Node);
 		return Visitor.ExitNew(Node);
 	}
@@ -19,7 +19,7 @@ public class NewNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.NewNodeAcceptor.Eval(this, Visitor);
+		return Visitor.NewNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

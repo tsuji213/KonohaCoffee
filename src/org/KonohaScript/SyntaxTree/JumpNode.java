@@ -5,7 +5,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.JumpNodeAcceptor;
 
 class DefaultJumpNodeAcceptor implements JumpNodeAcceptor {
 	@Override
-	public boolean Eval(JumpNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(JumpNode Node, NodeVisitor Visitor) {
 		Visitor.EnterJump(Node);
 		return Visitor.ExitJump(Node);
 	}
@@ -24,6 +24,6 @@ public class JumpNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.JumpNodeAcceptor.Eval(this, Visitor);
+		return Visitor.JumpNodeAcceptor.Invoke(this, Visitor);
 	}
 }
