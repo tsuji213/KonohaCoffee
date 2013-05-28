@@ -49,6 +49,14 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		}
 		return OriginalName;
 	}
+	
+	private void PushLocalVariableRenameTable(){
+		LocalVariableRenameTables.add(new HashMap<String, Integer>());
+	}
+	
+	private void PopLocalVariableRenameTable(){
+		LocalVariableRenameTables.remove(LocalVariableRenameTables.size() - 1);
+	}
 
 	private void AddLocalVariableRenameRule(String Name){
 		if(UseLetKeyword){
@@ -146,6 +154,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	protected boolean VisitBlock(TypedNode Node){
 		String highLevelIndent = indentGenerator.indentAndGet(1);
 		this.PushProgramSize();
+		this.PushLocalVariableRenameTable();
 		boolean ret = true;
 		if(Node != null){
 			ret &= this.Visit(Node);
@@ -159,6 +168,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 		String Block = PopNWithModifier(Size, true, "\n" + highLevelIndent, ";" , null);
 		push("{" + Block + "\n" + currentLevelIndent + "}");
+		this.PopLocalVariableRenameTable();
 		return ret;
 	}
 
