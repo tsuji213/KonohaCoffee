@@ -20,6 +20,8 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
+import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -31,16 +33,20 @@ import org.jllvm.*;
 import org.jllvm.bindings.LLVMRealPredicate;
 import org.jllvm.bindings.LLVMIntPredicate;
 
-public class LLVMCodeGen extends SourceCodeGen {
+public class LLVMCodeGen extends CodeGenerator {
 	private LLVMBuilder builder;
-	private Stack<LLVMBasicBlock> bblockStack;
-	private Stack<LLVMValue> valueStack;
 	
 	public LLVMCodeGen() {
 		super(null);
 		this.builder = new LLVMBuilder();
-		this.bblockStack = new Stack<LLVMBasicBlock>();
-		this.valueStack = new Stack<LLVMValue>();
+		
+		// initialize LLVMNodeAcceptor
+		this.IfNodeAcceptor = new LLVMIfNodeAcceptor(this.builder);
+	}
+
+	@Override
+	public boolean Visit(TypedNode Node) {
+		return Node.Evaluate(this);
 	}
 
 	@Override
@@ -79,10 +85,8 @@ public class LLVMCodeGen extends SourceCodeGen {
 		} else {
 			LLVMType[] argsType = {new LLVMVoidType()};
 			this.builder.createFunction("main", new LLVMVoidType(), argsType);
-			if (!Block.getClass().equals("org.KonohaScript.SyntaxTree.BlockNode")) {
-				this.builder.createBasicBlock("bblock");
-			}
 		}
+		this.builder.createBasicBlock("block");
 		
 		this.Visit(Block);
 		Mtd.CompiledCode = "dont support";
@@ -102,22 +106,22 @@ public class LLVMCodeGen extends SourceCodeGen {
 		Object value = Node.ConstValue;
 		LLVMValue constValue = 
 				this.builder.createLocalVariable(this.builder.createConstValue(typeName, value), "const");
-		this.valueStack.push(constValue);
+		this.builder.pushValue(constValue);
 		
 		return true;
 	}
 
 	@Override
 	public boolean ExitNew(NewNode Node) { 
-		LLVMValue heapValue = this.builder.createHeapAllocationInstruction(Node.TypeInfo.ShortClassName);
-		this.valueStack.push(heapValue);
+		LLVMValue heapValue = this.builder.createHeapAllocation(Node.TypeInfo.ShortClassName);
+		this.builder.pushValue(heapValue);
 		return true;
 	}
 
 	@Override
 	public boolean ExitNull(NullNode Node) { 
 		LLVMValue nullValue = this.builder.createNullValue(Node.TypeInfo.ShortClassName);
-		this.valueStack.push(nullValue);
+		this.builder.pushValue(nullValue);
 		return true;
 	}
 
@@ -130,7 +134,7 @@ public class LLVMCodeGen extends SourceCodeGen {
 	public boolean ExitLocal(LocalNode Node) { //TODO: support scope
 		LLVMArgument arg = this.builder.getArgument(Node.FieldName);
 		LLVMValue value =  this.builder.createLocalVariable(arg, Node.FieldName);
-		this.valueStack.push(value);
+		this.builder.pushValue(value);
 		
 		return true;
 	}
@@ -152,23 +156,36 @@ public class LLVMCodeGen extends SourceCodeGen {
 
 	}
 
+	static final String[]				binaryOpList	= { "+", "-", "*", "/",
+		"<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<",
+		">>"										};
+
+	private boolean isMethodBinaryOperator(ApplyNode Node) {
+		String methodName = Node.Method.MethodName;
+		for (String op : binaryOpList) {
+			if (op.equals(methodName))
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean ExitApply(ApplyNode Node) { //TODO: support unary operator
 		String methodName = Node.Method.MethodName;
 		LLVMValue retValue = null;
 		if (this.isMethodBinaryOperator(Node)) {
-			LLVMValue rightValue = this.valueStack.pop();
-			LLVMValue leftValue = this.valueStack.pop();
-			retValue = this.builder.createBinaryOpInstruction(methodName, leftValue, rightValue, "bopRet");
+			LLVMValue rightValue = this.builder.popValue();
+			LLVMValue leftValue = this.builder.popValue();
+			retValue = this.builder.createBinaryOp(methodName, leftValue, rightValue, "bopRet");
 		} else {
 			int size = Node.Params.size();
 			LLVMValue[] params = new LLVMValue[size];
 			for (int i = size - 1; i > -1; i--) {
-				params[i] = this.valueStack.pop();
+				params[i] = this.builder.popValue();
 			}
-			retValue = this.builder.createCallInstruction(methodName, params, "methodRet");
+			retValue = this.builder.createCall(methodName, params, "methodRet");
 		}
-		this.valueStack.push(retValue);
+		this.builder.pushValue(retValue);
 		return true;
 	}
 
@@ -189,8 +206,8 @@ public class LLVMCodeGen extends SourceCodeGen {
 	}
 
 	@Override
-	public void EnterAssign(AssignNode Node) { //TODO: 
-//		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
+	public void EnterAssign(AssignNode Node) { 
+		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
 	}
 
 	@Override
@@ -214,26 +231,18 @@ public class LLVMCodeGen extends SourceCodeGen {
 	}
 	
 	@Override
-	public void EnterIf(IfNode Node) { //FIXME
-		this.bblockStack.add(this.builder.getCurrentBBlock());
+	public void EnterIf(IfNode Node) { 
 	}
 	
 	@Override
-	public boolean ExitIf(IfNode Node) { //FIXME
-		LLVMBasicBlock elseBlock = this.bblockStack.pop();
-		LLVMBasicBlock thenBlock = this.bblockStack.pop();
-		LLVMBasicBlock currentBlock = this.bblockStack.pop();
-		LLVMValue condition = this.valueStack.pop();
-		
-		this.builder.changeCurrentBBlock(currentBlock);
-		this.builder.createIfElseInstruction(condition, thenBlock, elseBlock);
-		
+	public boolean ExitIf(IfNode Node) { 	
+		assert(false);
 		return true;
 	}
 
 	@Override
 	public void EnterSwitch(SwitchNode Node) {
-		this.bblockStack.add(this.builder.getCurrentBBlock());
+		this.builder.pushBBlock(this.builder.getCurrentBBlock());
 	}
 	
 	@Override
@@ -261,7 +270,7 @@ public class LLVMCodeGen extends SourceCodeGen {
 
 	@Override
 	public boolean ExitReturn(ReturnNode Node) { 
-		this.builder.createReturnInstruction(this.valueStack.pop());
+		this.builder.createReturn(this.builder.popValue());
 		return false;
 	}
 
@@ -323,6 +332,133 @@ public class LLVMCodeGen extends SourceCodeGen {
 //		this.push("throw new Exception(" + Expr + ";");
 		return false;
 	}
+
+
+
+	@Override
+	public void EnterDefine(DefineNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterConst(ConstNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterNew(NewNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterNull(NullNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterApply(ApplyNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterAnd(AndNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterOr(OrNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterLoop(LoopNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterReturn(ReturnNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterLabel(LabelNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterJump(JumpNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterTry(TryNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterThrow(ThrowNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterFunction(FunctionNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void EnterError(ErrorNode Node) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+}
+
+class LLVMIfNodeAcceptor implements IfNodeAcceptor {
+	private LLVMBuilder builder;
+	
+	@Override
+	public boolean Eval(IfNode Node, NodeVisitor Visitor) { 
+		System.out.println("LLVMIfNodeAcceptor");
+		Visitor.EnterIf(Node);
+		Visitor.Visit(Node.CondExpr);
+		
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
+		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("thenBlock");
+		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
+		
+		LLVMValue condition = this.builder.popValue();
+		
+		//Then Block
+		this.builder.changeCurrentBBlock(thenBlock);
+		Visitor.Visit(Node.ThenNode);
+		
+		//Else Block
+		this.builder.changeCurrentBBlock(elseBlock);
+		Visitor.Visit(Node.ElseNode);
+		
+		// create if 
+		this.builder.changeCurrentBBlock(currentBlock);
+		this.builder.createBinaryBranch(condition, thenBlock, elseBlock);
+		
+		return Visitor.ExitIf(Node);
+	}	
+	
+	public LLVMIfNodeAcceptor(LLVMBuilder builder) {
+		this.builder = builder;
+	}
 }
 
 class LLVMBuilder { //TODO: support basic block
@@ -334,6 +470,8 @@ class LLVMBuilder { //TODO: support basic block
 	private LLVMFunction currentFunc;
 	
 	private HashMap<String, Integer> argMap;
+	private Stack<LLVMValue> valueStack;
+	private Stack<LLVMBasicBlock> bblockStack;
 	private HashMap<String, LLVMFunction> definedFucnNameMap;
 	
 	public LLVMBuilder() {
@@ -342,13 +480,14 @@ class LLVMBuilder { //TODO: support basic block
 		builder = new LLVMInstructionBuilder();
 		currentFunc = null;
 		argMap = new HashMap<String, Integer>();
+		valueStack = new Stack<LLVMValue>();
+		bblockStack = new Stack<LLVMBasicBlock>();
 		definedFucnNameMap = new HashMap<String, LLVMFunction>();
-		
 		//defineEmbeddedMethod();
 	}
 	
 	public void dump() {
-		module.dump();
+		this.currentFunc.dump();
 	}
 	
 	public String toString() {
@@ -370,6 +509,22 @@ class LLVMBuilder { //TODO: support basic block
 	
 	public LLVMBasicBlock getCurrentBBlock() {
 		return currentBBlock;
+	}
+	
+	public void pushBBlock(LLVMBasicBlock bblock) {
+		this.bblockStack.push(bblock);
+	}
+	
+	public LLVMBasicBlock popBBlock() {
+		return this.bblockStack.pop();
+	}
+	
+	public void pushValue(LLVMValue value) {
+		this.valueStack.push(value);
+	}
+	
+	public LLVMValue popValue() {
+		return this.valueStack.pop();
 	}
 	
 	private LLVMFunction createFunctionAbst(String funcName, LLVMType retType, LLVMType[] argsType, boolean isVarArg) {
@@ -430,30 +585,28 @@ class LLVMBuilder { //TODO: support basic block
 		}
 	}
 	
-	public void createReturnInstruction(LLVMValue retValue) {
+	public void createReturn(LLVMValue retValue) {
 		new LLVMReturnInstruction(builder, retValue);
 	}
 	
-	public void createIfElseInstruction(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock elseBlock) {
-		LLVMBasicBlock currentBlock = getCurrentBBlock();	
-		LLVMBasicBlock endBlock = createBasicBlock("end");
-		
-		// else block
-		changeCurrentBBlock(elseBlock);
-		createBranchInstruction(endBlock);
-		
-		//then block
-		changeCurrentBBlock(thenBlock);
-		createBranchInstruction(endBlock);		
-		
-		changeCurrentBBlock(currentBlock);
-		new LLVMBranchInstruction(builder, condition, thenBlock, elseBlock);
-		
-		changeCurrentBBlock(endBlock);
+	public void createBranch(LLVMBasicBlock destBlock) {
+		new LLVMBranchInstruction(builder, destBlock);
 	}
 	
-	public void createBranchInstruction(LLVMBasicBlock destBlock) {
-		new LLVMBranchInstruction(builder, destBlock);
+	//TODO: remove branch instruction if not reachable
+	public void createBinaryBranch(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock elseBlock) {
+		LLVMBasicBlock currentBlock = this.getCurrentBBlock();
+		LLVMBasicBlock endBlock = this.createBasicBlock("endBlock");
+		
+		this.changeCurrentBBlock(thenBlock);
+		this.createBranch(endBlock);
+		
+		this.changeCurrentBBlock(elseBlock);
+		this.createBranch(endBlock);		
+		
+		this.changeCurrentBBlock(currentBlock);
+		new LLVMBranchInstruction(builder, condition, thenBlock, elseBlock);
+		this.changeCurrentBBlock(endBlock);
 	}
 	
 	public LLVMType convertTypeNameToLLVMType(String typeName) { //TODO: support user defined class
@@ -484,7 +637,7 @@ class LLVMBuilder { //TODO: support basic block
 	}
 	
 	//TODO: support float value at comparison instruction
-	public LLVMValue createBinaryOpInstruction(String opName, LLVMValue leftValue, LLVMValue rightValue, String retName) {
+	public LLVMValue createBinaryOp(String opName, LLVMValue leftValue, LLVMValue rightValue, String retName) {
 		//binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>" }
 		if (opName.equals("+")) {
 			return new LLVMAddInstruction(builder, leftValue, rightValue, false, retName);
@@ -531,7 +684,7 @@ class LLVMBuilder { //TODO: support basic block
 		return null;
 	}
 	
-	public LLVMValue createCallInstruction(String funcName, LLVMValue[] args, String retName) {
+	public LLVMValue createCall(String funcName, LLVMValue[] args, String retName) {
 		temporaryDefineMethod(funcName);
 		LLVMFunction func = module.getNamedFunction(funcName);
 		return new LLVMCallInstruction(builder, func, args, retName);
@@ -539,19 +692,25 @@ class LLVMBuilder { //TODO: support basic block
 	
 	private void temporaryDefineMethod(String funcName) {	//TODO: this is a temporary method. future removed
 		if (funcName.equals("fibo")) {
-			LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
-			createFunction("fibo", new LLVMIntegerType(intLength), argsType);
+			if (this.definedFucnNameMap.get(funcName) == null) {
+				LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
+				createFunction(funcName, new LLVMIntegerType(intLength), argsType);	
+			}
 		} else if (funcName.equals("p")) {
-			LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
-			createFunction("p", new LLVMVoidType(), argsType_p);
+			if (this.definedFucnNameMap.get(funcName) == null) {
+				LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
+				createFunction("p", new LLVMVoidType(), argsType_p);	
+			}
 		} else if (funcName.equals("toString")) {	
-			LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
-			createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);
+			if (this.definedFucnNameMap.get(funcName) == null) {
+				LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
+				createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);	
+			}
 		}
 	}
 	
 	//TODO: support array
-	public LLVMValue createHeapAllocationInstruction(String typeName) {
+	public LLVMValue createHeapAllocation(String typeName) {
 		LLVMType type = convertTypeNameToLLVMType(typeName);
 		return new LLVMHeapAllocation(builder, type, null, "heap");
 	}
@@ -588,6 +747,6 @@ class LLVMBuilder { //TODO: support basic block
 		LLVMType[] argsType = {new LLVMIntegerType(intLength)};
 		LLVMFunction definedFunc = createFunction("$getVoidNull", new LLVMVoidType(), argsType);
 		createBasicBlock("bblock");
-		createReturnInstruction(null);
+		createReturn(null);
 	}
 }
