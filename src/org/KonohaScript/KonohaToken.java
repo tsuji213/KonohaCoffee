@@ -45,7 +45,7 @@ public final class KonohaToken {
 	}
 
 	public String toString() { return ParsedText + "@" + (int)uline; }
-	
+
 	final static int ErrorTokenFlag = 1;
 	final static int GroupTokenFlag = (1 << 1);
 	int TokenFlag;
@@ -85,7 +85,7 @@ public final class KonohaToken {
 		return (String)ResolvedObject;
 	}
 
-	
+
 	// Debug
 	private final static String Tab = "  ";
 	void Dump(int Level) {
@@ -106,7 +106,7 @@ public final class KonohaToken {
 		for(int i = BeginIdx; i < EndIdx; i++) {
 			KonohaToken Token = TokenList.get(i);
 			KonohaDebug.Indent(Level, Tab);			
-			System.out.print("<"+i +"> "); 
+			System.out.print("<"+i +"> ");
 			Token.Dump(Level);
 		}
 		if(Message != null) {

@@ -119,7 +119,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	static final String MacroPrefix     = "@$";  // FIXME: use different symbol tables
 	static final String TopLevelPrefix  = "#";
-	
+
 //	KFunc GetDefinedMacroFunc(String Symbol) {
 //		if(DefinedSymbolTable != null) {
 //			Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
@@ -205,7 +205,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
 		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
 	}
-	
+
 	// Global Object
 	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {
 		KonohaType NewClass = new KonohaType(KonohaContext, null, ClassFlag, ShortName, null);
@@ -213,7 +213,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		NewClass.DefaultNullValue = GlobalObject;
 		return GlobalObject;
 	}
-	
+
 	public KonohaObject GetGlobalObject() {
 		Object GlobalObject = GetDefinedSymbol(GlobalConstName);
 		if(GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
@@ -222,7 +222,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 		return (KonohaObject)GlobalObject;
 	}
-	
+
 	public void ImportNameSpace(KonohaNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
 			ImportedNameSpaceList = new ArrayList<KonohaNameSpace>();
@@ -285,9 +285,9 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 		return ResultValue;
 	}
-	
+
 	// Builder 
-	
+
 	public KonohaBuilder Builder;
 
 	public KonohaBuilder GetBuilder() {
@@ -299,7 +299,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 		return Builder;
 	}
-	
+
 	public boolean LoadBuilder(String Name) {
 		Class<?> BuilderClass;
 		try {
@@ -347,11 +347,11 @@ class KonohaTokenizer implements KonohaConst {
 		}
 		return SourceList.size();
 	}
-	
+
 	int DispatchFunc(int KonohaChar, int pos) {
 		KonohaFunc FuncStack = ns.GetTokenFunc(KonohaChar);
 		int UnusedIdx = SourceList.size();
-		while (FuncStack != null) {
+		while(FuncStack != null) {
 			int NextIdx = FuncStack.InvokeTokenFunc(ns, SourceText, pos, SourceList);
 			if(NextIdx != -1) {
 				UnusedIdx = StampLine(UnusedIdx);
@@ -369,7 +369,7 @@ class KonohaTokenizer implements KonohaConst {
 	ArrayList<KonohaToken> Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
-		while (pos < len) {
+		while(pos < len) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(SourceText.charAt(pos));
 			int pos2 = DispatchFunc(kchar, pos);
 			if(!(pos < pos2))

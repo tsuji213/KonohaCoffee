@@ -34,8 +34,8 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local FindLocalVariable(String Name) {
-		for (Local l : this.LocalVals) {
-			if (l.Name.compareTo(Name) == 0) {
+		for(Local l : this.LocalVals) {
+			if(l.Name.compareTo(Name) == 0) {
 				return l;
 			}
 		}
@@ -43,7 +43,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local GetLocalVariableByIndex(int Index) {
-		if (this.LocalVals.size() > Index) {
+		if(this.LocalVals.size() > Index) {
 			return this.LocalVals.get(Index);
 		}
 		return null;
@@ -57,7 +57,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 
 	Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
 		Local local = this.FindLocalVariable(Name);
-		if (local != null) {
+		if(local != null) {
 			return local;
 		}
 		return this.AddLocal(Type, Name);
@@ -71,7 +71,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 
 	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for (int i = 0; i < params.size(); i++) {
+		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}

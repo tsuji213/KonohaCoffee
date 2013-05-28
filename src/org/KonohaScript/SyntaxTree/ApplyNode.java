@@ -11,7 +11,7 @@ class DefaultApplyNodeAcceptor implements ApplyNodeAcceptor {
 	@Override
 	public boolean Invoke(ApplyNode Node, NodeVisitor Visitor) {
 		Visitor.EnterApply(Node);
-		for (TypedNode Element : Node.Params) {
+		for(TypedNode Element : Node.Params) {
 			Visitor.Visit(Element);
 		}
 		return Visitor.ExitApply(Node);

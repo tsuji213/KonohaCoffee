@@ -36,14 +36,14 @@ public class KonohaObject {
 	}
 
 	public Object get(String FieldName) {
-		if (this.prototypes == null) {
+		if(this.prototypes == null) {
 			return null;
 		}
 		return this.prototypes.get(FieldName);
 	}
 
 	public void set(String FieldName, Object Obj) {
-		if (this.prototypes == null) {
+		if(this.prototypes == null) {
 			this.prototypes = new HashMap<String, Object>();
 		}
 		this.prototypes.put(FieldName, Obj);
