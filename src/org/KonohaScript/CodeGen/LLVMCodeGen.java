@@ -429,8 +429,12 @@ public class LLVMCodeGen extends CodeGenerator {
 class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 	private LLVMBuilder builder;
 	
+	public LLVMIfNodeAcceptor(LLVMBuilder builder) {
+		this.builder = builder;
+	}
+
 	@Override
-	public boolean Eval(IfNode Node, NodeVisitor Visitor) { 
+	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
 		System.out.println("LLVMIfNodeAcceptor");
 		Visitor.EnterIf(Node);
 		Visitor.Visit(Node.CondExpr);
@@ -454,14 +458,10 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		this.builder.createBinaryBranch(condition, thenBlock, elseBlock);
 		
 		return Visitor.ExitIf(Node);
-	}	
-	
-	public LLVMIfNodeAcceptor(LLVMBuilder builder) {
-		this.builder = builder;
 	}
 }
 
-class LLVMBuilder { //TODO: support basic block
+class LLVMBuilder { //TODO: use single module
 	private final int intLength = 64;
 	
 	private LLVMModule module;
@@ -487,7 +487,8 @@ class LLVMBuilder { //TODO: support basic block
 	}
 	
 	public void dump() {
-		this.currentFunc.dump();
+		//this.currentFunc.dump();
+		this.module.dump();
 	}
 	
 	public String toString() {
@@ -573,12 +574,11 @@ class LLVMBuilder { //TODO: support basic block
 	public LLVMValue createNullValue(String typeName) { //TODO: support void null 
 		if (typeName.equals("Void")) {
 //			LLVMValue[] arg = {createConstValue("Integer", 0)};
-//			LLVMValue voidValue = createCallInstruction("$getVoidNull", arg, "voidRet");
+//			LLVMValue voidValue = createCall("$getVoidNull", arg, "voidRet");
 //			return createLocalVariable(voidValue, "null");
-//			
+			
 			LLVMValue constNull = createConstValue("Integer", 0);
-			createLocalVariable(constNull, "null");	
-			return null;
+			return createLocalVariable(constNull, "null");
 		} else {
 			LLVMValue constNull = createConstValue(typeName, 0);
 			return createLocalVariable(constNull, "null");	
