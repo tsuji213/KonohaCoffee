@@ -40,7 +40,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	private void AddLocalVariableRenameRule(String Name){
 		int nameUsedTimes = 0;
 		int N = LocalVariableRenameTables.size();
-		if(!LocalVariableRenameTables.get(N - 1).containsKey(Name)){
+		if(N > 0 && !LocalVariableRenameTables.get(N - 1).containsKey(Name)){
 			for(int i = 0; i < N - 1; ++i){
 				if(LocalVariableRenameTables.get(i).containsKey(Name)){
 					nameUsedTimes++;
@@ -92,8 +92,8 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
-		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
+		this.VisitBlock(Block.GetHeadNode());
 		assert (this.getProgramSize() == 1);
 		String Source = this.pop();
 		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
@@ -121,6 +121,26 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		}
 		Mtd.CompiledCode = Source;
 		return Mtd;
+	}
+
+	@Override
+	protected boolean VisitBlock(TypedNode Node){
+		String highLevelIndent = indentGenerator.indentAndGet(1);
+		this.PushProgramSize();
+		boolean ret = true;
+		if(Node != null){
+			ret &= this.Visit(Node);
+			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode){
+				ret &= this.Visit(n);
+			}
+		}
+		String currentLevelIndent = indentGenerator.indentAndGet(-1);
+
+		int Size = this.getProgramSize() - this.PopProgramSize();
+
+		String Block = PopNWithModifier(Size, true, "\n" + highLevelIndent, ";" , null);
+		push("{" + Block + "\n" + currentLevelIndent + "}");
+		return ret;
 	}
 
 	@Override
@@ -254,8 +274,8 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
-		String source = "if(" + CondExpr + ") " + ThenBlock;
-		if (Node.ElseNode.NextNode != null) {
+		String source = "if (" + CondExpr + ") " + ThenBlock;
+		if (Node.ElseNode != null) {
 			source = source + " else " + ElseBlock;
 		}
 		this.push(source);

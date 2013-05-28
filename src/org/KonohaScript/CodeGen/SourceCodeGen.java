@@ -14,6 +14,7 @@ import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LabelNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -79,7 +80,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	private static String[]				binaryOpList	= { "+", "-", "*", "/",
 			"<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<",
 			">>"										};
-
+	
 	public SourceCodeGen() {
 		this(null);
 	}
@@ -88,6 +89,18 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		super(MethodInfo);
 		this.Program = new ArrayList<String>();
 		this.CurrentProgramSize = new ArrayList<Integer>();
+		
+		this.IfNodeAcceptor = new IfNodeAcceptor() {
+			@Override
+			public boolean Eval(IfNode Node, NodeVisitor Visitor) {
+				SourceCodeGen Gen = (SourceCodeGen)Visitor;
+				Gen.EnterIf(Node);
+				Gen.Visit(Node.CondExpr);
+				Gen.VisitBlock(Node.ThenNode);
+				Gen.VisitBlock(Node.ElseNode);
+				return Gen.ExitIf(Node);
+			}
+		};
 	}
 
 	protected boolean isMethodBinaryOperator(ApplyNode Node) {
@@ -229,6 +242,10 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	@Override
 	public boolean Visit(TypedNode Node) {
+		return Node.Evaluate(this);
+	}
+	
+	protected boolean VisitBlock(TypedNode Node){
 		return Node.Evaluate(this);
 	}
 
