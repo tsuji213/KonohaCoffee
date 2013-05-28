@@ -11,7 +11,7 @@ public interface KonohaConst {
 	public final static int StaticClass               = 1<<4;
 	public final static int ImmutableClass            = 1<<5;
 	public final static int InterfaceClass            = 1<<6;
-	
+
 	// MethodFlag
 	public final static int PrivateMethod              = 1<<0;
 	public final static int VirtualMethod              = 1<<1;
@@ -45,17 +45,17 @@ public interface KonohaConst {
 //	public final static int StaticError          = 1<<23;
 	//public final static int Warning              = 1<<24;
 
-	
+
 	public final static int GetterSymbol = 1;
 	public final static int SetterSymbol = 2;
 	public final static int MetaSymbol   = 3;
 
-	
-	
+
+
 	public final static int AllowNewId = -1;
 	public final static int NoMatch = -1;
 	public final static int BreakPreProcess = -1;
-	
+
 	public final static int Error    = 0;
 	public final static int Warning = 1;
 	public final static int Info     = 2;
@@ -100,7 +100,7 @@ public interface KonohaConst {
 	public final static int DefaultTypeCheckPolicy = 0;
 	public final static int Preliminary      = 0;
 	public final static int TypeCheckPolicy_AllowEmpty = 1;
-	
+
 	//typedef enum {
 //	TypeCheckPolicy_NoPolicy       = 0,
 //	TypeCheckPolicy_NoCheck        = (1 << 0),
@@ -111,7 +111,7 @@ public interface KonohaConst {
 //	TypeCheckPolicy_Creation       = (1 << 6)   /* TypeCheckNodeByName */
 //} TypeCheckPolicy;
 
-	
+
 	public final static String GlobalConstName = "global";
-	
+
 }

@@ -3,11 +3,11 @@ package org.KonohaScript;
 import java.util.ArrayList;
 
 public final class LexicalConverter implements KonohaConst {
-	
+
 	public boolean TopLevel;
 	public boolean SkipIndent;
 	int LastIndent;
-	
+
 	public LexicalConverter(KonohaNameSpace ns, boolean TopLevel, boolean SkipIndent) {
 		this.ns = ns;
 		this.TopLevel = TopLevel;
@@ -16,11 +16,11 @@ public final class LexicalConverter implements KonohaConst {
 	}
 
 	KonohaNameSpace ns;
-	
+
 	public KonohaSyntax GetSyntax(String Symbol) {
 		return ns.GetSyntax(Symbol, this.TopLevel);
 	}
-	
+
 	public void ResolveTokenSyntax(KonohaToken Token) {
 		Token.ResolvedObject = ns.GetSymbol(Token.ParsedText);
 		if(Token.ResolvedObject == null) {
@@ -51,7 +51,7 @@ public final class LexicalConverter implements KonohaConst {
 		}
 		return indent;
 	}
-	
+
 	public int Do(ArrayList<KonohaToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
 		int c = BeginIdx;
 		while (c < EndIdx) {

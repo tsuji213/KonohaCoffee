@@ -88,10 +88,10 @@ public class KonohaVM {
 	void Exec(KonohaIR[] Code) {
 		Object[] Registers = new Object[10];
 		Object[] Stack = new Object[10];
-		for (int i = 0; i < Code.length; i++) {
+		for(int i = 0; i < Code.length; i++) {
 			KonohaIR ir = Code[i];
 			VMState state = ir.exec(Registers, Stack);
-			if (state == VMState.Exit) {
+			if(state == VMState.Exit) {
 				break;
 			}
 		}

@@ -68,7 +68,7 @@ public class CodeGenTestBase {
 	public final KonohaType		StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
-		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
+		if(Expected != null && Actual != null && !Expected.equals(Actual)) {
 			System.out.println("Test Failed!!" + TestName);
 			System.out.println("---  Actual:---");
 			System.out.println(Actual);

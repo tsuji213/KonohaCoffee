@@ -10,7 +10,7 @@ class DefaultSwitchNodeAcceptor implements SwitchNodeAcceptor {
 	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
 		Visitor.EnterSwitch(Node);
 		Visitor.Visit(Node.CondExpr);
-		for (TypedNode Block : Node.Blocks) {
+		for(TypedNode Block : Node.Blocks) {
 			Visitor.VisitList(Block);
 		}
 		return Visitor.ExitSwitch(Node);

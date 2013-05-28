@@ -118,7 +118,7 @@ public class KonohaType {
 		}
 		ClassMethodList.add(Method);
 	}
-	
+
 	public void DefineMethod(int MethodFlag, String MethodName, KonohaParam Param, Object Callee, String LocalName) {
 		KonohaMethod Method = new KonohaMethod(MethodFlag, this, MethodName, Param, KonohaFunc.LookupMethod(Callee, LocalName));
 		if(this.ClassMethodList == KonohaType.EmptyMethodList) {
@@ -147,7 +147,7 @@ public class KonohaType {
 		}
 		return null;
 	}
-	
+
 	public boolean DefineNewMethod(KonohaMethod NewMethod) {
 		for(int i = 0; i < ClassMethodList.size(); i++) {
 			KonohaMethod DefinedMethod = ClassMethodList.get(i);

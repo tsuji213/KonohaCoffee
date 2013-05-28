@@ -56,7 +56,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	public boolean Is(int Flag) {
 		return ((MethodFlag & Flag) == Flag);
 	}
-	
+
 	public final KonohaType GetReturnType(KonohaType BaseType) {
 		KonohaType ReturnType = Param.Types[0];
 		return ReturnType;
@@ -70,7 +70,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	public final boolean Match(KonohaMethod Other) {
 		return (MethodName.equals(Other.MethodName) && Param.Match(Other.Param));
 	}
-	
+
 	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
 		if(MethodName.equals(this.MethodName)) {
 			if(Param.GetParamSize() == ParamSize) {
@@ -123,16 +123,16 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 
 	// DoLazyComilation();
-	
+
 	KonohaNameSpace LazyNameSpace;
 	ArrayList<KonohaToken> SourceList;
-	
+
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
 	}
-	
+
 	public KonohaMethod DoCompilation() {
 		if(MethodRef == null) {
 			ArrayList<KonohaToken> BufferList = new ArrayList<KonohaToken>();

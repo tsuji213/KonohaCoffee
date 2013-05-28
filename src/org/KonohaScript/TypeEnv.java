@@ -14,16 +14,16 @@ class VarSet {
 }
 
 public class TypeEnv implements KonohaConst {
-	
-	public KonohaNameSpace GammaNameSpace; 
-	
+
+	public KonohaNameSpace GammaNameSpace;
+
 	/* for convinient short cut */
 	public final KonohaType VoidType;
 	public final KonohaType BooleanType;
 	public final KonohaType IntType;
 	public final KonohaType StringType;
 	public final KonohaType VarType;
-	
+
 	TypeEnv(KonohaNameSpace GammaNameSpace, KonohaMethod Method) {
 		this.GammaNameSpace = GammaNameSpace;
 		this.VoidType = GammaNameSpace.KonohaContext.VoidType;
@@ -39,7 +39,7 @@ public class TypeEnv implements KonohaConst {
 
 	public KonohaMethod    Method;
 	public KonohaType     ReturnType;
-	
+
 	void InitMethod(KonohaMethod Method) {
 		this.ReturnType = Method.GetReturnType(Method.ClassInfo);
 		if(!Method.Is(StaticMethod)) {
@@ -47,16 +47,16 @@ public class TypeEnv implements KonohaConst {
 			KonohaDebug.TODO("Parameters must be appended at KGamma.InitMethod()");
 		}
 	}
-	
+
 	ArrayList<VarSet> LocalStackList = null;
-	
+
 	public void AppendLocalType(KonohaType TypeInfo, String Name) {
 		if(LocalStackList == null) {
 			LocalStackList = new ArrayList<VarSet>();
 		}
 		LocalStackList.add(new VarSet(TypeInfo, Name));
 	}
-	
+
 	public KonohaType GetLocalType(String Symbol) {
 		if(LocalStackList != null) {
 			for(int i = LocalStackList.size()-1; i >=0; i--) {
@@ -66,20 +66,20 @@ public class TypeEnv implements KonohaConst {
 		}
 		return null;
 	}
-	
-	
+
+
 	int GetLocalIndex(String Symbol) {
 		return -1;
 	}
-	
+
 	public TypedNode GetDefaultTypedNode(KonohaType TypeInfo) {
 		return null;  // TODO
 	}
-	
+
 	public TypedNode NewErrorNode(KonohaToken KeyToken, String Message) {
 		return new ErrorNode(VoidType, KeyToken, GammaNameSpace.Message(KonohaConst.Error, KeyToken, Message));
 	}
-	
+
 	public static TypedNode TypeEachNode(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode Node = null;
 		try {
@@ -116,7 +116,7 @@ public class TypeEnv implements KonohaConst {
 //		}
 		return Node;
 	}
-	
+
 	public static TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo, int TypeCheckPolicy) {
 		TypedNode TPrevNode = null;
 		while(UNode != null) {
