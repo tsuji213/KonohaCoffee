@@ -30,11 +30,24 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class LeafJSCodeGen extends SourceCodeGen {
 	private final boolean	UseLetKeyword	= false;
+	private HashMap<String, String> MethodMap = new HashMap<String, String>();
 
 	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
 
 	public LeafJSCodeGen() {
 		super(null);
+		MethodMap.put("System.p", "console.log");
+	}
+	
+	String MapMethodName(String TypeName, String MethodName){
+		return MapMethodName(TypeName + "." + MethodName);
+	}
+
+	String MapMethodName(String OriginalName){
+		if(MethodMap.containsKey(OriginalName)){
+			return MethodMap.get(OriginalName);
+		}
+		return OriginalName;
 	}
 
 	private void AddLocalVariableRenameRule(String Name){
@@ -206,7 +219,8 @@ public class LeafJSCodeGen extends SourceCodeGen {
 					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
 					+ ")";
 			String thisNode = this.pop();
-			this.push(thisNode + "." + methodName + params);
+			String originalName = thisNode + "." + methodName;
+			this.push(MapMethodName(originalName) + params);
 		}
 		return true;
 	}
@@ -301,7 +315,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		String LoopBody = this.pop();
 		String IterExpr = this.pop();
 		String CondExpr = this.pop();
-		this.push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		this.push("for (; " + CondExpr + "; " + IterExpr + ") " + LoopBody);
 		return true;
 
 	}

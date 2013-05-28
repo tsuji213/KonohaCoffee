@@ -101,6 +101,27 @@ public abstract class SourceCodeGen extends CodeGenerator {
 				return Gen.ExitIf(Node);
 			}
 		};
+		this.LoopNodeAcceptor = new LoopNodeAcceptor() {
+			@Override
+			public boolean Eval(LoopNode Node, NodeVisitor Visitor) {
+				SourceCodeGen Gen = (SourceCodeGen)Visitor;
+				Gen.EnterLoop(Node);
+				Gen.Visit(Node.CondExpr);
+				Gen.VisitBlock(Node.LoopBody);
+				Gen.Visit(Node.IterationExpr);
+				return Gen.ExitLoop(Node);
+			}
+		};
+		this.TryNodeAcceptor = new TryNodeAcceptor() {
+			@Override
+			public boolean Eval(TryNode Node, NodeVisitor Visitor) {
+				SourceCodeGen Gen = (SourceCodeGen)Visitor;
+				Gen.EnterTry(Node);
+				Gen.VisitBlock(Node.TryBlock);
+				Gen.VisitBlock(Node.FinallyBlock);
+				return Gen.ExitTry(Node);
+			}
+		};
 	}
 
 	protected boolean isMethodBinaryOperator(ApplyNode Node) {
