@@ -22,6 +22,7 @@ import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
+import org.KonohaScript.SyntaxTree.NodeVisitor.SwitchNodeAcceptor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -41,12 +42,24 @@ public class LLVMCodeGen extends CodeGenerator {
 		this.builder = new LLVMBuilder();
 		
 		// initialize LLVMNodeAcceptor
-		this.IfNodeAcceptor = new LLVMIfNodeAcceptor(this.builder);
+		this.IfNodeAcceptor = new LLVMIfNodeAcceptor(this, this.builder);
+		this.SwitchNodeAcceptor = new LLVMSwitchNodeAcceptor(this, this.builder);
 	}
 
 	@Override
 	public boolean Visit(TypedNode Node) {
 		return Node.Evaluate(this);
+	}
+	
+	public boolean VisitBlock(TypedNode Node){
+		boolean ret = true;
+		if(Node != null){
+			ret &= this.Visit(Node);
+			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode){
+				ret &= this.Visit(n);
+			}
+		}
+		return ret;
 	}
 
 	@Override
@@ -66,7 +79,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override 
-	public CompiledMethod Compile(TypedNode Block) { 
+	public CompiledMethod Compile(TypedNode Block) { //FIXME
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
 		
 		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
@@ -86,9 +99,9 @@ public class LLVMCodeGen extends CodeGenerator {
 			LLVMType[] argsType = {new LLVMVoidType()};
 			this.builder.createFunction("main", new LLVMVoidType(), argsType);
 		}
-		this.builder.createBasicBlock("block");
+		this.builder.createBasicBlock("topBlock");
 		
-		this.Visit(Block);
+		this.VisitBlock(Block.GetHeadNode());
 		Mtd.CompiledCode = "dont support";
 		this.builder.dump();
 		
@@ -156,9 +169,8 @@ public class LLVMCodeGen extends CodeGenerator {
 
 	}
 
-	static final String[]				binaryOpList	= { "+", "-", "*", "/",
-		"<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<",
-		">>"										};
+	static final String[] binaryOpList	= 
+		{ "+", "-", "*", "/","<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>"};
 
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
@@ -236,26 +248,15 @@ public class LLVMCodeGen extends CodeGenerator {
 	
 	@Override
 	public boolean ExitIf(IfNode Node) { 	
-		assert(false);
 		return true;
 	}
 
 	@Override
 	public void EnterSwitch(SwitchNode Node) {
-		this.builder.pushBBlock(this.builder.getCurrentBBlock());
 	}
 	
 	@Override
-	public boolean ExitSwitch(SwitchNode Node) { //TODO: 
-//		int Size = Node.Labels.size();
-//		String Exprs = "";
-//		for (int i = 0; i < Size; i = i + 1) {
-//			String Label = Node.Labels.get(Size - i);
-//			String Block = this.pop();
-//			Exprs = "case " + Label + ":" + Block + Exprs;
-//		}
-//		String CondExpr = this.pop();
-//		this.push("switch (" + CondExpr + ") {" + Exprs + "}");
+	public boolean ExitSwitch(SwitchNode Node) {  
 		return true;
 	}
 
@@ -333,103 +334,73 @@ public class LLVMCodeGen extends CodeGenerator {
 		return false;
 	}
 
-
-
 	@Override
 	public void EnterDefine(DefineNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterConst(ConstNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterNew(NewNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterNull(NullNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterApply(ApplyNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterAnd(AndNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterOr(OrNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterLoop(LoopNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterReturn(ReturnNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterLabel(LabelNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterJump(JumpNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterTry(TryNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterThrow(ThrowNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterFunction(FunctionNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 
 	@Override
 	public void EnterError(ErrorNode Node) {
-		// TODO 自動生成されたメソッド・スタブ
-		
 	}
 }
 
 class LLVMIfNodeAcceptor implements IfNodeAcceptor {
+	private LLVMCodeGen codeGen;
 	private LLVMBuilder builder;
 	
-	public LLVMIfNodeAcceptor(LLVMBuilder builder) {
+	public LLVMIfNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
+		this.codeGen = codeGen;
 		this.builder = builder;
 	}
 
@@ -440,18 +411,19 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		Visitor.Visit(Node.CondExpr);
 		
 		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
-		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("thenBlock");
-		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
-		
 		LLVMValue condition = this.builder.popValue();
 		
 		//Then Block
-		this.builder.changeCurrentBBlock(thenBlock);
-		Visitor.Visit(Node.ThenNode);
+		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("thenBlock");
+		if (Node.ThenNode != null) {
+			this.codeGen.VisitBlock(Node.ThenNode);	
+		}
 		
 		//Else Block
-		this.builder.changeCurrentBBlock(elseBlock);
-		Visitor.Visit(Node.ElseNode);
+		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
+		if (Node.ElseNode != null) {
+			this.codeGen.VisitBlock(Node.ElseNode);	
+		}
 		
 		// create if 
 		this.builder.changeCurrentBBlock(currentBlock);
@@ -459,6 +431,53 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		
 		return Visitor.ExitIf(Node);
 	}
+}
+
+class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support break statement
+	private LLVMCodeGen codeGen;
+	private LLVMBuilder builder;
+	
+	public LLVMSwitchNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
+		this.codeGen = codeGen;
+		this.builder = builder;
+	}
+	
+	@Override
+	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
+		Visitor.EnterSwitch(Node);
+		Visitor.Visit(Node.CondExpr);
+		
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();	
+		
+		
+		LLVMValue condition = this.builder.popValue();
+		long caseNum = Node.Blocks.size();
+		
+		//create switch
+		LLVMBasicBlock endSwitchBlock = this.builder.createBasicBlock("endSwitchBlock");
+		LLVMBasicBlock defaultBlock = this.builder.createBasicBlock("default");
+		this.builder.createBranch(endSwitchBlock);
+		
+		this.builder.changeCurrentBBlock(currentBlock);
+		LLVMSwitchInstruction switchIns = 
+				this.builder.createSwitch(condition, defaultBlock, caseNum);
+		
+		//case block		
+		for (int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
+			String labelName = Node.Labels.get(i);
+			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
+			this.codeGen.VisitBlock(Node.Blocks.get(i));
+			
+			LLVMValue caseLabel = 
+					this.builder.createConstValue("Integer", Integer.parseInt(labelName));
+			switchIns.addCase(caseLabel, caseBlock);
+		}
+		
+		this.builder.changeCurrentBBlock(endSwitchBlock);
+		
+		return Visitor.ExitSwitch(Node);
+	}
+	
 }
 
 class LLVMBuilder { //TODO: use single module
@@ -690,7 +709,7 @@ class LLVMBuilder { //TODO: use single module
 		return new LLVMCallInstruction(builder, func, args, retName);
 	}
 	
-	private void temporaryDefineMethod(String funcName) {	//TODO: this is a temporary method. future removed
+	private void temporaryDefineMethod(String funcName) {	//FIXME: this is a temporary method. future removed
 		if (funcName.equals("fibo")) {
 			if (this.definedFucnNameMap.get(funcName) == null) {
 				LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
@@ -713,6 +732,10 @@ class LLVMBuilder { //TODO: use single module
 	public LLVMValue createHeapAllocation(String typeName) {
 		LLVMType type = convertTypeNameToLLVMType(typeName);
 		return new LLVMHeapAllocation(builder, type, null, "heap");
+	}
+	
+	public LLVMSwitchInstruction createSwitch(LLVMValue condValue, LLVMBasicBlock defaultBlock, long caseNum) {
+		return new LLVMSwitchInstruction(builder, condValue, defaultBlock, caseNum);
 	}
 	
 	// embedded method definition
