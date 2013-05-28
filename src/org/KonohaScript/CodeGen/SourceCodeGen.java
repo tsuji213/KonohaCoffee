@@ -89,7 +89,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		super(MethodInfo);
 		this.Program = new ArrayList<String>();
 		this.CurrentProgramSize = new ArrayList<Integer>();
-		
+
 		this.IfNodeAcceptor = new IfNodeAcceptor() {
 			@Override
 			public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
@@ -103,7 +103,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		};
 		this.LoopNodeAcceptor = new LoopNodeAcceptor() {
 			@Override
-			public boolean Eval(LoopNode Node, NodeVisitor Visitor) {
+			public boolean Invoke(LoopNode Node, NodeVisitor Visitor) {
 				SourceCodeGen Gen = (SourceCodeGen)Visitor;
 				Gen.EnterLoop(Node);
 				Gen.Visit(Node.CondExpr);
@@ -114,7 +114,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		};
 		this.TryNodeAcceptor = new TryNodeAcceptor() {
 			@Override
-			public boolean Eval(TryNode Node, NodeVisitor Visitor) {
+			public boolean Invoke(TryNode Node, NodeVisitor Visitor) {
 				SourceCodeGen Gen = (SourceCodeGen)Visitor;
 				Gen.EnterTry(Node);
 				Gen.VisitBlock(Node.TryBlock);

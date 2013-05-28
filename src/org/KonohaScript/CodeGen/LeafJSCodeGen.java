@@ -51,6 +51,9 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	}
 
 	private void AddLocalVariableRenameRule(String Name){
+		if(UseLetKeyword){
+			return;
+		}
 		int nameUsedTimes = 0;
 		int N = LocalVariableRenameTables.size();
 		if(N > 0 && !LocalVariableRenameTables.get(N - 1).containsKey(Name)){
@@ -64,6 +67,9 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	}
 
 	private String GetRenamedLocalName(String originalName){
+		if(UseLetKeyword){
+			return originalName;
+		}
 		int N = LocalVariableRenameTables.size();
 		for(int i = N - 1; i >= 0; --i){
 			HashMap<String, Integer> map = LocalVariableRenameTables.get(i);
@@ -186,7 +192,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	public boolean ExitLocal(LocalNode Node) {
-		this.push(Node.FieldName);
+		this.push(GetRenamedLocalName(Node.FieldName));
 		return true;
 	}
 
