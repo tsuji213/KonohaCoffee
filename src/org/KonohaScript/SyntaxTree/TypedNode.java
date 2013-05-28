@@ -63,7 +63,7 @@ public abstract class TypedNode {
 		while (Node.NextNode != null) {
 			Node = Node.NextNode;
 		}
-		return Node;
+		return this;
 	}
 
 	public final void LinkNode(TypedNode Node) {
