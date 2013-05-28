@@ -8,7 +8,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.FunctionNodeAcceptor;
 
 class DefaultFunctionNodeAcceptor implements FunctionNodeAcceptor {
 	@Override
-	public boolean Eval(FunctionNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(FunctionNode Node, NodeVisitor Visitor) {
 		Visitor.EnterFunction(Node);
 		return Visitor.ExitFunction(Node);
 	}
@@ -36,7 +36,7 @@ public class FunctionNode extends TypedNode implements CallableNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.FunctionNodeAcceptor.Eval(this, Visitor);
+		return Visitor.FunctionNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

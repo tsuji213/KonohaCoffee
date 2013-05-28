@@ -47,7 +47,7 @@ public abstract class TypedNode {
 	public final TypedNode GetHeadNode() {
 		TypedNode Node = this;
 		while (Node.PreviousNode != null) {
-			Node = Node.ParentNode;
+			Node = Node.PreviousNode;
 		}
 		return Node;
 	}
@@ -63,7 +63,7 @@ public abstract class TypedNode {
 		while (Node.NextNode != null) {
 			Node = Node.NextNode;
 		}
-		return Node;
+		return this;
 	}
 
 	public final void LinkNode(TypedNode Node) {

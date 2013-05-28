@@ -5,7 +5,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.LabelNodeAcceptor;
 
 class DefaultLabelNodeAcceptor implements LabelNodeAcceptor {
 	@Override
-	public boolean Eval(LabelNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(LabelNode Node, NodeVisitor Visitor) {
 		Visitor.EnterLabel(Node);
 		return Visitor.ExitLabel(Node);
 	}
@@ -22,7 +22,7 @@ public class LabelNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.LabelNodeAcceptor.Eval(this, Visitor);
+		return Visitor.LabelNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

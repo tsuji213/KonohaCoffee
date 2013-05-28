@@ -6,10 +6,10 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.LetNodeAcceptor;
 
 class DefaultLetNodeAcceptor implements LetNodeAcceptor {
 	@Override
-	public boolean Eval(LetNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(LetNode Node, NodeVisitor Visitor) {
 		Visitor.EnterLet(Node);
 		Visitor.Visit(Node.ValueNode);
-		Visitor.Visit(Node.BlockNode);
+		Visitor.VisitList(Node.BlockNode);
 		return Visitor.ExitLet(Node);
 	}
 }
@@ -20,8 +20,7 @@ public class LetNode extends TypedNode {
 	public TypedNode	BlockNode;
 
 	/* let frame[Index] = Right in Block end */
-	public LetNode(KonohaType TypeInfo, KonohaToken VarToken, TypedNode Right,
-			TypedNode Block) {
+	public LetNode(KonohaType TypeInfo, KonohaToken VarToken, TypedNode Right, TypedNode Block) {
 		super(TypeInfo, VarToken);
 		this.VarToken = VarToken;
 		this.ValueNode = Right;
@@ -30,7 +29,7 @@ public class LetNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.LetNodeAcceptor.Eval(this, Visitor);
+		return Visitor.LetNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

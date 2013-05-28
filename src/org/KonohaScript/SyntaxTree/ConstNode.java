@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.ConstNodeAcceptor;
 
 class DefaultConstNodeAcceptor implements ConstNodeAcceptor {
 	@Override
-	public boolean Eval(ConstNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(ConstNode Node, NodeVisitor Visitor) {
 		Visitor.EnterConst(Node);
 		return Visitor.ExitConst(Node);
 	}
@@ -23,7 +23,7 @@ public class ConstNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.ConstNodeAcceptor.Eval(this, Visitor);
+		return Visitor.ConstNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }

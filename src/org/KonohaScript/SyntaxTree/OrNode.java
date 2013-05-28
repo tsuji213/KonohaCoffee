@@ -6,7 +6,7 @@ import org.KonohaScript.SyntaxTree.NodeVisitor.OrNodeAcceptor;
 
 class DefaultOrNodeAcceptor implements OrNodeAcceptor {
 	@Override
-	public boolean Eval(OrNode Node, NodeVisitor Visitor) {
+	public boolean Invoke(OrNode Node, NodeVisitor Visitor) {
 		Visitor.EnterOr(Node);
 		Visitor.Visit(Node.LeftNode);
 		Visitor.Visit(Node.RightNode);
@@ -23,7 +23,7 @@ public class OrNode extends BinaryNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.OrNodeAcceptor.Eval(this, Visitor);
+		return Visitor.OrNodeAcceptor.Invoke(this, Visitor);
 	}
 
 }
