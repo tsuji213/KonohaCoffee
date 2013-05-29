@@ -83,7 +83,8 @@ public class LLVMCodeGen extends CodeGenerator {
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
 		
 		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
-			String methodName = this.MethodInfo.MethodName;
+			String fqMethodName = this.getFullyQualifiedMethodName(this.MethodInfo);
+			//String fqMethodName = this.MethodInfo.MethodName;
 			int argsSize = this.LocalVals.size();
 			LLVMType[] argsType = new LLVMType[argsSize];
 			
@@ -92,9 +93,10 @@ public class LLVMCodeGen extends CodeGenerator {
 				argsType[i] = this.builder.convertTypeNameToLLVMType(local.TypeInfo.ShortClassName);
 				this.builder.setArgument(local.Name, i);
 			}
+			
 			LLVMType retType = 
 					this.builder.convertTypeNameToLLVMType(this.MethodInfo.ClassInfo.ShortClassName);
-			this.builder.createFunction(methodName, retType, argsType);
+			this.builder.createFunction(fqMethodName, retType, argsType);
 		} else {
 			LLVMType[] argsType = {new LLVMVoidType()};
 			this.builder.createFunction("main", new LLVMVoidType(), argsType);
@@ -103,22 +105,40 @@ public class LLVMCodeGen extends CodeGenerator {
 		
 		this.VisitBlock(Block.GetHeadNode());
 		Mtd.CompiledCode = "dont support";
-		this.builder.dump();
+		//this.builder.dumpFunction();
+		//this.builder.dumpModule();
 
 		return Mtd;
 	}
+	
+	public String getFullyQualifiedMethodName(KonohaMethod methodInfo) {
+		String methodName = methodInfo.MethodName;
+		String retType = methodInfo.ClassInfo.ShortClassName; 
+		int argsSize = methodInfo.Param.Types.length;
+		
+		String fqMethodName = retType + "_" + methodName;
+		for (int i = 0; i < argsSize; i++) {
+			fqMethodName = fqMethodName + "_" + methodInfo.Param.Types[i].ShortClassName;
+		}
+		
+		return fqMethodName;
+	}
+	
+	public static void dumpModule() {
+		LLVMBuilder.dumpModule();
+	}
+	
 
 	@Override
-	public boolean ExitDefine(DefineNode Node) { //TODO:
+ 	public boolean ExitDefine(DefineNode Node) { //TODO:
 		return true;
 	}
 
 	@Override 
 	public boolean ExitConst(ConstNode Node) { 
 		String typeName = Node.TypeInfo.ShortClassName;
-		Object value = Node.ConstValue;
-		LLVMValue constValue = 
-				this.builder.createLocalVariable(this.builder.createConstValue(typeName, value), "const");
+		Object value = Node.ConstValue;	
+		LLVMValue constValue = this.builder.createConstValue(typeName, value);
 		this.builder.pushValue(constValue);
 		
 		return true;
@@ -133,8 +153,10 @@ public class LLVMCodeGen extends CodeGenerator {
 
 	@Override
 	public boolean ExitNull(NullNode Node) { 
-		LLVMValue nullValue = this.builder.createNullValue(Node.TypeInfo.ShortClassName);
+		LLVMType nullType = this.builder.convertTypeNameToLLVMType(Node.TypeInfo.ShortClassName);
+		LLVMValue nullValue = this.builder.createConstNull(nullType);
 		this.builder.pushValue(nullValue);
+		
 		return true;
 	}
 
@@ -183,19 +205,22 @@ public class LLVMCodeGen extends CodeGenerator {
 	
 	@Override
 	public boolean ExitApply(ApplyNode Node) { //TODO: support unary operator
-		String methodName = Node.Method.MethodName;
 		LLVMValue retValue = null;
 		if (this.isMethodBinaryOperator(Node)) {
+			String methodName = Node.Method.MethodName;
 			LLVMValue rightValue = this.builder.popValue();
 			LLVMValue leftValue = this.builder.popValue();
 			retValue = this.builder.createBinaryOp(methodName, leftValue, rightValue, "bopRet");
 		} else {
+			String fqMethodName = getFullyQualifiedMethodName(Node.Method);
+//			System.out.println("fqName: " + getFullyQualifiedMethodName(Node.Method));
+//			String fqMethodName = Node.Method.MethodName;
 			int size = Node.Params.size();
 			LLVMValue[] params = new LLVMValue[size];
 			for (int i = size - 1; i > -1; i--) {
 				params[i] = this.builder.popValue();
 			}
-			retValue = this.builder.createCall(methodName, params, "methodRet");
+			retValue = this.builder.createCall(fqMethodName, params, "methodRet");
 		}
 		this.builder.pushValue(retValue);
 		return true;
@@ -406,7 +431,6 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 
 	@Override
 	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-		System.out.println("LLVMIfNodeAcceptor");
 		Visitor.EnterIf(Node);
 		Visitor.Visit(Node.CondExpr);
 		
@@ -480,10 +504,14 @@ class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support bre
 	
 }
 
-class LLVMBuilder { //TODO: use single module
+class LLVMBuilder { 
 	private final int intLength = 64;
 	
-	private LLVMModule module;
+	private static boolean isInitialized = false;
+	private static boolean isDefinedEmbeddeFunc = false;
+	private static LLVMModule module;
+	private static HashMap<String, LLVMFunction> definedFucnNameMap; //TODO: future may be removed
+	
 	private LLVMInstructionBuilder builder;
 	private LLVMBasicBlock currentBBlock;
 	private LLVMFunction currentFunc;
@@ -491,84 +519,114 @@ class LLVMBuilder { //TODO: use single module
 	private HashMap<String, Integer> argMap;
 	private Stack<LLVMValue> valueStack;
 	private Stack<LLVMBasicBlock> bblockStack;
-	private HashMap<String, LLVMFunction> definedFucnNameMap;
+	
+	public static void initBuilder() {
+		if (!isInitialized) {
+			isInitialized = true;
+			
+			System.loadLibrary("jllvm");	
+			module = new LLVMModule("top", LLVMContext.getGlobalContext());
+			definedFucnNameMap = new HashMap<String, LLVMFunction>();
+		}
+	}
+	
+	public static void dumpModule() {
+		if (isInitialized) {
+			module.dump();
+		} else {
+			System.err.println("Module has not been initialized yet");
+		}
+	}
+	
 	
 	public LLVMBuilder() {
-		System.loadLibrary("jllvm");	
-		module = new LLVMModule("top", LLVMContext.getGlobalContext());
+		initBuilder();
+		
 		builder = new LLVMInstructionBuilder();
 		currentFunc = null;
 		argMap = new HashMap<String, Integer>();
 		valueStack = new Stack<LLVMValue>();
 		bblockStack = new Stack<LLVMBasicBlock>();
-		definedFucnNameMap = new HashMap<String, LLVMFunction>();
-		//defineEmbeddedMethod();
+		
+		if (!isDefinedEmbeddeFunc) {
+			isDefinedEmbeddeFunc = true;
+			defineEmbeddedMethod();	
+		}
 	}
 	
-	public void dump() {
-		//this.currentFunc.dump();
-		this.module.dump();
-	}
+	public void dumpFunction() {
+		this.currentFunc.dump();
+	}	
+
 	
-	public String toString() {
-		return module.toString();
-	}
 	
 	public void setArgument(String argName, int index) {
 		this.argMap.put(argName, index);
 	}
 	
+	
 	public void changeCurrentFunction(LLVMFunction func) {
 		currentFunc = func;
 	}
+	
 	
 	public void changeCurrentBBlock(LLVMBasicBlock bblock) {
 		currentBBlock = bblock;
 		builder.positionBuilderAtEnd(bblock);
 	}
 	
+	
 	public LLVMBasicBlock getCurrentBBlock() {
 		return currentBBlock;
 	}
+	
 	
 	public void pushBBlock(LLVMBasicBlock bblock) {
 		this.bblockStack.push(bblock);
 	}
 	
+	
 	public LLVMBasicBlock popBBlock() {
 		return this.bblockStack.pop();
 	}
+	
 	
 	public void pushValue(LLVMValue value) {
 		this.valueStack.push(value);
 	}
 	
+	
 	public LLVMValue popValue() {
 		return this.valueStack.pop();
 	}
 	
+	
 	private LLVMFunction createFunctionAbst(String funcName, LLVMType retType, LLVMType[] argsType, boolean isVarArg) {
 		LLVMFunctionType funcType = new LLVMFunctionType(retType, argsType, isVarArg);
-		LLVMFunction func = new LLVMFunction(this.module, funcName, funcType);	
+		LLVMFunction func = new LLVMFunction(module, funcName, funcType);	
 		changeCurrentFunction(func);
 		definedFucnNameMap.put(funcName, func);
 		
 		return func;
 	}
 	
+	
 	public LLVMFunction createFunction(String funcName, LLVMType retType, LLVMType[] argsType) {
 		return createFunctionAbst(funcName, retType, argsType, false);
 	}
 	
+	
 	public LLVMFunction createVariableFunction(String funcName, LLVMType retType, LLVMType[] argsType) {
 		return createFunctionAbst(funcName, retType, argsType, true);
 	}
+	
 	
 	public LLVMBasicBlock createBasicBlock(String bblockName) {
 		LLVMBasicBlock bblock = currentFunc.appendBasicBlock(bblockName);
 		changeCurrentBBlock(bblock);
 		return bblock;
 	}
+	
 	
 	//TODO: support user defined class 
 	public LLVMValue createConstValue(String typeName, Object value) {
@@ -590,27 +648,21 @@ class LLVMBuilder { //TODO: use single module
 		return null;
 	}
 	
-	public LLVMValue createNullValue(String typeName) { //TODO: support void null 
-		if (typeName.equals("Void")) {
-//			LLVMValue[] arg = {createConstValue("Integer", 0)};
-//			LLVMValue voidValue = createCall("$getVoidNull", arg, "voidRet");
-//			return createLocalVariable(voidValue, "null");
-			
-			LLVMValue constNull = createConstValue("Integer", 0);
-			return createLocalVariable(constNull, "null");
-		} else {
-			LLVMValue constNull = createConstValue(typeName, 0);
-			return createLocalVariable(constNull, "null");	
-		}
+
+	public LLVMConstant createConstNull(LLVMType type) {
+		return LLVMConstant.constNull(type);
 	}
+	
 	
 	public void createReturn(LLVMValue retValue) {
 		new LLVMReturnInstruction(builder, retValue);
 	}
 	
+	
 	public void createBranch(LLVMBasicBlock destBlock) {
 		new LLVMBranchInstruction(builder, destBlock);
 	}
+	
 	
 	//TODO: remove branch instruction if not reachable
 	public void createBinaryBranch(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock elseBlock) {
@@ -627,6 +679,7 @@ class LLVMBuilder { //TODO: use single module
 		new LLVMBranchInstruction(builder, condition, thenBlock, elseBlock);
 		this.changeCurrentBBlock(endBlock);
 	}
+	
 	
 	public LLVMType convertTypeNameToLLVMType(String typeName) { //TODO: support user defined class
 		if (typeName.equals("Integer")) {
@@ -704,24 +757,24 @@ class LLVMBuilder { //TODO: use single module
 	}
 	
 	public LLVMValue createCall(String funcName, LLVMValue[] args, String retName) {
-		temporaryDefineMethod(funcName);
+		//temporaryDefineMethod(funcName);
 		LLVMFunction func = module.getNamedFunction(funcName);
 		return new LLVMCallInstruction(builder, func, args, retName);
 	}
 	
 	private void temporaryDefineMethod(String funcName) {	//FIXME: this is a temporary method. future removed
 		if (funcName.equals("fibo")) {
-			if (this.definedFucnNameMap.get(funcName) == null) {
+			if (definedFucnNameMap.get(funcName) == null) {
 				LLVMType[] argsType = {new LLVMVoidType(), new LLVMIntegerType(intLength)};
 				createFunction(funcName, new LLVMIntegerType(intLength), argsType);	
 			}
 		} else if (funcName.equals("p")) {
-			if (this.definedFucnNameMap.get(funcName) == null) {
+			if (definedFucnNameMap.get(funcName) == null) {
 				LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
 				createFunction("p", new LLVMVoidType(), argsType_p);	
 			}
 		} else if (funcName.equals("toString")) {	
-			if (this.definedFucnNameMap.get(funcName) == null) {
+			if (definedFucnNameMap.get(funcName) == null) {
 				LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
 				createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);	
 			}
@@ -742,31 +795,24 @@ class LLVMBuilder { //TODO: use single module
 	private void defineEmbeddedMethod() {
 		defineMethod_p();
 		defineMethod_toString();
-		defineMethod_$getVoidNull();
+		//defineMethod_$getVoidNull();
 	}
 	
 	private void defineMethod_p() { //FIXME
-		// define puts function
-//		LLVMType[] argsType_printf = {new LLVMPointerType(new LLVMIntegerType(8), 0)};
-//		createVariableFunction("printf", new LLVMIntegerType(32), argsType_printf);
-		
-		//define p method
-		LLVMType[] argsType_p = {new LLVMVoidType(), new LLVMPointerType(new LLVMIntegerType(8), 0)};
-		createFunction("p", new LLVMVoidType(), argsType_p);
-//		createBasicBlock("bblock");
-//		LLVMArgument arg = currentFunc.getParameter(1);
-//		LLVMValue strValue = createLocalVariable(arg, "str");
-//		
-//		LLVMValue format = createLocalVariable(new LLVMConstantString("%s\n", true), "format");
-		//new LLVMGetElementPointerInstruction(builder, format, format, "format");
+		//define method: void_p_Integer_String 
+		LLVMType[] argsType_p = {new LLVMIntegerType(intLength), new LLVMPointerType(new LLVMIntegerType(8), 0)};
+		createFunction("Void_p_Integer_String", new LLVMVoidType(), argsType_p);
+		//createFunction("p", new LLVMVoidType(), argsType_p);
 	}
 	
-	private void defineMethod_toString() {	//FIXME
+	private void defineMethod_toString() {	//TODO: currently only support int type
+		//define method: String_toString_Integer_Integer
 		LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
-		createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);
+		createFunction("String_toString_Integer_Integer", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);
+		//createFunction("toString", new LLVMPointerType(new LLVMIntegerType(8), 0), argsType);
 	}	
 	
-	private void defineMethod_$getVoidNull() {
+	private void defineMethod_$getVoidNull() { //TODO: not used. future removed
 		LLVMType[] argsType = {new LLVMIntegerType(intLength)};
 		LLVMFunction definedFunc = createFunction("$getVoidNull", new LLVMVoidType(), argsType);
 		createBasicBlock("bblock");
