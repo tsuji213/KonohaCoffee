@@ -155,15 +155,10 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		String highLevelIndent = indentGenerator.indentAndGet(1);
 		this.PushProgramSize();
 		this.PushLocalVariableRenameTable();
-		boolean ret = true;
-		if(Node != null){
-			ret &= this.Visit(Node);
-			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode){
-				ret &= this.Visit(n);
-			}
-		}
+		
+		boolean ret = this.VisitList(Node);
+		
 		String currentLevelIndent = indentGenerator.indentAndGet(-1);
-
 		int Size = this.getProgramSize() - this.PopProgramSize();
 
 		String Block = PopNWithModifier(Size, true, "\n" + highLevelIndent, ";" , null);
@@ -283,22 +278,6 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		return true;
 	}
 
-	// @Override
-	// public void EnterBlock(BlockNode Node) {
-	// this.PushProgramSize();
-	// this.indentGenerator.indent(1);
-	// }
-	//
-	// @Override
-	// public boolean ExitBlock(BlockNode Node) {
-	// IndentGenerator g = this.indentGenerator;
-	// int Size = this.getProgramSize() - this.PopProgramSize();
-	// this.push("{\n" + g.get()
-	// + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n"
-	// + g.indentAndGet(-1) + "}");
-	// return true;
-	// }
-
 	@Override
 	public boolean ExitIf(IfNode Node) {
 		String ElseBlock = this.pop();
@@ -311,18 +290,34 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		this.push(source);
 		return true;
 	}
+	
+	@Override
+	public void EnterSwitch(SwitchNode Node) {
+		indentGenerator.indent(1);
+	}
 
 	@Override
 	public boolean ExitSwitch(SwitchNode Node) {
 		int Size = Node.Labels.size();
-		String Exprs = "";
-		for(int i = 0; i < Size; i = i + 1) {
-			String Label = Node.Labels.get(Size - i);
-			String Block = this.pop();
-			Exprs = "case " + Label + ":" + Block + Exprs;
-		}
+		String[] Blocks = PopNReverse(Size);
 		String CondExpr = this.pop();
-		this.push("switch (" + CondExpr + ") {" + Exprs + "}");
+		
+		String Indent = indentGenerator.get();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("switch (");
+		builder.append(CondExpr);
+		builder.append(") {\n");
+		builder.append(Indent);
+		for(int i = 0; i < Size; i++) {
+			builder.append("case ");
+			builder.append(Node.Labels.get(i));
+			builder.append(": ");
+			builder.append(Blocks[i]);
+		}
+		builder.append("}\n");
+		builder.append(indentGenerator.indentAndGet(-1));
+		this.push(builder.toString());
 		return true;
 	}
 
@@ -333,7 +328,6 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		String CondExpr = this.pop();
 		this.push("for (; " + CondExpr + "; " + IterExpr + ") " + LoopBody);
 		return true;
-
 	}
 
 	@Override

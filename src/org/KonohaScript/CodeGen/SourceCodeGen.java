@@ -112,6 +112,18 @@ public abstract class SourceCodeGen extends CodeGenerator {
 				return Gen.ExitLoop(Node);
 			}
 		};
+		this.SwitchNodeAcceptor = new SwitchNodeAcceptor() {
+			@Override
+			public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
+				SourceCodeGen Gen = (SourceCodeGen)Visitor;
+				Gen.EnterSwitch(Node);
+				Gen.Visit(Node.CondExpr);
+				for(TypedNode Block : Node.Blocks) {
+					Gen.VisitBlock(Block);
+				}
+				return Visitor.ExitSwitch(Node);
+			}
+		};
 		this.TryNodeAcceptor = new TryNodeAcceptor() {
 			@Override
 			public boolean Invoke(TryNode Node, NodeVisitor Visitor) {
@@ -267,7 +279,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected boolean VisitBlock(TypedNode Node){
-		return Node.Evaluate(this);
+		return this.VisitList(Node);
 	}
 
 	@Override
