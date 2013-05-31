@@ -436,6 +436,7 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		Visitor.Visit(Node.CondExpr);
 		
 		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
+		LLVMBasicBlock endBlock = null;
 		LLVMValue condition = this.builder.popValue();
 		
 		//Then Block
@@ -443,18 +444,59 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		if (Node.ThenNode != null) {
 			this.codeGen.VisitBlock(Node.ThenNode);	
 		}
+		boolean thenBlockHasNotReturnNode = hasNotReturnNode(Node.ThenNode);
 		
 		//Else Block
 		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
 		if (Node.ElseNode != null) {
 			this.codeGen.VisitBlock(Node.ElseNode);	
 		}
+		boolean elseBlockHasNotReturnNode = hasNotReturnNode(Node.ElseNode);
+		
+		//End Block
+		if (thenBlockHasNotReturnNode || elseBlockHasNotReturnNode) {
+			endBlock = this.builder.createBasicBlock("endBlock");
+			if (thenBlockHasNotReturnNode) {
+				this.builder.changeCurrentBBlock(thenBlock);
+				this.builder.createBranch(endBlock);
+			}
+			
+			if (elseBlockHasNotReturnNode) {
+				this.builder.changeCurrentBBlock(elseBlock);
+				this.builder.createBranch(endBlock);
+			}
+		}
 		
 		// create if 
 		this.builder.changeCurrentBBlock(currentBlock);
 		this.builder.createIfElse(condition, thenBlock, elseBlock);
+		if (endBlock != null) {
+			this.builder.changeCurrentBBlock(endBlock);
+		}
 		
 		return Visitor.ExitIf(Node);
+	}
+	
+	private boolean hasNotReturnNode(TypedNode node) { //FIXME
+		String nameOfReturnNodeClass =  "class org.KonohaScript.SyntaxTree.ReturnNode";
+		boolean hasNotReturnNode = true;
+		TypedNode iterNode = node;
+		
+		if (iterNode == null) {
+			return true;
+		}
+		
+		while(true) {
+			if (iterNode.NextNode == null) {
+				if (iterNode.getClass().toString().equals(nameOfReturnNodeClass)) {
+					hasNotReturnNode = false;
+				}
+				break;
+			}
+			iterNode = iterNode.NextNode;
+		}
+		
+		return hasNotReturnNode;
 	}
 }
 
@@ -621,13 +663,13 @@ class LLVMBuilder {
 	
 	public void execute() { //FIXME
 		finalizeMainFunc();
-		//dumpModuleToFile("compiledCode.bc");
-		//module.writeBitcodeToFile("compiledCode.bc");
-		//System.out.println("date\n" + module.getDataLayout());
-		//new CmdLauncher("llvm-link compiledCode.bc embeddedMethod.bc -S -o linkedCode.ll");
-		//new CmdLauncher("lli linkedCode.ll");
-		//new CmdLauncher("rm compiledCode.bc");
-		//new CmdLauncher("rm linkedCode.ll");
+		dumpModule();
+		module.writeBitcodeToFile("compiledCode.bc");
+		new CmdLauncher("llvm-link compiledCode.bc embeddedMethod.bc -S -o linkedCode.ll");
+		new CmdLauncher("lli linkedCode.ll");
+		new CmdLauncher("rm compiledCode.bc");
+		new CmdLauncher("rm linkedCode.ll");
+		new CmdLauncher("rm embeddedMethod.bc");
 	}
 	
 	public LLVMBuilder() {
@@ -732,25 +774,12 @@ class LLVMBuilder {
 	public void createReturn(LLVMValue retValue) {
 		new LLVMReturnInstruction(builder, retValue);
 	}
-	
 	public void createBranch(LLVMBasicBlock destBlock) {
 		new LLVMBranchInstruction(builder, destBlock);
 	}
 	
-	//TODO: remove branch instruction if not reachable
 	public void createIfElse(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock elseBlock) {
-		LLVMBasicBlock currentBlock = this.getCurrentBBlock();
-		LLVMBasicBlock endBlock = this.createBasicBlock("endBlock");
-		
-		this.changeCurrentBBlock(thenBlock);
-		this.createBranch(endBlock);
-		
-		this.changeCurrentBBlock(elseBlock);
-		this.createBranch(endBlock);		
-		
-		this.changeCurrentBBlock(currentBlock);
 		new LLVMBranchInstruction(builder, condition, thenBlock, elseBlock);
-		this.changeCurrentBBlock(endBlock);
 	}
 	
 	public void createCondLogicalOp(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock endBlock, boolean isAnd) {
@@ -869,19 +898,6 @@ class LLVMBuilder {
 		changeCurrentFunction(module.getNamedFunction("main"));
 		changeCurrentBBlock(currentFunc.getLastBasicBlock());
 		createReturn(null);
-		dumpModule();
-	}
-	
-	private void dumpModuleToFile(String dumpFile) {
-		try {
-			PrintStream ps = new PrintStream(dumpFile);
-			System.setErr(ps);
-			dumpModule();
-			ps.flush();
-			ps.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public LLVMValue createPhiNode(LLVMType type, String retName, LLVMValue[] values, LLVMBasicBlock[] blocks) {
