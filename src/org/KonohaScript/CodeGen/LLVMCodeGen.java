@@ -113,7 +113,6 @@ public class LLVMCodeGen extends CodeGenerator {
 		this.VisitBlock(Block.GetHeadNode());
 		Mtd.CompiledCode = "dont support";
 		//this.builder.dumpFunction();
-		//this.builder.dumpModule();
 
 		return Mtd;
 	}
@@ -529,7 +528,7 @@ class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support bre
 		LLVMSwitchInstruction switchIns = 
 				this.builder.createSwitch(condition, defaultBlock, caseNum);
 		
-		//add case block		
+		//add case block	
 		for (int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
 			String labelName = Node.Labels.get(i);
 			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
@@ -640,7 +639,6 @@ class LLVMBuilder {
 	
 	private HashMap<String, Integer> argMap;
 	private Stack<LLVMValue> valueStack;
-	private Stack<LLVMBasicBlock> bblockStack; //TODO: future may be removed
 	
 	public static void initBuilder() {
 		if (!isInitialized) {
@@ -657,21 +655,6 @@ class LLVMBuilder {
 		}
 	}
 	
-	public void dumpModule() {
-		module.dump();
-	}
-	
-	public void execute() { //FIXME
-		finalizeMainFunc();
-		dumpModule();
-		module.writeBitcodeToFile("compiledCode.bc");
-		new CmdLauncher("llvm-link compiledCode.bc embeddedMethod.bc -S -o linkedCode.ll");
-		new CmdLauncher("lli linkedCode.ll");
-		new CmdLauncher("rm compiledCode.bc");
-		new CmdLauncher("rm linkedCode.ll");
-		new CmdLauncher("rm embeddedMethod.bc");
-	}
-	
 	public LLVMBuilder() {
 		initBuilder();
 		
@@ -679,7 +662,6 @@ class LLVMBuilder {
 		currentFunc = null;
 		argMap = new HashMap<String, Integer>();
 		valueStack = new Stack<LLVMValue>();
-		bblockStack = new Stack<LLVMBasicBlock>();
 		
 		if (!isDefinedEmbeddedFunc) {
 			isDefinedEmbeddedFunc = true;
@@ -690,6 +672,23 @@ class LLVMBuilder {
 	public void dumpFunction() {
 		this.currentFunc.dump();
 	}	
+	
+	public void dumpModule() {
+		module.dump();
+	}
+	
+	public void execute() { //FIXME
+		finalizeMainFunc();
+		dumpModule();
+		module.writeBitcodeToFile("compiledCode.bc");
+		
+		// execute llvm tool chain
+		new CmdLauncher("llvm-link compiledCode.bc embeddedMethod.bc -S -o linkedCode.ll");
+		new CmdLauncher("lli linkedCode.ll");
+		new CmdLauncher("rm compiledCode.bc");
+		new CmdLauncher("rm linkedCode.ll");
+		new CmdLauncher("rm embeddedMethod.bc");
+	}
 
 	public void setArgument(String argName, int index) {
 		this.argMap.put(argName, index);
@@ -706,14 +705,6 @@ class LLVMBuilder {
 	
 	public LLVMBasicBlock getCurrentBBlock() {
 		return currentBBlock;
-	}
-	
-	public void pushBBlock(LLVMBasicBlock bblock) {
-		this.bblockStack.push(bblock);
-	}
-	
-	public LLVMBasicBlock popBBlock() {
-		return this.bblockStack.pop();
 	}
 	
 	public void pushValue(LLVMValue value) {
@@ -762,9 +753,9 @@ class LLVMBuilder {
 		} else if (typeName.equals("String")) {
 			String strValue = (String)value;
 			return new LLVMConstantString(strValue, true);
+		} else {
+			return null;	
 		}
-		
-		return null;
 	}
 
 	public LLVMConstant createConstNull(LLVMType type) {
@@ -774,6 +765,7 @@ class LLVMBuilder {
 	public void createReturn(LLVMValue retValue) {
 		new LLVMReturnInstruction(builder, retValue);
 	}
+	
 	public void createBranch(LLVMBasicBlock destBlock) {
 		new LLVMBranchInstruction(builder, destBlock);
 	}
@@ -783,13 +775,13 @@ class LLVMBuilder {
 	}
 	
 	public void createCondLogicalOp(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock endBlock, boolean isAnd) {
-		// isAnd == true: create and. isAnd == false: create false
+		// isAnd == true: create and. isAnd == false: create false.
 		LLVMBasicBlock currentBlock = this.getCurrentBBlock();
 		
 		if (!isAnd) {	//swap block
-			LLVMBasicBlock swap = thenBlock;
+			LLVMBasicBlock swapBlock = thenBlock;
 			thenBlock = endBlock;
-			endBlock = swap;
+			endBlock = swapBlock;
 		} 
 			
 		this.changeCurrentBBlock(thenBlock);
@@ -813,8 +805,10 @@ class LLVMBuilder {
 			return new LLVMPointerType(new LLVMIntegerType(8), 0);
 		} else if (typeName.equals("Object")) { //FIXME
 			return new LLVMIntegerType(intLength);
+		} else {
+			System.err.println(typeName + " is not defined type");
+			return null;	
 		}
-		return null;
 	}
 	
 	public LLVMArgument getArgument(String argName) {
@@ -876,7 +870,6 @@ class LLVMBuilder {
 	}
 	
 	public LLVMValue createCall(String funcName, LLVMValue[] args, String retName) {
-		//temporaryDefineMethod(funcName);
 		LLVMFunction func = module.getNamedFunction(funcName);
 		if (funcName.split("_")[0].equals("Void")) {
 			retName = "";
@@ -884,7 +877,7 @@ class LLVMBuilder {
 		return new LLVMCallInstruction(builder, func, args, retName);
 	}
 	
-	//TODO: support array
+	//TODO: support user defined class
 	public LLVMValue createHeapAllocation(String typeName) {
 		LLVMType type = convertTypeNameToLLVMType(typeName);
 		return new LLVMHeapAllocation(builder, type, null, "heap");
@@ -894,7 +887,7 @@ class LLVMBuilder {
 		return new LLVMSwitchInstruction(builder, condValue, defaultBlock, caseNum);
 	}
 	
-	private void finalizeMainFunc() {
+	private void finalizeMainFunc() { //FIXME
 		changeCurrentFunction(module.getNamedFunction("main"));
 		changeCurrentBBlock(currentFunc.getLastBasicBlock());
 		createReturn(null);
