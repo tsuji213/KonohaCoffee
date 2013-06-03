@@ -102,7 +102,7 @@ public abstract class KonohaChar {
 		/*170  x   171  y   172  z   173  {   174  |   175  }   176  ~   177 del*/
 		LowerAlpha, LowerAlpha, LowerAlpha, OpenBrace, Var, CloseBrace, Childer, 1,
 	};
-	
+
 	static int JavaCharToKonohaChar(char c) {
 		if(c < 128) {
 			return cMatrix[(int)c];

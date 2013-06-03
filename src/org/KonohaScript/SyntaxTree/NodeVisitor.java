@@ -1,7 +1,9 @@
 package org.KonohaScript.SyntaxTree;
 
-public interface NodeVisitor {
+interface INodeVisitor {
 	boolean Visit(TypedNode Node);
+
+	boolean VisitList(TypedNode valueNode);
 
 	void EnterDefine(DefineNode Node);
 
@@ -23,9 +25,9 @@ public interface NodeVisitor {
 
 	boolean ExitLocal(LocalNode Node);
 
-	void EnterField(GetterNode Node);
+	void EnterGetter(GetterNode Node);
 
-	boolean ExitField(GetterNode Node);
+	boolean ExitGetter(GetterNode Node);
 
 	void EnterApply(ApplyNode Node);
 
@@ -86,5 +88,122 @@ public interface NodeVisitor {
 	void EnterError(ErrorNode Node);
 
 	boolean ExitError(ErrorNode Node);
+}
 
+public abstract class NodeVisitor implements INodeVisitor {
+	public interface AndNodeAcceptor {
+		boolean Invoke(AndNode Node, NodeVisitor Visitor);
+	}
+
+	public interface ApplyNodeAcceptor {
+		boolean Invoke(ApplyNode Node, NodeVisitor Visitor);
+	}
+
+	public interface AssignNodeAcceptor {
+		boolean Invoke(AssignNode Node, NodeVisitor Visitor);
+	}
+
+	public interface ConstNodeAcceptor {
+		boolean Invoke(ConstNode Node, NodeVisitor Visitor);
+	}
+
+	public interface DefineNodeAcceptor {
+		boolean Invoke(DefineNode Node, NodeVisitor Visitor);
+	}
+
+	public interface ErrorNodeAcceptor {
+		boolean Invoke(ErrorNode Node, NodeVisitor Visitor);
+	}
+
+	public interface FunctionNodeAcceptor {
+		boolean Invoke(FunctionNode Node, NodeVisitor Visitor);
+	}
+
+	public interface GetterNodeAcceptor {
+		boolean Invoke(GetterNode Node, NodeVisitor Visitor);
+	}
+
+	public interface IfNodeAcceptor {
+		boolean Invoke(IfNode Node, NodeVisitor Visitor);
+	}
+
+	public interface JumpNodeAcceptor {
+		boolean Invoke(JumpNode Node, NodeVisitor Visitor);
+	}
+
+	public interface LabelNodeAcceptor {
+		boolean Invoke(LabelNode Node, NodeVisitor Visitor);
+	}
+
+	public interface LetNodeAcceptor {
+		boolean Invoke(LetNode Node, NodeVisitor Visitor);
+	}
+
+	public interface LocalNodeAcceptor {
+		boolean Invoke(LocalNode Node, NodeVisitor Visitor);
+	}
+
+	public interface LoopNodeAcceptor {
+		boolean Invoke(LoopNode Node, NodeVisitor Visitor);
+	}
+
+	public interface NewNodeAcceptor {
+		boolean Invoke(NewNode Node, NodeVisitor Visitor);
+	}
+
+	public interface NullNodeAcceptor {
+		boolean Invoke(NullNode Node, NodeVisitor Visitor);
+	}
+
+	public interface OrNodeAcceptor {
+		boolean Invoke(OrNode Node, NodeVisitor Visitor);
+	}
+
+	public interface ReturnNodeAcceptor {
+		boolean Invoke(ReturnNode Node, NodeVisitor Visitor);
+	}
+
+	public interface SwitchNodeAcceptor {
+		boolean Invoke(SwitchNode Node, NodeVisitor Visitor);
+	}
+
+	public interface ThrowNodeAcceptor {
+		boolean Invoke(ThrowNode Node, NodeVisitor Visitor);
+	}
+
+	public interface TryNodeAcceptor {
+		boolean Invoke(TryNode Node, NodeVisitor Visitor);
+	}
+
+	public AndNodeAcceptor		AndNodeAcceptor			= new DefaultAndNodeAcceptor();
+	public ApplyNodeAcceptor	ApplyNodeAcceptor		= new DefaultApplyNodeAcceptor();
+	public AssignNodeAcceptor	AssignNodeAcceptor		= new DefaultAssignNodeAcceptor();
+	public ConstNodeAcceptor	ConstNodeAcceptor		= new DefaultConstNodeAcceptor();
+	public DefineNodeAcceptor	DefineNodeAcceptor		= new DefaultDefineNodeAcceptor();
+	public ErrorNodeAcceptor	ErrorNodeAcceptor		= new DefaultErrorNodeAcceptor();
+	public FunctionNodeAcceptor	FunctionNodeAcceptor	= new DefaultFunctionNodeAcceptor();
+	public GetterNodeAcceptor	GetterNodeAcceptor		= new DefaultGetterNodeAcceptor();
+	public IfNodeAcceptor		IfNodeAcceptor			= new DefaultIfNodeAcceptor();
+	public JumpNodeAcceptor		JumpNodeAcceptor		= new DefaultJumpNodeAcceptor();
+	public LabelNodeAcceptor	LabelNodeAcceptor		= new DefaultLabelNodeAcceptor();
+	public LetNodeAcceptor		LetNodeAcceptor			= new DefaultLetNodeAcceptor();
+	public LocalNodeAcceptor	LocalNodeAcceptor		= new DefaultLocalNodeAcceptor();
+	public LoopNodeAcceptor		LoopNodeAcceptor		= new DefaultLoopNodeAcceptor();
+	public NewNodeAcceptor		NewNodeAcceptor			= new DefaultNewNodeAcceptor();
+	public NullNodeAcceptor		NullNodeAcceptor		= new DefaultNullNodeAcceptor();
+	public OrNodeAcceptor		OrNodeAcceptor			= new DefaultOrNodeAcceptor();
+	public ReturnNodeAcceptor	ReturnNodeAcceptor		= new DefaultReturnNodeAcceptor();
+	public SwitchNodeAcceptor	SwitchNodeAcceptor		= new DefaultSwitchNodeAcceptor();
+	public ThrowNodeAcceptor	ThrowNodeAcceptor		= new DefaultThrowNodeAcceptor();
+	public TryNodeAcceptor		TryNodeAcceptor			= new DefaultTryNodeAcceptor();
+
+	@Override
+	public boolean VisitList(TypedNode Node) {
+		boolean Ret = true;
+		while(Ret && Node != null) {
+			Ret &= this.Visit(Node);
+			Node = Node.NextNode;
+		}
+		return Ret;
+	}
 }

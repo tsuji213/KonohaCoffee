@@ -53,13 +53,16 @@ class KonohaIR {
 	public static void dump1(String OP, String A1Ty, Object A1) {
 	}
 
-	public static void dump2(String OP, String A1Ty, Object A1, String A2Ty, Object A2) {
+	public static void dump2(String OP, String A1Ty, Object A1, String A2Ty,
+			Object A2) {
 	}
 
-	public static void dump3(String OP, String A1Ty, Object A1, String A2Ty, Object A2, String A3Ty, Object A3) {
+	public static void dump3(String OP, String A1Ty, Object A1, String A2Ty,
+			Object A2, String A3Ty, Object A3) {
 	}
 
-	public static void dump4(String OP, String A1Ty, Object A1, String A2Ty, Object A2, String A3Ty, Object A3, String A4Ty, Object A4) {
+	public static void dump4(String OP, String A1Ty, Object A1, String A2Ty,
+			Object A2, String A3Ty, Object A3, String A4Ty, Object A4) {
 	}
 
 	public BasicBlock GetParent() {
@@ -85,10 +88,10 @@ public class KonohaVM {
 	void Exec(KonohaIR[] Code) {
 		Object[] Registers = new Object[10];
 		Object[] Stack = new Object[10];
-		for (int i = 0; i < Code.length; i++) {
+		for(int i = 0; i < Code.length; i++) {
 			KonohaIR ir = Code[i];
 			VMState state = ir.exec(Registers, Stack);
-			if (state == VMState.Exit) {
+			if(state == VMState.Exit) {
 				break;
 			}
 		}
@@ -109,7 +112,14 @@ class OPLoadConst extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump3("LoadConst", "int", this.Dst, "long", this.Value, "KonohaType", this.TypeInfo);
+		KonohaIR.dump3(
+			"LoadConst",
+			"int",
+			this.Dst,
+			"long",
+			this.Value,
+			"KonohaType",
+			this.TypeInfo);
 	}
 
 	@Override
@@ -135,7 +145,14 @@ class OPMove extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump3("Move", "int", this.Dst, "int", this.Src, "KonohaType", this.TypeInfo);
+		KonohaIR.dump3(
+			"Move",
+			"int",
+			this.Dst,
+			"int",
+			this.Src,
+			"KonohaType",
+			this.TypeInfo);
 	}
 
 	@Override
@@ -162,7 +179,16 @@ class OPLoadField extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump4("LoadField", "int", this.Dst, "int", this.Src, "int", this.Offset, "KonohaType", this.TypeInfo);
+		KonohaIR.dump4(
+			"LoadField",
+			"int",
+			this.Dst,
+			"int",
+			this.Src,
+			"int",
+			this.Offset,
+			"KonohaType",
+			this.TypeInfo);
 	}
 
 	@Override
@@ -190,7 +216,16 @@ class OPStoreField extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump4("StoreField", "int", this.Dst, "int", this.Offset, "int", this.Src, "KonohaType", this.TypeInfo);
+		KonohaIR.dump4(
+			"StoreField",
+			"int",
+			this.Dst,
+			"int",
+			this.Offset,
+			"int",
+			this.Src,
+			"KonohaType",
+			this.TypeInfo);
 	}
 
 	@Override
@@ -265,7 +300,14 @@ class OPBox extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump3("Box", "int", this.Dst, "int", this.Src, "KonohaType", this.TypeInfo);
+		KonohaIR.dump3(
+			"Box",
+			"int",
+			this.Dst,
+			"int",
+			this.Src,
+			"KonohaType",
+			this.TypeInfo);
 	}
 
 	@Override
@@ -292,7 +334,16 @@ class OPLookup extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump4("Lookup", "int", this.Dst, "KNameSpace", this.NS, "KonohaMethod", this.Mtd, "KonohaType", this.ThisType);
+		KonohaIR.dump4(
+			"Lookup",
+			"int",
+			this.Dst,
+			"KNameSpace",
+			this.NS,
+			"KonohaMethod",
+			this.Mtd,
+			"KonohaType",
+			this.ThisType);
 	}
 
 	@Override
@@ -320,7 +371,16 @@ class OPCall extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump4("Call", "int", this.Dst, "KNameSpace", this.NS, "KonohaMethod", this.Mtd, "KonohaType", this.ThisType);
+		KonohaIR.dump4(
+			"Call",
+			"int",
+			this.Dst,
+			"KNameSpace",
+			this.NS,
+			"KonohaMethod",
+			this.Mtd,
+			"KonohaType",
+			this.ThisType);
 	}
 
 	@Override
@@ -382,7 +442,7 @@ class OPBNot extends KonohaIR {
 class OPJump extends KonohaIR {
 	long	Address;
 
-	OPJump(BasicBlock Parent) {
+	OPJump(BasicBlock Parent, BasicBlock Traget) {
 		super(Parent);
 	}
 
@@ -405,7 +465,7 @@ class OPJumpF extends KonohaIR {
 	long	Address;
 	int		Src;
 
-	OPJumpF(BasicBlock Parent) {
+	OPJumpF(BasicBlock Parent, BasicBlock Target, KonohaIR Src) {
 		super(Parent);
 	}
 
@@ -498,7 +558,12 @@ class OPSafePoint extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump2("SafePoint", "LineInfo", this.linfo, "int", this.StackTop);
+		KonohaIR.dump2(
+			"SafePoint",
+			"LineInfo",
+			this.linfo,
+			"int",
+			this.StackTop);
 	}
 
 	@Override
@@ -545,7 +610,14 @@ class OPTrace extends KonohaIR {
 
 	@Override
 	void dump() {
-		KonohaIR.dump3("Trace", "LineInfo", this.linfo, "int", this.StackTop, "KonohaMethod", this.TraceFunc);
+		KonohaIR.dump3(
+			"Trace",
+			"LineInfo",
+			this.linfo,
+			"int",
+			this.StackTop,
+			"KonohaMethod",
+			this.TraceFunc);
 	}
 
 	@Override

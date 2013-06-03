@@ -20,7 +20,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -29,19 +28,43 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
+public class LeafJSCodeGen extends SourceCodeGen {
 	private final boolean	UseLetKeyword	= false;
+	private HashMap<String, String> MethodMap = new HashMap<String, String>();
 
 	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
 
 	public LeafJSCodeGen() {
 		super(null);
+		MethodMap.put("System.p", "console.log");
+	}
+	
+	String MapMethodName(String TypeName, String MethodName){
+		return MapMethodName(TypeName + "." + MethodName);
+	}
+
+	String MapMethodName(String OriginalName){
+		if(MethodMap.containsKey(OriginalName)){
+			return MethodMap.get(OriginalName);
+		}
+		return OriginalName;
+	}
+	
+	private void PushLocalVariableRenameTable(){
+		LocalVariableRenameTables.add(new HashMap<String, Integer>());
+	}
+	
+	private void PopLocalVariableRenameTable(){
+		LocalVariableRenameTables.remove(LocalVariableRenameTables.size() - 1);
 	}
 
 	private void AddLocalVariableRenameRule(String Name){
+		if(UseLetKeyword){
+			return;
+		}
 		int nameUsedTimes = 0;
 		int N = LocalVariableRenameTables.size();
-		if(!LocalVariableRenameTables.get(N - 1).containsKey(Name)){
+		if(N > 0 && !LocalVariableRenameTables.get(N - 1).containsKey(Name)){
 			for(int i = 0; i < N - 1; ++i){
 				if(LocalVariableRenameTables.get(i).containsKey(Name)){
 					nameUsedTimes++;
@@ -52,6 +75,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	}
 
 	private String GetRenamedLocalName(String originalName){
+		if(UseLetKeyword){
+			return originalName;
+		}
 		int N = LocalVariableRenameTables.size();
 		for(int i = N - 1; i >= 0; --i){
 			HashMap<String, Integer> map = LocalVariableRenameTables.get(i);
@@ -85,7 +111,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	@Override
 	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for (int i = 0; i < params.size(); i++) {
+		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
@@ -93,11 +119,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
-		this.Visit(Block);
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
+		this.VisitBlock(Block.GetHeadNode());
 		assert (this.getProgramSize() == 1);
 		String Source = this.pop();
-		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
@@ -108,9 +134,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 			FuncBuilder.append(MethodName);
 			FuncBuilder.append(" = function(");
 
-			for (int i = 1; i < this.LocalVals.size(); i++) {
+			for(int i = 1; i < this.LocalVals.size(); i++) {
 				Local local = this.GetLocalVariableByIndex(i);
-				if (i != 1) {
+				if(i != 1) {
 					FuncBuilder.append(", ");
 				}
 				FuncBuilder.append(local.Name);
@@ -122,6 +148,23 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 		}
 		Mtd.CompiledCode = Source;
 		return Mtd;
+	}
+
+	@Override
+	protected boolean VisitBlock(TypedNode Node){
+		String highLevelIndent = indentGenerator.indentAndGet(1);
+		this.PushProgramSize();
+		this.PushLocalVariableRenameTable();
+		
+		boolean ret = this.VisitList(Node);
+		
+		String currentLevelIndent = indentGenerator.indentAndGet(-1);
+		int Size = this.getProgramSize() - this.PopProgramSize();
+
+		String Block = PopNWithModifier(Size, true, "\n" + highLevelIndent, ";" , null);
+		push("{" + Block + "\n" + currentLevelIndent + "}");
+		this.PopLocalVariableRenameTable();
+		return ret;
 	}
 
 	@Override
@@ -154,18 +197,18 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 
 	@Override
 	public boolean ExitLocal(LocalNode Node) {
-		this.push(Node.FieldName);
+		this.push(GetRenamedLocalName(Node.FieldName));
 		return true;
 	}
 
 	@Override
-	public void EnterField(GetterNode Node) {
+	public void EnterGetter(GetterNode Node) {
 		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
 		assert (local != null);
 	}
 
 	@Override
-	public boolean ExitField(GetterNode Node) {
+	public boolean ExitGetter(GetterNode Node) {
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -178,7 +221,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	@Override
 	public boolean ExitApply(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
-		if (this.isMethodBinaryOperator(Node)) {
+		if(this.isMethodBinaryOperator(Node)) {
 			String params = this.pop();
 			String thisNode = this.pop();
 			this.push(thisNode + " " + methodName + " " + params);
@@ -187,7 +230,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
 					+ ")";
 			String thisNode = this.pop();
-			this.push(thisNode + "." + methodName + params);
+			String originalName = thisNode + "." + methodName;
+			this.push(MapMethodName(originalName) + params);
 		}
 		return true;
 	}
@@ -234,46 +278,46 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 		return true;
 	}
 
-	// @Override
-	// public void EnterBlock(BlockNode Node) {
-	// this.PushProgramSize();
-	// this.indentGenerator.indent(1);
-	// }
-	//
-	// @Override
-	// public boolean ExitBlock(BlockNode Node) {
-	// IndentGenerator g = this.indentGenerator;
-	// int Size = this.getProgramSize() - this.PopProgramSize();
-	// this.push("{\n" + g.get()
-	// + this.PopNReverseAndJoin(Size, ";\n" + g.get()) + ";\n"
-	// + g.indentAndGet(-1) + "}");
-	// return true;
-	// }
-
 	@Override
 	public boolean ExitIf(IfNode Node) {
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
 		String source = "if(" + CondExpr + ") " + ThenBlock;
-		if (Node.ElseNode.NextNode != null) {
+		if(Node.ElseNode != null) {
 			source = source + " else " + ElseBlock;
 		}
 		this.push(source);
 		return true;
 	}
+	
+	@Override
+	public void EnterSwitch(SwitchNode Node) {
+		indentGenerator.indent(1);
+	}
 
 	@Override
 	public boolean ExitSwitch(SwitchNode Node) {
 		int Size = Node.Labels.size();
-		String Exprs = "";
-		for (int i = 0; i < Size; i = i + 1) {
-			String Label = Node.Labels.get(Size - i);
-			String Block = this.pop();
-			Exprs = "case " + Label + ":" + Block + Exprs;
-		}
+		String[] Blocks = PopNReverse(Size);
 		String CondExpr = this.pop();
-		this.push("switch (" + CondExpr + ") {" + Exprs + "}");
+		
+		String Indent = indentGenerator.get();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("switch (");
+		builder.append(CondExpr);
+		builder.append(") {\n");
+		builder.append(Indent);
+		for(int i = 0; i < Size; i++) {
+			builder.append("case ");
+			builder.append(Node.Labels.get(i));
+			builder.append(": ");
+			builder.append(Blocks[i]);
+		}
+		builder.append("}\n");
+		builder.append(indentGenerator.indentAndGet(-1));
+		this.push(builder.toString());
 		return true;
 	}
 
@@ -282,9 +326,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 		String LoopBody = this.pop();
 		String IterExpr = this.pop();
 		String CondExpr = this.pop();
-		this.push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		this.push("for (; " + CondExpr + "; " + IterExpr + ") " + LoopBody);
 		return true;
-
 	}
 
 	@Override
@@ -297,9 +340,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	@Override
 	public boolean ExitLabel(LabelNode Node) {
 		String Label = Node.Label;
-		if (Label.compareTo("continue") == 0) {
+		if(Label.compareTo("continue") == 0) {
 			this.push("");
-		} else if (Label.compareTo("continue") == 0) {
+		} else if(Label.compareTo("continue") == 0) {
 			this.push("");
 		} else {
 			this.push(Label + ":");
@@ -310,9 +353,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements NodeVisitor {
 	@Override
 	public boolean ExitJump(JumpNode Node) {
 		String Label = Node.Label;
-		if (Label.compareTo("continue") == 0) {
+		if(Label.compareTo("continue") == 0) {
 			this.push("continue;");
-		} else if (Label.compareTo("continue") == 0) {
+		} else if(Label.compareTo("continue") == 0) {
 			this.push("break;");
 		} else {
 			this.push("goto " + Label);

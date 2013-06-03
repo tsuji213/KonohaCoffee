@@ -2,15 +2,17 @@ package org.KonohaScript.CodeGen;
 
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaType;
+import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class CompiledMethod extends KonohaMethod {
-	public Object CompiledCode;
+	public Object	CompiledCode;
 
 	public CompiledMethod(KonohaMethod MethodInfo) {
-		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo, MethodInfo.MethodName, MethodInfo.Param, null);
+		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo,
+				MethodInfo.MethodName, MethodInfo.Param, null);
 	}
 
 	Object Invoke(Object[] Args) {
@@ -18,9 +20,9 @@ class CompiledMethod extends KonohaMethod {
 	}
 }
 
-public abstract class CodeGenerator {
-	ArrayList<Local> LocalVals;
-	KonohaMethod MethodInfo;
+public abstract class CodeGenerator extends NodeVisitor {
+	ArrayList<Local>	LocalVals;
+	KonohaMethod		MethodInfo;
 
 	CodeGenerator(KonohaMethod MethodInfo) {
 		this.LocalVals = new ArrayList<Local>();
@@ -58,7 +60,7 @@ public abstract class CodeGenerator {
 		if(local != null) {
 			return local;
 		}
-		return AddLocal(Type, Name);
+		return this.AddLocal(Type, Name);
 	}
 
 	public void Prepare(KonohaMethod Method) {

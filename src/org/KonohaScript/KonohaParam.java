@@ -6,12 +6,15 @@ public class KonohaParam {
 	public final static int	MAX					= 16;
 	public final static int	VariableParamSize	= -1;
 	public int				ReturnSize;
-	public KonohaType[]			Types;
+	public KonohaType[]		Types;
+	public String[]			ArgNames;
 
-	public KonohaParam(int DataSize, KonohaType ParamData[]) {
+	public KonohaParam(int DataSize, KonohaType ParamData[], String[] ArgNames) {
 		this.ReturnSize = 1;
 		this.Types = new KonohaType[DataSize];
+		this.ArgNames = new String[DataSize - this.ReturnSize];
 		System.arraycopy(ParamData, 0, this.Types, 0, DataSize);
+		System.arraycopy(ArgNames, 0, this.ArgNames, 0, DataSize - this.ReturnSize);
 	}
 
 	public static KonohaParam ParseOf(KonohaNameSpace ns, String TypeList) {
@@ -19,7 +22,8 @@ public class KonohaParam {
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		KonohaType[] ParamData = new KonohaType[KonohaParam.MAX];
-		int i, DataSize = 0;
+		String[] ArgNames = new String[KonohaParam.MAX];
+		int i, DataSize = 0, ParamSize = 0;
 		for(i = next; i < BufferList.size(); i++) {
 			KonohaToken Token = BufferList.get(i);
 			if(Token.ResolvedObject instanceof KonohaType) {
@@ -27,9 +31,12 @@ public class KonohaParam {
 				DataSize++;
 				if(DataSize == KonohaParam.MAX)
 					break;
+			} else {
+				ArgNames[ParamSize] = Token.ParsedText;
+				ParamSize++;
 			}
 		}
-		return new KonohaParam(DataSize, ParamData);
+		return new KonohaParam(DataSize, ParamData, ArgNames);
 	}
 
 	public final int GetParamSize() {
@@ -38,9 +45,10 @@ public class KonohaParam {
 
 	public final boolean Match(KonohaParam Other) {
 		int ParamSize = Other.GetParamSize();
-		if(ParamSize == GetParamSize()) {
-			for(int i = ReturnSize; i < Types.length; i++) {
-				if(Types[i] != Other.Types[i]) return false;
+		if(ParamSize == this.GetParamSize()) {
+			for(int i = this.ReturnSize; i < this.Types.length; i++) {
+				if(this.Types[i] != Other.Types[i])
+					return false;
 			}
 			return true;
 		}

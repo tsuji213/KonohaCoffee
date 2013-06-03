@@ -27,10 +27,25 @@ package org.KonohaScript;
 import java.util.HashMap;
 
 public class KonohaObject {
-	public KonohaType TypeInfo;
-	public HashMap<String, Object> prototypes;
+	public KonohaType				TypeInfo;
+	public HashMap<String, Object>	prototypes;
+
 	KonohaObject(KonohaType TypeInfo) {
 		this.TypeInfo = TypeInfo;
 		this.prototypes = null;
+	}
+
+	public Object get(String FieldName) {
+		if(this.prototypes == null) {
+			return null;
+		}
+		return this.prototypes.get(FieldName);
+	}
+
+	public void set(String FieldName, Object Obj) {
+		if(this.prototypes == null) {
+			this.prototypes = new HashMap<String, Object>();
+		}
+		this.prototypes.put(FieldName, Obj);
 	}
 }

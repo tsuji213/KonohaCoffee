@@ -32,7 +32,7 @@ public final class KonohaFunc {
 	Object callee;
 	Method method;
 	KonohaFunc  prev;
-	
+
 	static Method LookupMethod(Object Callee, String MethodName) {
 		if(MethodName != null) {
 //			KonohaDebug.P("looking up method : " + Callee.getClass().getSimpleName() + "." + MethodName);
@@ -65,7 +65,7 @@ public final class KonohaFunc {
 			return (m2 == null) ? false: m1.equals(m2);
 		}
 	}
-	
+
 	static KonohaFunc NewFunc(Object callee, String methodName, KonohaFunc prev) {
 		Method method = LookupMethod(callee, methodName);
 		if(prev != null && EqualsMethod(prev.method, method)) {
@@ -126,7 +126,7 @@ public final class KonohaFunc {
 		}
 		return EndIdx;
 	}
-	
+
 	@Override public String toString() {
 		return method.toString();
 	}

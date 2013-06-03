@@ -3,10 +3,23 @@ package org.KonohaScript.SyntaxTree;
 import java.util.ArrayList;
 
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.SyntaxTree.NodeVisitor.SwitchNodeAcceptor;
+
+class DefaultSwitchNodeAcceptor implements SwitchNodeAcceptor {
+	@Override
+	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
+		Visitor.EnterSwitch(Node);
+		Visitor.Visit(Node.CondExpr);
+		for(TypedNode Block : Node.Blocks) {
+			Visitor.VisitList(Block);
+		}
+		return Visitor.ExitSwitch(Node);
+	}
+}
 
 public class SwitchNode extends TypedNode {
 	public SwitchNode(KonohaType TypeInfo) {
-		super(TypeInfo, null/*fixme*/);
+		super(TypeInfo, null/* fixme */);
 	}
 
 	/*
@@ -18,11 +31,7 @@ public class SwitchNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		Visitor.EnterSwitch(this);
-		Visitor.Visit(this.CondExpr);
-		for(TypedNode Node : this.Blocks) {
-			Visitor.Visit(Node);
-		}
-		return Visitor.ExitSwitch(this);
+		return Visitor.SwitchNodeAcceptor.Invoke(this, Visitor);
 	}
+
 }

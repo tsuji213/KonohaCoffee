@@ -46,8 +46,8 @@ public abstract class TypedNode {
 
 	public final TypedNode GetHeadNode() {
 		TypedNode Node = this;
-		while (Node.PreviousNode != null) {
-			Node = Node.ParentNode;
+		while(Node.PreviousNode != null) {
+			Node = Node.PreviousNode;
 		}
 		return Node;
 	}
@@ -60,10 +60,10 @@ public abstract class TypedNode {
 
 	public final TypedNode GetTailNode() {
 		TypedNode Node = this;
-		while (Node.NextNode != null) {
+		while(Node.NextNode != null) {
 			Node = Node.NextNode;
 		}
-		return Node;
+		return this;
 	}
 
 	public final void LinkNode(TypedNode Node) {
@@ -76,9 +76,7 @@ public abstract class TypedNode {
 		this.SourceToken = SourceToken;
 	}
 
-	public boolean Evaluate(NodeVisitor Visitor) {
-		throw new NotSupportedNodeError();
-	}
+	public abstract boolean Evaluate(NodeVisitor Visitor);
 
 	public final boolean IsError() {
 		return (this instanceof ErrorNode);
