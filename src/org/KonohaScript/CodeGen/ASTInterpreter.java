@@ -1,7 +1,6 @@
 package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.KLib.*;
-import java.util.HashMap;
 
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;

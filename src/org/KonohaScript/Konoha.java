@@ -30,6 +30,7 @@ package org.KonohaScript;
  */
 
 import org.KonohaScript.KLib.*;
+
 import java.util.HashMap;
 
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
@@ -54,71 +55,72 @@ class KParamMap {
 	}
 }
 
-class SymbolTable implements KonohaConst {
-//	ArrayList<KonohaType> ClassList;
-//	HashMap<String, KonohaType> ClassNameMap;
-//
-//	ArrayList<KPackage> PackageList;
-//	KKeyIdMap PackageMap;
-//
-//	KonohaArray FileIdList;
-//	HashMap<String, Integer> FileIdMap;
-//
-//	KonohaArray SymbolList;
-//	HashMap<String, Integer> SymbolMap;
 
-//	ArrayList<KonohaParam> ParamList;
-//	KParamMap ParamMap;
-//	ArrayList<KonohaParam> SignatureList;
-//	KParamMap SignatureMap;
+class SymbolTable implements KonohaConst {
+	KonohaArray ClassList;
+	HashMap<String, KonohaType> ClassNameMap;
+
+	KonohaArray PackageList;
+	KKeyIdMap PackageMap;
+
+	KonohaArray FileIdList;
+	HashMap<String, Integer> FileIdMap;
+
+	KonohaArray SymbolList;
+	HashMap<String, Integer> SymbolMap;
+
+	KonohaArray ParamList;
+	KParamMap ParamMap;
+	KonohaArray SignatureList;
+	KParamMap SignatureMap;
 
 	SymbolTable() {
-//		this.ClassList = new ArrayList<KonohaType>(64);
-//		this.ClassNameMap = new HashMap<String, KonohaType>();
-//
-//		this.FileIdList = new KonohaArray(16);
-//		this.FileIdMap = new HashMap<String, Integer>();
-//
-//		this.SymbolList = new KonohaArray(64);
-//		this.SymbolMap = new HashMap<String, Integer>();
-//
-//		this.PackageList = new ArrayList<KPackage>(16);
-//		this.ParamList = new ArrayList<KonohaParam>(64);
-//		this.SignatureList = new ArrayList<KonohaParam>(64);
-//		this.PackageMap = new KKeyIdMap();
-//		this.ParamMap = new KParamMap();
-//		this.SignatureMap = new KParamMap();
+		this.ClassList = new KonohaArray(64);
+		this.ClassNameMap = new HashMap<String, KonohaType>();
+
+		this.FileIdList = new KonohaArray(16);
+		this.FileIdMap = new HashMap<String, Integer>();
+
+		this.SymbolList = new KonohaArray(64);
+		this.SymbolMap = new HashMap<String, Integer>();
+
+		this.PackageList = new KonohaArray(16);
+		this.ParamList = new KonohaArray(64);
+		this.SignatureList = new KonohaArray(64);
+		this.PackageMap = new KKeyIdMap();
+		this.ParamMap = new KParamMap();
+		this.SignatureMap = new KParamMap();
 	}
 
 	void Init(Konoha kctx) {
-		//KPackage defaultPackage = this.NewPackage(kctx, "Konoha");
+		 this.NewPackage(kctx, "Konoha");
 		// NewClass(kctx, defaultPackage, "void");
 	}
 
-//	long GetFileId(String file, int linenum) {
-//		Integer fileid = this.FileIdMap.get(file);
-//		if(fileid == null) {
-//			int id = this.FileIdList.size();
-//			this.FileIdList.add(file);
-//			this.FileIdMap.put(
-//					file, new Integer(id));
-//			return ((long) id << 32) | linenum;
-//		}
-//		return (fileid.longValue() << 32) | linenum;
-//	}
-//
-//	String GetFileName(long uline) {
-//		int id = (int) (uline >> 32);
-//		return this.FileIdList.get(id);
-//	}
-//
-//
-//	KPackage NewPackage(Konoha kctx, String name) {
-//		int packageId = this.PackageList.size();
-//		KPackage p = new KPackage(kctx, packageId, name);
-//		this.PackageList.add(p);
-//		return p;
-//	}
+	long GetFileId(String file, int linenum) {
+		Integer fileid = this.FileIdMap.get(file);
+		if(fileid == null) {
+			int id = this.FileIdList.size();
+			this.FileIdList.add(file);
+			this.FileIdMap.put(
+					file, new Integer(id));
+			return ((long) id << 32) | linenum;
+		}
+		return (fileid.longValue() << 32) | linenum;
+	}
+
+	String GetFileName(long uline) {
+		int id = (int) (uline >> 32);
+		return (String) this.FileIdList.get(id);
+	}
+
+
+	KPackage NewPackage(Konoha kctx, String name) {
+		int packageId = this.PackageList.size();
+		KPackage p = new KPackage(kctx, packageId, name);
+		this.PackageList.add(p);
+		return p;
+	}
 
 	// KClass NewClass(Konoha kctx, KPackage p, String name) {
 	// int classId = this.ClassList.size();
@@ -134,7 +136,7 @@ public final class Konoha implements KonohaConst {
 
 	KonohaNameSpace RootNameSpace;
 	KonohaNameSpace DefaultNameSpace;
-//	SymbolTable SymbolTable;
+	SymbolTable SymbolTable;
 
 	public final KonohaType	VoidType;
 	public final KonohaType	ObjectType;
@@ -144,13 +146,16 @@ public final class Konoha implements KonohaConst {
 	public final KonohaType	VarType;
 	
 	KonohaArray EmptyList;
+	KonohaMap  ClassNameMap;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
-//		this.SymbolTable = new SymbolTable();
-//		this.SymbolTable.Init(this);
+		this.SymbolTable = new SymbolTable();
+		this.SymbolTable.Init(this);
 
 		this.EmptyList = new KonohaArray();
 		this.ClassNameMap = new KonohaMap();
+		this.RootNameSpace = new KonohaNameSpace(this, null);
+
 		this.VoidType = this.RootNameSpace.LookupTypeInfo(Void.class);
 		this.ObjectType = this.RootNameSpace.LookupTypeInfo(Object.class);
 		this.BooleanType = this.RootNameSpace.LookupTypeInfo(Boolean.class);
@@ -158,7 +163,6 @@ public final class Konoha implements KonohaConst {
 		this.StringType = this.RootNameSpace.LookupTypeInfo(String.class);
 		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
 
-		this.RootNameSpace = new KonohaNameSpace(this, null);
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
 		if(BuilderClassName != null) {
@@ -166,7 +170,6 @@ public final class Konoha implements KonohaConst {
 		}
 	}
 
-	KonohaMap  ClassNameMap;
 
 	KonohaType LookupTypeInfo(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType)ClassNameMap.get(ClassInfo.getName());

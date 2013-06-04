@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
 @KonohaPure
@@ -91,7 +92,7 @@ public class KonohaShell {
 		this.IsInteractiveMode = true;
 		String[] newArgs = new String[Args.size()];
 		for(int i = 0; i < Args.size(); i++) {
-			newArgs[i] = Args.get(i);
+			newArgs[i] = (String) Args.get(i);
 		}
 		return newArgs;
 	}
@@ -162,6 +163,7 @@ public class KonohaShell {
 				}
 				console.println("b:" + source);
 			}
+			s.close();
 			if(this.ProcessSource(source) == false) {
 				break;
 			}

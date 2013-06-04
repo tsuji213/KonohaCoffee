@@ -10,7 +10,8 @@ class DefaultSwitchNodeAcceptor implements SwitchNodeAcceptor {
 	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
 		Visitor.EnterSwitch(Node);
 		Visitor.Visit(Node.CondExpr);
-		for(TypedNode Block : Node.Blocks) {
+		for(int i = 0; i < Node.Blocks.size(); i++) {
+			TypedNode Block = (TypedNode) Node.Blocks.get(i);
 			Visitor.VisitList(Block);
 		}
 		return Visitor.ExitSwitch(Node);
@@ -27,7 +28,7 @@ public class SwitchNode extends TypedNode {
 	 */
 	public TypedNode			CondExpr;
 	public KonohaArray	Labels;
-	public ArrayList<TypedNode>	Blocks;
+	public KonohaArray	Blocks;
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {

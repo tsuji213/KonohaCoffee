@@ -74,7 +74,7 @@ class IndentGenerator {
 
 public abstract class SourceCodeGen extends CodeGenerator {
 	private final KonohaArray		Program;
-	private final ArrayList<Integer>	CurrentProgramSize;
+	private final KonohaArray	CurrentProgramSize;
 
 	protected final IndentGenerator		indentGenerator	= new IndentGenerator(4);
 	private static String[]				binaryOpList	= { "+", "-", "*", "/",
@@ -88,7 +88,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	public SourceCodeGen(KonohaMethod MethodInfo) {
 		super(MethodInfo);
 		this.Program = new KonohaArray();
-		this.CurrentProgramSize = new ArrayList<Integer>();
+		this.CurrentProgramSize = new KonohaArray();
 		
 		this.IfNodeAcceptor = new IfNodeAcceptor() {
 			@Override
@@ -117,7 +117,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected String pop() {
-		return this.Program.remove(this.Program.size() - 1);
+		return (String) this.Program.remove(this.Program.size() - 1);
 	}
 
 	protected String[] PopN(int n) {
@@ -228,8 +228,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected int PopProgramSize() {
-		return this.CurrentProgramSize
-				.remove(this.CurrentProgramSize.size() - 1);
+		return (int) this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
 	}
 
 	protected void push(String Program) {

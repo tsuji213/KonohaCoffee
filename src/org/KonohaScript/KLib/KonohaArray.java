@@ -31,6 +31,9 @@ public final class KonohaArray {
 	public KonohaArray() {
 		this.List = new ArrayList<Object>();
 	}
+	public KonohaArray(int DefaultSize) {
+		this.List = new ArrayList<Object>(DefaultSize);
+	}
 	public int size() {
 		return List.size();
 	}

@@ -1,8 +1,8 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KLib.*;
 import java.util.HashMap;
 
+import org.KonohaScript.KLib.*;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.AndNode;
@@ -31,29 +31,34 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 public class LeafJSCodeGen extends SourceCodeGen {
 	private final boolean	UseLetKeyword	= false;
 
-	private ArrayList<HashMap<String, Integer>> LocalVariableRenameTables = new ArrayList<HashMap<String, Integer>>();
+	private KonohaArray LocalVariableRenameTables;
 
 	public LeafJSCodeGen() {
 		super(null);
+		this.LocalVariableRenameTables = new KonohaArray();
 	}
 
 	private void AddLocalVariableRenameRule(String Name){
 		int nameUsedTimes = 0;
 		int N = LocalVariableRenameTables.size();
-		if(N > 0 && !LocalVariableRenameTables.get(N - 1).containsKey(Name)){
+		if(N == 0)
+			return;
+		HashMap<String, Integer> map = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(N-1);
+		if(!map.containsKey(Name)){
 			for(int i = 0; i < N - 1; ++i){
-				if(LocalVariableRenameTables.get(i).containsKey(Name)){
+				HashMap<String, Integer> parent = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(i);
+				if(parent.containsKey(Name)){
 					nameUsedTimes++;
 				}
 			}
-			LocalVariableRenameTables.get(N - 1).put(Name, nameUsedTimes);
+			map.put(Name, nameUsedTimes);
 		}
 	}
 
 	private String GetRenamedLocalName(String originalName){
 		int N = LocalVariableRenameTables.size();
 		for(int i = N - 1; i >= 0; --i){
-			HashMap<String, Integer> map = LocalVariableRenameTables.get(i);
+			HashMap<String, Integer> map = (HashMap<String, Integer>) LocalVariableRenameTables.get(i);
 			if(map.containsKey(originalName)){
 				if(map.get(originalName) > 0){
 					return originalName + map.get(originalName);
@@ -85,7 +90,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = params.get(i);
+			Local local = (Local) params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
@@ -287,7 +292,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		int Size = Node.Labels.size();
 		String Exprs = "";
 		for(int i = 0; i < Size; i = i + 1) {
-			String Label = Node.Labels.get(Size - i);
+			String Label = (String) Node.Labels.get(Size - i);
 			String Block = this.pop();
 			Exprs = "case " + Label + ":" + Block + Exprs;
 		}

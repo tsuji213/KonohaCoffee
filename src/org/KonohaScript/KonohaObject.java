@@ -24,7 +24,7 @@
 
 package org.KonohaScript;
 
-import java.util.HashMap;
+import org.KonohaScript.KLib.KonohaMap;
 
 public class KonohaObject {
 	public KonohaType				TypeInfo;

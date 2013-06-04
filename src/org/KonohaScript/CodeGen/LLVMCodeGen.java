@@ -1,11 +1,9 @@
  package org.KonohaScript.CodeGen;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import org.KonohaScript.KLib.*;
 import java.util.HashMap;
 import java.util.Stack;
@@ -81,7 +79,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = params.get(i);
+			Local local = (Local) params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
@@ -530,9 +528,9 @@ class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support bre
 		
 		//add case block	
 		for(int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
-			String labelName = Node.Labels.get(i);
+			String labelName = (String) Node.Labels.get(i);
 			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
-			this.codeGen.VisitBlock(Node.Blocks.get(i));
+			this.codeGen.VisitBlock((TypedNode)Node.Blocks.get(i));
 			
 			LLVMValue caseLabel = 
 					this.builder.createConstValue("Integer", Integer.parseInt(labelName));
