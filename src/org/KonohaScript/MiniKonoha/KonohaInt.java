@@ -25,7 +25,7 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "/", BinaryParam, this, "IntDivInt");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "%", BinaryParam, this, "IntModInt");
 
-		if (KonohaDebug.UseBuiltInTest) {
+		if(KonohaDebug.UseBuiltInTest) {
 			assert (BaseClass.LookupMethod("+", 0) != null);
 			assert (BaseClass.LookupMethod("+", 1) != null);
 			assert (BaseClass.LookupMethod("+", 2) == null);

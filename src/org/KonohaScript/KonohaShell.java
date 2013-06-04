@@ -73,15 +73,15 @@ public class KonohaShell {
 
 	String[] ProcessOptions(String[] origArgs) {
 		ArrayList<String> Args = new ArrayList<String>();
-		for (int i = 0; i < origArgs.length; i++) {
+		for(int i = 0; i < origArgs.length; i++) {
 			String arg = origArgs[i];
-			if (arg.equals("-h")) {
+			if(arg.equals("-h")) {
 				this.printHelp();
 				return null;
 			}
-			if (arg.equals("-i")) {
+			if(arg.equals("-i")) {
 				this.IsInteractiveMode = true;
-			} else if (arg.startsWith("-arch=")) {
+			} else if(arg.startsWith("-arch=")) {
 				String BuilderName = arg.substring("-arch=".length());
 				this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
 			} else {
@@ -91,7 +91,7 @@ public class KonohaShell {
 
 		this.IsInteractiveMode = true;
 		String[] newArgs = new String[Args.size()];
-		for (int i = 0; i < Args.size(); i++) {
+		for(int i = 0; i < Args.size(); i++) {
 			newArgs[i] = Args.get(i);
 		}
 		return newArgs;
@@ -101,14 +101,14 @@ public class KonohaShell {
 		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
 		KonohaShell shell = new KonohaShell(DefaultBuilder);
 		String[] args = shell.ProcessOptions(origArgs);
-		if (args == null) {
+		if(args == null) {
 			return;
 		}
 
-		for (int i = 0; i < args.length; i++) {
+		for(int i = 0; i < args.length; i++) {
 			shell.ProcessFile(args[i]);
 		}
-		if (shell.IsInteractiveMode) {
+		if(shell.IsInteractiveMode) {
 			shell.ProcessConsole();
 
 		}
@@ -117,26 +117,26 @@ public class KonohaShell {
 	static int Count(String begin, String terminator, String source) {
 		int level = 0;
 		int start = source.indexOf(begin);
-		if (start >= 0) {
+		if(start >= 0) {
 			int i = start;
-			while (i < source.length()) {
+			while(i < source.length()) {
 				level = level + 1;
 				// System.out.println("start = " + start + ",i = " + i +":inc");
 				i = source.indexOf(begin, i + 1);
-				if (i < 0) {
+				if(i < 0) {
 					break;
 				}
 			}
 		}
 
 		int end = source.indexOf(terminator);
-		if (end >= 0) {
+		if(end >= 0) {
 			int i = end;
-			while (i < source.length()) {
+			while(i < source.length()) {
 				level = level - 1;
 				// System.out.println("end = " + end + ",i = " + i + ":dec");
 				i = source.indexOf(end, i + 1);
-				if (i < 0) {
+				if(i < 0) {
 					break;
 				}
 			}
@@ -147,23 +147,23 @@ public class KonohaShell {
 	private void ProcessConsole() {
 		KConsole console = new KConsole();
 		console.println("Konoha version 3.0");
-		while (true) {
+		while(true) {
 			console.print(">>>");
 			String source = "";
 			Scanner s = new Scanner(console.stdin);
 			int level = 0;
 
-			while (s.hasNext()) {
+			while(s.hasNext()) {
 				String line = s.next();
 				source = source + line + "\n";
 				level = level + Count("(", ")", line);
 				level = level + Count("{", "}", line);
-				if (level == 0) {
+				if(level == 0) {
 					break;
 				}
 				console.println("b:" + source);
 			}
-			if (this.ProcessSource(source) == false) {
+			if(this.ProcessSource(source) == false) {
 				break;
 			}
 		}

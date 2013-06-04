@@ -49,22 +49,22 @@ class KParamMap {
 }
 
 class KSymbolTable implements KonohaConst {
-	ArrayList<KonohaType> ClassList;
-	HashMap<String, KonohaType> ClassNameMap;
+	ArrayList<KonohaType>		ClassList;
+	HashMap<String, KonohaType>	ClassNameMap;
 
-	ArrayList<KPackage> PackageList;
-	KKeyIdMap PackageMap;
+	ArrayList<KPackage>			PackageList;
+	KKeyIdMap					PackageMap;
 
-	ArrayList<String> FileIdList;
-	HashMap<String, Integer> FileIdMap;
+	ArrayList<String>			FileIdList;
+	HashMap<String, Integer>	FileIdMap;
 
-	ArrayList<String> SymbolList;
-	HashMap<String, Integer> SymbolMap;
+	ArrayList<String>			SymbolList;
+	HashMap<String, Integer>	SymbolMap;
 
-	ArrayList<KonohaParam> ParamList;
-	KParamMap ParamMap;
-	ArrayList<KonohaParam> SignatureList;
-	KParamMap SignatureMap;
+	ArrayList<KonohaParam>		ParamList;
+	KParamMap					ParamMap;
+	ArrayList<KonohaParam>		SignatureList;
+	KParamMap					SignatureMap;
 
 	KSymbolTable() {
 		this.ClassList = new ArrayList<KonohaType>(64);
@@ -85,8 +85,7 @@ class KSymbolTable implements KonohaConst {
 	}
 
 	void Init(Konoha kctx) {
-		KPackage defaultPackage = this.NewPackage(
-				kctx, "Konoha");
+		KPackage defaultPackage = this.NewPackage(kctx, "Konoha");
 		// NewClass(kctx, defaultPackage, "void");
 	}
 
@@ -95,8 +94,7 @@ class KSymbolTable implements KonohaConst {
 		if(fileid == null) {
 			int id = this.FileIdList.size();
 			this.FileIdList.add(file);
-			this.FileIdMap.put(
-					file, new Integer(id));
+			this.FileIdMap.put(file, new Integer(id));
 			return ((long) id << 32) | linenum;
 		}
 		return (fileid.longValue() << 32) | linenum;
@@ -152,25 +150,20 @@ class KSymbolTable implements KonohaConst {
 			if(DefaultValue == KonohaConst.AllowNewId) {
 				int n = this.SymbolList.size();
 				this.SymbolList.add(key);
-				this.SymbolMap.put(
-						key, new Integer(n));
-				return KSymbolTable.MaskSymbol(
-						n, mask);
+				this.SymbolMap.put(key, new Integer(n));
+				return KSymbolTable.MaskSymbol(n, mask);
 			}
 			return DefaultValue;
 		}
-		return KSymbolTable.MaskSymbol(
-				id.intValue(), mask);
+		return KSymbolTable.MaskSymbol(id.intValue(), mask);
 	}
 
 	public static String CanonicalSymbol(String Symbol) {
-		return Symbol.toLowerCase().replaceAll(
-				"_", "");
+		return Symbol.toLowerCase().replaceAll("_", "");
 	}
 
 	public int GetCanonicalSymbol(String Symbol, int DefaultValue) {
-		return this.GetSymbol(
-				KSymbolTable.CanonicalSymbol(Symbol), DefaultValue);
+		return this.GetSymbol(KSymbolTable.CanonicalSymbol(Symbol), DefaultValue);
 	}
 
 	int GetSymbol(String symbol, boolean isnew) {
@@ -199,16 +192,16 @@ class KSymbolTable implements KonohaConst {
 
 public class Konoha implements KonohaConst {
 
-	KonohaNameSpace RootNameSpace;
-	KonohaNameSpace DefaultNameSpace;
-	KSymbolTable SymbolTable;
+	KonohaNameSpace			RootNameSpace;
+	KonohaNameSpace			DefaultNameSpace;
+	KSymbolTable			SymbolTable;
 
-	public final KonohaType VoidType;
-	public final KonohaType ObjectType;
-	public final KonohaType BooleanType;
-	public final KonohaType IntType;
-	public final KonohaType StringType;
-	public final KonohaType VarType;
+	public final KonohaType	VoidType;
+	public final KonohaType	ObjectType;
+	public final KonohaType	BooleanType;
+	public final KonohaType	IntType;
+	public final KonohaType	StringType;
+	public final KonohaType	VarType;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new KSymbolTable();
@@ -233,8 +226,7 @@ public class Konoha implements KonohaConst {
 		KonohaType TypeInfo = this.SymbolTable.ClassNameMap.get(ClassInfo.getName());
 		if(TypeInfo == null) {
 			TypeInfo = new KonohaType(this, ClassInfo);
-			this.SymbolTable.ClassNameMap.put(
-					ClassInfo.getName(), TypeInfo);
+			this.SymbolTable.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
 		}
 		return TypeInfo;
 	}
@@ -244,13 +236,11 @@ public class Konoha implements KonohaConst {
 	// }
 
 	public void Define(String symbol, Object Value) {
-		this.RootNameSpace.DefineSymbol(
-				symbol, Value);
+		this.RootNameSpace.DefineSymbol(symbol, Value);
 	}
 
 	public void Eval(String text, long uline) {
-		this.DefaultNameSpace.Eval(
-				text, uline);
+		this.DefaultNameSpace.Eval(text, uline);
 	}
 
 	public void Load(String fileName) {
@@ -264,10 +254,6 @@ public class Konoha implements KonohaConst {
 		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
 		// KonohaContext.Eval("a == b + C; D + e == F", 2);
 		// KonohaContext.Eval("1+2*3", 3333);
-		KonohaContext.Eval(
-				"int fibo(int n) {\n" +
-						"\tif(n < 3) return 1;\n" +
-						"\treturn fibo(n-1)+fibo(n-2);\n" +
-						"}", 1000);
+		KonohaContext.Eval("int fibo(int n) {\n" + "\tif(n < 3) return 1;\n" + "\treturn fibo(n-1)+fibo(n-2);\n" + "}", 1000);
 	}
 }

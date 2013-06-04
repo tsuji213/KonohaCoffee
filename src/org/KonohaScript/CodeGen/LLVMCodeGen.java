@@ -44,7 +44,7 @@ import org.jllvm.bindings.LLVMIntPredicate;
 
 public class LLVMCodeGen extends CodeGenerator {
 	private LLVMBuilder builder;
-	
+
 	public LLVMCodeGen() {
 		super(null);
 		this.builder = new LLVMBuilder();
@@ -58,7 +58,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	public boolean Visit(TypedNode Node) {
 		return Node.Evaluate(this);
 	}
-	
+
 	public boolean VisitBlock(TypedNode Node){
 		boolean ret = true;
 		if(Node != null){
@@ -80,7 +80,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	@Override 
 	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
 		this.Prepare(Method);
-		for (int i = 0; i < params.size(); i++) {
+		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
@@ -90,12 +90,12 @@ public class LLVMCodeGen extends CodeGenerator {
 	public CompiledMethod Compile(TypedNode Block) { //FIXME
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
 		
-		if (this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			String fqMethodName = this.getFullyQualifiedMethodName(this.MethodInfo);
 			int argsSize = this.LocalVals.size();
 			LLVMType[] argsType = new LLVMType[argsSize];
 			
-			for (int i = 0; i < argsSize; i++) {
+			for(int i = 0; i < argsSize; i++) {
 				Local local = this.GetLocalVariableByIndex(i);
 				argsType[i] = this.builder.convertTypeNameToLLVMType(local.TypeInfo.ShortClassName);
 				this.builder.setArgument(local.Name, i);
@@ -116,24 +116,24 @@ public class LLVMCodeGen extends CodeGenerator {
 
 		return Mtd;
 	}
-	
+
 	public String getFullyQualifiedMethodName(KonohaMethod methodInfo) {
 		String methodName = methodInfo.MethodName;
-		String retType = methodInfo.ClassInfo.ShortClassName; 
+		String retType = methodInfo.ClassInfo.ShortClassName;
 		int argsSize = methodInfo.Param.Types.length;
 		
 		String fqMethodName = retType + "_" + methodName;
-		for (int i = 0; i < argsSize; i++) {
+		for(int i = 0; i < argsSize; i++) {
 			fqMethodName = fqMethodName + "_" + methodInfo.Param.Types[i].ShortClassName;
 		}
 		
 		return fqMethodName;
 	}
-	
+
 	public void dumpModule() {
 		builder.dumpModule();
 	}
-	
+
 	public void execute() {
 		builder.execute();
 	}
@@ -146,7 +146,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	@Override 
 	public boolean ExitConst(ConstNode Node) { 
 		String typeName = Node.TypeInfo.ShortClassName;
-		Object value = Node.ConstValue;	
+		Object value = Node.ConstValue;
 		LLVMValue constValue = this.builder.createConstValue(typeName, value);
 		this.builder.pushValue(constValue);
 		
@@ -204,17 +204,17 @@ public class LLVMCodeGen extends CodeGenerator {
 
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
-		for (String op : binaryOpList) {
-			if (op.equals(methodName))
+		for(String op : binaryOpList) {
+			if(op.equals(methodName))
 				return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean ExitApply(ApplyNode Node) { //TODO: support unary operator
 		LLVMValue retValue = null;
-		if (this.isMethodBinaryOperator(Node)) {
+		if(this.isMethodBinaryOperator(Node)) {
 			String methodName = Node.Method.MethodName;
 			LLVMValue rightValue = this.builder.popValue();
 			LLVMValue leftValue = this.builder.popValue();
@@ -223,7 +223,7 @@ public class LLVMCodeGen extends CodeGenerator {
 			String fqMethodName = getFullyQualifiedMethodName(Node.Method);
 			int size = Node.Params.size();
 			LLVMValue[] params = new LLVMValue[size];
-			for (int i = size - 1; i > -1; i--) {
+			for(int i = size - 1; i > -1; i--) {
 				params[i] = this.builder.popValue();
 			}
 			retValue = this.builder.createCall(fqMethodName, params, "methodRet");
@@ -266,11 +266,11 @@ public class LLVMCodeGen extends CodeGenerator {
 //		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
-	
+
 	@Override
 	public void EnterIf(IfNode Node) { 
 	}
-	
+
 	@Override
 	public boolean ExitIf(IfNode Node) { 	
 		return true;
@@ -279,7 +279,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	@Override
 	public void EnterSwitch(SwitchNode Node) {
 	}
-	
+
 	@Override
 	public boolean ExitSwitch(SwitchNode Node) {  
 		return true;
@@ -290,7 +290,7 @@ public class LLVMCodeGen extends CodeGenerator {
 //		String LoopBody = this.pop();
 //		String IterExpr = this.pop();
 //		String CondExpr = this.pop();
-//		this.push("while (" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+//		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
 		return true;
 	}
 
@@ -303,9 +303,9 @@ public class LLVMCodeGen extends CodeGenerator {
 	@Override
 	public boolean ExitLabel(LabelNode Node) { //TODO: 
 //		String Label = Node.Label;
-//		if (Label.compareTo("continue") == 0) {
+//		if(Label.compareTo("continue") == 0) {
 //			this.push("");
-//		} else if (Label.compareTo("continue") == 0) {
+//		} else if(Label.compareTo("continue") == 0) {
 //			this.push("");
 //		} else {
 //			this.push(Label + ":");
@@ -316,9 +316,9 @@ public class LLVMCodeGen extends CodeGenerator {
 	@Override
 	public boolean ExitJump(JumpNode Node) { //TODO: 
 //		String Label = Node.Label;
-//		if (Label.compareTo("continue") == 0) {
+//		if(Label.compareTo("continue") == 0) {
 //			this.push("continue;");
-//		} else if (Label.compareTo("continue") == 0) {
+//		} else if(Label.compareTo("continue") == 0) {
 //			this.push("break;");
 //		} else {
 //			this.push("goto " + Label);
@@ -330,7 +330,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	public boolean ExitTry(TryNode Node) { //TODO: 
 //		String FinallyBlock = this.pop();
 //		String CatchBlocks = "";
-//		for (int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
+//		for(int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
 //			String Block = this.pop();
 //			CatchBlocks = "catch() " + Block + CatchBlocks;
 //		}
@@ -423,7 +423,7 @@ public class LLVMCodeGen extends CodeGenerator {
 class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 	private LLVMCodeGen codeGen;
 	private LLVMBuilder builder;
-	
+
 	public LLVMIfNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
 		this.codeGen = codeGen;
 		this.builder = builder;
@@ -440,27 +440,27 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		
 		//Then Block
 		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("thenBlock");
-		if (Node.ThenNode != null) {
-			this.codeGen.VisitBlock(Node.ThenNode);	
+		if(Node.ThenNode != null) {
+			this.codeGen.VisitBlock(Node.ThenNode);
 		}
 		boolean thenBlockHasNotReturnNode = hasNotReturnNode(Node.ThenNode);
 		
 		//Else Block
 		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
-		if (Node.ElseNode != null) {
-			this.codeGen.VisitBlock(Node.ElseNode);	
+		if(Node.ElseNode != null) {
+			this.codeGen.VisitBlock(Node.ElseNode);
 		}
 		boolean elseBlockHasNotReturnNode = hasNotReturnNode(Node.ElseNode);
 		
 		//End Block
-		if (thenBlockHasNotReturnNode || elseBlockHasNotReturnNode) {
+		if(thenBlockHasNotReturnNode || elseBlockHasNotReturnNode) {
 			endBlock = this.builder.createBasicBlock("endBlock");
-			if (thenBlockHasNotReturnNode) {
+			if(thenBlockHasNotReturnNode) {
 				this.builder.changeCurrentBBlock(thenBlock);
 				this.builder.createBranch(endBlock);
 			}
 			
-			if (elseBlockHasNotReturnNode) {
+			if(elseBlockHasNotReturnNode) {
 				this.builder.changeCurrentBBlock(elseBlock);
 				this.builder.createBranch(endBlock);
 			}
@@ -469,25 +469,25 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		// create if 
 		this.builder.changeCurrentBBlock(currentBlock);
 		this.builder.createIfElse(condition, thenBlock, elseBlock);
-		if (endBlock != null) {
+		if(endBlock != null) {
 			this.builder.changeCurrentBBlock(endBlock);
 		}
 		
 		return Visitor.ExitIf(Node);
 	}
-	
+
 	private boolean hasNotReturnNode(TypedNode node) { //FIXME
 		String nameOfReturnNodeClass =  "class org.KonohaScript.SyntaxTree.ReturnNode";
 		boolean hasNotReturnNode = true;
 		TypedNode iterNode = node;
 		
-		if (iterNode == null) {
+		if(iterNode == null) {
 			return true;
 		}
 		
 		while(true) {
-			if (iterNode.NextNode == null) {
-				if (iterNode.getClass().toString().equals(nameOfReturnNodeClass)) {
+			if(iterNode.NextNode == null) {
+				if(iterNode.getClass().toString().equals(nameOfReturnNodeClass)) {
 					hasNotReturnNode = false;
 				}
 				break;
@@ -502,18 +502,18 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support break statement
 	private LLVMCodeGen codeGen;
 	private LLVMBuilder builder;
-	
+
 	public LLVMSwitchNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
 		this.codeGen = codeGen;
 		this.builder = builder;
 	}
-	
+
 	@Override
 	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
 		Visitor.EnterSwitch(Node);
 		Visitor.Visit(Node.CondExpr);
 		
-		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();	
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
 		
 		
 		LLVMValue condition = this.builder.popValue();
@@ -529,7 +529,7 @@ class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support bre
 				this.builder.createSwitch(condition, defaultBlock, caseNum);
 		
 		//add case block	
-		for (int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
+		for(int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
 			String labelName = Node.Labels.get(i);
 			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
 			this.codeGen.VisitBlock(Node.Blocks.get(i));
@@ -548,12 +548,12 @@ class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support bre
 class LLVMAndNodeAcceptor implements AndNodeAcceptor { 
 	private LLVMCodeGen codeGen;
 	private LLVMBuilder builder;
-	
+
 	public LLVMAndNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
 		this.codeGen = codeGen;
 		this.builder = builder;
 	}
-	
+
 	@Override
 	public boolean Invoke(AndNode Node, NodeVisitor Visitor) { 
 		Visitor.EnterAnd(Node);
@@ -564,7 +564,7 @@ class LLVMAndNodeAcceptor implements AndNodeAcceptor {
 		
 		//Then Block
 		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("andThenBlock");
-		this.codeGen.VisitBlock(Node.RightNode);	
+		this.codeGen.VisitBlock(Node.RightNode);
 		LLVMValue ret = this.builder.popValue();
 		
 		//End Block
@@ -588,12 +588,12 @@ class LLVMAndNodeAcceptor implements AndNodeAcceptor {
 class LLVMOrNodeAcceptor implements OrNodeAcceptor { 
 	private LLVMCodeGen codeGen;
 	private LLVMBuilder builder;
-	
+
 	public LLVMOrNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
 		this.codeGen = codeGen;
 		this.builder = builder;
 	}
-	
+
 	@Override
 	public boolean Invoke(OrNode Node, NodeVisitor Visitor) { 
 		Visitor.EnterOr(Node);
@@ -607,7 +607,7 @@ class LLVMOrNodeAcceptor implements OrNodeAcceptor {
 		
 		//Else Block
 		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("orElseBlock");
-		this.codeGen.VisitBlock(Node.RightNode);	
+		this.codeGen.VisitBlock(Node.RightNode);
 		LLVMValue ret = this.builder.popValue();
 		
 		// create Or
@@ -624,27 +624,27 @@ class LLVMOrNodeAcceptor implements OrNodeAcceptor {
 		return Visitor.ExitOr(Node);
 	}
 }
-	
+
 class LLVMBuilder { 
 	private final int intLength = 64;
-	
+
 	private static boolean isInitialized = false;
 	private static boolean isDefinedEmbeddedFunc = false;
 	private static LLVMModule module;
 	private static HashMap<String, LLVMFunction> definedFucnNameMap; //TODO: future may be removed
-	
+
 	private LLVMInstructionBuilder builder;
 	private LLVMBasicBlock currentBBlock;
 	private LLVMFunction currentFunc;
-	
+
 	private HashMap<String, Integer> argMap;
 	private Stack<LLVMValue> valueStack;
-	
+
 	public static void initBuilder() {
-		if (!isInitialized) {
+		if(!isInitialized) {
 			isInitialized = true;
 			
-			System.loadLibrary("jllvm");	
+			System.loadLibrary("jllvm");
 			module = new LLVMModule("top", LLVMContext.getGlobalContext());
 			definedFucnNameMap = new HashMap<String, LLVMFunction>();
 			
@@ -654,7 +654,7 @@ class LLVMBuilder {
 			new CmdLauncher("rm embeddedMethod.ll");
 		}
 	}
-	
+
 	public LLVMBuilder() {
 		initBuilder();
 		
@@ -663,20 +663,20 @@ class LLVMBuilder {
 		argMap = new HashMap<String, Integer>();
 		valueStack = new Stack<LLVMValue>();
 		
-		if (!isDefinedEmbeddedFunc) {
+		if(!isDefinedEmbeddedFunc) {
 			isDefinedEmbeddedFunc = true;
-			defineEmbeddedMethod();	
+			defineEmbeddedMethod();
 		}
 	}
-	
+
 	public void dumpFunction() {
 		this.currentFunc.dump();
 	}	
-	
+
 	public void dumpModule() {
 		module.dump();
 	}
-	
+
 	public void execute() { //FIXME
 		finalizeMainFunc();
 		dumpModule();
@@ -693,92 +693,92 @@ class LLVMBuilder {
 	public void setArgument(String argName, int index) {
 		this.argMap.put(argName, index);
 	}
-	
+
 	public void changeCurrentFunction(LLVMFunction func) {
 		currentFunc = func;
 	}
-	
+
 	public void changeCurrentBBlock(LLVMBasicBlock bblock) {
 		currentBBlock = bblock;
 		builder.positionBuilderAtEnd(bblock);
 	}
-	
+
 	public LLVMBasicBlock getCurrentBBlock() {
 		return currentBBlock;
 	}
-	
+
 	public void pushValue(LLVMValue value) {
 		this.valueStack.push(value);
 	}
-	
+
 	public LLVMValue popValue() {
 		return this.valueStack.pop();
 	}
-	
+
 	private LLVMFunction createFunctionAbst(String funcName, LLVMType retType, LLVMType[] argsType, boolean isVarArg) {
 		LLVMFunctionType funcType = new LLVMFunctionType(retType, argsType, isVarArg);
-		LLVMFunction func = new LLVMFunction(module, funcName, funcType);	
+		LLVMFunction func = new LLVMFunction(module, funcName, funcType);
 		changeCurrentFunction(func);
 		definedFucnNameMap.put(funcName, func);
 		
 		return func;
 	}
-	
+
 	public LLVMFunction createFunction(String funcName, LLVMType retType, LLVMType[] argsType) {
 		return createFunctionAbst(funcName, retType, argsType, false);
 	}
-	
+
 	public LLVMFunction createVariableFunction(String funcName, LLVMType retType, LLVMType[] argsType) {
 		return createFunctionAbst(funcName, retType, argsType, true);
 	}
-	
+
 	public LLVMBasicBlock createBasicBlock(String bblockName) {
 		LLVMBasicBlock bblock = currentFunc.appendBasicBlock(bblockName);
 		changeCurrentBBlock(bblock);
 		return bblock;
 	}
-	
+
 	//TODO: support user defined class 
 	public LLVMValue createConstValue(String typeName, Object value) {
 		LLVMType type = convertTypeNameToLLVMType(typeName);
-		if (typeName.equals("Integer")) {
+		if(typeName.equals("Integer")) {
 			long intValue = (Integer)value;
 			return LLVMConstantInteger.constantInteger((LLVMIntegerType)type, intValue, false);
-		} else if (typeName.equals("Float")) {	//FIXME
+		} else if(typeName.equals("Float")) {	//FIXME
 			double floatValue = (Double)value;
 			return new LLVMConstantReal(new LLVMFloatType(), floatValue);
-		} else if (typeName.equals("Boolean")) {
+		} else if(typeName.equals("Boolean")) {
 			boolean boolValue = (Boolean)value;
 			return new LLVMConstantBoolean(boolValue);
-		} else if (typeName.equals("String")) {
+		} else if(typeName.equals("String")) {
 			String strValue = (String)value;
 			return new LLVMConstantString(strValue, true);
 		} else {
-			return null;	
+			return null;
 		}
 	}
 
 	public LLVMConstant createConstNull(LLVMType type) {
 		return LLVMConstant.constNull(type);
 	}
-	
+
 	public void createReturn(LLVMValue retValue) {
 		new LLVMReturnInstruction(builder, retValue);
 	}
-	
+
 	public void createBranch(LLVMBasicBlock destBlock) {
 		new LLVMBranchInstruction(builder, destBlock);
 	}
-	
+
 	public void createIfElse(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock elseBlock) {
 		new LLVMBranchInstruction(builder, condition, thenBlock, elseBlock);
 	}
-	
+
 	public void createCondLogicalOp(LLVMValue condition, LLVMBasicBlock thenBlock, LLVMBasicBlock endBlock, boolean isAnd) {
 		// isAnd == true: create and. isAnd == false: create false.
 		LLVMBasicBlock currentBlock = this.getCurrentBBlock();
 		
-		if (!isAnd) {	//swap block
+		if(!isAnd) {	//swap block
 			LLVMBasicBlock swapBlock = thenBlock;
 			thenBlock = endBlock;
 			endBlock = swapBlock;
@@ -791,126 +791,126 @@ class LLVMBuilder {
 		new LLVMBranchInstruction(builder, condition, thenBlock, endBlock);
 		this.changeCurrentBBlock(endBlock);
 	}
-	
+
 	public LLVMType convertTypeNameToLLVMType(String typeName) { //TODO: support user defined class
-		if (typeName.equals("Integer")) {
+		if(typeName.equals("Integer")) {
 			return new LLVMIntegerType(intLength);
-		} else if (typeName.equals("Float")) {
+		} else if(typeName.equals("Float")) {
 			return new LLVMFloatType();
-		} else if (typeName.equals("Void")) {
+		} else if(typeName.equals("Void")) {
 			return new LLVMVoidType();
-		} else if (typeName.equals("Boolean")) {
+		} else if(typeName.equals("Boolean")) {
 			return new LLVMIntegerType(1);
-		} else if (typeName.equals("String")) {
+		} else if(typeName.equals("String")) {
 			return new LLVMPointerType(new LLVMIntegerType(8), 0);
-		} else if (typeName.equals("Object")) { //FIXME
+		} else if(typeName.equals("Object")) { //FIXME
 			return new LLVMIntegerType(intLength);
 		} else {
 			System.err.println(typeName + " is not defined type");
-			return null;	
+			return null;
 		}
 	}
-	
+
 	public LLVMArgument getArgument(String argName) {
 		return this.currentFunc.getParameter(this.argMap.get(argName));
 	}
-	
+
 	public LLVMValue createLocalVariable(LLVMValue initValue, String varName) { //FIXME
-		LLVMStackAllocation stack = new LLVMStackAllocation(builder, initValue.typeOf(), null, varName);	
+		LLVMStackAllocation stack = new LLVMStackAllocation(builder, initValue.typeOf(), null, varName);
 		new LLVMStoreInstruction(builder, initValue, stack);
 		return stack;
 	}
-	
+
 	//TODO: support float value at comparison instruction
 	public LLVMValue createBinaryOp(String opName, LLVMValue leftValue, LLVMValue rightValue, String retName) {
 		//binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<", ">>" }
-		if (opName.equals("+")) {
+		if(opName.equals("+")) {
 			return new LLVMAddInstruction(builder, leftValue, rightValue, false, retName);
-		} else if (opName.equals("-")) {
+		} else if(opName.equals("-")) {
 			return new LLVMSubtractInstruction(builder, leftValue, rightValue, false, retName);
-		} else if (opName.equals("*")) {
+		} else if(opName.equals("*")) {
 			return new LLVMMultiplyInstruction(builder, leftValue, rightValue, false, retName);
-		} else if (opName.equals("/")) {	//FIXME
-		} else if (opName.equals("<")) {
+		} else if(opName.equals("/")) {	//FIXME
+		} else if(opName.equals("<")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntSLT;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals("<=")) {
+		} else if(opName.equals("<=")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntSLE;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals(">")) {
+		} else if(opName.equals(">")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntSGT;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals(">=")) {
+		} else if(opName.equals(">=")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntSGE;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals("==")) {
+		} else if(opName.equals("==")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntEQ;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals("!=")) {
+		} else if(opName.equals("!=")) {
 			LLVMIntPredicate predicate = LLVMIntPredicate.LLVMIntNE;
 			return new LLVMIntegerComparison(builder, predicate, leftValue, rightValue, retName);
-		} else if (opName.equals("&&")) { //FIXME
-		} else if (opName.equals("||")) { //FIXME
-		} else if (opName.equals("&")) {
+		} else if(opName.equals("&&")) { //FIXME
+		} else if(opName.equals("||")) { //FIXME
+		} else if(opName.equals("&")) {
 			LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType insType = 
 					LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType.AND;
 			return new LLVMBinaryBitwiseInstruction(insType, builder, leftValue, rightValue, retName);
-		} else if (opName.equals("|")) {
+		} else if(opName.equals("|")) {
 			LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType insType = 
 					LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType.OR;
 			return new LLVMBinaryBitwiseInstruction(insType, builder, leftValue, rightValue, retName);
-		} else if (opName.equals("^")) {
+		} else if(opName.equals("^")) {
 			LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType insType = 
 					LLVMBinaryBitwiseInstruction.BinaryBitwiseInstructionType.XOR;
 			return new LLVMBinaryBitwiseInstruction(insType, builder, leftValue, rightValue, retName);
-		} else if (opName.equals("<<")) {
-		} else if (opName.equals(">>")) {
+		} else if(opName.equals("<<")) {
+		} else if(opName.equals(">>")) {
 		} 
 		return null;
 	}
-	
+
 	public LLVMValue createCall(String funcName, LLVMValue[] args, String retName) {
 		LLVMFunction func = module.getNamedFunction(funcName);
-		if (funcName.split("_")[0].equals("Void")) {
+		if(funcName.split("_")[0].equals("Void")) {
 			retName = "";
 		}
 		return new LLVMCallInstruction(builder, func, args, retName);
 	}
-	
+
 	//TODO: support user defined class
 	public LLVMValue createHeapAllocation(String typeName) {
 		LLVMType type = convertTypeNameToLLVMType(typeName);
 		return new LLVMHeapAllocation(builder, type, null, "heap");
 	}
-	
+
 	public LLVMSwitchInstruction createSwitch(LLVMValue condValue, LLVMBasicBlock defaultBlock, long caseNum) {
 		return new LLVMSwitchInstruction(builder, condValue, defaultBlock, caseNum);
 	}
-	
+
 	private void finalizeMainFunc() { //FIXME
 		changeCurrentFunction(module.getNamedFunction("main"));
 		changeCurrentBBlock(currentFunc.getLastBasicBlock());
 		createReturn(null);
 	}
-	
+
 	public LLVMValue createPhiNode(LLVMType type, String retName, LLVMValue[] values, LLVMBasicBlock[] blocks) {
 		LLVMPhiNode phiNode = new LLVMPhiNode(builder, type, retName);
 		phiNode.addIncoming(values, blocks);
 		return phiNode;
 	}
-	
+
 	// embedded method definition
 	private void defineEmbeddedMethod() {
 		defineMethod_p();
 		defineMethod_toString();
 	}
-	
+
 	private void defineMethod_p() { //FIXME
 		//define method: void_p_Integer_String 
 		LLVMType[] argsType_p = {new LLVMIntegerType(intLength), new LLVMPointerType(new LLVMIntegerType(8), 0)};
 		createFunction("Void_p_Integer_String", new LLVMVoidType(), argsType_p);
 	}
-	
+
 	private void defineMethod_toString() {	//TODO: currently only support int type
 		//define method: String_toString_Integer_Integer
 		LLVMType[] argsType = {new LLVMIntegerType(intLength), new LLVMIntegerType(intLength)};
@@ -935,8 +935,8 @@ class CmdLauncher { //output stderr stdout separately
 			stderrGetter.join();
 			
 			System.out.println(stdoutGetter.getRedirectedStr());
-			if (proc.exitValue() != 0) {
-				System.out.println(stderrGetter.getRedirectedStr());	
+			if(proc.exitValue() != 0) {
+				System.out.println(stderrGetter.getRedirectedStr());
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -944,7 +944,7 @@ class CmdLauncher { //output stderr stdout separately
 			throw new RuntimeException(e);
 		}		
 	}
-	
+
 	private String[] createRunnableCmd(String cmd) {
 		String[] cmdArray = new String[3];
 		cmdArray[0] = "bash";
@@ -952,7 +952,7 @@ class CmdLauncher { //output stderr stdout separately
 		cmdArray[2] = new String(cmd);
 		return cmdArray;
 	}
-	
+
 	class StreamGetter extends Thread {
 		private BufferedReader br;
 		private String redirectedStr;
@@ -965,7 +965,7 @@ class CmdLauncher { //output stderr stdout separately
 		public void run() {
 			String line = null;
 			try {
-				while ((line = br.readLine()) != null) {
+				while((line = br.readLine()) != null) {
 					redirectedStr = redirectedStr.concat(line + "\n");
 				}
 				br.close();
