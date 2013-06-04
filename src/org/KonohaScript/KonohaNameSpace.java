@@ -23,9 +23,7 @@
  ***************************************************************************/
 
 package org.KonohaScript;
-
 import org.KonohaScript.KLib.*;
-import java.util.HashMap;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
