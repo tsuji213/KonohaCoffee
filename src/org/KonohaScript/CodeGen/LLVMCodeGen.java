@@ -78,7 +78,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override 
-	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);

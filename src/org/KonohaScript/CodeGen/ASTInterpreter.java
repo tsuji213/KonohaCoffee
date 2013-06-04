@@ -187,9 +187,9 @@ class NotSupportedCodeError extends RuntimeException {
 }
 
 public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
-	ArrayList<Object>		Evaled;
-	ArrayList<String>		Labels;
-	HashMap<String, Object>	LocalVariable;
+	KonohaArray		Evaled;
+	KonohaArray		Labels;
+	KonohaMap	    LocalVariable;
 
 	public ASTInterpreter() {
 		super(null);
@@ -202,9 +202,9 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	void Init() {
-		this.Evaled = new ArrayList<Object>();
-		this.Labels = new ArrayList<String>();
-		this.LocalVariable = new HashMap<String, Object>();
+		this.Evaled = new KonohaArray();
+		this.Labels = new KonohaArray();
+		this.LocalVariable = new KonohaMap();
 
 		this.AndNodeAcceptor = new InterpreterAndNodeAcceptor();
 		this.OrNodeAcceptor = new InterpreterOrNodeAcceptor();
@@ -237,10 +237,10 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = params.get(i);
+			Local local = (Local)params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}

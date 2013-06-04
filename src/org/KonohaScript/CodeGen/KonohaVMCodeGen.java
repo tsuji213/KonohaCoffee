@@ -283,7 +283,7 @@ class LocalVariableCollector extends CodeGenerator {
 	}
 
 	@Override
-	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
@@ -519,7 +519,7 @@ public class KonohaVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
 			Local local = params.get(i);
@@ -650,7 +650,7 @@ public class KonohaVMCodeGen extends CodeGenerator {
 
 	@Override
 	public boolean ExitFunction(FunctionNode Node) {
-		KonohaMethod Mtd = Node.Mtd;
+		KonohaMethod Mtd = Node.Method;
 		IRList Param = this.Builder.Get();
 		KonohaIR Method = this.Builder.LoadConst(Mtd);
 		KonohaMethod FuncNew = null;

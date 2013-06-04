@@ -28,7 +28,7 @@ import java.util.HashMap;
 
 public class KonohaObject {
 	public KonohaType				TypeInfo;
-	public HashMap<String, Object>	prototypes;
+	public KonohaMap	prototypes;
 
 	KonohaObject(KonohaType TypeInfo) {
 		this.TypeInfo = TypeInfo;
@@ -44,7 +44,7 @@ public class KonohaObject {
 
 	public void set(String FieldName, Object Obj) {
 		if(this.prototypes == null) {
-			this.prototypes = new HashMap<String, Object>();
+			this.prototypes = new KonohaMap();
 		}
 		this.prototypes.put(FieldName, Obj);
 	}

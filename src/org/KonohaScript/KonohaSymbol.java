@@ -100,8 +100,8 @@ public final class KonohaSymbol implements KonohaConst {
 		return Symbol.toLowerCase().replaceAll("_", "");
 	}
 
-	public static int GetCanonicalSymbol(String Symbol, int DefaultValue) {
-		return GetSymbolId(CanonicalSymbol(Symbol), DefaultValue);
+	public static int GetCanonicalSymbolId(String Symbol) {
+		return GetSymbolId(CanonicalSymbol(Symbol), AllowNewId);
 	}
 
 }

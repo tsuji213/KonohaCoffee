@@ -43,4 +43,10 @@ public final class KonohaArray {
 	public void set(int index, Object Value) {
 		List.set(index, Value);
 	}
+	public Object remove(int index) {
+		return List.remove(index);
+	}
+	public void clear() {
+		List.clear();
+	}
 }

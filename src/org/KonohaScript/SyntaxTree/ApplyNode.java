@@ -11,8 +11,8 @@ class DefaultApplyNodeAcceptor implements ApplyNodeAcceptor {
 	@Override
 	public boolean Invoke(ApplyNode Node, NodeVisitor Visitor) {
 		Visitor.EnterApply(Node);
-		for(TypedNode Element : Node.Params) {
-			Visitor.Visit(Element);
+		for(int i = 0; i < Node.Params.size(); i++) {
+			Visitor.Visit((TypedNode)Node.Params.get(i));
 		}
 		return Visitor.ExitApply(Node);
 	}
@@ -20,29 +20,26 @@ class DefaultApplyNodeAcceptor implements ApplyNodeAcceptor {
 
 public class ApplyNode extends TypedNode implements CallableNode {
 	public KonohaMethod			Method;
-	public ArrayList<TypedNode>	Params; /* [this, arg1, arg2, ...] */
+	public KonohaArray	Params; /* [this, arg1, arg2, ...] */
 
 	/* call self.Method(arg1, arg2, ...) */
-	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken,
-			KonohaMethod Method) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method) {
 		super(TypeInfo, KeyToken);
 		this.Method = Method;
-		this.Params = new ArrayList<TypedNode>();
+		this.Params = new KonohaArray();
 	}
 
-	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken,
-			KonohaMethod Method, TypedNode arg1) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1) {
 		super(TypeInfo, KeyToken);
 		this.Method = Method;
-		this.Params = new ArrayList<TypedNode>();
+		this.Params = new KonohaArray();
 		this.Params.add(arg1);
 	}
 
-	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken,
-			KonohaMethod Method, TypedNode arg1, TypedNode arg2) {
+	public ApplyNode(KonohaType TypeInfo, KonohaToken KeyToken, KonohaMethod Method, TypedNode arg1, TypedNode arg2) {
 		super(TypeInfo, KeyToken);
 		this.Method = Method;
-		this.Params = new ArrayList<TypedNode>();
+		this.Params = new KonohaArray();
 		this.Params.add(arg1);
 		this.Params.add(arg2);
 	}

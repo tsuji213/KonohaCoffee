@@ -105,7 +105,7 @@ public class CodeGenTestBase {
 
 		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", Param2, null);
 
-		ArrayList<Local> Params = new ArrayList<Local>();
+		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, this.IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
@@ -134,7 +134,7 @@ public class CodeGenTestBase {
 
 		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param2, null);
 
-		ArrayList<Local> Params = new ArrayList<Local>();
+		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, this.IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
@@ -259,7 +259,7 @@ public class CodeGenTestBase {
 				null,
 				2))))));
 		{
-			ArrayList<Local> Params = new ArrayList<Local>();
+			KonohaArray Params = new KonohaArray();
 			Params.add(new Param(0, this.IntTy, "n"));
 			Builder.Prepare(Fibo, Params);
 			CompiledMethod Mtd = Builder.Compile(Block2);

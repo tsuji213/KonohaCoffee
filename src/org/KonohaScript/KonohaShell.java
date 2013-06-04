@@ -71,7 +71,7 @@ public class KonohaShell {
 	}
 
 	String[] ProcessOptions(String[] origArgs) {
-		ArrayList<String> Args = new ArrayList<String>();
+		KonohaArray Args = new KonohaArray();
 		for(int i = 0; i < origArgs.length; i++) {
 			String arg = origArgs[i];
 			if(arg.equals("-h")) {

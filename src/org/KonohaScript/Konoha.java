@@ -61,10 +61,10 @@ class SymbolTable implements KonohaConst {
 //	ArrayList<KPackage> PackageList;
 //	KKeyIdMap PackageMap;
 //
-//	ArrayList<String> FileIdList;
+//	KonohaArray FileIdList;
 //	HashMap<String, Integer> FileIdMap;
 //
-//	ArrayList<String> SymbolList;
+//	KonohaArray SymbolList;
 //	HashMap<String, Integer> SymbolMap;
 
 //	ArrayList<KonohaParam> ParamList;
@@ -76,10 +76,10 @@ class SymbolTable implements KonohaConst {
 //		this.ClassList = new ArrayList<KonohaType>(64);
 //		this.ClassNameMap = new HashMap<String, KonohaType>();
 //
-//		this.FileIdList = new ArrayList<String>(16);
+//		this.FileIdList = new KonohaArray(16);
 //		this.FileIdMap = new HashMap<String, Integer>();
 //
-//		this.SymbolList = new ArrayList<String>(64);
+//		this.SymbolList = new KonohaArray(64);
 //		this.SymbolMap = new HashMap<String, Integer>();
 //
 //		this.PackageList = new ArrayList<KPackage>(16);

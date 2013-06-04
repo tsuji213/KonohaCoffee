@@ -26,7 +26,7 @@ package org.KonohaScript.KLib;
 import java.util.HashMap;
 
 public final class KonohaMap {
-	private HashMap<String, Object> Map;
+	private KonohaMap Map;
 	public KonohaMap() {
 		this.Map = new HashMap<String,Object>();
 	}

@@ -35,19 +35,17 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	public KonohaType ClassInfo;
 	public String MethodName;
-	// int MethodSymbol;
-	// int CanonicalSymbol;
+	int MethodSymbolId;
+	int CanonicalSymbolId;
 	public KonohaParam Param;
 	Method MethodRef;
-
-	// String Source;
-	// long uline;
-	// KNameSpace LazyCompileNameSpace;
 
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
 		this.ClassInfo = ClassInfo;
 		this.MethodName = MethodName;
+		this.MethodSymbolId = KonohaSymbol.GetSymbolId(MethodName);
+		this.CanonicalSymbolId = KonohaSymbol.GetCanonicalSymbolId(MethodName);
 		this.Param = Param;
 		this.MethodRef = MethodRef;
 	}

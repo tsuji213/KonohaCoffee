@@ -73,7 +73,7 @@ class IndentGenerator {
 }
 
 public abstract class SourceCodeGen extends CodeGenerator {
-	private final ArrayList<String>		Program;
+	private final KonohaArray		Program;
 	private final ArrayList<Integer>	CurrentProgramSize;
 
 	protected final IndentGenerator		indentGenerator	= new IndentGenerator(4);
@@ -87,7 +87,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 
 	public SourceCodeGen(KonohaMethod MethodInfo) {
 		super(MethodInfo);
-		this.Program = new ArrayList<String>();
+		this.Program = new KonohaArray();
 		this.CurrentProgramSize = new ArrayList<Integer>();
 		
 		this.IfNodeAcceptor = new IfNodeAcceptor() {

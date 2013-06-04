@@ -21,11 +21,11 @@ class CompiledMethod extends KonohaMethod {
 }
 
 public abstract class CodeGenerator extends NodeVisitor {
-	ArrayList<Local>	LocalVals;
+	KonohaArray	        LocalVals;
 	KonohaMethod		MethodInfo;
 
 	CodeGenerator(KonohaMethod MethodInfo) {
-		this.LocalVals = new ArrayList<Local>();
+		this.LocalVals = new KonohaArray();
 		this.MethodInfo = MethodInfo;
 	}
 
@@ -34,7 +34,9 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local FindLocalVariable(String Name) {
-		for(Local l : this.LocalVals) {
+		
+		for(int i = 0; i < LocalVals.size(); i++ ) {
+			Local l = (Local)LocalVals.get(i);
 			if(l.Name.compareTo(Name) == 0) {
 				return l;
 			}
@@ -44,7 +46,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 
 	Local GetLocalVariableByIndex(int Index) {
 		if(this.LocalVals.size() > Index) {
-			return this.LocalVals.get(Index);
+			return (Local)LocalVals.get(Index);
 		}
 		return null;
 	}
@@ -69,10 +71,10 @@ public abstract class CodeGenerator extends NodeVisitor {
 		this.AddLocal(Method.ClassInfo, "this");
 	}
 
-	public void Prepare(KonohaMethod Method, ArrayList<Local> params) {
+	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = params.get(i);
+			Local local = (Local)params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
