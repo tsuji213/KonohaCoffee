@@ -1,6 +1,6 @@
 package org.KonohaScript;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 public class KonohaParam {
 	public final static int	MAX					= 16;
@@ -18,7 +18,7 @@ public class KonohaParam {
 	}
 
 	public static KonohaParam ParseOf(KonohaNameSpace ns, String TypeList) {
-		ArrayList<KonohaToken> BufferList = ns.Tokenize(TypeList, 0);
+		KonohaArray BufferList = ns.Tokenize(TypeList, 0);
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		KonohaType[] ParamData = new KonohaType[KonohaParam.MAX];

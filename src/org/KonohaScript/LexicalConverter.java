@@ -1,6 +1,6 @@
 package org.KonohaScript;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 public final class LexicalConverter implements KonohaConst {
 
@@ -52,7 +52,7 @@ public final class LexicalConverter implements KonohaConst {
 		return indent;
 	}
 
-	public int Do(ArrayList<KonohaToken> SourceList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
+	public int Do(KonohaArray SourceList, int BeginIdx, int EndIdx, KonohaArray BufferList) {
 		int c = BeginIdx;
 		while(c < EndIdx) {
 			KonohaToken Token = SourceList.get(c);

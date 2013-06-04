@@ -24,7 +24,7 @@
 
 package org.KonohaScript;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 import java.util.HashMap;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -113,7 +113,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 	}
 
-	public ArrayList<KonohaToken> Tokenize(String text, long uline) {
+	public KonohaArray Tokenize(String text, long uline) {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
@@ -198,13 +198,13 @@ public final class KonohaNameSpace implements KonohaConst {
 		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
 	}
 
-	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
-	}
-
-	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
-	}
+//	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
+//		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
+//	}
+//
+//	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
+//		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
+//	}
 
 	// Global Object
 	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {
@@ -244,7 +244,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		// }
 	}
 
-	public int PreProcess(ArrayList<KonohaToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
+	public int PreProcess(KonohaArray tokenList, int BeginIdx, int EndIdx, KonohaArray BufferList) {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
@@ -271,7 +271,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public Object Eval(String text, long uline) {
 		Object ResultValue = null;
 		System.out.println("Eval: " + text);
-		ArrayList<KonohaToken> BufferList = Tokenize(text, uline);
+		KonohaArray BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
@@ -324,16 +324,16 @@ class KonohaTokenizer implements KonohaConst {
 	KonohaNameSpace ns;
 	String SourceText;
 	long CurrentLine;
-	ArrayList<KonohaToken> SourceList;
+	KonohaArray SourceList;
 
 	KonohaTokenizer(KonohaNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;
-		this.SourceList = new ArrayList<KonohaToken>();
+		this.SourceList = new KonohaArray();
 	}
 
-	int TokenizeFirstToken(ArrayList<KonohaToken> tokenList) {
+	int TokenizeFirstToken(KonohaArray tokenList) {
 		return 0;
 	}
 
@@ -366,7 +366,7 @@ class KonohaTokenizer implements KonohaConst {
 		return SourceText.length();
 	}
 
-	ArrayList<KonohaToken> Tokenize() {
+	KonohaArray Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
 		while(pos < len) {

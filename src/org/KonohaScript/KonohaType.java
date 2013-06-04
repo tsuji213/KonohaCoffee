@@ -25,7 +25,7 @@
 package org.KonohaScript;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 public class KonohaType {
 	Konoha										KonohaContext;

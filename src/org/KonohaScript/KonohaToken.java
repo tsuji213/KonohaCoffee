@@ -24,7 +24,7 @@
 
 package org.KonohaScript;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 public final class KonohaToken {
 
@@ -61,7 +61,7 @@ public final class KonohaToken {
 	public KonohaSyntax ResolvedSyntax;
 	Object ResolvedObject;
 
-	public void SetGroup(KonohaSyntax Syntax, ArrayList<KonohaToken> GroupList) {
+	public void SetGroup(KonohaSyntax Syntax, KonohaArray GroupList) {
 		assert(Syntax != null);
 		ResolvedSyntax = Syntax;
 		ResolvedObject = GroupList;
@@ -69,9 +69,9 @@ public final class KonohaToken {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<KonohaToken> GetGroupList() {
+	public KonohaArray GetGroupList() {
 		assert (IsGroupToken());
-		return (ArrayList<KonohaToken>) ResolvedObject;
+		return (KonohaArray) ResolvedObject;
 	}
 
 	public String SetErrorMessage(String msg) {
@@ -92,12 +92,12 @@ public final class KonohaToken {
 		String Syntax = (ResolvedSyntax == null) ? "null" : ResolvedSyntax.SyntaxName;
 		System.out.println("[" + Syntax + "+" + (int) uline + "] '" + ParsedText + "'");
 		if(IsGroupToken()) {
-			ArrayList<KonohaToken> group = GetGroupList();
+			KonohaArray group = GetGroupList();
 			DumpTokenList(Level + 1, null, group, 0, group.size());
 		}
 	}
 
-	public static void DumpTokenList(int Level, String Message, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx) {
+	public static void DumpTokenList(int Level, String Message, KonohaArray TokenList, int BeginIdx, int EndIdx) {
 		if(Message != null) {
 			KonohaDebug.Indent(Level, Tab);			
 			System.out.println("Begin: " + Message);
@@ -116,7 +116,7 @@ public final class KonohaToken {
 		}
 	}
 
-	public static void DumpTokenList(ArrayList<KonohaToken> TokenList) {
+	public static void DumpTokenList(KonohaArray TokenList) {
 		DumpTokenList(0, null, TokenList, 0, TokenList.size());
 	}
 

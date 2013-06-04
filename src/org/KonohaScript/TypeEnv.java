@@ -1,7 +1,7 @@
 package org.KonohaScript;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.TypedNode;

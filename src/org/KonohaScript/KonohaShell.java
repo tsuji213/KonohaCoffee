@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 import java.util.Scanner;
 
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;

@@ -125,9 +125,9 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	// DoLazyComilation();
 
 	KonohaNameSpace LazyNameSpace;
-	ArrayList<KonohaToken> SourceList;
+	KonohaArray SourceList;
 
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, KonohaArray SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
@@ -135,7 +135,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	public KonohaMethod DoCompilation() {
 		if(MethodRef == null) {
-			ArrayList<KonohaToken> BufferList = new ArrayList<KonohaToken>();
+			KonohaArray BufferList = new KonohaArray();
 			LazyNameSpace.PreProcess(SourceList, 0, SourceList.size(), BufferList);
 			UntypedNode UNode = UntypedNode.ParseNewNode(LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
