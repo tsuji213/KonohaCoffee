@@ -6,11 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import org.KonohaScript.KLib.*;
-import java.util.Scanner;
+import java.util.*;
 
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
+@KonohaPure
 class KConsole {
 	public final InputStream	stdin	= System.in;
 	public final PrintStream	stdout	= System.out;
@@ -34,8 +34,8 @@ public class KonohaShell {
 	Konoha	ShellContext;
 	boolean	IsInteractiveMode;
 
-	public KonohaShell() {
-		this.ShellContext = new Konoha(new MiniKonohaGrammar(), null);
+	public KonohaShell(String DefaultBuilder) {
+		this.ShellContext = new Konoha(new MiniKonohaGrammar(), DefaultBuilder);
 		this.IsInteractiveMode = false;
 	}
 
@@ -97,7 +97,8 @@ public class KonohaShell {
 	}
 
 	public static void main(String[] origArgs) {
-		KonohaShell shell = new KonohaShell();
+		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
+		KonohaShell shell = new KonohaShell(DefaultBuilder);
 		String[] args = shell.ProcessOptions(origArgs);
 		if(args == null) {
 			return;

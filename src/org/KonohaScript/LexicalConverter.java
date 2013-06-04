@@ -52,7 +52,7 @@ public final class LexicalConverter implements KonohaConst {
 		return indent;
 	}
 
-	public int Do(KonohaArray SourceList, int BeginIdx, int EndIdx, KonohaArray BufferList) {
+	public int Do(TokenList SourceList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		int c = BeginIdx;
 		while(c < EndIdx) {
 			KonohaToken Token = SourceList.get(c);

@@ -264,6 +264,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		} else {
 			throw new NotSupportedCodeError();
 		}
+		this.push(null);
 		return true;
 	}
 
@@ -514,6 +515,9 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		this.Prepare(null);
 		this.VisitList(Node);
 		Object Ret = this.Pop();
+		if(Ret == null) {
+			Ret = "";
+		}
 		System.out.println("EvalAtTopLevel::::::" + Ret.toString());
 		return Ret;
 	}

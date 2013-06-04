@@ -36,13 +36,11 @@ public class KonohaType {
 	KonohaType									SuperClass;
 	KonohaParam									ClassParam;
 	KonohaType									SearchSimilarClass;
-	ArrayList<KonohaMethod>						ClassMethodList;
+	KonohaArray         						ClassMethodList;
 	public KonohaType							SearchSuperMethodClass;
 	// FIXME(ide) where is superclass info?
 	public Object								DefaultNullValue;
 	Object										LocalSpec;
-
-	public static final ArrayList<KonohaMethod>	EmptyMethodList	= new ArrayList<KonohaMethod>();
 
 	public KonohaType(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
@@ -51,7 +49,7 @@ public class KonohaType {
 		this.ShortClassName = ClassName;
 		this.SuperClass = null;
 		this.BaseClass = this;
-		this.ClassMethodList = KonohaType.EmptyMethodList;
+		this.ClassMethodList = KonohaContext.EmptyList;
 		this.LocalSpec = Spec;
 	}
 
@@ -116,23 +114,23 @@ public class KonohaType {
 	}
 
 	public void AddMethod(KonohaMethod Method) {
-		if(this.ClassMethodList == KonohaType.EmptyMethodList) {
-			this.ClassMethodList = new ArrayList<KonohaMethod>();
+		if(this.ClassMethodList == KonohaContext.EmptyList) {
+			this.ClassMethodList = new KonohaArray();
 		}
 		this.ClassMethodList.add(Method);
 	}
 
 	public void DefineMethod(int MethodFlag, String MethodName, KonohaParam Param, Object Callee, String LocalName) {
 		KonohaMethod Method = new KonohaMethod(MethodFlag, this, MethodName, Param, KonohaFunc.LookupMethod(Callee, LocalName));
-		if(this.ClassMethodList == KonohaType.EmptyMethodList) {
-			this.ClassMethodList = new ArrayList<KonohaMethod>();
+		if(this.ClassMethodList == KonohaContext.EmptyList) {
+			this.ClassMethodList = new KonohaArray();
 		}
 		this.ClassMethodList.add(Method);
 	}
 
 	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
-		for(int i = 0; i < this.ClassMethodList.size(); i++) {
-			KonohaMethod Method = this.ClassMethodList.get(i);
+		for(int i = 0; i < ClassMethodList.size(); i++) {
+			KonohaMethod Method = (KonohaMethod)ClassMethodList.get(i);
 			if(Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
@@ -152,8 +150,8 @@ public class KonohaType {
 	}
 
 	public boolean DefineNewMethod(KonohaMethod NewMethod) {
-		for(int i = 0; i < this.ClassMethodList.size(); i++) {
-			KonohaMethod DefinedMethod = this.ClassMethodList.get(i);
+		for(int i = 0; i < ClassMethodList.size(); i++) {
+			KonohaMethod DefinedMethod = (KonohaMethod)ClassMethodList.get(i);
 			if(NewMethod.Match(DefinedMethod)) {
 				return false;
 			}

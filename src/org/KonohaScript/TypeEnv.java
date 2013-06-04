@@ -54,11 +54,11 @@ public class TypeEnv implements KonohaConst {
 		}
 	}
 
-	ArrayList<VarSet>	LocalStackList	= null;
+	KonohaArray	LocalStackList	= null;
 
 	public void AppendLocalType(KonohaType TypeInfo, String Name) {
 		if(this.LocalStackList == null) {
-			this.LocalStackList = new ArrayList<VarSet>();
+			this.LocalStackList = new KonohaArray();
 		}
 		this.LocalStackList.add(new VarSet(TypeInfo, Name));
 	}
@@ -66,7 +66,7 @@ public class TypeEnv implements KonohaConst {
 	public KonohaType GetLocalType(String Symbol) {
 		if(this.LocalStackList != null) {
 			for(int i = this.LocalStackList.size() - 1; i >= 0; i--) {
-				VarSet t = this.LocalStackList.get(i);
+				VarSet t = (VarSet)LocalStackList.get(i);
 				if(t.Name.equals(Symbol))
 					return t.TypeInfo;
 			}

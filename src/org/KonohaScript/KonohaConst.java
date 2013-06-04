@@ -35,6 +35,7 @@ public interface KonohaConst {
 //	public final static int JCompatible          = 1<<15;
 //	public final static int Accountable          = 1<<16;
 
+
 	// internal
 	public final static int HiddenMethod               = 1<<17;
 	public final static int AbstractMethod             = 1<<18;

@@ -91,7 +91,7 @@ public final class KonohaFunc {
 		return other.Duplicate().prev = this.Duplicate();
 	}
 
-	int InvokeTokenFunc(KonohaNameSpace ns, String source, int pos, KonohaArray bufferToken) {
+	int InvokeTokenFunc(KonohaNameSpace ns, String source, int pos, TokenList bufferToken) {
 		try {
 			//KonohaDebug.P("invoking: " + method + ", pos: " + pos + " < " + source.length());
 			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
@@ -110,7 +110,7 @@ public final class KonohaFunc {
 		return 0;
 	}
 
-	int InvokeMacroFunc(LexicalConverter lex,  KonohaArray tokenList, int BeginIdx, int EndIdx, KonohaArray bufferToken) {
+	int InvokeMacroFunc(LexicalConverter lex,  TokenList tokenList, int BeginIdx, int EndIdx, TokenList bufferToken) {
 		try {
 			Integer next = (Integer)method.invoke(callee, lex, tokenList, BeginIdx, EndIdx, bufferToken);
 			return next.intValue();

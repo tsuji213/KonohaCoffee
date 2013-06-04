@@ -18,7 +18,7 @@ public class KonohaParam {
 	}
 
 	public static KonohaParam ParseOf(KonohaNameSpace ns, String TypeList) {
-		KonohaArray BufferList = ns.Tokenize(TypeList, 0);
+		TokenList BufferList = ns.Tokenize(TypeList, 0);
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		KonohaType[] ParamData = new KonohaType[KonohaParam.MAX];

@@ -33,7 +33,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public Konoha KonohaContext;
 	KonohaNameSpace ParentNameSpace;
-	ArrayList<KonohaNameSpace> ImportedNameSpaceList;
+	KonohaArray/*ArrayList<KonohaNameSpace>*/ ImportedNameSpaceList;
 
 	@SuppressWarnings("unchecked")
 	KonohaNameSpace(Konoha konoha, KonohaNameSpace parent) {
@@ -113,7 +113,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 	}
 
-	public KonohaArray Tokenize(String text, long uline) {
+	public TokenList Tokenize(String text, long uline) {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
@@ -225,7 +225,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void ImportNameSpace(KonohaNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
-			ImportedNameSpaceList = new ArrayList<KonohaNameSpace>();
+			ImportedNameSpaceList = new KonohaArray();
 			ImportedNameSpaceList.add(ns);
 		}
 		if(ImportedTokenMatrix == null) {
@@ -244,7 +244,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		// }
 	}
 
-	public int PreProcess(KonohaArray tokenList, int BeginIdx, int EndIdx, KonohaArray BufferList) {
+	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
@@ -271,7 +271,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public Object Eval(String text, long uline) {
 		Object ResultValue = null;
 		System.out.println("Eval: " + text);
-		KonohaArray BufferList = Tokenize(text, uline);
+		TokenList BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
@@ -324,16 +324,16 @@ class KonohaTokenizer implements KonohaConst {
 	KonohaNameSpace ns;
 	String SourceText;
 	long CurrentLine;
-	KonohaArray SourceList;
+	TokenList SourceList;
 
 	KonohaTokenizer(KonohaNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;
-		this.SourceList = new KonohaArray();
+		this.SourceList = new TokenList();
 	}
 
-	int TokenizeFirstToken(KonohaArray tokenList) {
+	int TokenizeFirstToken(TokenList tokenList) {
 		return 0;
 	}
 
@@ -366,7 +366,7 @@ class KonohaTokenizer implements KonohaConst {
 		return SourceText.length();
 	}
 
-	KonohaArray Tokenize() {
+	TokenList Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
 		while(pos < len) {
