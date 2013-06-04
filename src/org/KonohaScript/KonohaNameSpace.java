@@ -31,27 +31,26 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
 
-	public Konoha KonohaContext;
+	public Konoha   KonohaContext;
 	KonohaNameSpace ParentNameSpace;
-	KonohaArray/*ArrayList<KonohaNameSpace>*/ ImportedNameSpaceList;
+	KonohaArray     ImportedNameSpaceList;
 
-	@SuppressWarnings("unchecked")
-	KonohaNameSpace(Konoha konoha, KonohaNameSpace parent) {
+	KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = konoha;
-		this.ParentNameSpace = parent;
-		if(parent != null) {
+		this.ParentNameSpace = ParentNameSpace;
+		if(ParentNameSpace != null) {
 			ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 			for(int i = 0; i < KonohaChar.MAX; i++) {
-				if(parent.ImportedTokenMatrix[i] != null) {
-					ImportedTokenMatrix[i] = parent.GetTokenFunc(i).Duplicate();
+				if(ParentNameSpace.ImportedTokenMatrix[i] != null) {
+					ImportedTokenMatrix[i] = ParentNameSpace.GetTokenFunc(i).Duplicate();
 				}
 			}
-			if(parent.ImportedSymbolTable != null) {
-				ImportedSymbolTable = (HashMap<String,Object>)parent.ImportedSymbolTable.clone();
+			if(ParentNameSpace.ImportedSymbolTable != null) {
+				ImportedSymbolTable = (KonohaMap)ParentNameSpace.ImportedSymbolTable.Duplicate();
 			}
 		}
 	}
-
+	
 	// class
 	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
@@ -147,8 +146,8 @@ public final class KonohaNameSpace implements KonohaConst {
 		DefineSymbol(MacroPrefix + TopLevelPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
 	}
 
-	HashMap<String, Object> DefinedSymbolTable;
-	HashMap<String, Object> ImportedSymbolTable;
+	KonohaMap DefinedSymbolTable;
+	KonohaMap ImportedSymbolTable;
 
 	Object GetDefinedSymbol(String symbol) {
 		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol) : null;
@@ -160,11 +159,11 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineSymbol(String Symbol, Object Value) {
 		if(DefinedSymbolTable == null) {
-			DefinedSymbolTable = new HashMap<String, Object>();
+			DefinedSymbolTable = new KonohaMap();
 		}
 		DefinedSymbolTable.put(Symbol, Value);
 		if(ImportedSymbolTable == null) {
-			ImportedSymbolTable = new HashMap<String, Object>();
+			ImportedSymbolTable = new KonohaMap();
 		}
 		ImportedSymbolTable.put(Symbol, Value);
 	}
@@ -197,14 +196,6 @@ public final class KonohaNameSpace implements KonohaConst {
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
 		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
 	}
-
-//	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-//		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
-//	}
-//
-//	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-//		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
-//	}
 
 	// Global Object
 	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {

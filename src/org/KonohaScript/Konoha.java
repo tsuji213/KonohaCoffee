@@ -207,7 +207,7 @@ public final class Konoha implements KonohaConst {
 
 	KonohaNameSpace RootNameSpace;
 	KonohaNameSpace DefaultNameSpace;
-	SymbolTable SymbolTable;
+//	SymbolTable SymbolTable;
 
 	public final KonohaType	VoidType;
 	public final KonohaType	ObjectType;
@@ -217,15 +217,13 @@ public final class Konoha implements KonohaConst {
 	public final KonohaType	VarType;
 	
 	KonohaArray EmptyList;
-	KonohaMap  ClassNameMap;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
-		this.SymbolTable = new SymbolTable();
-		this.SymbolTable.Init(this);
+//		this.SymbolTable = new SymbolTable();
+//		this.SymbolTable.Init(this);
+
 		this.EmptyList = new KonohaArray();
 		this.ClassNameMap = new KonohaMap();
-		this.RootNameSpace = new KonohaNameSpace(this, null);
-
 		this.VoidType = this.RootNameSpace.LookupTypeInfo(Void.class);
 		this.ObjectType = this.RootNameSpace.LookupTypeInfo(Object.class);
 		this.BooleanType = this.RootNameSpace.LookupTypeInfo(Boolean.class);
@@ -233,12 +231,15 @@ public final class Konoha implements KonohaConst {
 		this.StringType = this.RootNameSpace.LookupTypeInfo(String.class);
 		this.VarType = this.RootNameSpace.LookupTypeInfo(Object.class);
 
+		this.RootNameSpace = new KonohaNameSpace(this, null);
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
 		if(BuilderClassName != null) {
 			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 		}
 	}
+
+	KonohaMap  ClassNameMap;
 
 	KonohaType LookupTypeInfo(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType)ClassNameMap.get(ClassInfo.getName());
