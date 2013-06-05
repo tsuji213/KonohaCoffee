@@ -677,6 +677,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
 
 		// Macro
+		NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
 		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
 		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
 		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
