@@ -38,14 +38,14 @@ public final class KonohaNameSpace implements KonohaConst {
 	KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = ParentNameSpace;
-		if (ParentNameSpace != null) {
+		if(ParentNameSpace != null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
-			for (int i = 0; i < KonohaChar.MAX; i++) {
-				if (ParentNameSpace.ImportedTokenMatrix[i] != null) {
+			for(int i = 0; i < KonohaChar.MAX; i++) {
+				if(ParentNameSpace.ImportedTokenMatrix[i] != null) {
 					this.ImportedTokenMatrix[i] = ParentNameSpace.GetTokenFunc(i).Duplicate();
 				}
 			}
-			if (ParentNameSpace.ImportedSymbolTable != null) {
+			if(ParentNameSpace.ImportedSymbolTable != null) {
 				this.ImportedSymbolTable = ParentNameSpace.ImportedSymbolTable.Duplicate();
 			}
 		}
@@ -67,9 +67,9 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	KonohaFunc MergeFunc(KonohaFunc f, KonohaFunc f2) {
-		if (f == null)
+		if(f == null)
 			return f2;
-		if (f2 == null)
+		if(f2 == null)
 			return f;
 		return f.Merge(f2);
 	}
@@ -82,12 +82,12 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	KonohaFunc GetTokenFunc(int kchar) {
-		if (this.ImportedTokenMatrix == null) {
+		if(this.ImportedTokenMatrix == null) {
 			return null;
 		}
-		if (this.ImportedTokenMatrix[kchar] == null) {
+		if(this.ImportedTokenMatrix[kchar] == null) {
 			KonohaFunc func = null;
-			if (this.ParentNameSpace != null) {
+			if(this.ParentNameSpace != null) {
 				func = this.ParentNameSpace.GetTokenFunc(kchar);
 			}
 			func = this.MergeFunc(func, this.GetDefinedTokenFunc(kchar));
@@ -98,13 +98,13 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void AddTokenFunc(String keys, Object callee, String name) {
-		if (this.DefinedTokenMatrix == null) {
+		if(this.DefinedTokenMatrix == null) {
 			this.DefinedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
-		if (this.ImportedTokenMatrix == null) {
+		if(this.ImportedTokenMatrix == null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
-		for (int i = 0; i < keys.length(); i++) {
+		for(int i = 0; i < keys.length(); i++) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
 			this.DefinedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, this.DefinedTokenMatrix[kchar]);
 			this.ImportedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, this.GetTokenFunc(kchar));
@@ -129,9 +129,9 @@ public final class KonohaNameSpace implements KonohaConst {
 	// }
 
 	KonohaFunc GetMacro(String Symbol, boolean TopLevel) {
-		if (TopLevel) {
+		if(TopLevel) {
 			Object o = this.GetSymbol(MacroPrefix + TopLevelPrefix + Symbol);
-			if (o != null && o instanceof KonohaFunc) {
+			if(o != null && o instanceof KonohaFunc) {
 				return (KonohaFunc) o;
 			}
 		}
@@ -159,11 +159,11 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void DefineSymbol(String Symbol, Object Value) {
-		if (this.DefinedSymbolTable == null) {
+		if(this.DefinedSymbolTable == null) {
 			this.DefinedSymbolTable = new KonohaMap();
 		}
 		this.DefinedSymbolTable.put(Symbol, Value);
-		if (this.ImportedSymbolTable == null) {
+		if(this.ImportedSymbolTable == null) {
 			this.ImportedSymbolTable = new KonohaMap();
 		}
 		this.ImportedSymbolTable.put(Symbol, Value);
@@ -175,9 +175,9 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public KonohaSyntax GetSyntax(String symbol, boolean TopLevel) {
-		if (TopLevel) {
+		if(TopLevel) {
 			Object o = this.GetSymbol(TopLevelPrefix + symbol);
-			if (o != null && o instanceof KonohaSyntax)
+			if(o != null && o instanceof KonohaSyntax)
 				return (KonohaSyntax) o;
 		}
 		Object o = this.GetSymbol(symbol);
@@ -192,7 +192,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		this.AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), false);
+		this.DefineSyntax(SyntaxName, flag, Callee, MethodName, MethodName);
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
@@ -209,7 +209,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public KonohaObject GetGlobalObject() {
 		Object GlobalObject = this.GetDefinedSymbol(GlobalConstName);
-		if (GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
+		if(GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
 			GlobalObject = this.CreateGlobalObject(SingletonClass, "*GlobalType*");
 			this.DefineSymbol(GlobalConstName, GlobalObject);
 		}
@@ -217,17 +217,17 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void ImportNameSpace(KonohaNameSpace ns) {
-		if (this.ImportedNameSpaceList == null) {
+		if(this.ImportedNameSpaceList == null) {
 			this.ImportedNameSpaceList = new KonohaArray();
 			this.ImportedNameSpaceList.add(ns);
 		}
-		if (this.ImportedTokenMatrix == null) {
+		if(this.ImportedTokenMatrix == null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
 
-		if (ns.DefinedTokenMatrix != null) {
-			for (int i = 0; i < KonohaChar.MAX; i++) {
-				if (ns.DefinedTokenMatrix[i] != null) {
+		if(ns.DefinedTokenMatrix != null) {
+			for(int i = 0; i < KonohaChar.MAX; i++) {
+				if(ns.DefinedTokenMatrix[i] != null) {
 					this.ImportedTokenMatrix[i] = this.MergeFunc(this.GetTokenFunc(i), ns.DefinedTokenMatrix[i]);
 				}
 			}
@@ -238,11 +238,8 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
-		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false).Do(
-			tokenList,
-			BeginIdx,
-			EndIdx,
-			BufferList);
+		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
+				.Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -250,13 +247,13 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public String Message(int Level, KonohaToken Token, String Message) {
-		if (!Token.IsErrorToken()) {
-			if (Level == Error) {
+		if(!Token.IsErrorToken()) {
+			if(Level == Error) {
 				Message = "(error) " + this.GetSourcePosition(Token.uline) + " " + Message;
 				Token.SetErrorMessage(Message);
-			} else if (Level == Warning) {
+			} else if(Level == Warning) {
 				Message = "(warning) " + this.GetSourcePosition(Token.uline) + " " + Message;
-			} else if (Level == Info) {
+			} else if(Level == Info) {
 				Message = "(info) " + this.GetSourcePosition(Token.uline) + " " + Message;
 			}
 			System.out.println(Message);
@@ -273,7 +270,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		this.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
-		while (UNode != null) {
+		while(UNode != null) {
 			TypeEnv Gamma = new TypeEnv(this, null);
 			TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = this.GetBuilder();
@@ -288,8 +285,8 @@ public final class KonohaNameSpace implements KonohaConst {
 	public KonohaBuilder	Builder;
 
 	public KonohaBuilder GetBuilder() {
-		if (this.Builder == null) {
-			if (this.ParentNameSpace != null) {
+		if(this.Builder == null) {
+			if(this.ParentNameSpace != null) {
 				return this.ParentNameSpace.GetBuilder();
 			}
 			this.Builder = new DefaultKonohaBuilder(); // create default builder
@@ -342,9 +339,9 @@ class KonohaTokenizer implements KonohaConst {
 	}
 
 	int StampLine(int StartIdx) {
-		for (int i = StartIdx; i < this.SourceList.size(); i++) {
+		for(int i = StartIdx; i < this.SourceList.size(); i++) {
 			KonohaToken token = this.SourceList.get(i);
-			if (token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
+			if(token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
 				this.CurrentLine = this.CurrentLine + 1;
 			}
 			token.uline = this.CurrentLine;
@@ -355,9 +352,9 @@ class KonohaTokenizer implements KonohaConst {
 	int DispatchFunc(int KonohaChar, int pos) {
 		KonohaFunc FuncStack = this.ns.GetTokenFunc(KonohaChar);
 		int UnusedIdx = this.SourceList.size();
-		while (FuncStack != null) {
+		while(FuncStack != null) {
 			int NextIdx = FuncStack.InvokeTokenFunc(this.ns, this.SourceText, pos, this.SourceList);
-			if (NextIdx != -1) {
+			if(NextIdx != -1) {
 				UnusedIdx = this.StampLine(UnusedIdx);
 				return NextIdx;
 			}
@@ -373,10 +370,10 @@ class KonohaTokenizer implements KonohaConst {
 	TokenList Tokenize() {
 		int pos = 0, len = this.SourceText.length();
 		pos = this.TokenizeFirstToken(this.SourceList);
-		while (pos < len) {
+		while(pos < len) {
 			int kchar = KonohaChar.JavaCharToKonohaChar(this.SourceText.charAt(pos));
 			int pos2 = this.DispatchFunc(kchar, pos);
-			if (!(pos < pos2))
+			if(!(pos < pos2))
 				break;
 			pos = pos2;
 		}

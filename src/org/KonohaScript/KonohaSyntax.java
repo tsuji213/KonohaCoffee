@@ -36,13 +36,18 @@ public final class KonohaSyntax implements KonohaConst {
 
 	public KonohaNameSpace PackageNameSpace;
 	public String SyntaxName;
+	int SyntaxFlag;
+
+	public Object ParseObject;
+	public Method ParseMethod;
+	public Object TypeObject;
+	public Method TypeMethod;
+	public KonohaSyntax ParentSyntax = null;
 
 	@Override
 	public String toString() {
 		return SyntaxName;
 	}
-
-	int SyntaxFlag;
 
 	public boolean IsBeginTerm() {
 		return ((SyntaxFlag & Term) == Term);
@@ -70,12 +75,6 @@ public final class KonohaSyntax implements KonohaConst {
 		// right, Right.SyntaxName);
 		return (left < right || (left == right && IsFlag(this.SyntaxFlag, LeftJoin) && IsFlag(Right.SyntaxFlag, LeftJoin)));
 	}
-
-	public Object ParseObject;
-	public Method ParseMethod;
-	public Object TypeObject;
-	public Method TypeMethod;
-	public KonohaSyntax ParentSyntax = null;
 
 	// KSyntax Pop() { return ParentSyntax; }
 
@@ -123,6 +122,30 @@ public final class KonohaSyntax implements KonohaConst {
 		return -1;
 	}
 
+	TypedNode InvokeTypeFunc(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode Node = null;
+		try {
+			// System.err.println("Syntax" + UNode.Syntax);
+			// System.err.println("Syntax.TypeMethod" +
+			// UNode.Syntax.TypeMethod);
+			// System.err.println("Syntax.TypeObject" +
+			// UNode.Syntax.TypeObject);
+			Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
+		}
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
+		}
+		return Node;
+	}
 }
 
 class CommonSyntax {

@@ -254,6 +254,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public int MergeOperatorMacro(LexicalConverter Lexer, TokenList SourceList, int BeginIdx, int EndIdx, TokenList BufferList) {
+		// ["=", "="] => "=="
 		KonohaToken Token = SourceList.get(BeginIdx);
 		if(BufferList.size() > 0) {
 			KonohaToken PrevToken = BufferList.get(BufferList.size() - 1);
@@ -349,6 +350,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	ApplyMethodName			= 1;
 	public final static int	ApplyMethodParam		= 2;
 
+	// $Symbol [ "." $Symbol ] ()
 	public int ParseApplyMethod(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
 		System.out.println(UNode.KeyToken.ParsedText);
@@ -758,7 +760,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
 		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
 
-		NameSpace.DefineSyntax("()", Term | SuffixOperator | Precedence_CStyleSuffixCall, this, "ApplyMethod");
+		NameSpace.DefineSyntax("()", Term | MetaPattern | Precedence_CStyleSuffixCall, this, "ApplyMethod");
 		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
 		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StrngLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
