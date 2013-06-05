@@ -93,7 +93,7 @@ class SymbolTable implements KonohaConst {
 	}
 
 	void Init(Konoha kctx) {
-		 this.NewPackage(kctx, "Konoha");
+		 //this.NewPackage(kctx, "Konoha");
 		// NewClass(kctx, defaultPackage, "void");
 	}
 
@@ -115,12 +115,12 @@ class SymbolTable implements KonohaConst {
 	}
 
 
-	KPackage NewPackage(Konoha kctx, String name) {
-		int packageId = this.PackageList.size();
-		KPackage p = new KPackage(kctx, packageId, name);
-		this.PackageList.add(p);
-		return p;
-	}
+//	KPackage NewPackage(Konoha kctx, String name) {
+//		int packageId = this.PackageList.size();
+//		KPackage p = new KPackage(kctx, packageId, name);
+//		this.PackageList.add(p);
+//		return p;
+//	}
 
 	// KClass NewClass(Konoha kctx, KPackage p, String name) {
 	// int classId = this.ClassList.size();
