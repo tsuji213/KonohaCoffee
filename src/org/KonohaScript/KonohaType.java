@@ -30,7 +30,6 @@ import org.KonohaScript.KLib.KonohaArray;
 
 public class KonohaType {
 	Konoha				KonohaContext;
-	KPackage			Package;
 	int					ClassFlag;
 	public String		ShortClassName;
 	KonohaType			BaseClass;
@@ -46,10 +45,9 @@ public class KonohaType {
 	// Java Implementation Only
 	Class<?>			HostedClassInfo	= null;
 
-	public KonohaType(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
+	public KonohaType(Konoha KonohaContext, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
 		this.ClassFlag = ClassFlag;
-		this.Package = Package;
 		this.ShortClassName = ClassName;
 		this.SuperClass = null;
 		this.BaseClass = this;
@@ -58,7 +56,7 @@ public class KonohaType {
 	}
 
 	public KonohaType(Konoha KonohaContext, Class<?> ClassInfo) {
-		this(KonohaContext, null, 0, ClassInfo.getSimpleName(), null);
+		this(KonohaContext, 0, ClassInfo.getSimpleName(), null);
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
 		if(ClassInfo != Object.class) {

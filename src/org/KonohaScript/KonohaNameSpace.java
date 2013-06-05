@@ -201,7 +201,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	// Global Object
 	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {
-		KonohaType NewClass = new KonohaType(this.KonohaContext, null, ClassFlag, ShortName, null);
+		KonohaType NewClass = new KonohaType(this.KonohaContext, ClassFlag, ShortName, null);
 		KonohaObject GlobalObject = new KonohaObject(NewClass);
 		NewClass.DefaultNullValue = GlobalObject;
 		return GlobalObject;
