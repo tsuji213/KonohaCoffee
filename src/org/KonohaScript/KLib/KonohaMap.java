@@ -39,12 +39,12 @@ public final class KonohaMap {
 	public Object get(String Key) {
 		return Map.get(Key);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private KonohaMap(HashMap<String,Object> Map) {
 		this.Map = (HashMap<String,Object>)Map.clone();
 	}
-	
+
 	public KonohaMap Duplicate() {
 		return new KonohaMap(this.Map);
 	}

@@ -1,8 +1,7 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KLib.*;
-
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
@@ -74,12 +73,11 @@ class IndentGenerator {
 
 public abstract class SourceCodeGen extends CodeGenerator {
 	private final KonohaArray		Program;
-	private final KonohaArray	CurrentProgramSize;
+	private final KonohaArray		CurrentProgramSize;
 
-	protected final IndentGenerator		indentGenerator	= new IndentGenerator(4);
-	private static String[]				binaryOpList	= { "+", "-", "*", "/",
-			"<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|", "^", "<<",
-			">>"										};
+	protected final IndentGenerator	indentGenerator	= new IndentGenerator(4);
+	private static String[]			binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&",
+			"|", "^", "<<", ">>"					};
 
 	public SourceCodeGen() {
 		this(null);
@@ -89,11 +87,11 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		super(MethodInfo);
 		this.Program = new KonohaArray();
 		this.CurrentProgramSize = new KonohaArray();
-		
+
 		this.IfNodeAcceptor = new IfNodeAcceptor() {
 			@Override
 			public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-				SourceCodeGen Gen = (SourceCodeGen)Visitor;
+				SourceCodeGen Gen = (SourceCodeGen) Visitor;
 				Gen.EnterIf(Node);
 				Gen.Visit(Node.CondExpr);
 				Gen.VisitBlock(Node.ThenNode);
@@ -136,8 +134,8 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		return array;
 	}
 
-	protected StringBuilder PopNWithModifier(StringBuilder builder, int n,
-			boolean reverse, String prefix, String suffix, String delim) {
+	protected StringBuilder PopNWithModifier(StringBuilder builder, int n, boolean reverse, String prefix, String suffix,
+			String delim) {
 		if(prefix == null) {
 			prefix = "";
 		}
@@ -159,43 +157,31 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		return builder;
 	}
 
-	protected String PopNWithModifier(int n, boolean reverse, String prefix,
-			String suffix, String delim) {
-		return this.PopNWithModifier(
-			new StringBuilder(),
-			n,
-			reverse,
-			prefix,
-			suffix,
-			delim).toString();
+	protected String PopNWithModifier(int n, boolean reverse, String prefix, String suffix, String delim) {
+		return this.PopNWithModifier(new StringBuilder(), n, reverse, prefix, suffix, delim).toString();
 	}
 
 	protected String PopNAndJoin(int n, String delim) {
 		return this.PopNAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
-	protected StringBuilder PopNAndJoin(StringBuilder builder, int n,
-			String delim) {
+	protected StringBuilder PopNAndJoin(StringBuilder builder, int n, String delim) {
 		return this.PopNWithModifier(builder, n, false, null, null, delim);
 	}
 
 	protected String PopNReverseAndJoin(int n, String delim) {
-		return this.PopNReverseAndJoin(new StringBuilder(), n, delim)
-				.toString();
+		return this.PopNReverseAndJoin(new StringBuilder(), n, delim).toString();
 	}
 
-	protected StringBuilder PopNReverseAndJoin(StringBuilder builder, int n,
-			String delim) {
+	protected StringBuilder PopNReverseAndJoin(StringBuilder builder, int n, String delim) {
 		return this.PopNWithModifier(builder, n, true, null, null, delim);
 	}
 
 	protected String PopNReverseWithSuffix(int n, String suffix) {
-		return this.PopNReverseWithSuffix(new StringBuilder(), n, suffix)
-				.toString();
+		return this.PopNReverseWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
-	protected StringBuilder PopNReverseWithSuffix(StringBuilder builder, int n,
-			String suffix) {
+	protected StringBuilder PopNReverseWithSuffix(StringBuilder builder, int n, String suffix) {
 		return this.PopNWithModifier(builder, n, true, null, suffix, null);
 	}
 
@@ -203,18 +189,15 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		return this.PopNWithSuffix(new StringBuilder(), n, suffix).toString();
 	}
 
-	protected StringBuilder PopNWithSuffix(StringBuilder builder, int n,
-			String suffix) {
+	protected StringBuilder PopNWithSuffix(StringBuilder builder, int n, String suffix) {
 		return this.PopNWithModifier(builder, n, false, null, suffix, null);
 	}
 
 	protected String PopNReverseWithPrefix(int n, String prefix) {
-		return this.PopNReverseWithPrefix(new StringBuilder(), n, prefix)
-				.toString();
+		return this.PopNReverseWithPrefix(new StringBuilder(), n, prefix).toString();
 	}
 
-	protected StringBuilder PopNReverseWithPrefix(StringBuilder builder, int n,
-			String prefix) {
+	protected StringBuilder PopNReverseWithPrefix(StringBuilder builder, int n, String prefix) {
 		return this.PopNWithModifier(builder, n, true, prefix, null, null);
 	}
 
@@ -222,13 +205,12 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		return this.PopNWithSuffix(new StringBuilder(), n, prefix).toString();
 	}
 
-	protected StringBuilder PopNWithPrefix(StringBuilder builder, int n,
-			String prefix) {
+	protected StringBuilder PopNWithPrefix(StringBuilder builder, int n, String prefix) {
 		return this.PopNWithModifier(builder, n, false, prefix, null, null);
 	}
 
 	protected int PopProgramSize() {
-		return (int) this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
+		return (Integer) this.CurrentProgramSize.remove(this.CurrentProgramSize.size() - 1);
 	}
 
 	protected void push(String Program) {
@@ -244,7 +226,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		return Node.Evaluate(this);
 	}
 
-	protected boolean VisitBlock(TypedNode Node){
+	protected boolean VisitBlock(TypedNode Node) {
 		return Node.Evaluate(this);
 	}
 

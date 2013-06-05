@@ -129,7 +129,7 @@ class SymbolTable implements KonohaConst {
 	// this.LongClassNameMap.SetId(p.PackageName + "." + name, classId);
 	// return c;
 	// }
-	
+
 }
 
 public final class Konoha implements KonohaConst {
@@ -144,7 +144,7 @@ public final class Konoha implements KonohaConst {
 	public final KonohaType	IntType;
 	public final KonohaType	StringType;
 	public final KonohaType	VarType;
-	
+
 	KonohaArray EmptyList;
 	KonohaMap  ClassNameMap;
 

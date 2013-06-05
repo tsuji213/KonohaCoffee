@@ -48,7 +48,7 @@ public final class KonohaNameSpace implements KonohaConst {
 			}
 		}
 	}
-	
+
 	// class
 	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {

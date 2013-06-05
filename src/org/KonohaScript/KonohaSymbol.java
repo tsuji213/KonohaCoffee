@@ -26,7 +26,7 @@ package org.KonohaScript;
 import org.KonohaScript.KLib.*;
 
 public final class KonohaSymbol implements KonohaConst {
-	
+
 	public static boolean IsGetterSymbol(int SymbolId) {
 		return (SymbolId & KonohaConst.GetterSymbolMask) == KonohaConst.GetterSymbolMask;
 	}
@@ -95,7 +95,7 @@ public final class KonohaSymbol implements KonohaConst {
 	public static int GetSymbolId(String Symbol) {
 		return GetSymbolId(Symbol, AllowNewId);
 	}
-	
+
 	public static String CanonicalSymbol(String Symbol) {
 		return Symbol.toLowerCase().replaceAll("_", "");
 	}
