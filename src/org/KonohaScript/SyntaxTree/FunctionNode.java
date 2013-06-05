@@ -1,6 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaType;
@@ -20,13 +20,13 @@ public class FunctionNode extends TypedNode implements CallableNode {
 	 * void f() { int Env1, Env2; return function (int Param1, int Param2) int {
 	 * return Env1 + Env2 + Param1 + Param2; } (10, 20); } }
 	 */
-	public ArrayList<TypedNode>	EnvList;
-	public KonohaMethod			Mtd;
+	public KonohaArray	EnvList;
+	public KonohaMethod			Method;
 
-	public FunctionNode(KonohaType TypeInfo, KonohaMethod Mtd) {
+	public FunctionNode(KonohaType TypeInfo, KonohaMethod Method) {
 		super(TypeInfo, null/* FIXME */);
-		this.Mtd = Mtd;
-		this.EnvList = new ArrayList<TypedNode>();
+		this.Method = Method;
+		this.EnvList = new KonohaArray();
 	}
 
 	@Override

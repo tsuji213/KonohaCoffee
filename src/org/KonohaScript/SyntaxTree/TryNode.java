@@ -1,6 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.NodeVisitor.TryNodeAcceptor;
@@ -22,16 +22,16 @@ public class TryNode extends TypedNode {
 	 * CatchedExceptions[1] then CatchBlock[1] ... FinallyBlock end
 	 */
 	public TypedNode			TryBlock;
-	public ArrayList<TypedNode>	TargetException;
-	public ArrayList<TypedNode>	CatchBlock;
+	public KonohaArray	TargetException;
+	public KonohaArray	CatchBlock;
 	public TypedNode			FinallyBlock;
 
 	public TryNode(KonohaType TypeInfo, TypedNode TryBlock, TypedNode FinallyBlock) {
 		super(TypeInfo, null/* fixme */);
 		this.TryBlock = TryBlock;
 		this.FinallyBlock = FinallyBlock;
-		this.CatchBlock = new ArrayList<TypedNode>();
-		this.TargetException = new ArrayList<TypedNode>();
+		this.CatchBlock      = new KonohaArray();
+		this.TargetException = new KonohaArray();
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.SyntaxTree.NodeVisitor.SwitchNodeAcceptor;
@@ -10,7 +10,8 @@ class DefaultSwitchNodeAcceptor implements SwitchNodeAcceptor {
 	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
 		Visitor.EnterSwitch(Node);
 		Visitor.Visit(Node.CondExpr);
-		for(TypedNode Block : Node.Blocks) {
+		for(int i = 0; i < Node.Blocks.size(); i++) {
+			TypedNode Block = (TypedNode) Node.Blocks.get(i);
 			Visitor.VisitList(Block);
 		}
 		return Visitor.ExitSwitch(Node);
@@ -26,8 +27,8 @@ public class SwitchNode extends TypedNode {
 	 * switch CondExpr { Label[0]: Blocks[0]; Label[1]: Blocks[2]; ... }
 	 */
 	public TypedNode			CondExpr;
-	public ArrayList<String>	Labels;
-	public ArrayList<TypedNode>	Blocks;
+	public KonohaArray	Labels;
+	public KonohaArray	Blocks;
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {

@@ -26,7 +26,7 @@ package org.KonohaScript;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -101,7 +101,7 @@ public final class KonohaSyntax implements KonohaConst {
 		return this == ErrorSyntax;
 	}
 
-	int InvokeParseFunc(UntypedNode UNode, ArrayList<KonohaToken> TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	int InvokeParseFunc(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		try {
 			System.err.println("invoking.." + ParseMethod);
 			Integer NextId = (Integer) ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
@@ -127,7 +127,7 @@ public final class KonohaSyntax implements KonohaConst {
 
 class CommonSyntax {
 
-	public int ParseErrorNode(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseErrorNode(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// KToken token = tokens.get(OpIdx);
 		node.Syntax = KonohaSyntax.ErrorSyntax;
 		return EndIdx;
@@ -137,19 +137,19 @@ class CommonSyntax {
 		return null;
 	}
 
-	public int ParseIndent(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseIndent(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// // KToken token = tokens.get(OpIdx);
 		// node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
-	public int ParseTypeStatement(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseTypeStatement(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		// // KToken token = tokens.get(OpIdx);
 		// node.Syntax = KSyntax.ErrorSyntax;
 		return EndIdx;
 	}
 
-	public int ParseValue(UntypedNode node, ArrayList<KonohaToken> tokens, int BeginIdx, int OpIdx, int EndIdx) {
+	public int ParseValue(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		KonohaToken Token = tokens.get(OpIdx);
 		return EndIdx;
 	}

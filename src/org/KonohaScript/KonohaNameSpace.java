@@ -23,31 +23,28 @@
  ***************************************************************************/
 
 package org.KonohaScript;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
 
-	public Konoha KonohaContext;
+	public Konoha   KonohaContext;
 	KonohaNameSpace ParentNameSpace;
-	ArrayList<KonohaNameSpace> ImportedNameSpaceList;
+	KonohaArray     ImportedNameSpaceList;
 
-	@SuppressWarnings("unchecked")
-	KonohaNameSpace(Konoha konoha, KonohaNameSpace parent) {
+	KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = konoha;
-		this.ParentNameSpace = parent;
-		if(parent != null) {
+		this.ParentNameSpace = ParentNameSpace;
+		if(ParentNameSpace != null) {
 			ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 			for(int i = 0; i < KonohaChar.MAX; i++) {
-				if(parent.ImportedTokenMatrix[i] != null) {
-					ImportedTokenMatrix[i] = parent.GetTokenFunc(i).Duplicate();
+				if(ParentNameSpace.ImportedTokenMatrix[i] != null) {
+					ImportedTokenMatrix[i] = ParentNameSpace.GetTokenFunc(i).Duplicate();
 				}
 			}
-			if(parent.ImportedSymbolTable != null) {
-				ImportedSymbolTable = (HashMap<String,Object>)parent.ImportedSymbolTable.clone();
+			if(ParentNameSpace.ImportedSymbolTable != null) {
+				ImportedSymbolTable = (KonohaMap)ParentNameSpace.ImportedSymbolTable.Duplicate();
 			}
 		}
 	}
@@ -113,7 +110,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 	}
 
-	public ArrayList<KonohaToken> Tokenize(String text, long uline) {
+	public TokenList Tokenize(String text, long uline) {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
@@ -147,8 +144,8 @@ public final class KonohaNameSpace implements KonohaConst {
 		DefineSymbol(MacroPrefix + TopLevelPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
 	}
 
-	HashMap<String, Object> DefinedSymbolTable;
-	HashMap<String, Object> ImportedSymbolTable;
+	KonohaMap DefinedSymbolTable;
+	KonohaMap ImportedSymbolTable;
 
 	Object GetDefinedSymbol(String symbol) {
 		return (DefinedSymbolTable != null) ? DefinedSymbolTable.get(symbol) : null;
@@ -160,11 +157,11 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineSymbol(String Symbol, Object Value) {
 		if(DefinedSymbolTable == null) {
-			DefinedSymbolTable = new HashMap<String, Object>();
+			DefinedSymbolTable = new KonohaMap();
 		}
 		DefinedSymbolTable.put(Symbol, Value);
 		if(ImportedSymbolTable == null) {
-			ImportedSymbolTable = new HashMap<String, Object>();
+			ImportedSymbolTable = new KonohaMap();
 		}
 		ImportedSymbolTable.put(Symbol, Value);
 	}
@@ -198,14 +195,6 @@ public final class KonohaNameSpace implements KonohaConst {
 		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
 	}
 
-	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
-		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + MethodName, "Type" + MethodName), true);
-	}
-
-	public void DefineTopLevelSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), true);
-	}
-
 	// Global Object
 	public KonohaObject CreateGlobalObject(int ClassFlag, String ShortName) {
 		KonohaType NewClass = new KonohaType(KonohaContext, null, ClassFlag, ShortName, null);
@@ -225,7 +214,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void ImportNameSpace(KonohaNameSpace ns) {
 		if(ImportedNameSpaceList == null) {
-			ImportedNameSpaceList = new ArrayList<KonohaNameSpace>();
+			ImportedNameSpaceList = new KonohaArray();
 			ImportedNameSpaceList.add(ns);
 		}
 		if(ImportedTokenMatrix == null) {
@@ -244,7 +233,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		// }
 	}
 
-	public int PreProcess(ArrayList<KonohaToken> tokenList, int BeginIdx, int EndIdx, ArrayList<KonohaToken> BufferList) {
+	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /*TopLevel*/true, /*SkipIndent*/false).Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
@@ -271,7 +260,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public Object Eval(String text, long uline) {
 		Object ResultValue = null;
 		System.out.println("Eval: " + text);
-		ArrayList<KonohaToken> BufferList = Tokenize(text, uline);
+		TokenList BufferList = Tokenize(text, uline);
 		int next = BufferList.size();
 		PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
@@ -324,16 +313,16 @@ class KonohaTokenizer implements KonohaConst {
 	KonohaNameSpace ns;
 	String SourceText;
 	long CurrentLine;
-	ArrayList<KonohaToken> SourceList;
+	TokenList SourceList;
 
 	KonohaTokenizer(KonohaNameSpace ns, String text, long CurrentLine) {
 		this.ns = ns;
 		this.SourceText = text;
 		this.CurrentLine = CurrentLine;
-		this.SourceList = new ArrayList<KonohaToken>();
+		this.SourceList = new TokenList();
 	}
 
-	int TokenizeFirstToken(ArrayList<KonohaToken> tokenList) {
+	int TokenizeFirstToken(TokenList tokenList) {
 		return 0;
 	}
 
@@ -366,7 +355,7 @@ class KonohaTokenizer implements KonohaConst {
 		return SourceText.length();
 	}
 
-	ArrayList<KonohaToken> Tokenize() {
+	TokenList Tokenize() {
 		int pos = 0, len = SourceText.length();
 		pos = TokenizeFirstToken(SourceList);
 		while(pos < len) {

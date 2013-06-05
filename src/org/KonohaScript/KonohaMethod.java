@@ -24,7 +24,7 @@
 
 package org.KonohaScript;
 
-import java.util.*;
+import org.KonohaScript.KLib.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -35,19 +35,17 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	public KonohaType ClassInfo;
 	public String MethodName;
-	// int MethodSymbol;
-	// int CanonicalSymbol;
+	int MethodSymbolId;
+	int CanonicalSymbolId;
 	public KonohaParam Param;
 	Method MethodRef;
-
-	// String Source;
-	// long uline;
-	// KNameSpace LazyCompileNameSpace;
 
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
 		this.ClassInfo = ClassInfo;
 		this.MethodName = MethodName;
+		this.MethodSymbolId = KonohaSymbol.GetSymbolId(MethodName);
+		this.CanonicalSymbolId = KonohaSymbol.GetCanonicalSymbolId(MethodName);
 		this.Param = Param;
 		this.MethodRef = MethodRef;
 	}
@@ -125,9 +123,9 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	// DoLazyComilation();
 
 	KonohaNameSpace LazyNameSpace;
-	ArrayList<KonohaToken> SourceList;
+	TokenList SourceList;
 
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, ArrayList<KonohaToken> SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, TokenList SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
@@ -135,7 +133,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	public KonohaMethod DoCompilation() {
 		if(MethodRef == null) {
-			ArrayList<KonohaToken> BufferList = new ArrayList<KonohaToken>();
+			TokenList BufferList = new TokenList();
 			LazyNameSpace.PreProcess(SourceList, 0, SourceList.size(), BufferList);
 			UntypedNode UNode = UntypedNode.ParseNewNode(LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);

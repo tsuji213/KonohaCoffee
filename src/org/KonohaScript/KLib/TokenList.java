@@ -22,30 +22,22 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.KLib;
+import java.util.ArrayList;
+import org.KonohaScript.*;
 
-import org.KonohaScript.KLib.KonohaMap;
-
-public class KonohaObject {
-	public KonohaType				TypeInfo;
-	public KonohaMap	prototypes;
-
-	KonohaObject(KonohaType TypeInfo) {
-		this.TypeInfo = TypeInfo;
-		this.prototypes = null;
+public final class TokenList {
+	private ArrayList<KonohaToken> List;
+	public TokenList() {
+		this.List = new ArrayList<KonohaToken>();
 	}
-
-	public Object get(String FieldName) {
-		if(this.prototypes == null) {
-			return null;
-		}
-		return this.prototypes.get(FieldName);
+	public int size() {
+		return List.size();
 	}
-
-	public void set(String FieldName, Object Obj) {
-		if(this.prototypes == null) {
-			this.prototypes = new KonohaMap();
-		}
-		this.prototypes.put(FieldName, Obj);
+	public void add(KonohaToken Token) {
+		List.add(Token);
+	}
+	public KonohaToken get(int index) {
+		return List.get(index);
 	}
 }

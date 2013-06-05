@@ -22,30 +22,34 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.KLib;
+import java.util.ArrayList;
+//import java.util.HashMap;
 
-import org.KonohaScript.KLib.KonohaMap;
-
-public class KonohaObject {
-	public KonohaType				TypeInfo;
-	public KonohaMap	prototypes;
-
-	KonohaObject(KonohaType TypeInfo) {
-		this.TypeInfo = TypeInfo;
-		this.prototypes = null;
+public final class KonohaArray {
+	private ArrayList<Object> List;
+	public KonohaArray() {
+		this.List = new ArrayList<Object>();
 	}
-
-	public Object get(String FieldName) {
-		if(this.prototypes == null) {
-			return null;
-		}
-		return this.prototypes.get(FieldName);
+	public KonohaArray(int DefaultSize) {
+		this.List = new ArrayList<Object>(DefaultSize);
 	}
-
-	public void set(String FieldName, Object Obj) {
-		if(this.prototypes == null) {
-			this.prototypes = new KonohaMap();
-		}
-		this.prototypes.put(FieldName, Obj);
+	public int size() {
+		return List.size();
+	}
+	public void add(Object Value) {
+		List.add(Value);
+	}
+	public Object get(int index) {
+		return List.get(index);
+	}
+	public void set(int index, Object Value) {
+		List.set(index, Value);
+	}
+	public Object remove(int index) {
+		return List.remove(index);
+	}
+	public void clear() {
+		List.clear();
 	}
 }

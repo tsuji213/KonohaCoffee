@@ -35,6 +35,7 @@ public interface KonohaConst {
 //	public final static int JCompatible          = 1<<15;
 //	public final static int Accountable          = 1<<16;
 
+
 	// internal
 	public final static int HiddenMethod               = 1<<17;
 	public final static int AbstractMethod             = 1<<18;
@@ -46,11 +47,14 @@ public interface KonohaConst {
 	//public final static int Warning              = 1<<24;
 
 
-	public final static int GetterSymbol = 1;
-	public final static int SetterSymbol = 2;
-	public final static int MetaSymbol   = 3;
-
-
+	public final static int SymbolMaskSize = 3;
+	public final static int LowerSymbolMask  = 1;
+	public final static int GetterSymbolMask = (1 << 1);
+	public final static int SetterSymbolMask = (1 << 2);
+	public final static int MetaSymbolMask   = (GetterSymbolMask|SetterSymbolMask);
+	public final static String GetterPrefix = "Get";
+	public final static String SetterPrefix = "Set";
+	public final static String MetaPrefix = "\\";
 
 	public final static int AllowNewId = -1;
 	public final static int NoMatch = -1;

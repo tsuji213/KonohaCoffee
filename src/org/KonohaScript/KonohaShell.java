@@ -6,11 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
+@KonohaPure
 class KConsole {
 	public final InputStream	stdin	= System.in;
 	public final PrintStream	stdout	= System.out;
@@ -34,8 +35,8 @@ public class KonohaShell {
 	Konoha	ShellContext;
 	boolean	IsInteractiveMode;
 
-	public KonohaShell() {
-		this.ShellContext = new Konoha(new MiniKonohaGrammar(), null);
+	public KonohaShell(String DefaultBuilder) {
+		this.ShellContext = new Konoha(new MiniKonohaGrammar(), DefaultBuilder);
 		this.IsInteractiveMode = false;
 	}
 
@@ -71,7 +72,7 @@ public class KonohaShell {
 	}
 
 	String[] ProcessOptions(String[] origArgs) {
-		ArrayList<String> Args = new ArrayList<String>();
+		KonohaArray Args = new KonohaArray();
 		for(int i = 0; i < origArgs.length; i++) {
 			String arg = origArgs[i];
 			if(arg.equals("-h")) {
@@ -91,13 +92,14 @@ public class KonohaShell {
 		this.IsInteractiveMode = true;
 		String[] newArgs = new String[Args.size()];
 		for(int i = 0; i < Args.size(); i++) {
-			newArgs[i] = Args.get(i);
+			newArgs[i] = (String) Args.get(i);
 		}
 		return newArgs;
 	}
 
 	public static void main(String[] origArgs) {
-		KonohaShell shell = new KonohaShell();
+		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
+		KonohaShell shell = new KonohaShell(DefaultBuilder);
 		String[] args = shell.ProcessOptions(origArgs);
 		if(args == null) {
 			return;
@@ -161,6 +163,7 @@ public class KonohaShell {
 				}
 				console.println("b:" + source);
 			}
+			s.close();
 			if(this.ProcessSource(source) == false) {
 				break;
 			}

@@ -22,30 +22,30 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.KLib;
+import java.util.HashMap;
 
-import org.KonohaScript.KLib.KonohaMap;
-
-public class KonohaObject {
-	public KonohaType				TypeInfo;
-	public KonohaMap	prototypes;
-
-	KonohaObject(KonohaType TypeInfo) {
-		this.TypeInfo = TypeInfo;
-		this.prototypes = null;
+public final class KonohaMap {
+	private HashMap<String, Object> Map;
+	public KonohaMap() {
+		this.Map = new HashMap<String,Object>();
+	}
+	public int size() {
+		return Map.size();
+	}
+	public void put(String Key, Object Value) {
+		Map.put(Key, Value);
+	}
+	public Object get(String Key) {
+		return Map.get(Key);
 	}
 
-	public Object get(String FieldName) {
-		if(this.prototypes == null) {
-			return null;
-		}
-		return this.prototypes.get(FieldName);
+	@SuppressWarnings("unchecked")
+	private KonohaMap(HashMap<String,Object> Map) {
+		this.Map = (HashMap<String,Object>)Map.clone();
 	}
 
-	public void set(String FieldName, Object Obj) {
-		if(this.prototypes == null) {
-			this.prototypes = new KonohaMap();
-		}
-		this.prototypes.put(FieldName, Obj);
+	public KonohaMap Duplicate() {
+		return new KonohaMap(this.Map);
 	}
 }
