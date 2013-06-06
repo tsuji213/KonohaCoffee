@@ -35,7 +35,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	KonohaNameSpace	ParentNameSpace;
 	KonohaArray		ImportedNameSpaceList;
 
-	KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
+	public KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = konoha;
 		this.ParentNameSpace = ParentNameSpace;
 		if(ParentNameSpace != null) {

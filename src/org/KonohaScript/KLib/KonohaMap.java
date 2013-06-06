@@ -23,26 +23,43 @@
  ***************************************************************************/
 
 package org.KonohaScript.KLib;
+
 import java.util.HashMap;
+import java.util.Iterator;
 
 public final class KonohaMap {
-	private HashMap<String, Object> Map;
+	private final HashMap<String, Object>	Map;
+
 	public KonohaMap() {
-		this.Map = new HashMap<String,Object>();
+		this.Map = new HashMap<String, Object>();
 	}
+
 	public int size() {
-		return Map.size();
+		return this.Map.size();
 	}
+
 	public void put(String Key, Object Value) {
-		Map.put(Key, Value);
+		this.Map.put(Key, Value);
 	}
+
 	public Object get(String Key) {
-		return Map.get(Key);
+		return this.Map.get(Key);
+	}
+
+	public String[] keys() {
+		Iterator<String> itr = this.Map.keySet().iterator();
+		String[] List = new String[this.Map.size()];
+		int i = 0;
+		while(itr.hasNext()) {
+			List[i] = itr.next();
+			i = i + 1;
+		}
+		return List;
 	}
 
 	@SuppressWarnings("unchecked")
-	private KonohaMap(HashMap<String,Object> Map) {
-		this.Map = (HashMap<String,Object>)Map.clone();
+	private KonohaMap(HashMap<String, Object> Map) {
+		this.Map = (HashMap<String, Object>) Map.clone();
 	}
 
 	public KonohaMap Duplicate() {

@@ -717,12 +717,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		// Macro
 		//NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
-		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
-		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
-		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
-		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
-		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
-		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
+		//NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		//NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		//NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		//NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		//NameSpace.DefineMacro("]", this, "CloseBracketMacro");
 		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
@@ -750,8 +750,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
 		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
 		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
-		// NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null,
-		// null);
+		//NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
 
 		NameSpace.DefineSyntax("$Const", Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
