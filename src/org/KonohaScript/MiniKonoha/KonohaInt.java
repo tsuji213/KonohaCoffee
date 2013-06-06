@@ -25,7 +25,9 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "*", BinaryParam, this, "IntMulInt");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "/", BinaryParam, this, "IntDivInt");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "%", BinaryParam, this, "IntModInt");
-		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "<", BinaryParam, this, "IntLtInt");
+
+		KonohaParam RelationParam = KonohaParam.ParseOf(ns, "boolean int x");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "<", RelationParam, this, "IntLtInt");
 
 		if(KonohaDebug.UseBuiltInTest) {
 			assert (BaseClass.LookupMethod("+", 0) != null);
@@ -66,7 +68,8 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 	public static int IntModInt(int x, int y) {
 		return x % y;
 	}
-	public static int IntLtInt(int x, int y) {
+
+	public static boolean IntLtInt(int x, int y) {
 		return x < y;
 	}
 }
