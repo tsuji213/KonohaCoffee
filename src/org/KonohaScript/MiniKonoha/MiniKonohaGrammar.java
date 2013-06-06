@@ -346,22 +346,22 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return NextIdx;
 	}
 
-	public final static int	ApplyMethodBaseClass	= 0;
-	public final static int	ApplyMethodName			= 1;
-	public final static int	ApplyMethodParam		= 2;
+	public final static int	MethodCallBaseClass	= 0;
+	public final static int	MethodCallName			= 1;
+	public final static int	MethodCallParam		= 2;
 
 	// $Symbol [ "." $Symbol ] ()
-	public int ParseApplyMethod(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
 		System.out.println(UNode.KeyToken.ParsedText);
-		// int ClassIdx = UNode.MatchSyntax(ApplyMethodBaseClass, "$Type",
+		// int ClassIdx = UNode.MatchSyntax(MethodCallBaseClass, "$Type",
 		// TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
 		int SymbolIdx = ClassIdx + 1;
 		if(ClassIdx == -1) {
 			SymbolIdx = BeginIdx;
-			UNode.SetAtToken(ApplyMethodBaseClass, null);
+			UNode.SetAtToken(MethodCallBaseClass, null);
 		}
-		int ParamIdx = UNode.MatchSyntax(ApplyMethodName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
 		if(NextIdx != -1) {
 			KonohaToken GroupToken = TokenList.get(ParamIdx);
@@ -381,6 +381,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(UntypedBaseNode == null) {
 
 		}
+		
 		if(UntypedBaseNode != null) {
 			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
 			if(BaseNode.IsError())
@@ -599,7 +600,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public int ParseVarDecl(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
+		//KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
 		int SymbolIdx = BeginIdx + 1;
 		int AfterSymbolIdx = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		if(AfterSymbolIdx == -1)
@@ -711,7 +712,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
 
 		// Macro
-		NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
+		//NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
 		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
 		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
 		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
@@ -758,9 +759,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("$Const", Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
+		NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
 		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
 
-		NameSpace.DefineSyntax("()", Term | MetaPattern | Precedence_CStyleSuffixCall, this, "ApplyMethod");
+		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
 		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
 		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StrngLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");

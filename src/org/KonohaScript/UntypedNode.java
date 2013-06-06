@@ -90,6 +90,7 @@ public class UntypedNode implements KonohaConst {
 			}
 			if(Index < this.NodeList.size()) {
 				this.NodeList.set(Index, Value);
+				return;
 			}
 			while(this.NodeList.size() < Index) {
 				this.NodeList.add(null);
@@ -328,7 +329,7 @@ public class UntypedNode implements KonohaConst {
 		BeginIdx = SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
 		if(BeginIdx < EndIdx) {
 			KonohaToken GroupToken = TokenList.get(BeginIdx);
-			if(GroupToken.ResolvedSyntax.equals("()")) {
+			if(GroupToken.ResolvedSyntax.SyntaxName.equals("()")) {
 				this.SetAtNode(Index, ParseGroup(this.NodeNameSpace, GroupToken, ParseOption));
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
 			}
