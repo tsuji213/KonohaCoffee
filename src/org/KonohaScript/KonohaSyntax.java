@@ -26,43 +26,43 @@ package org.KonohaScript;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.KonohaScript.KLib.*;
 
+import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaSyntax implements KonohaConst {
 
-	public KonohaNameSpace PackageNameSpace;
-	public String SyntaxName;
-	int SyntaxFlag;
+	public KonohaNameSpace	PackageNameSpace;
+	public String			SyntaxName;
+	int						SyntaxFlag;
 
-	public Object ParseObject;
-	public Method ParseMethod;
-	public Object TypeObject;
-	public Method TypeMethod;
-	public KonohaSyntax ParentSyntax = null;
+	public Object			ParseObject;
+	public Method			ParseMethod;
+	public Object			TypeObject;
+	public Method			TypeMethod;
+	public KonohaSyntax		ParentSyntax	= null;
 
 	@Override
 	public String toString() {
-		return SyntaxName;
+		return this.SyntaxName;
 	}
 
 	public boolean IsBeginTerm() {
-		return ((SyntaxFlag & Term) == Term);
+		return ((this.SyntaxFlag & Term) == Term);
 	}
 
 	public boolean IsBinaryOperator() {
-		return ((SyntaxFlag & BinaryOperator) == BinaryOperator);
+		return ((this.SyntaxFlag & BinaryOperator) == BinaryOperator);
 	}
 
 	public boolean IsSuffixOperator() {
-		return ((SyntaxFlag & SuffixOperator) == SuffixOperator);
+		return ((this.SyntaxFlag & SuffixOperator) == SuffixOperator);
 	}
 
 	public boolean IsDelim() {
-		return ((SyntaxFlag & Precedence_CStyleDelim) == Precedence_CStyleDelim);
+		return ((this.SyntaxFlag & Precedence_CStyleDelim) == Precedence_CStyleDelim);
 	}
 
 	public final static boolean IsFlag(int flag, int flag2) {
@@ -102,20 +102,25 @@ public final class KonohaSyntax implements KonohaConst {
 
 	int InvokeParseFunc(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		try {
-			System.err.println("invoking.." + ParseMethod);
-			Integer NextId = (Integer) ParseMethod.invoke(ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
+			System.err.println("invoking.." + this.ParseMethod);
+			Integer NextId = (Integer) this.ParseMethod
+					.invoke(this.ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
-		} catch (IllegalArgumentException e) {
+		}
+		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		}
+		catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NullPointerException e) {
-			System.err.println("undefined ParseMethod: " + SyntaxName);
+		}
+		catch (NullPointerException e) {
+			System.err.println("undefined ParseMethod: " + this.SyntaxName);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -125,9 +130,8 @@ public final class KonohaSyntax implements KonohaConst {
 	TypedNode InvokeTypeFunc(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode Node = null;
 		try {
-			// System.err.println("Syntax" + UNode.Syntax);
-			// System.err.println("Syntax.TypeMethod" +
-			// UNode.Syntax.TypeMethod);
+			System.err.println("Syntax" + UNode.Syntax);
+			System.err.println("Syntax.TypeMethod" + UNode.Syntax.TypeMethod);
 			// System.err.println("Syntax.TypeObject" +
 			// UNode.Syntax.TypeObject);
 			Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
@@ -142,7 +146,7 @@ public final class KonohaSyntax implements KonohaConst {
 		}
 		catch (InvocationTargetException e) {
 			e.printStackTrace();
-			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
+			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e + "\n\t" + e.getCause().toString());
 		}
 		return Node;
 	}

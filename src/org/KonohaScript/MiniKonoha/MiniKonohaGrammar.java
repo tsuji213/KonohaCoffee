@@ -347,7 +347,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	MethodCallBaseClass	= 0;
-	public final static int	MethodCallName			= 1;
+	public final static int	MethodCallName		= 1;
 	public final static int	MethodCallParam		= 2;
 
 	// $Symbol [ "." $Symbol ] ()
@@ -358,16 +358,21 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		// TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
 		int SymbolIdx = ClassIdx + 1;
 		if(ClassIdx == -1) {
+			UNode.NodeNameSpace.GetGlobalObject();
+			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
+			//FIXME
+			//UntypedNode baseNode = new UntypedNode(ns, token);
 			SymbolIdx = BeginIdx;
-			UNode.SetAtToken(MethodCallBaseClass, null);
+			UNode.SetAtToken(MethodCallBaseClass, token);
 		}
 		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
-		if(NextIdx != -1) {
-			KonohaToken GroupToken = TokenList.get(ParamIdx);
-			TokenList GroupList = GroupToken.GetGroupList();
-			UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
+		if(NextIdx == -1) {
+			return -1;
 		}
+		KonohaToken GroupToken = TokenList.get(ParamIdx);
+		TokenList GroupList = GroupToken.GetGroupList();
+		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
 		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
 		return NextIdx;
@@ -381,7 +386,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(UntypedBaseNode == null) {
 
 		}
-		
+
 		if(UntypedBaseNode != null) {
 			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
 			if(BaseNode.IsError())
@@ -590,9 +595,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			return this.ParseVarDeclIteration(ScopeNode, TypeToken, TokenList, NextVarDeclIdx, EndIdx, TermRequired);
 		}
 		if(NextIdx < EndIdx) {
-			UNode.SetAtNode(
-				VarDeclScope,
-				UntypedNode.ParseNewNode(UNode.NodeNameSpace, null, TokenList, NextIdx, EndIdx, TermRequired));
+			UNode.SetAtNode(VarDeclScope, UntypedNode
+					.ParseNewNode(UNode.NodeNameSpace, null, TokenList, NextIdx, EndIdx, TermRequired));
 		} else {
 			UNode.SetAtToken(VarDeclScope, null);
 		}
@@ -728,18 +732,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
 		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
 
-		NameSpace.DefineSyntax(
-			"+",
-			UniaryOperator | BinaryOperator | Precedence_CStyleADD,
-			this,
-			"UniaryOperator",
-			"MethodCall");
-		NameSpace.DefineSyntax(
-			"-",
-			UniaryOperator | BinaryOperator | Precedence_CStyleADD,
-			this,
-			"UniaryOperator",
-			"MethodCall");
+		NameSpace
+				.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
+		NameSpace
+				.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
 
 		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
 		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
@@ -760,6 +756,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("$Const", Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
+
+		NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
 		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
 
 		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
