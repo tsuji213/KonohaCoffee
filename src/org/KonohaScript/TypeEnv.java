@@ -1,8 +1,6 @@
 package org.KonohaScript;
 
-import java.lang.reflect.InvocationTargetException;
-import org.KonohaScript.KLib.*;
-
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -66,7 +64,7 @@ public class TypeEnv implements KonohaConst {
 	public KonohaType GetLocalType(String Symbol) {
 		if(this.LocalStackList != null) {
 			for(int i = this.LocalStackList.size() - 1; i >= 0; i--) {
-				VarSet t = (VarSet)LocalStackList.get(i);
+				VarSet t = (VarSet) this.LocalStackList.get(i);
 				if(t.Name.equals(Symbol))
 					return t.TypeInfo;
 			}
@@ -87,30 +85,8 @@ public class TypeEnv implements KonohaConst {
 	}
 
 	public static TypedNode TypeEachNode(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		TypedNode Node = null;
-		try {
-			// System.err.println("Syntax" + UNode.Syntax);
-			// System.err.println("Syntax.TypeMethod" +
-			// UNode.Syntax.TypeMethod);
-			// System.err.println("Syntax.TypeObject" +
-			// UNode.Syntax.TypeObject);
-			Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
-		}
-		catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
-		}
-		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
-		}
-		catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + e);
-		}
+		TypedNode Node = UNode.Syntax.InvokeTypeFunc(Gamma, UNode, TypeInfo);
+
 		if(Node == null) {
 			Node = Gamma.NewErrorNode(UNode.KeyToken, "undefined type checker: " + UNode.Syntax);
 		}

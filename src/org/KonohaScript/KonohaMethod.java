@@ -24,21 +24,21 @@
 
 package org.KonohaScript;
 
-import org.KonohaScript.KLib.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class KonohaMethod extends KonohaDef implements KonohaConst {
 
-	public KonohaType ClassInfo;
-	public String MethodName;
-	int MethodSymbolId;
-	int CanonicalSymbolId;
-	public KonohaParam Param;
-	Method MethodRef;
+	public KonohaType	ClassInfo;
+	public String		MethodName;
+	int					MethodSymbolId;
+	int					CanonicalSymbolId;
+	public KonohaParam	Param;
+	Method				MethodRef;
 
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
@@ -50,28 +50,29 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		this.MethodRef = MethodRef;
 	}
 
-	public int MethodFlag;
+	public int	MethodFlag;
+
 	public boolean Is(int Flag) {
-		return ((MethodFlag & Flag) == Flag);
+		return ((this.MethodFlag & Flag) == Flag);
 	}
 
 	public final KonohaType GetReturnType(KonohaType BaseType) {
-		KonohaType ReturnType = Param.Types[0];
+		KonohaType ReturnType = this.Param.Types[0];
 		return ReturnType;
 	}
 
 	public final KonohaType GetParamType(KonohaType BaseType, int ParamIdx) {
-		KonohaType ParamType = Param.Types[ParamIdx + Param.ReturnSize];
+		KonohaType ParamType = this.Param.Types[ParamIdx + this.Param.ReturnSize];
 		return ParamType;
 	}
 
 	public final boolean Match(KonohaMethod Other) {
-		return (MethodName.equals(Other.MethodName) && Param.Match(Other.Param));
+		return (this.MethodName.equals(Other.MethodName) && this.Param.Match(Other.Param));
 	}
 
 	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
 		if(MethodName.equals(this.MethodName)) {
-			if(Param.GetParamSize() == ParamSize) {
+			if(this.Param.GetParamSize() == ParamSize) {
 				return true;
 			}
 		}
@@ -79,39 +80,41 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	}
 
 	boolean IsStaticInvocation() {
-		return Modifier.isStatic(MethodRef.getModifiers());
+		return Modifier.isStatic(this.MethodRef.getModifiers());
 	}
 
 	public Object Eval(Object[] ParamData) {
-		int ParamSize = Param.GetParamSize();
+		int ParamSize = this.Param.GetParamSize();
 		try {
-			if(IsStaticInvocation()) {
+			if(this.IsStaticInvocation()) {
 				switch (ParamSize) {
 				case 0:
-					return MethodRef.invoke(null, ParamData[0]);
+					return this.MethodRef.invoke(null, ParamData[0]);
 				case 1:
-					return MethodRef.invoke(null, ParamData[0], ParamData[1]);
+					return this.MethodRef.invoke(null, ParamData[0], ParamData[1]);
 				default:
-					return MethodRef.invoke(null, ParamData); // FIXME
+					return this.MethodRef.invoke(null, ParamData); // FIXME
 				}
-			}
-			else {
+			} else {
 				switch (ParamSize) {
 				case 0:
-					return MethodRef.invoke(ParamData[0]);
+					return this.MethodRef.invoke(ParamData[0]);
 				case 1:
-					return MethodRef.invoke(ParamData[0], ParamData[1]);
+					return this.MethodRef.invoke(ParamData[0], ParamData[1]);
 				default:
-					return MethodRef.invoke(ParamData[0], ParamData); // FIXME
+					return this.MethodRef.invoke(ParamData[0], ParamData); // FIXME
 				}
 			}
-		} catch (IllegalArgumentException e) {
+		}
+		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		}
+		catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -119,27 +122,27 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return null;
 	}
 
-
 	// DoLazyComilation();
 
-	KonohaNameSpace LazyNameSpace;
-	TokenList SourceList;
+	KonohaNameSpace	LazyNameSpace;
+	TokenList		SourceList;
 
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, TokenList SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param,
+			KonohaNameSpace LazyNameSpace, TokenList SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
 	}
 
 	public KonohaMethod DoCompilation() {
-		if(MethodRef == null) {
+		if(this.MethodRef == null) {
 			TokenList BufferList = new TokenList();
-			LazyNameSpace.PreProcess(SourceList, 0, SourceList.size(), BufferList);
-			UntypedNode UNode = UntypedNode.ParseNewNode(LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
+			this.LazyNameSpace.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
+			UntypedNode UNode = UntypedNode.ParseNewNode(this.LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
-			TypeEnv Gamma = new TypeEnv(LazyNameSpace, this);
+			TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);
 			TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
-			KonohaBuilder Builder = LazyNameSpace.GetBuilder();
+			KonohaBuilder Builder = this.LazyNameSpace.GetBuilder();
 			return Builder.Build(TNode, this);
 		}
 		return this;

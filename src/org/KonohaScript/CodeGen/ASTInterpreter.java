@@ -1,12 +1,12 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KLib.*;
-
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -186,9 +186,9 @@ class NotSupportedCodeError extends RuntimeException {
 }
 
 public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
-	KonohaArray		Evaled;
-	KonohaArray		Labels;
-	KonohaMap	    LocalVariable;
+	KonohaArray	Evaled;
+	KonohaArray	Labels;
+	KonohaMap	LocalVariable;
 
 	public ASTInterpreter() {
 		super(null);
@@ -239,7 +239,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = (Local)params.get(i);
+			Local local = (Local) params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
@@ -505,8 +505,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean ExitError(ErrorNode Node) {
-		throw new NotSupportedCodeError();
-		// return false;
+		throw new RuntimeException(Node.ErrorMessage);
 	}
 
 	@Override
@@ -531,5 +530,6 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		Konoha konoha = new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
 		// konoha.Eval("3 + 1", 0);
 		konoha.Eval("int add(int x) { return x + 1; }", 0);
+		konoha.Eval("add(10);", 0);
 	}
 }

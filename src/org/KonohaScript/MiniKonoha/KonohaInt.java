@@ -9,7 +9,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 
 public class KonohaInt extends KonohaGrammar implements KonohaConst {
-	
+
 	public KonohaInt() {
 	}
 

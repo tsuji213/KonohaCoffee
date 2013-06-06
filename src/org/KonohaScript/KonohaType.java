@@ -25,27 +25,29 @@
 package org.KonohaScript;
 
 import java.lang.reflect.Method;
-import org.KonohaScript.KLib.*;
+
+import org.KonohaScript.KLib.KonohaArray;
 
 public class KonohaType {
-	Konoha										KonohaContext;
-	KPackage									Package;
-	int											ClassFlag;
-	public String								ShortClassName;
-	KonohaType									BaseClass;
-	KonohaType									SuperClass;
-	KonohaParam									ClassParam;
-	KonohaType									SearchSimilarClass;
-	KonohaArray         						ClassMethodList;
-	public KonohaType							SearchSuperMethodClass;
+	Konoha				KonohaContext;
+	int					ClassFlag;
+	public String		ShortClassName;
+	KonohaType			BaseClass;
+	KonohaType			SuperClass;
+	KonohaParam			ClassParam;
+	KonohaType			SearchSimilarClass;
+	KonohaArray			ClassMethodList;
+	public KonohaType	SearchSuperMethodClass;
 	// FIXME(ide) where is superclass info?
-	public Object								DefaultNullValue;
-	Object										LocalSpec;
+	public Object		DefaultNullValue;
+	Object				LocalSpec;
 
-	public KonohaType(Konoha KonohaContext, KPackage Package, int ClassFlag, String ClassName, Object Spec) {
+	// Java Implementation Only
+	Class<?>			HostedClassInfo	= null;
+
+	public KonohaType(Konoha KonohaContext, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;
 		this.ClassFlag = ClassFlag;
-		this.Package = Package;
 		this.ShortClassName = ClassName;
 		this.SuperClass = null;
 		this.BaseClass = this;
@@ -53,11 +55,8 @@ public class KonohaType {
 		this.LocalSpec = Spec;
 	}
 
-	// Java Implementation Only
-	Class<?>	HostedClassInfo	= null;
-
 	public KonohaType(Konoha KonohaContext, Class<?> ClassInfo) {
-		this(KonohaContext, null, 0, ClassInfo.getSimpleName(), null);
+		this(KonohaContext, 0, ClassInfo.getSimpleName(), null);
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
 		if(ClassInfo != Object.class) {
@@ -114,7 +113,7 @@ public class KonohaType {
 	}
 
 	public void AddMethod(KonohaMethod Method) {
-		if(this.ClassMethodList == KonohaContext.EmptyList) {
+		if(this.ClassMethodList == this.KonohaContext.EmptyList) {
 			this.ClassMethodList = new KonohaArray();
 		}
 		this.ClassMethodList.add(Method);
@@ -122,15 +121,12 @@ public class KonohaType {
 
 	public void DefineMethod(int MethodFlag, String MethodName, KonohaParam Param, Object Callee, String LocalName) {
 		KonohaMethod Method = new KonohaMethod(MethodFlag, this, MethodName, Param, KonohaFunc.LookupMethod(Callee, LocalName));
-		if(this.ClassMethodList == KonohaContext.EmptyList) {
-			this.ClassMethodList = new KonohaArray();
-		}
-		this.ClassMethodList.add(Method);
+		this.AddMethod(Method);
 	}
 
 	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
-		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KonohaMethod Method = (KonohaMethod)ClassMethodList.get(i);
+		for(int i = 0; i < this.ClassMethodList.size(); i++) {
+			KonohaMethod Method = (KonohaMethod) this.ClassMethodList.get(i);
 			if(Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
@@ -150,8 +146,8 @@ public class KonohaType {
 	}
 
 	public boolean DefineNewMethod(KonohaMethod NewMethod) {
-		for(int i = 0; i < ClassMethodList.size(); i++) {
-			KonohaMethod DefinedMethod = (KonohaMethod)ClassMethodList.get(i);
+		for(int i = 0; i < this.ClassMethodList.size(); i++) {
+			KonohaMethod DefinedMethod = (KonohaMethod) this.ClassMethodList.get(i);
 			if(NewMethod.Match(DefinedMethod)) {
 				return false;
 			}
