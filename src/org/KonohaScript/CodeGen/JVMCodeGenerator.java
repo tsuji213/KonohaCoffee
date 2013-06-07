@@ -169,16 +169,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opLT = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPGE, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPGE, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);
 			}
 		};		
@@ -186,16 +186,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opLE = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPGT, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPGT, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true 
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
 		};
@@ -203,16 +203,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opGT = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPLE, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPLE, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
 		};
@@ -220,16 +220,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opGE = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPLT, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPLT, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
 		};	
@@ -237,16 +237,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opEQ = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPNE, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPNE, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
 		};		
@@ -254,16 +254,16 @@ class JVMBuilder implements Opcodes {
 		BinaryOperator opNE = new BinaryOperator() {
 			@Override
 			void codeGen() {
-				Label ELSE = new Label();
+				Label FALSE = new Label();
 				Label END = new Label();
 				stack.pop();
 				stack.pop();
 				stack.push();
-				methodVisitor.visitJumpInsn(IF_ICMPEQ, ELSE); // condition
-				methodVisitor.visitLdcInsn(1); // then
+				methodVisitor.visitJumpInsn(IF_ICMPEQ, FALSE); // condition
+				methodVisitor.visitInsn(ICONST_1); // true
 				methodVisitor.visitJumpInsn(GOTO, END);
-				methodVisitor.visitLabel(ELSE);
-				methodVisitor.visitLdcInsn(0); // else
+				methodVisitor.visitLabel(FALSE);
+				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
 		};	
