@@ -360,10 +360,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(ClassIdx == -1) {
 			UNode.NodeNameSpace.GetGlobalObject();
 			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
-			//FIXME
-			//UntypedNode baseNode = new UntypedNode(ns, token);
+			token.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
+			UntypedNode baseNode = new UntypedNode(UNode.NodeNameSpace, token);
 			SymbolIdx = BeginIdx;
-			UNode.SetAtToken(MethodCallBaseClass, token);
+			UNode.SetAtNode(MethodCallBaseClass, baseNode);
 		}
 		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
@@ -380,15 +380,19 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeMethodCall(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaDebug.P("(>_<) typing method calls: " + UNode);
+		KonohaDebug.P("debug!! head");
 		KonohaArray NodeList = UNode.NodeList;
+		KonohaDebug.P("debug!! after NodeList");
 		assert (NodeList.size() > 1);
+		assert (NodeList.get(0) instanceof UntypedNode);
 		UntypedNode UntypedBaseNode = (UntypedNode) NodeList.get(0);
+		KonohaDebug.P("debug!! before if");
 		if(UntypedBaseNode == null) {
-
-		}
-
-		if(UntypedBaseNode != null) {
+			KonohaDebug.P("debug!! UntypedBaseNode == null");
+		}else{
+			KonohaDebug.P("debug!! before");
 			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
+			KonohaDebug.P("debug!! after");
 			if(BaseNode.IsError())
 				return BaseNode;
 			return this.TypeFindingMethod(Gamma, UNode, BaseNode, TypeInfo);
@@ -717,12 +721,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		// Macro
 		//NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
-		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
-		//NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
-		//NameSpace.DefineMacro("{", this, "OpenBraceMacro");
-		//NameSpace.DefineMacro("}", this, "CloseBraceMacro");
-		//NameSpace.DefineMacro("[", this, "OpenBracketMacro");
-		//NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
+		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
 		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");

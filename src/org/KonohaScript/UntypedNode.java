@@ -103,7 +103,8 @@ public class UntypedNode implements KonohaConst {
 		this.SetAt(Index, Node);
 		return Node;
 	}
-
+	
+	@Deprecated
 	public void SetAtToken(int Index, KonohaToken Token) {
 		this.SetAt(Index, Token);
 	}
