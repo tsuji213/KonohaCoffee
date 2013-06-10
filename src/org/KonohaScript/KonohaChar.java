@@ -103,7 +103,7 @@ public abstract class KonohaChar {
 		LowerAlpha, LowerAlpha, LowerAlpha, OpenBrace, Var, CloseBrace, Childer, 1,
 	};
 
-	static int JavaCharToKonohaChar(char c) {
+	static int FromJavaChar(char c) {
 		if(c < 128) {
 			return cMatrix[(int)c];
 		}

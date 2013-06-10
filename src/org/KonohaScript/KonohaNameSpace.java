@@ -105,7 +105,7 @@ public final class KonohaNameSpace implements KonohaConst {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
 		}
 		for(int i = 0; i < keys.length(); i++) {
-			int kchar = KonohaChar.JavaCharToKonohaChar(keys.charAt(i));
+			int kchar = KonohaChar.FromJavaChar(keys.charAt(i));
 			this.DefinedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, this.DefinedTokenMatrix[kchar]);
 			this.ImportedTokenMatrix[kchar] = KonohaFunc.NewFunc(callee, name, this.GetTokenFunc(kchar));
 		}
@@ -369,7 +369,7 @@ class KonohaTokenizer implements KonohaConst {
 		int pos = 0, len = this.SourceText.length();
 		pos = this.TokenizeFirstToken(this.SourceList);
 		while(pos < len) {
-			int kchar = KonohaChar.JavaCharToKonohaChar(this.SourceText.charAt(pos));
+			int kchar = KonohaChar.FromJavaChar(this.SourceText.charAt(pos));
 			int pos2 = this.DispatchFunc(kchar, pos);
 			if(!(pos < pos2))
 				break;
