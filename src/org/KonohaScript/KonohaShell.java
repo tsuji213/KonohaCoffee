@@ -147,14 +147,19 @@ public class KonohaShell {
 	private void ProcessConsole() {
 		KConsole console = new KConsole();
 		console.println("Konoha version 3.0");
-		while(true) {
-			console.print(">>>");
+		Scanner s = new Scanner(console.stdin);
+		statement: while(true) {
+			System.out.flush();
+			System.err.flush();
+			console.print(">>> ");
 			String source = "";
-			Scanner s = new Scanner(console.stdin);
 			int level = 0;
 
-			while(s.hasNext()) {
-				String line = s.next();
+			while(true) {
+				String line = s.nextLine();
+				if(line.trim().isEmpty()) {
+					continue statement;
+				}
 				source = source + line + "\n";
 				level = level + Count("(", ")", line);
 				level = level + Count("{", "}", line);
@@ -163,7 +168,6 @@ public class KonohaShell {
 				}
 				console.println("b:" + source);
 			}
-			s.close();
 			if(this.ProcessSource(source) == false) {
 				break;
 			}
