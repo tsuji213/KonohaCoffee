@@ -199,15 +199,9 @@ public abstract class NodeVisitor implements INodeVisitor {
 
 	@Override
 	public boolean VisitList(TypedNode Node) {
-		boolean Ret = false;
-		while(true) {
-			Ret = this.Visit(Node);
-			if(Ret == false) {
-				break;
-			}
-			if(Node.NextNode == null) {
-				break;
-			}
+		boolean Ret = true;
+		while(Ret && Node != null) {
+			Ret &= this.Visit(Node);
 			Node = Node.NextNode;
 		}
 		return Ret;
