@@ -25,7 +25,7 @@ public class TypeEnv implements KonohaConst {
 	public final KonohaType	StringType;
 	public final KonohaType	VarType;
 
-	TypeEnv(KonohaNameSpace GammaNameSpace, KonohaMethod Method) {
+	public TypeEnv(KonohaNameSpace GammaNameSpace, KonohaMethod Method) {
 		this.GammaNameSpace = GammaNameSpace;
 		this.VoidType = GammaNameSpace.KonohaContext.VoidType;
 		this.BooleanType = GammaNameSpace.KonohaContext.BooleanType;

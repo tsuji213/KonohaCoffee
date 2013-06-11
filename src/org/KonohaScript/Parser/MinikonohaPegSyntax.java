@@ -9,7 +9,7 @@ import org.KonohaScript.KLib.TokenList;
 	]
 ]
 */
-class SourceCodeSyntax extends Syntax {
+class SourceCodeSyntax extends SyntaxTemplate {
 	SourceCodeSyntax() {
 		super("$SourceCode");
 	}
@@ -19,9 +19,11 @@ class SourceCodeSyntax extends Syntax {
 		Parser.AddSyntax(this, new TopLevelDefinitionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new SourceCodeSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $SourceCode");
-		Parser.PushThunk(SourceCodeSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -52,7 +54,7 @@ class SourceCodeSyntax extends Syntax {
 	]
 ]
 */
-class TopLevelDefinitionSyntax extends Syntax {
+class TopLevelDefinitionSyntax extends SyntaxTemplate {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
 	}
@@ -63,15 +65,19 @@ class TopLevelDefinitionSyntax extends Syntax {
 		Parser.AddSyntax(this, new statementSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new TopLevelDefinitionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $TopLevelDefinition");
-		Parser.PushThunk(TopLevelDefinitionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new TopLevelDefinitionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $TopLevelDefinition");
-		Parser.PushThunk(TopLevelDefinitionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -105,7 +111,7 @@ class TopLevelDefinitionSyntax extends Syntax {
 	]
 ]
 */
-class functionSignatureSyntax extends Syntax {
+class functionSignatureSyntax extends SyntaxTemplate {
 	functionSignatureSyntax() {
 		super("$functionSignature");
 	}
@@ -117,9 +123,11 @@ class functionSignatureSyntax extends Syntax {
 		Parser.AddSyntax(this, new ParamDeclListSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new functionSignatureSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $functionSignature");
-		Parser.PushThunk(functionSignatureSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -152,7 +160,7 @@ class functionSignatureSyntax extends Syntax {
 	]
 ]
 */
-class functionBodySyntax extends Syntax {
+class functionBodySyntax extends SyntaxTemplate {
 	functionBodySyntax() {
 		super("$functionBody");
 	}
@@ -162,9 +170,11 @@ class functionBodySyntax extends Syntax {
 		Parser.AddSyntax(this, new blockSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new functionBodySyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $functionBody");
-		Parser.PushThunk(functionBodySyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -196,7 +206,7 @@ class functionBodySyntax extends Syntax {
 	]
 ]
 */
-class functionDefinitionSyntax extends Syntax {
+class functionDefinitionSyntax extends SyntaxTemplate {
 	functionDefinitionSyntax() {
 		super("$functionDefinition");
 	}
@@ -207,15 +217,19 @@ class functionDefinitionSyntax extends Syntax {
 		Parser.AddSyntax(this, new functionBodySyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new functionDefinitionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $functionDefinition");
-		Parser.PushThunk(functionDefinitionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new functionDefinitionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $functionDefinition");
-		Parser.PushThunk(functionDefinitionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -258,7 +272,7 @@ class functionDefinitionSyntax extends Syntax {
 	]
 ]
 */
-class ParamDeclListSyntax extends Syntax {
+class ParamDeclListSyntax extends SyntaxTemplate {
 	ParamDeclListSyntax() {
 		super("$ParamDeclList");
 	}
@@ -268,15 +282,19 @@ class ParamDeclListSyntax extends Syntax {
 		Parser.AddSyntax(this, new ParamDeclsSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParamDeclListSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParamDeclList");
-		Parser.PushThunk(ParamDeclListSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new ParamDeclListSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParamDeclList");
-		Parser.PushThunk(ParamDeclListSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -314,7 +332,7 @@ class ParamDeclListSyntax extends Syntax {
 	]
 ]
 */
-class ParamDeclsSyntax extends Syntax {
+class ParamDeclsSyntax extends SyntaxTemplate {
 	ParamDeclsSyntax() {
 		super("$ParamDecls");
 	}
@@ -324,9 +342,11 @@ class ParamDeclsSyntax extends Syntax {
 		Parser.AddSyntax(this, new ParamDeclSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParamDeclsSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParamDecls");
-		Parser.PushThunk(ParamDeclsSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -362,7 +382,7 @@ class ParamDeclsSyntax extends Syntax {
 	]
 ]
 */
-class ParamDeclSyntax extends Syntax {
+class ParamDeclSyntax extends SyntaxTemplate {
 	ParamDeclSyntax() {
 		super("$ParamDecl");
 	}
@@ -373,9 +393,11 @@ class ParamDeclSyntax extends Syntax {
 		Parser.AddSyntax(this, new typeSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParamDeclSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParamDecl");
-		Parser.PushThunk(ParamDeclSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -411,7 +433,7 @@ class ParamDeclSyntax extends Syntax {
 	]
 ]
 */
-class ParameterListSyntax extends Syntax {
+class ParameterListSyntax extends SyntaxTemplate {
 	ParameterListSyntax() {
 		super("$ParameterList");
 	}
@@ -421,15 +443,19 @@ class ParameterListSyntax extends Syntax {
 		Parser.AddSyntax(this, new ParametersSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParameterListSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParameterList");
-		Parser.PushThunk(ParameterListSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new ParameterListSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ParameterList");
-		Parser.PushThunk(ParameterListSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -467,7 +493,7 @@ class ParameterListSyntax extends Syntax {
 	]
 ]
 */
-class ParametersSyntax extends Syntax {
+class ParametersSyntax extends SyntaxTemplate {
 	ParametersSyntax() {
 		super("$Parameters");
 	}
@@ -477,9 +503,11 @@ class ParametersSyntax extends Syntax {
 		Parser.AddSyntax(this, new ParameterSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParametersSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Parameters");
-		Parser.PushThunk(ParametersSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -514,7 +542,7 @@ class ParametersSyntax extends Syntax {
 	]
 ]
 */
-class ParameterSyntax extends Syntax {
+class ParameterSyntax extends SyntaxTemplate {
 	ParameterSyntax() {
 		super("$Parameter");
 	}
@@ -524,9 +552,11 @@ class ParameterSyntax extends Syntax {
 		Parser.AddSyntax(this, new expressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ParameterSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Parameter");
-		Parser.PushThunk(ParameterSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -565,7 +595,7 @@ class ParameterSyntax extends Syntax {
 	]
 ]
 */
-class literalSyntax extends Syntax {
+class literalSyntax extends SyntaxTemplate {
 	literalSyntax() {
 		super("$literal");
 	}
@@ -576,33 +606,43 @@ class literalSyntax extends Syntax {
 		Parser.AddSyntax(this, new intLiteralSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new literalSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $literal");
-		Parser.PushThunk(literalSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor1	= new literalSyntax1();
 
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $literal");
-		Parser.PushThunk(literalSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor2	= new literalSyntax2();
 
 	int action2(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $literal");
-		Parser.PushThunk(literalSyntax2.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor3	= new literalSyntax3();
 
 	int action3(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $literal");
-		Parser.PushThunk(literalSyntax3.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor4	= new literalSyntax4();
+
 	int action4(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $literal");
-		Parser.PushThunk(literalSyntax4.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -650,7 +690,7 @@ class literalSyntax extends Syntax {
 	]
 ]
 */
-class typeSyntax extends Syntax {
+class typeSyntax extends SyntaxTemplate {
 	typeSyntax() {
 		super("$type");
 	}
@@ -660,15 +700,19 @@ class typeSyntax extends Syntax {
 		Parser.AddSyntax(this, new TypeTokenSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new typeSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $type");
-		Parser.PushThunk(typeSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new typeSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $type");
-		Parser.PushThunk(typeSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -728,7 +772,7 @@ class typeSyntax extends Syntax {
 	]
 ]
 */
-class statementSyntax extends Syntax {
+class statementSyntax extends SyntaxTemplate {
 	statementSyntax() {
 		super("$statement");
 	}
@@ -745,51 +789,67 @@ class statementSyntax extends Syntax {
 		Parser.AddSyntax(this, new blockSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new statementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor1	= new statementSyntax1();
 
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor2	= new statementSyntax2();
 
 	int action2(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax2.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor3	= new statementSyntax3();
 
 	int action3(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax3.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor4	= new statementSyntax4();
 
 	int action4(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax4.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor5	= new statementSyntax5();
 
 	int action5(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax5.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor5, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor6	= new statementSyntax6();
 
 	int action6(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax6.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor6, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor7	= new statementSyntax7();
+
 	int action7(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statement");
-		Parser.PushThunk(statementSyntax7.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor7, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -851,7 +911,7 @@ class statementSyntax extends Syntax {
 	]
 ]
 */
-class variableSyntax extends Syntax {
+class variableSyntax extends SyntaxTemplate {
 	variableSyntax() {
 		super("$variable");
 	}
@@ -861,9 +921,11 @@ class variableSyntax extends Syntax {
 		Parser.AddSyntax(this, new identifierSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new variableSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $variable");
-		Parser.PushThunk(variableSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -890,7 +952,7 @@ class variableSyntax extends Syntax {
 	]
 ]
 */
-class EQSyntax extends Syntax {
+class EQSyntax extends SyntaxTemplate {
 	EQSyntax() {
 		super("$EQ");
 	}
@@ -899,9 +961,11 @@ class EQSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new EQSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $EQ");
-		Parser.PushThunk(EQSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -936,7 +1000,7 @@ class EQSyntax extends Syntax {
 	]
 ]
 */
-class variableDeclarationSyntax extends Syntax {
+class variableDeclarationSyntax extends SyntaxTemplate {
 	variableDeclarationSyntax() {
 		super("$variableDeclaration");
 	}
@@ -950,15 +1014,19 @@ class variableDeclarationSyntax extends Syntax {
 		Parser.AddSyntax(this, new EQSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new variableDeclarationSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $variableDeclaration");
-		Parser.PushThunk(variableDeclarationSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new variableDeclarationSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $variableDeclaration");
-		Parser.PushThunk(variableDeclarationSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1006,7 +1074,7 @@ class variableDeclarationSyntax extends Syntax {
 	]
 ]
 */
-class statementsSyntax extends Syntax {
+class statementsSyntax extends SyntaxTemplate {
 	statementsSyntax() {
 		super("$statements");
 	}
@@ -1016,9 +1084,11 @@ class statementsSyntax extends Syntax {
 		Parser.AddSyntax(this, new statementSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new statementsSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $statements");
-		Parser.PushThunk(statementsSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1048,7 +1118,7 @@ class statementsSyntax extends Syntax {
 	]
 ]
 */
-class blockSyntax extends Syntax {
+class blockSyntax extends SyntaxTemplate {
 	blockSyntax() {
 		super("$block");
 	}
@@ -1058,9 +1128,11 @@ class blockSyntax extends Syntax {
 		Parser.AddSyntax(this, new statementsSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new blockSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $block");
-		Parser.PushThunk(blockSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1104,7 +1176,7 @@ class blockSyntax extends Syntax {
 	]
 ]
 */
-class ifStatementSyntax extends Syntax {
+class ifStatementSyntax extends SyntaxTemplate {
 	ifStatementSyntax() {
 		super("$ifStatement");
 	}
@@ -1115,15 +1187,19 @@ class ifStatementSyntax extends Syntax {
 		Parser.AddSyntax(this, new blockSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new ifStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ifStatement");
-		Parser.PushThunk(ifStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new ifStatementSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $ifStatement");
-		Parser.PushThunk(ifStatementSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1182,7 +1258,7 @@ class ifStatementSyntax extends Syntax {
 	]
 ]
 */
-class whileStatementSyntax extends Syntax {
+class whileStatementSyntax extends SyntaxTemplate {
 	whileStatementSyntax() {
 		super("$whileStatement");
 	}
@@ -1193,9 +1269,11 @@ class whileStatementSyntax extends Syntax {
 		Parser.AddSyntax(this, new blockSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new whileStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $whileStatement");
-		Parser.PushThunk(whileStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1232,7 +1310,7 @@ class whileStatementSyntax extends Syntax {
 	]
 ]
 */
-class breakStatementSyntax extends Syntax {
+class breakStatementSyntax extends SyntaxTemplate {
 	breakStatementSyntax() {
 		super("$breakStatement");
 	}
@@ -1241,9 +1319,11 @@ class breakStatementSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new breakStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $breakStatement");
-		Parser.PushThunk(breakStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1272,7 +1352,7 @@ class breakStatementSyntax extends Syntax {
 	]
 ]
 */
-class continueStatementSyntax extends Syntax {
+class continueStatementSyntax extends SyntaxTemplate {
 	continueStatementSyntax() {
 		super("$continueStatement");
 	}
@@ -1281,9 +1361,11 @@ class continueStatementSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new continueStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $continueStatement");
-		Parser.PushThunk(continueStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1317,7 +1399,7 @@ class continueStatementSyntax extends Syntax {
 	]
 ]
 */
-class returnStatementSyntax extends Syntax {
+class returnStatementSyntax extends SyntaxTemplate {
 	returnStatementSyntax() {
 		super("$returnStatement");
 	}
@@ -1327,15 +1409,19 @@ class returnStatementSyntax extends Syntax {
 		Parser.AddSyntax(this, new expressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new returnStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $returnStatement");
-		Parser.PushThunk(returnStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new returnStatementSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $returnStatement");
-		Parser.PushThunk(returnStatementSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1373,7 +1459,7 @@ class returnStatementSyntax extends Syntax {
 	]
 ]
 */
-class expressionStatementSyntax extends Syntax {
+class expressionStatementSyntax extends SyntaxTemplate {
 	expressionStatementSyntax() {
 		super("$expressionStatement");
 	}
@@ -1383,9 +1469,11 @@ class expressionStatementSyntax extends Syntax {
 		Parser.AddSyntax(this, new expressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new expressionStatementSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $expressionStatement");
-		Parser.PushThunk(expressionStatementSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1419,7 +1507,7 @@ class expressionStatementSyntax extends Syntax {
 	]
 ]
 */
-class expressionSyntax extends Syntax {
+class expressionSyntax extends SyntaxTemplate {
 	expressionSyntax() {
 		super("$expression");
 	}
@@ -1432,15 +1520,19 @@ class expressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new EQSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new expressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $expression");
-		Parser.PushThunk(expressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new expressionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $expression");
-		Parser.PushThunk(expressionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1481,7 +1573,7 @@ class expressionSyntax extends Syntax {
 	]
 ]
 */
-class leftHandSideExpressionSyntax extends Syntax {
+class leftHandSideExpressionSyntax extends SyntaxTemplate {
 	leftHandSideExpressionSyntax() {
 		super("$leftHandSideExpression");
 	}
@@ -1492,15 +1584,19 @@ class leftHandSideExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new callEpxressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new leftHandSideExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $leftHandSideExpression");
-		Parser.PushThunk(leftHandSideExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new leftHandSideExpressionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $leftHandSideExpression");
-		Parser.PushThunk(leftHandSideExpressionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1533,7 +1629,7 @@ class leftHandSideExpressionSyntax extends Syntax {
 	]
 ]
 */
-class callEpxressionSyntax extends Syntax {
+class callEpxressionSyntax extends SyntaxTemplate {
 	callEpxressionSyntax() {
 		super("$callEpxression");
 	}
@@ -1544,9 +1640,11 @@ class callEpxressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new memberExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new callEpxressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $callEpxression");
-		Parser.PushThunk(callEpxressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1577,7 +1675,7 @@ class callEpxressionSyntax extends Syntax {
 	]
 ]
 */
-class memberExpressionSyntax extends Syntax {
+class memberExpressionSyntax extends SyntaxTemplate {
 	memberExpressionSyntax() {
 		super("$memberExpression");
 	}
@@ -1588,9 +1686,11 @@ class memberExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new selectorSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new memberExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $memberExpression");
-		Parser.PushThunk(memberExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1634,7 +1734,7 @@ class memberExpressionSyntax extends Syntax {
 	]
 ]
 */
-class primarySyntax extends Syntax {
+class primarySyntax extends SyntaxTemplate {
 	primarySyntax() {
 		super("$primary");
 	}
@@ -1646,27 +1746,35 @@ class primarySyntax extends Syntax {
 		Parser.AddSyntax(this, new expressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new primarySyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $primary");
-		Parser.PushThunk(primarySyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor1	= new primarySyntax1();
 
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $primary");
-		Parser.PushThunk(primarySyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor2	= new primarySyntax2();
 
 	int action2(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $primary");
-		Parser.PushThunk(primarySyntax2.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor3	= new primarySyntax3();
+
 	int action3(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $primary");
-		Parser.PushThunk(primarySyntax3.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1717,7 +1825,7 @@ class primarySyntax extends Syntax {
 	]
 ]
 */
-class selectorSyntax extends Syntax {
+class selectorSyntax extends SyntaxTemplate {
 	selectorSyntax() {
 		super("$selector");
 	}
@@ -1728,15 +1836,19 @@ class selectorSyntax extends Syntax {
 		Parser.AddSyntax(this, new expressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new selectorSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $selector");
-		Parser.PushThunk(selectorSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new selectorSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $selector");
-		Parser.PushThunk(selectorSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1779,7 +1891,7 @@ class selectorSyntax extends Syntax {
 	]
 ]
 */
-class newExpressionSyntax extends Syntax {
+class newExpressionSyntax extends SyntaxTemplate {
 	newExpressionSyntax() {
 		super("$newExpression");
 	}
@@ -1791,15 +1903,19 @@ class newExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new memberExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new newExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $newExpression");
-		Parser.PushThunk(newExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new newExpressionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $newExpression");
-		Parser.PushThunk(newExpressionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1837,7 +1953,7 @@ class newExpressionSyntax extends Syntax {
 	]
 ]
 */
-class logicalOrExpressionSyntax extends Syntax {
+class logicalOrExpressionSyntax extends SyntaxTemplate {
 	logicalOrExpressionSyntax() {
 		super("$logicalOrExpression");
 	}
@@ -1847,9 +1963,11 @@ class logicalOrExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new logicalAndExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new logicalOrExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $logicalOrExpression");
-		Parser.PushThunk(logicalOrExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1885,7 +2003,7 @@ class logicalOrExpressionSyntax extends Syntax {
 	]
 ]
 */
-class logicalAndExpressionSyntax extends Syntax {
+class logicalAndExpressionSyntax extends SyntaxTemplate {
 	logicalAndExpressionSyntax() {
 		super("$logicalAndExpression");
 	}
@@ -1895,9 +2013,11 @@ class logicalAndExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new relationExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new logicalAndExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $logicalAndExpression");
-		Parser.PushThunk(logicalAndExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -1937,7 +2057,7 @@ class logicalAndExpressionSyntax extends Syntax {
 	]
 ]
 */
-class relationExpressionSyntax extends Syntax {
+class relationExpressionSyntax extends SyntaxTemplate {
 	relationExpressionSyntax() {
 		super("$relationExpression");
 	}
@@ -1948,15 +2068,19 @@ class relationExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new relationOperatorSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new relationExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationExpression");
-		Parser.PushThunk(relationExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new relationExpressionSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationExpression");
-		Parser.PushThunk(relationExpressionSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2009,7 +2133,7 @@ class relationExpressionSyntax extends Syntax {
 	]
 ]
 */
-class relationOperatorSyntax extends Syntax {
+class relationOperatorSyntax extends SyntaxTemplate {
 	relationOperatorSyntax() {
 		super("$relationOperator");
 	}
@@ -2018,39 +2142,51 @@ class relationOperatorSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new relationOperatorSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor1	= new relationOperatorSyntax1();
 
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor2	= new relationOperatorSyntax2();
 
 	int action2(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax2.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor3	= new relationOperatorSyntax3();
 
 	int action3(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax3.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor4	= new relationOperatorSyntax4();
 
 	int action4(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax4.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor5	= new relationOperatorSyntax5();
+
 	int action5(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $relationOperator");
-		Parser.PushThunk(relationOperatorSyntax5.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor5, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2099,7 +2235,7 @@ class relationOperatorSyntax extends Syntax {
 	]
 ]
 */
-class shiftOperatorSyntax extends Syntax {
+class shiftOperatorSyntax extends SyntaxTemplate {
 	shiftOperatorSyntax() {
 		super("$shiftOperator");
 	}
@@ -2108,15 +2244,19 @@ class shiftOperatorSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new shiftOperatorSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $shiftOperator");
-		Parser.PushThunk(shiftOperatorSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new shiftOperatorSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $shiftOperator");
-		Parser.PushThunk(shiftOperatorSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2149,7 +2289,7 @@ class shiftOperatorSyntax extends Syntax {
 	]
 ]
 */
-class additiveOperatorSyntax extends Syntax {
+class additiveOperatorSyntax extends SyntaxTemplate {
 	additiveOperatorSyntax() {
 		super("$additiveOperator");
 	}
@@ -2158,15 +2298,19 @@ class additiveOperatorSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new additiveOperatorSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $additiveOperator");
-		Parser.PushThunk(additiveOperatorSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor1	= new additiveOperatorSyntax1();
+
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $additiveOperator");
-		Parser.PushThunk(additiveOperatorSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2202,7 +2346,7 @@ class additiveOperatorSyntax extends Syntax {
 	]
 ]
 */
-class multiplicativeOperatorSyntax extends Syntax {
+class multiplicativeOperatorSyntax extends SyntaxTemplate {
 	multiplicativeOperatorSyntax() {
 		super("$multiplicativeOperator");
 	}
@@ -2211,21 +2355,27 @@ class multiplicativeOperatorSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new multiplicativeOperatorSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $multiplicativeOperator");
-		Parser.PushThunk(multiplicativeOperatorSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
+
+	public SyntaxAcceptor	Acceptor1	= new multiplicativeOperatorSyntax1();
 
 	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $multiplicativeOperator");
-		Parser.PushThunk(multiplicativeOperatorSyntax1.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor2	= new multiplicativeOperatorSyntax2();
+
 	int action2(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $multiplicativeOperator");
-		Parser.PushThunk(multiplicativeOperatorSyntax2.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2260,7 +2410,7 @@ class multiplicativeOperatorSyntax extends Syntax {
 	]
 ]
 */
-class additiveExpressionSyntax extends Syntax {
+class additiveExpressionSyntax extends SyntaxTemplate {
 	additiveExpressionSyntax() {
 		super("$additiveExpression");
 	}
@@ -2271,9 +2421,11 @@ class additiveExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new multiplicativeExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new additiveExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $additiveExpression");
-		Parser.PushThunk(additiveExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2310,7 +2462,7 @@ class additiveExpressionSyntax extends Syntax {
 	]
 ]
 */
-class multiplicativeExpressionSyntax extends Syntax {
+class multiplicativeExpressionSyntax extends SyntaxTemplate {
 	multiplicativeExpressionSyntax() {
 		super("$multiplicativeExpression");
 	}
@@ -2321,9 +2473,11 @@ class multiplicativeExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new unaryExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new multiplicativeExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $multiplicativeExpression");
-		Parser.PushThunk(multiplicativeExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2359,7 +2513,7 @@ class multiplicativeExpressionSyntax extends Syntax {
 	]
 ]
 */
-class unaryExpressionSyntax extends Syntax {
+class unaryExpressionSyntax extends SyntaxTemplate {
 	unaryExpressionSyntax() {
 		super("$unaryExpression");
 	}
@@ -2369,9 +2523,11 @@ class unaryExpressionSyntax extends Syntax {
 		Parser.AddSyntax(this, new leftHandSideExpressionSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new unaryExpressionSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $unaryExpression");
-		Parser.PushThunk(unaryExpressionSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -2398,7 +2554,7 @@ class unaryExpressionSyntax extends Syntax {
 	]
 ]
 */
-class identifierSyntax extends Syntax {
+class identifierSyntax extends SyntaxTemplate {
 	identifierSyntax() {
 		super("$identifier");
 	}
@@ -2408,9 +2564,11 @@ class identifierSyntax extends Syntax {
 		Parser.AddSyntax(this, new SymbolSyntax(), false);
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new identifierSyntax0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $identifier");
-		Parser.PushThunk(identifierSyntax0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 

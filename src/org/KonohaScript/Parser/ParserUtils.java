@@ -7,8 +7,6 @@ import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class intLiteral0 extends SyntaxAcceptor {
-	static final intLiteral0 Instance = new intLiteral0();
-
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("intLiteral0 : " + NodeSize);
@@ -18,12 +16,12 @@ class intLiteral0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(SyntaxModule Parser, TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
 }
 
-class intLiteralSyntax extends Syntax {
+class intLiteralSyntax extends SyntaxTemplate {
 	public intLiteralSyntax() {
 		super("$intLiteral");
 	}
@@ -32,9 +30,11 @@ class intLiteralSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new intLiteral0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $intLiteral");
-		Parser.PushThunk(intLiteral0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -58,8 +58,6 @@ class intLiteralSyntax extends Syntax {
 }
 
 class stringLiteral0 extends SyntaxAcceptor {
-	static final stringLiteral0 Instance = new stringLiteral0();
-
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("stringLiteral0 : " + NodeSize);
@@ -69,12 +67,12 @@ class stringLiteral0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(SyntaxModule Parser, TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
 }
 
-class stringLiteralSyntax extends Syntax {
+class stringLiteralSyntax extends SyntaxTemplate {
 	public stringLiteralSyntax() {
 		super("$stringLiteral");
 	}
@@ -83,9 +81,11 @@ class stringLiteralSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new stringLiteral0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $stringLiteral");
-		Parser.PushThunk(stringLiteral0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -109,7 +109,6 @@ class stringLiteralSyntax extends Syntax {
 }
 
 class Symbol0 extends SyntaxAcceptor {
-	static final Symbol0 Instance = new Symbol0();
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -120,12 +119,12 @@ class Symbol0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(SyntaxModule Parser, TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
 }
 
-class SymbolSyntax extends Syntax {
+class SymbolSyntax extends SyntaxTemplate {
 	public SymbolSyntax() {
 		super("$Symbol");
 	}
@@ -134,9 +133,11 @@ class SymbolSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new Symbol0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Symbol");
-		Parser.PushThunk(Symbol0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
@@ -160,7 +161,6 @@ class SymbolSyntax extends Syntax {
 }
 
 class Type0 extends SyntaxAcceptor {
-	static final Type0 Instance = new Type0();
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -171,12 +171,12 @@ class Type0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(SyntaxModule Parser, TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
 }
 
-class TypeTokenSyntax extends Syntax {
+class TypeTokenSyntax extends SyntaxTemplate {
 	public TypeTokenSyntax() {
 		super("$Type");
 	}
@@ -185,9 +185,11 @@ class TypeTokenSyntax extends Syntax {
 	void Init(SyntaxModule Parser) {
 	}
 
+	public SyntaxAcceptor	Acceptor0	= new Type0();
+
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Type");
-		Parser.PushThunk(Type0.Instance, BeginIdx, NodeSize);
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 

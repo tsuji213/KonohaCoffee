@@ -1,6 +1,7 @@
 package org.KonohaScript.Parser;
 
 import org.KonohaScript.Konoha;
+import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaGrammar;
 import org.KonohaScript.KonohaNameSpace;
@@ -12,28 +13,6 @@ import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
-
-// TokenList => UntypedNode => TypedNode
-class SyntaxMatcherTemplate {
-	int Match(SyntaxModule Parser, TokenList TokenList) {
-		return -1;
-	}
-
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx) {
-		return -1;
-	}
-}
-
-// String => Token
-class TokenizerTemplate {
-	int Match(SyntaxModule Parser, String SourceText, int pos) {
-		return -1;
-	}
-
-	int Parse(SyntaxModule Parser, String SourceText, int pos, TokenList ParsedTokenList) {
-		return -1;
-	}
-}
 
 final class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst {
 	public int ParseType(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
@@ -169,7 +148,12 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		Mod.SetRootSyntax(new SourceCodeSyntax());
 		KonohaToken.DumpTokenList(0, "Dump::", TokenList, 0, TokenList.size());
 		UntypedNode UNode = Mod.Parse(TokenList, 0, TokenList.size());
-		System.out.println(UNode.toString());
 
+		System.out.println("untyped tree: " + UNode);
+		TypeEnv Gamma = new TypeEnv(NameSpace, null);
+		TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
+		KonohaBuilder Builder = NameSpace.GetBuilder();
+		Object ResultValue = Builder.EvalAtTopLevel(TNode);
+		System.out.println(ResultValue);
 	}
 }
