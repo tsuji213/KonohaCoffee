@@ -63,6 +63,11 @@ public class KonohaType {
 			this.SuperClass = KonohaContext.LookupTypeInfo(ClassInfo.getSuperclass());
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return this.ShortClassName;
+	};
 
 	// public KClass(Konoha KonohaContext, String ClassName) throws
 	// ClassNotFoundException {
@@ -113,9 +118,6 @@ public class KonohaType {
 	}
 
 	public void AddMethod(KonohaMethod Method) {
-		if(this.ClassMethodList == this.KonohaContext.EmptyList) {
-			this.ClassMethodList = new KonohaArray();
-		}
 		this.ClassMethodList.add(Method);
 	}
 

@@ -530,7 +530,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	public static void main(String[] args) {
 		Konoha konoha = new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
 		// konoha.Eval("3 + 1", 0);
-		//konoha.Eval("int add(int x) { return x + 1; }", 0);
+		konoha.Eval("int add(int x) { return x + 1; }", 0);
 		konoha.Eval("add(10);", 0);
 	}
 }

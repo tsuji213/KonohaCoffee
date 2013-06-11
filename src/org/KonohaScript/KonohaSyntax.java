@@ -130,11 +130,15 @@ public final class KonohaSyntax implements KonohaConst {
 	TypedNode InvokeTypeFunc(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode Node = null;
 		try {
-			System.err.println("Syntax" + UNode.Syntax);
-			System.err.println("Syntax.TypeMethod" + UNode.Syntax.TypeMethod);
+			System.err.println("Syntax " + UNode.Syntax);
+			System.err.println("Syntax.TypeMethod " + UNode.Syntax.TypeMethod);
 			// System.err.println("Syntax.TypeObject" +
 			// UNode.Syntax.TypeObject);
-			Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
+			if(UNode.Syntax.TypeMethod == null){
+				Node = Gamma.NewErrorNode(UNode.KeyToken, "internal error: " + "Syntax " + UNode.Syntax + " 's TypeMethod is null");
+			}else{
+				Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
+			}
 		}
 		catch (IllegalArgumentException e) {
 			e.printStackTrace();

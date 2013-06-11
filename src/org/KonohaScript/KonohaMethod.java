@@ -49,6 +49,25 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		this.Param = Param;
 		this.MethodRef = MethodRef;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.Param.Types[0]);
+		builder.append(" ");
+		builder.append(this.MethodName);
+		builder.append("(");
+		for(int i = 0; i < this.Param.ArgNames.length; i++){
+			if(i > 0){
+				builder.append(", ");
+			}
+			builder.append(this.Param.Types[i+1]);
+			builder.append(" ");
+			builder.append(this.Param.ArgNames[i]);
+		}
+		builder.append(")");
+		return builder.toString();
+	};
 
 	public int	MethodFlag;
 

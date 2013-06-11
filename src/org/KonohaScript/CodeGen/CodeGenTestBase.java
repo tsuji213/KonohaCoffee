@@ -17,7 +17,7 @@ import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 abstract class CodeGeneratorTester {
-	CodeGenerator CreteCodeGen() {
+	CodeGenerator CreateCodeGen() {
 		return null;
 	}
 
@@ -76,7 +76,7 @@ public class CodeGenTestBase {
 	}
 
 	public void testReturnConst(CodeGeneratorTester Tester) {
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		KonohaType[] ParamData1 = new KonohaType[1];
 		String[] ArgData1 = new String[0];
 		ParamData1[0] = this.IntTy;
@@ -89,7 +89,7 @@ public class CodeGenTestBase {
 	}
 
 	public void testAddOne(CodeGeneratorTester Tester) {
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		KonohaType[] ParamData1 = new KonohaType[1];
 		String[] ArgData1 = new String[0];
 		ParamData1[0] = this.IntTy;
@@ -118,7 +118,7 @@ public class CodeGenTestBase {
 	}
 
 	public void testIf(CodeGeneratorTester Tester) {
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		KonohaType[] ParamData1 = new KonohaType[1];
 		ParamData1[0] = this.IntTy;
 		String[] ArgData1 = new String[0];
@@ -159,7 +159,7 @@ public class CodeGenTestBase {
 
 		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
 
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		Builder.Prepare(GlobalFunction);
 
 		TypedNode Block = new IfNode(this.VoidTy,
@@ -173,7 +173,7 @@ public class CodeGenTestBase {
 	}
 
 	void testMethodCall(CodeGeneratorTester Tester) {
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		String[] ArgData1 = new String[0];
 		String[] ArgData2 = new String[1];
 		ArgData2[0] = "x";
@@ -216,7 +216,7 @@ public class CodeGenTestBase {
 	}
 
 	void testFibo(CodeGeneratorTester Tester) {
-		CodeGenerator Builder = Tester.CreteCodeGen();
+		CodeGenerator Builder = Tester.CreateCodeGen();
 		String[] ArgData2 = new String[1];
 		ArgData2[0] = "x";
 		KonohaType[] ParamData1 = new KonohaType[2];

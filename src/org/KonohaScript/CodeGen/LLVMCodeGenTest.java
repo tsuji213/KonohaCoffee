@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 public class LLVMCodeGenTest extends CodeGeneratorTester {
 	@Override
-	CodeGenerator CreteCodeGen() {
+	CodeGenerator CreateCodeGen() {
 		return new LLVMCodeGen();
 	}
 

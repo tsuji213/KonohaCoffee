@@ -306,18 +306,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
 		}
+		
+		// case: Symbol is GlobalVariable
+		if(UNode.KeyToken.ParsedText.equals("global")){
+			return new ConstNode(UNode.NodeNameSpace.GetGlobalObject().TypeInfo, UNode.KeyToken, UNode.NodeNameSpace.GetGlobalObject());
+		}
 
-		// // case: Symbol is MethodName
-		// KonohaMethod Method = null;
-		// // Method =
-		// Gamma.GammaNameSpace.LookupMethod(UNode.KeyToken.ParsedText);
-		// if(Method == null) {
-		// Method =
-		// Gamma.GetLocalType("this").LookupMethod(UNode.KeyToken.ParsedText);
-		// }
-		// if(Method != null) {
-		// return new ConstNode(Method.ClassInfo, UNode.KeyToken, Method);
-		// }
 		// case: Symbol is undefined name
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}
@@ -354,25 +348,32 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
 		System.out.println(UNode.KeyToken.ParsedText);
-		// int ClassIdx = UNode.MatchSyntax(MethodCallBaseClass, "$Type",
-		// TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
-		int SymbolIdx = ClassIdx + 1;
-		if(ClassIdx == -1) {
-			UNode.NodeNameSpace.GetGlobalObject();
-			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
-			token.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
-			UntypedNode baseNode = new UntypedNode(UNode.NodeNameSpace, token);
-			SymbolIdx = BeginIdx;
-			UNode.SetAtNode(MethodCallBaseClass, baseNode);
-		}
+		//ClassIdx = UNode.MatchSyntax(MethodCallBaseClass, "$Type", TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
+		int SymbolIdx = BeginIdx;//ClassIdx + 1;
+
 		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
 		if(NextIdx == -1) {
 			return -1;
 		}
+		
 		KonohaToken GroupToken = TokenList.get(ParamIdx);
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
+		
+		if(ClassIdx == -1) {			
+			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
+			token.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
+			TokenList globalTokenList = new TokenList();
+			globalTokenList.add(token);
+			UntypedNode baseNode = UntypedNode.ParseNewNode(UNode.NodeNameSpace, null, globalTokenList, 0, 1, 0);
+			
+			SymbolIdx = BeginIdx;
+			UNode.SetAtNode(MethodCallBaseClass, baseNode);
+		}
+		
+		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
+		
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
 		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
 		return NextIdx;
@@ -380,19 +381,13 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeMethodCall(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaDebug.P("(>_<) typing method calls: " + UNode);
-		KonohaDebug.P("debug!! head");
 		KonohaArray NodeList = UNode.NodeList;
-		KonohaDebug.P("debug!! after NodeList");
 		assert (NodeList.size() > 1);
 		assert (NodeList.get(0) instanceof UntypedNode);
 		UntypedNode UntypedBaseNode = (UntypedNode) NodeList.get(0);
-		KonohaDebug.P("debug!! before if");
 		if(UntypedBaseNode == null) {
-			KonohaDebug.P("debug!! UntypedBaseNode == null");
 		}else{
-			KonohaDebug.P("debug!! before");
 			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
-			KonohaDebug.P("debug!! after");
 			if(BaseNode.IsError())
 				return BaseNode;
 			return this.TypeFindingMethod(Gamma, UNode, BaseNode, TypeInfo);
@@ -402,7 +397,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
-		int ParamSize = NodeList.size() - 1;
+		int ParamSize = NodeList.size() - 2;
 		KonohaToken KeyToken = UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);

@@ -390,8 +390,7 @@ public class UntypedNode implements KonohaConst {
 			KonohaToken Token = TokenList.get(BeginIdx);
 			if(Token.ResolvedSyntax == null) {
 				System.err.println("(>.<) " + Token.ParsedText + ", ResolvedSyntax " + Token.ResolvedSyntax);
-			}
-			if(Token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
+			}else if(Token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
 				this.SetAt(Index, Token);
 				return SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
 			}

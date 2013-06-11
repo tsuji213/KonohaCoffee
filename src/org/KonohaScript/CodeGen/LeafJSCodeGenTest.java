@@ -2,7 +2,7 @@ package org.KonohaScript.CodeGen;
 
 public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	@Override
-	CodeGenerator CreteCodeGen() {
+	CodeGenerator CreateCodeGen() {
 		return new LeafJSCodeGen();
 	}
 
