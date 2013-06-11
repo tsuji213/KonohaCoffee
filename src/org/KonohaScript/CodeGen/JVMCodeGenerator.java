@@ -18,16 +18,16 @@ class CodeGenException extends RuntimeException {
 	CodeGenException() {
 		super();
 	}
-	
+
 	CodeGenException(String msg) {
 		super(msg);
 	}
 }
 
 class JVMIfNodeAcceptor implements IfNodeAcceptor, Opcodes {
-	
+
 	private JVMBuilder builder;
-	
+
 	public JVMIfNodeAcceptor(JVMBuilder builder) {
 		this.builder = builder;
 	}
@@ -58,18 +58,18 @@ class JVMIfNodeAcceptor implements IfNodeAcceptor, Opcodes {
 		
 		return true;
 	}
-	
+
 }
 
 abstract class BinaryOperator {
-	
+
 	abstract void codeGen();
-	
+
 }
 
 class JVMBuilder implements Opcodes {
 
-	MethodVisitor methodVisitor;	
+	MethodVisitor methodVisitor;
 	Stack stack;
 	HashMap<String, BinaryOperator> binaryOperatorMap;
 	private HashMap<String, String> typeDescriptorMap;
@@ -81,7 +81,7 @@ class JVMBuilder implements Opcodes {
 		this.stack = new Stack();
 		this.methodDescriptorMap = new HashMap<String, String>();
 	}	
-	
+
 	class Stack {
 		private int stackTop = 0;
 		private int maxStackSize = 0;
@@ -114,7 +114,7 @@ class JVMBuilder implements Opcodes {
 			this.setStackTop(this.getStackTop() - 1);
 		}
 	}
-	
+
 	private void initBinaryOpcodeMap() {
 		BinaryOperator opADD = new BinaryOperator() {
 			@Override
@@ -164,7 +164,7 @@ class JVMBuilder implements Opcodes {
 				stack.push();
 				methodVisitor.visitInsn(IREM);
 			}
-		};	
+		};
 		
 		BinaryOperator opLT = new BinaryOperator() {
 			@Override
@@ -232,7 +232,7 @@ class JVMBuilder implements Opcodes {
 				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
-		};	
+		};
 		
 		BinaryOperator opEQ = new BinaryOperator() {
 			@Override
@@ -266,7 +266,7 @@ class JVMBuilder implements Opcodes {
 				methodVisitor.visitInsn(ICONST_0); // false
 				methodVisitor.visitLabel(END);			
 			}
-		};	
+		};
 		
 		this.binaryOperatorMap = new HashMap<String, BinaryOperator>();
 		this.binaryOperatorMap.put("+", opADD);
@@ -282,7 +282,7 @@ class JVMBuilder implements Opcodes {
 		this.binaryOperatorMap.put("!=", opNE);
 		// add other binary operator
 	}
-	
+
 	private void initTypeDescriptorMap() {
 		this.typeDescriptorMap = new HashMap<String, String>();
 		this.typeDescriptorMap.put("Void", Type.getType(void.class).getDescriptor());
@@ -302,7 +302,7 @@ class JVMBuilder implements Opcodes {
 
 	String getMethodDescriptor(KonohaMethod method) {
 		KonohaType returnType = method.GetReturnType(null);
-		ArrayList<KonohaType> paramTypes = new ArrayList<KonohaType>(Arrays.asList(method.Param.Types)); 
+		ArrayList<KonohaType> paramTypes = new ArrayList<KonohaType>(Arrays.asList(method.Param.Types));
 		paramTypes.remove(0);
 		StringBuilder signature = new StringBuilder();
 		signature.append("(");
@@ -313,11 +313,11 @@ class JVMBuilder implements Opcodes {
 		signature.append(this.getTypeDescriptor(returnType));
 		return signature.toString();
 	}
-	
+
 	String getMethodDescriptor(String className, String methodName) {
 		return this.methodDescriptorMap.get(className+"."+methodName);
 	}
-	
+
 	void LoadLocal(Local local) {
 		KonohaType type = local.TypeInfo;
 		//TODO check KonohaType -> Type
@@ -326,7 +326,7 @@ class JVMBuilder implements Opcodes {
 		this.methodVisitor.visitVarInsn(ILOAD, local.Index);
 		// this.asmctx.getMethodVisitor().visitVarInsn(type.getOpcode(ILOAD), local.Index);
 	}
-	
+
 	void StoreLocal(Local local) {
 		KonohaType type = local.TypeInfo;
 		//TODO check KonohaType -> Type
@@ -335,29 +335,29 @@ class JVMBuilder implements Opcodes {
 		this.methodVisitor.visitVarInsn(ISTORE, local.Index);
 		// this.asmctx.getMethodVisitor().visitVarInsn(type.getOpcode(ISTORE), local.Index);
 	}
-	
+
 	void LoadConst(Object o) {
 		this.stack.push();
 		this.methodVisitor.visitLdcInsn(o);
 	}
-	
+
 	void BinaryOp(String opName) {
 		this.binaryOperatorMap.get(opName).codeGen();
 	}
-	
+
 	void Call(int opcode, String className, String methodName) {
 		String owner = "org/KonohaScript/CodeGen/" + className;
 		String methodDescriptor = this.getMethodDescriptor(className, methodName);
 		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}
-	
+
 }
 
 public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
-	
+
 	private JVMBuilder builder;
 	private HashMap<String, ClassWriter> classWriterMap;
-	
+
 	public JVMCodeGenerator(KonohaMethod MethodInfo) {
 		super(MethodInfo);
 		
@@ -369,7 +369,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 		
 		this.IfNodeAcceptor = new JVMIfNodeAcceptor(this.builder);
 	}
-	
+
 	public JVMCodeGenerator() {
 		this(null);
 	}
@@ -387,7 +387,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 			if(fos != null) fos.close();
 		}
 	}	
-	
+
 	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
@@ -403,7 +403,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 			this.AddLocal(local.TypeInfo, local.Name);
 		}	
 	}
-	
+
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
@@ -440,7 +440,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 	public boolean Visit(TypedNode Node) {
 		return Node.Evaluate(this);
 	}
-	
+
 	public boolean VisitBlock(TypedNode Node){
 		boolean ret = true;
 		if(Node != null){
@@ -451,7 +451,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 		}
 		return ret;
 	}	
-	
+
 	@Override
 	public void EnterDefine(DefineNode Node) {
 	}
@@ -512,7 +512,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 		this.builder.LoadLocal(local);
 		return true;
 	}
-	
+
 	@Override
 	public void EnterGetter(GetterNode Node) {
 		// TODO Auto-generated method stub
@@ -524,15 +524,15 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public void EnterApply(ApplyNode Node) {
 	}
-	
+
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
-		for (String op : this.builder.binaryOperatorMap.keySet()) {
-			if (op.equals(methodName))
+		for(String op : this.builder.binaryOperatorMap.keySet()) {
+			if(op.equals(methodName))
 				return true;
 		}
 		return false;
@@ -563,7 +563,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
 	public void EnterOr(OrNode Node) {
 		// TODO Auto-generated method stub

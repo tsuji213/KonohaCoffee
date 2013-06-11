@@ -17,11 +17,11 @@ import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class TestClassLoader extends ClassLoader {
-	
+
 }
 
 public class JVMCodeGenTest {
-	
+
 	public static final Konoha	KonohaContext	= new Konoha(
 			new MiniKonohaGrammar(),
 			null);
@@ -29,8 +29,8 @@ public class JVMCodeGenTest {
 	public static final KonohaType		ObjectTy		= KonohaContext.ObjectType;
 	public static final KonohaType		BooleanTy		= KonohaContext.BooleanType;
 	public static final KonohaType		IntTy			= KonohaContext.IntType;
-	public static final KonohaType		StringTy		= KonohaContext.StringType;	
-	
+	public static final KonohaType		StringTy		= KonohaContext.StringType;
+
 	public static void testReturnConst(JVMCodeGenerator Builder) {
 		KonohaType[] ParamData1 = new KonohaType[1];
 		String[] ArgData1 = new String[0];
@@ -39,9 +39,9 @@ public class JVMCodeGenTest {
 		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testReturnConst", Param1, null);
 		Builder.Prepare(func1);
 		TypedNode Block = new ReturnNode(IntTy, new ConstNode(IntTy, null, 1));
-		Builder.Compile(Block);	
+		Builder.Compile(Block);
 	}
-	
+
 	public static void testAddOne(JVMCodeGenerator Builder) {
 		KonohaType[] ParamData1 = new KonohaType[2];
 		String[] ArgData1 = new String[1];
@@ -68,9 +68,9 @@ public class JVMCodeGenTest {
 				IntTy,
 				null,
 				"n"), new ConstNode(IntTy, null, 1)));
-		Builder.Compile(Block);	
+		Builder.Compile(Block);
 	}
-	
+
 	public static void testIf(JVMCodeGenerator Builder) {
 		KonohaType[] ParamData1 = new KonohaType[2];
 		ParamData1[0] = IntTy;
@@ -101,9 +101,9 @@ public class JVMCodeGenTest {
 		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
 		/* else */new ReturnNode(IntTy, new ConstNode(IntTy, null, 2))).Next(
 		/* */new ReturnNode(IntTy, new ConstNode(IntTy, null, 3)));
-		Builder.Compile(Block);	
+		Builder.Compile(Block);
 	}
-	
+
 	public static void testFibo(JVMCodeGenerator Builder) {
 		String[] ArgData2 = new String[1];
 		ArgData2[0] = "x";
@@ -151,7 +151,7 @@ public class JVMCodeGenTest {
 		Builder.Prepare(Fibo, Params);
 		Builder.Compile(Block2);
 	}
-	
+
 	public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JVMCodeGenerator Builder = new JVMCodeGenerator();
 		
@@ -177,5 +177,5 @@ public class JVMCodeGenTest {
 		System.out.println(ret4);
 		assert((Integer)ret3 == 55);
 	}
-	
+
 }
