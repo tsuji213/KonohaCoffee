@@ -717,12 +717,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		// Macro
 		//NameSpace.DefineTopLevelMacro("{", this, "OpenCloseBraceMacro");
-		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
-		//NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
-		//NameSpace.DefineMacro("{", this, "OpenBraceMacro");
-		//NameSpace.DefineMacro("}", this, "CloseBraceMacro");
-		//NameSpace.DefineMacro("[", this, "OpenBracketMacro");
-		//NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
+		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
 		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
