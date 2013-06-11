@@ -1,0 +1,21 @@
+$Exp <- $Term ($AddOp $Term)*
+
+$Term <- $Factor ($MulOp $Factor)*
+
+$Factor <- $Number
+/ $Group
+
+$Number <- "number"
+
+$Group <- $OpenParen $Exp $CloseParen
+
+$AddOp <- "+"
+/ "-"
+
+$MulOp <- "*"
+/ "/"
+
+$OpenParen <- "("
+
+$CloseParen <- ")"
+

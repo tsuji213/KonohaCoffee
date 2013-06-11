@@ -1,0 +1,126 @@
+
+$SourceCode <- $TopLevelDefinition*
+
+$TopLevelDefinition <-  $statement
+/ $functionDefinition
+#/ $moduleStatement
+
+$functionSignature <- $type $identifier $ParamDeclList
+
+$functionBody <- $block
+
+$functionDefinition <- $functionSignature $functionBody
+/ $functionSignature ";"
+
+$ParamDeclList <- "(" ")"
+/ "(" $ParamDecls ")"
+
+$ParamDecls <- $ParamDecl ("," $ParamDecl)*
+
+$ParamDecl <- $type $identifier
+
+$ParameterList <- "(" ")"
+/ "(" $Parameters ")"
+
+$Parameters <- $Parameter ("," $Parameter)*
+
+$Parameter <- $expression
+
+$literal <- "null"
+/ "true"
+/ "false"
+/ $intLiteral
+/ $stringLiteral
+
+$type <- $Type
+/ $Type ("[" "]")*
+
+#$moduleStatement <- "using" $identifier ("*" $identifier)* ";"
+#/ "include" $stringLiteral ";"
+
+$statement <- $block
+/ $variableDeclaration
+/ $expressionStatement
+/ $ifStatement
+/ $whileStatement
+/ $breakStatement
+/ $continueStatement
+/ $returnStatement
+
+$variable <- $identifier
+
+$EQ <- "="
+
+$variableDeclaration <- $type $identifier ";"
+/ $type $variable $EQ $expression ";"
+
+$statements <- $statement*
+
+$block <- "{" $statements "}"
+
+$ifStatement <- "if" "(" $expression ")" $block "else" $block
+/ "if" "(" $expression ")" $block
+
+$whileStatement <- "while" "(" $expression  ")" $block
+
+$breakStatement <- "break" ";"
+
+$continueStatement <- "continue" ";"
+
+$returnStatement <- "return" ";"
+/ "return" $expression ";"
+
+$expressionStatement <- $expression ";"
+
+$expression <- $leftHandSideExpression $EQ $expression
+/ $logicalOrExpression
+
+$leftHandSideExpression <- $callEpxression
+/ $newExpression
+
+$callEpxression <-  $memberExpression $ParameterList
+
+$memberExpression <- $primary $selector*
+
+$primary <- "this"
+/ $identifier
+/ $literal
+/ "(" $expression ")"
+
+$selector <- "[" $expression "]"
+/ "." $identifier
+
+$newExpression <- $memberExpression
+/ "new" $type $ParameterList
+
+$logicalOrExpression <- $logicalAndExpression ("||" $logicalAndExpression)*
+
+$logicalAndExpression <- $relationExpression ("&&" $relationExpression)*
+
+$relationExpression <- $additiveExpression $relationOperator $additiveExpression
+/ $additiveExpression
+
+$relationOperator <- "=="
+/ "!="
+/ ">="
+/ ">"
+/ "<="
+/ "<"
+
+$shiftOperator <- "<<"
+/ ">>"
+
+$additiveOperator <- "+"
+/ "-"
+
+$multiplicativeOperator <- "*"
+/ "/"
+/ "%"
+
+$additiveExpression <- $multiplicativeExpression ($additiveOperator $multiplicativeExpression)*
+
+$multiplicativeExpression <- $unaryExpression ($multiplicativeOperator $unaryExpression)*
+
+$unaryExpression <- $leftHandSideExpression
+
+$identifier <- $Symbol
