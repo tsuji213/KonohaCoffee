@@ -51,7 +51,78 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	Object testTopLevelExpr() {
 		return null;
 	}
+	
+	//additional test case
+	@Override
+	Object testConstInteger() {
+		return "{\n" +
+			   "    123;\n" +
+			   "}";
+	}
+	
+	Object testNegativeConstInteger() {
+		return "{\n" +
+			   "    -123;\n" +
+			   "}";
+	}
+	
+	Object testConstIntegers() {
+		return "{\n" +
+	           "    9999999;\n" +
+			   "    -86757;\n" +
+	           "}";
+	}
+	
+	Object testConstBooleanTrue() {
+		return "{\n" +
+	           "    true;\n" +
+	           "}";
+	}
+	
+	Object testConstBooleanFalse() {
+		return "{\n" +
+	           "    false;\n" +
+			   "}";
+	}
+	
+	Object testConstBooleans() {
+		return "{\n" +
+	           "    false;\n" +
+			   "    true;\n" +
+	           "}";
+	}
+	
+	Object testConstString() {
+		return "{\n" +
+	           "    Hello World!!;\n" +
+	           "}";
+	}
+	
+	Object testConstString2() {
+		return "{\n" +
+			   "    \"Hello World!!\";\n" +
+			   "}";
+	}
+	
+	Object testConstString3() {
+		return "{\n" +
+			   "    こんにちは世界;\n" +
+			   "}";
+	}
 
+	Object testConstStrings() {
+		return "{\n" +
+			   "    Hello World!!;\n" +
+			   "    こんにちは世界;\n" +
+			   "}";
+	}
+	
+	Object testIntegerValiable() {
+		return "{\n" +
+	           "    var lovalVar;\n" +
+	           "}";
+	}
+	
 	public static void main(String[] args) {
 		LeafJSCodeGenTest tester = new LeafJSCodeGenTest();
 		tester.Test(tester);
