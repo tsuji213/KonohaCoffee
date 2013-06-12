@@ -1,9 +1,8 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KLib.*;
-
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -14,8 +13,14 @@ class CompiledMethod extends KonohaMethod {
 		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo,
 				MethodInfo.MethodName, MethodInfo.Param, null);
 	}
+	
+	@Override
+	protected boolean IsStaticInvocation() {
+		return false; //FIXME
+	}
 
-	Object Invoke(Object[] Args) {
+	@Override
+	public Object Eval(Object[] ParamData) {
 		return null;
 	}
 }
@@ -34,7 +39,6 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local FindLocalVariable(String Name) {
-		
 		for(int i = 0; i < LocalVals.size(); i++ ) {
 			Local l = (Local)LocalVals.get(i);
 			if(l.Name.compareTo(Name) == 0) {

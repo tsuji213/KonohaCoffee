@@ -243,11 +243,12 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
-
+	
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
 		Mtd.CompiledCode = Block;
+		Mtd.ClassInfo.RegisterCompiledMethod(Mtd);
 		return Mtd;
 	}
 
@@ -259,7 +260,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	public boolean ExitDefine(DefineNode Node) {
 		if(Node.DefInfo instanceof KonohaMethod) {
 			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
-			Mtd.DoCompilation();
+			Node.DefInfo = Mtd.DoCompilation();
 		} else {
 			throw new NotSupportedCodeError();
 		}
@@ -340,14 +341,23 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	@Override
 	public boolean ExitApply(ApplyNode Node) {
 		System.out.println("Exit Apply");
-		int n = Node.Params.size();
-		Object[] args = new Object[n];
-		for(int i = 0; i < n; ++i) {
-			args[n - i - 1] = this.Pop();
+
+		// FIXME
+		if(Node.Method instanceof CompiledMethod){
+			CompiledMethod Mtd = (CompiledMethod)Node.Method;
+			try{
+				this.VisitList((TypedNode)Mtd.CompiledCode);
+			}catch(ReturnException e){
+			}
+		}else{
+			int n = Node.Params.size();
+			Object[] args = new Object[n];
+			for(int i = 0; i < n; ++i) {
+				args[n - i - 1] = this.Pop();
+			}
+			Object Ret = Node.Method.Eval(args);
+			this.push(Ret);
 		}
-		KonohaMethod Mtd = Node.Method;
-		Object Ret = Mtd.Eval(args);
-		this.push(Ret);
 		return true;
 	}
 

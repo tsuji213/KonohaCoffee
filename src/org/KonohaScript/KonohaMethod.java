@@ -98,7 +98,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return false;
 	}
 
-	boolean IsStaticInvocation() {
+	protected boolean IsStaticInvocation() {
 		return Modifier.isStatic(this.MethodRef.getModifiers());
 	}
 
