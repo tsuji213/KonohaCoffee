@@ -32,6 +32,7 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -42,11 +43,13 @@ class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("TopLevelDefinitionSyntax0 : " + NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -57,11 +60,13 @@ class TopLevelDefinitionSyntax1 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("TopLevelDefinitionSyntax1 : " + NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -74,7 +79,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("functionSignatureSyntax0 : " + NodeSize);
-		UntypedNode UNode = this.CreateNode(Parser, new KonohaToken("$MethodDecl"));
+		UntypedNode UNode = this.CreateNode(Parser, TokenList.get(BeginIdx));
 		int Index = 0;
 		UNode.SetAtNode(FunctionSignatureOffset + 0, (UntypedNode) Parser.Get(Index, NodeSize)); // ReturnType
 		UNode.SetAtNode(FunctionSignatureOffset + 1, null); // Receiver
@@ -85,7 +90,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 
 		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
 		for(int i = 0; i < ParamList.size(); i++) {
-			UNode.SetAtToken(FunctionSignatureOffset + i + 4, (KonohaToken) ParamList.get(i));
+			UNode.SetAtToken(FunctionSignatureOffset + 4 + i, (KonohaToken) ParamList.get(i));
 		}
 		UNode.Syntax = Parser.NameSpace.GetSyntax("$functionSignature");
 		if(NodeSize > 0) {
@@ -106,29 +111,32 @@ class functionBodySyntax0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("functionBodySyntax0 : " + NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:$functionSignature>, <Symbol:$functionBody>
 class functionDefinitionSyntax0 extends SyntaxAcceptor {
-	static final int	FunctionDefinitionOffset	= functionSignatureSyntax0.FunctionSignatureOffset + 3;
+	static final int	FunctionDefinitionOffset	= SyntaxAcceptor.ListOffset;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("functionDefinitionSyntax0 : " + NodeSize);
 		int Index = 0;
-		UntypedNode UNode = (UntypedNode) Parser.Get(Index, NodeSize);
+		UntypedNode UNode = this.CreateNode(Parser, TokenList.get(BeginIdx));
+		UNode.SetAtNode(FunctionDefinitionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
 		KonohaArray Body = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		if(Body.size() > 0) {
-			UNode.SetAtNode(FunctionDefinitionOffset, (UntypedNode) Body.get(0));
+			UNode.SetAtNode(FunctionDefinitionOffset + 1, (UntypedNode) Body.get(0));
 		}
 		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, UNode);
@@ -179,6 +187,7 @@ class ParamDeclListSyntax1 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("ParamDeclListSyntax1 : " + NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
