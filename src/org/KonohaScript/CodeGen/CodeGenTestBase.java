@@ -8,6 +8,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.ApplyNode;
+import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -44,6 +45,52 @@ abstract class CodeGeneratorTester {
 	Object testTopLevelExpr() {
 		return null;
 	}
+	
+	//test case: const value
+	Object testConstInteger() {
+		return null;
+	}
+	
+	Object testNegativeConstInteger() {
+		return null;
+	}
+	
+	Object testConstIntegers() {
+		return null;
+	}
+	
+	Object testConstBooleanTrue() {
+		return null;
+	}
+	
+	Object testConstBooleanFalse() {
+		return null;
+	}
+	
+	Object testConstBooleans() {
+		return null;
+	}
+	
+	Object testConstString() {
+		return null;
+	}
+	
+	Object testConstString2() {
+		return null;
+	}
+	
+	Object testConstString3() {
+		return null;
+	}
+	
+	Object testConstStrings() {
+		return null;
+	}
+
+	//test case: variable
+	Object testIntegerValiable() {
+		return null;
+	}
 
 	public void Test(CodeGeneratorTester test) {
 		CodeGenTestBase TestRules = new CodeGenTestBase();
@@ -53,6 +100,19 @@ abstract class CodeGeneratorTester {
 		TestRules.testMethodCall(test);
 		TestRules.testFibo(test);
 		TestRules.testTopLevelExpr(test);
+		
+		TestRules.testConstInteger(test);
+		TestRules.testNegativeConstInteger(test);
+		TestRules.testConstIntegers(test);
+		TestRules.testConstBooleanTrue(test);
+		TestRules.testConstBooleanFalse(test);
+		TestRules.testConstBooleans(test);
+		TestRules.testConstString(test);
+		TestRules.testConstString2(test);
+		TestRules.testConstString3(test);
+		TestRules.testConstStrings(test);
+		
+		//TestRules.testIntegerValiable(test); //FIXME
 	}
 }
 
@@ -74,7 +134,7 @@ public class CodeGenTestBase {
 			System.out.println(Expected);
 		}
 	}
-
+	
 	public void testReturnConst(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreateCodeGen();
 		KonohaType[] ParamData1 = new KonohaType[1];
@@ -268,5 +328,214 @@ public class CodeGenTestBase {
 			this.Check("Fibo", Tester.testFibo(), Program);
 		}
 	}
+	
+	//additional test case
+	public void testConstInteger(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
 
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.IntTy, null, 123);
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstInteger", Tester.testConstInteger(), Program);
+	}
+	
+	public void testNegativeConstInteger(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.IntTy, null, -123);
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("NegativeConstInteger", Tester.testNegativeConstInteger(), Program);
+	}	
+	
+	public void testConstIntegers(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.IntTy, null, 9999999).Next(new ConstNode(this.IntTy, null, -86757));
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstIntegers", Tester.testConstIntegers(), Program);
+	}
+
+	public void testConstBooleanTrue(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.BooleanTy, null, true);
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstBooleanTrue", Tester.testConstBooleanTrue(), Program);
+	}
+	
+	public void testConstBooleanFalse(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.BooleanTy, null, false);
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstBooleanFalse", Tester.testConstBooleanFalse(), Program);
+	}
+	
+	public void testConstBooleans(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.BooleanTy, null, false).Next(new ConstNode(this.BooleanTy, null, true));
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstBooleans", Tester.testConstBooleans(), Program);
+	}
+	
+	public void testConstString(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.StringTy, null, "Hello World!!");
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstString", Tester.testConstString(), Program);
+	}
+	
+	public void testConstString2(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.StringTy, null, "\"Hello World!!\"");
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstString2", Tester.testConstString2(), Program);
+	}
+	
+	public void testConstString3(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.StringTy, null, "こんにちは世界");
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstString3", Tester.testConstString3(), Program);
+	}
+	
+	public void testConstStrings(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ConstNode(this.StringTy, null, "Hello World!!").Next(new ConstNode(BooleanTy, null, "こんにちは世界"));
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("ConstStrings", Tester.testConstStrings(), Program);
+	}
+	
+	public void testIntegerValiable(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+		
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new AssignNode(this.IntTy, null, new LocalNode(this.IntTy, null, "localVar"), new ConstNode(this.IntTy, null, 123));
+		CompiledMethod Mtd = Builder.Compile(Block);
+		assert (Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.Check("IntegerValiable", Tester.testIntegerValiable(), Program);
+	}
 }

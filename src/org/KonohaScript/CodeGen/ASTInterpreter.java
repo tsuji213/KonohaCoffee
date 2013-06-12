@@ -243,7 +243,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}
-	
+
 	@Override
 	public CompiledMethod Compile(TypedNode Block) {
 		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
@@ -345,6 +345,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		// FIXME
 		if(Node.Method instanceof CompiledMethod){
 			CompiledMethod Mtd = (CompiledMethod)Node.Method;
+			this.Prepare(Mtd);
 			try{
 				this.VisitList((TypedNode)Mtd.CompiledCode);
 			}catch(ReturnException e){
