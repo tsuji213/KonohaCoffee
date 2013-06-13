@@ -35,6 +35,9 @@ public class TypeEnv implements KonohaConst {
 		this.Method = Method;
 		if(Method != null) {
 			this.InitMethod(Method);
+		} else {
+			// global
+			this.AppendLocalType(GammaNameSpace.GetGlobalObject().TypeInfo, "this");
 		}
 	}
 

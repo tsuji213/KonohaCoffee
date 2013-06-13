@@ -1,6 +1,7 @@
 package org.KonohaScript.CodeGen;
 
 public class LLVMCodeGenTest extends CodeGeneratorTester {
+
 	@Override
 	CodeGenerator CreateCodeGen() {
 		return new LLVMCodeGen();
@@ -8,7 +9,7 @@ public class LLVMCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testReturnConst() {
-		return "func1(void)\n" +"{\n" +"  return 1;\n" + "}";
+		return "func1(void)\n" + "{\n" + "  return 1;\n" + "}";
 	}
 
 	@Override
@@ -28,7 +29,8 @@ public class LLVMCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testFibo() {
-		return "int fibo(n)\n" + "{\n" + "  if(n < 3) {\n" + "    return 1;" + "\n  } else {\n" + "\n  }\n" + "  return fibo(n-1) + fibo(n-2);\n" + "}";
+		return "int fibo(n)\n" + "{\n" + "  if(n < 3) {\n" + "    return 1;" + "\n  } else {\n" + "\n  }\n"
+				+ "  return fibo(n-1) + fibo(n-2);\n" + "}";
 	}
 
 	@Override

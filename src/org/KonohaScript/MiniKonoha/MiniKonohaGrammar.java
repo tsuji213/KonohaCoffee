@@ -306,12 +306,14 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
 		}
-		
-		// case: Symbol is GlobalVariable
-		if(UNode.KeyToken.ParsedText.equals("global")){
-			return new ConstNode(UNode.NodeNameSpace.GetGlobalObject().TypeInfo, UNode.KeyToken, UNode.NodeNameSpace.GetGlobalObject());
-		}
 
+		// case: Symbol is GlobalVariable
+		if(UNode.KeyToken.ParsedText.equals("global")) {
+			return new ConstNode(
+					UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
+					UNode.KeyToken,
+					UNode.NodeNameSpace.GetGlobalObject());
+		}
 		// case: Symbol is undefined name
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}
@@ -356,24 +358,22 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(NextIdx == -1) {
 			return -1;
 		}
-		
+
 		KonohaToken GroupToken = TokenList.get(ParamIdx);
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
-		
-		if(ClassIdx == -1) {			
+
+		if(ClassIdx == -1) {
 			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
 			token.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
 			TokenList globalTokenList = new TokenList();
 			globalTokenList.add(token);
 			UntypedNode baseNode = UntypedNode.ParseNewNode(UNode.NodeNameSpace, null, globalTokenList, 0, 1, 0);
-			
 			SymbolIdx = BeginIdx;
 			UNode.SetAtNode(MethodCallBaseClass, baseNode);
 		}
-		
+
 		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
-		
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
 		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
 		return NextIdx;
@@ -386,7 +386,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		assert (NodeList.get(0) instanceof UntypedNode);
 		UntypedNode UntypedBaseNode = (UntypedNode) NodeList.get(0);
 		if(UntypedBaseNode == null) {
-		}else{
+		} else {
 			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
 			if(BaseNode.IsError())
 				return BaseNode;

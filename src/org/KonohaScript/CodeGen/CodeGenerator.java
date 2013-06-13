@@ -1,9 +1,8 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.KLib.*;
-
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -11,8 +10,7 @@ class CompiledMethod extends KonohaMethod {
 	public Object	CompiledCode;
 
 	public CompiledMethod(KonohaMethod MethodInfo) {
-		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo,
-				MethodInfo.MethodName, MethodInfo.Param, null);
+		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo, MethodInfo.MethodName, MethodInfo.Param, null);
 	}
 
 	Object Invoke(Object[] Args) {
@@ -21,8 +19,8 @@ class CompiledMethod extends KonohaMethod {
 }
 
 public abstract class CodeGenerator extends NodeVisitor {
-	KonohaArray	        LocalVals;
-	KonohaMethod		MethodInfo;
+	KonohaArray		LocalVals;
+	KonohaMethod	MethodInfo;
 
 	CodeGenerator(KonohaMethod MethodInfo) {
 		this.LocalVals = new KonohaArray();
@@ -34,9 +32,9 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local FindLocalVariable(String Name) {
-		
-		for(int i = 0; i < LocalVals.size(); i++ ) {
-			Local l = (Local)LocalVals.get(i);
+
+		for(int i = 0; i < this.LocalVals.size(); i++) {
+			Local l = (Local) this.LocalVals.get(i);
 			if(l.Name.compareTo(Name) == 0) {
 				return l;
 			}
@@ -46,7 +44,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 
 	Local GetLocalVariableByIndex(int Index) {
 		if(this.LocalVals.size() > Index) {
-			return (Local)LocalVals.get(Index);
+			return (Local) this.LocalVals.get(Index);
 		}
 		return null;
 	}
@@ -74,7 +72,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 	public void Prepare(KonohaMethod Method, KonohaArray params) {
 		this.Prepare(Method);
 		for(int i = 0; i < params.size(); i++) {
-			Local local = (Local)params.get(i);
+			Local local = (Local) params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
 	}

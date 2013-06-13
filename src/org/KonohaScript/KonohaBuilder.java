@@ -27,7 +27,6 @@ package org.KonohaScript;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public interface KonohaBuilder {
-
 	Object EvalAtTopLevel(TypedNode Node);
 
 	KonohaMethod Build(TypedNode Node, KonohaMethod Method);

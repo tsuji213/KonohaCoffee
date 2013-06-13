@@ -22,14 +22,12 @@ class TestClassLoader extends ClassLoader {
 
 public class JVMCodeGenTest {
 
-	public static final Konoha	KonohaContext	= new Konoha(
-			new MiniKonohaGrammar(),
-			null);
-	public static final KonohaType		VoidTy			= KonohaContext.VoidType;
-	public static final KonohaType		ObjectTy		= KonohaContext.ObjectType;
-	public static final KonohaType		BooleanTy		= KonohaContext.BooleanType;
-	public static final KonohaType		IntTy			= KonohaContext.IntType;
-	public static final KonohaType		StringTy		= KonohaContext.StringType;
+	public static final Konoha		KonohaContext	= new Konoha(new MiniKonohaGrammar(), null);
+	public static final KonohaType	VoidTy			= KonohaContext.VoidType;
+	public static final KonohaType	ObjectTy		= KonohaContext.ObjectType;
+	public static final KonohaType	BooleanTy		= KonohaContext.BooleanType;
+	public static final KonohaType	IntTy			= KonohaContext.IntType;
+	public static final KonohaType	StringTy		= KonohaContext.StringType;
 
 	public static void testReturnConst(JVMCodeGenerator Builder) {
 		KonohaType[] ParamData1 = new KonohaType[1];
@@ -64,10 +62,12 @@ public class JVMCodeGenTest {
 		Params.add(new Param(0, IntTy, "n"));
 		Builder.Prepare(func1, Params);
 
-		TypedNode Block = new ReturnNode(IntTy, new ApplyNode(VoidTy, null, intAdd, new LocalNode(
-				IntTy,
+		TypedNode Block = new ReturnNode(IntTy, new ApplyNode(
+				VoidTy,
 				null,
-				"n"), new ConstNode(IntTy, null, 1)));
+				intAdd,
+				new LocalNode(IntTy, null, "n"),
+				new ConstNode(IntTy, null, 1)));
 		Builder.Compile(Block);
 	}
 
@@ -94,10 +94,7 @@ public class JVMCodeGenTest {
 		Builder.Prepare(func1, Params);
 
 		TypedNode Block = new IfNode(VoidTy,
-		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(
-				IntTy,
-				null,
-				3)),
+		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
 		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
 		/* else */new ReturnNode(IntTy, new ConstNode(IntTy, null, 2))).Next(
 		/* */new ReturnNode(IntTy, new ConstNode(IntTy, null, 3)));
@@ -124,58 +121,49 @@ public class JVMCodeGenTest {
 		KonohaMethod intLt = new KonohaMethod(0, BooleanTy, "<", Param3, null);
 
 		TypedNode Block2 = new IfNode(VoidTy,
-		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(
-				IntTy,
-				null,
-				3)),
+		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
 		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
-		/* else */null).Next(new ReturnNode(IntTy, new ApplyNode(IntTy, null, intAdd, new ApplyNode(
+		/* else */null).Next(new ReturnNode(IntTy, new ApplyNode(IntTy, null, intAdd, new ApplyNode(IntTy, null, Fibo,
+		/*new LocalNode(VoidTy, null, "this"),*/
+		new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 1))), new ApplyNode(
 				IntTy,
 				null,
-				Fibo,
-				/*new LocalNode(VoidTy, null, "this"),*/
-				new ApplyNode(
-						IntTy,
+				Fibo, /*new LocalNode(
+						VoidTy,
 						null,
-						intSub,
-						new LocalNode(IntTy, null, "n"),
-						new ConstNode(IntTy, null, 1))), new ApplyNode(IntTy, null, Fibo, /*new LocalNode(
-				VoidTy,
-				null,
-				"this"),*/ new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(
-				IntTy,
-				null,
-				2))))));
+						"this"),*/
+				new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 2))))));
 		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, IntTy, "n"));
 		Builder.Prepare(Fibo, Params);
 		Builder.Compile(Block2);
 	}
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalArgumentException,
+			SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JVMCodeGenerator Builder = new JVMCodeGenerator();
-		
+
 		testReturnConst(Builder);
 		testAddOne(Builder);
 		testIf(Builder);
 		testFibo(Builder);
-		
+
 		Builder.OutputClassFile("Script", "./bin/org/KonohaScript/CodeGen/");
 		ClassLoader cl = new TestClassLoader();
 		Class<?> c = cl.loadClass("org.KonohaScript.CodeGen.Script");
-		
+
 		Object ret1 = c.getMethod("testReturnConst").invoke(null);
 		System.out.println(ret1);
-		assert((Integer)ret1 == 1);
+		assert ((Integer) ret1 == 1);
 		Object ret2 = c.getMethod("testAddOne", int.class).invoke(null, 1);
 		System.out.println(ret2);
-		assert((Integer)ret2 == 2);
+		assert ((Integer) ret2 == 2);
 		Object ret3 = c.getMethod("testIf", int.class).invoke(null, 1);
 		System.out.println(ret3);
-		assert((Integer)ret3 == 1);
+		assert ((Integer) ret3 == 1);
 		Object ret4 = c.getMethod("testFibo", int.class).invoke(null, 10);
 		System.out.println(ret4);
-		assert((Integer)ret3 == 55);
+		assert ((Integer) ret3 == 55);
 	}
 
 }

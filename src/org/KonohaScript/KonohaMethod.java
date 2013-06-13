@@ -39,6 +39,14 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	int					CanonicalSymbolId;
 	public KonohaParam	Param;
 	Method				MethodRef;
+	public int			MethodFlag;
+
+	// DoLazyComilation();
+
+	KonohaNameSpace		LazyNameSpace;
+	TokenList			SourceList;
+	//FIXME merge ParsedTree field in SouceList.
+	public UntypedNode	ParsedTree;
 
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
@@ -48,8 +56,9 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		this.CanonicalSymbolId = KonohaSymbol.GetCanonicalSymbolId(MethodName);
 		this.Param = Param;
 		this.MethodRef = MethodRef;
+		this.ParsedTree = null;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -57,11 +66,11 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		builder.append(" ");
 		builder.append(this.MethodName);
 		builder.append("(");
-		for(int i = 0; i < this.Param.ArgNames.length; i++){
-			if(i > 0){
+		for(int i = 0; i < this.Param.ArgNames.length; i++) {
+			if(i > 0) {
 				builder.append(", ");
 			}
-			builder.append(this.Param.Types[i+1]);
+			builder.append(this.Param.Types[i + 1]);
 			builder.append(" ");
 			builder.append(this.Param.ArgNames[i]);
 		}
@@ -69,7 +78,12 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return builder.toString();
 	};
 
-	public int	MethodFlag;
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param,
+			KonohaNameSpace LazyNameSpace, TokenList SourceList) {
+		this(MethodFlag, ClassInfo, MethodName, Param, null);
+		this.LazyNameSpace = LazyNameSpace;
+		this.SourceList = SourceList;
+	}
 
 	public boolean Is(int Flag) {
 		return ((this.MethodFlag & Flag) == Flag);
@@ -89,8 +103,11 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return (this.MethodName.equals(Other.MethodName) && this.Param.Match(Other.Param));
 	}
 
-	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData */) {
+	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData*/) {
 		if(MethodName.equals(this.MethodName)) {
+			if(ParamSize == -1) {
+				return true;
+			}
 			if(this.Param.GetParamSize() == ParamSize) {
 				return true;
 			}
@@ -141,30 +158,21 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return null;
 	}
 
-	// DoLazyComilation();
-
-	KonohaNameSpace	LazyNameSpace;
-	TokenList		SourceList;
-
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param,
-			KonohaNameSpace LazyNameSpace, TokenList SourceList) {
-		this(MethodFlag, ClassInfo, MethodName, Param, null);
-		this.LazyNameSpace = LazyNameSpace;
-		this.SourceList = SourceList;
-	}
-
 	public KonohaMethod DoCompilation() {
-		if(this.MethodRef == null) {
+		if(this.MethodRef != null) {
+			return this;
+		}
+		UntypedNode UNode = this.ParsedTree;
+		if(UNode == null) {
 			TokenList BufferList = new TokenList();
 			this.LazyNameSpace.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
-			UntypedNode UNode = UntypedNode.ParseNewNode(this.LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
+			UNode = UntypedNode.ParseNewNode(this.LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
-			TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);
-			TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
-			KonohaBuilder Builder = this.LazyNameSpace.GetBuilder();
-			return Builder.Build(TNode, this);
 		}
-		return this;
+		TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);
+		TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
+		KonohaBuilder Builder = this.LazyNameSpace.GetBuilder();
+		return Builder.Build(TNode, this);
 	}
 
 }

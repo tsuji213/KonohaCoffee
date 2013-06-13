@@ -63,11 +63,11 @@ public class KonohaType {
 			this.SuperClass = KonohaContext.LookupTypeInfo(ClassInfo.getSuperclass());
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.ShortClassName;
-	};
+	}
 
 	// public KClass(Konoha KonohaContext, String ClassName) throws
 	// ClassNotFoundException {

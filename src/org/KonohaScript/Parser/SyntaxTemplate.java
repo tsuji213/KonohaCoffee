@@ -11,8 +11,8 @@ import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public abstract class SyntaxTemplate extends KonohaGrammar {
-	String		Name;
-	KonohaArray	Childrens;
+	String Name;
+	KonohaArray Childrens;
 
 	public SyntaxTemplate(String Name) {
 		this.Name = Name;
@@ -43,6 +43,8 @@ public abstract class SyntaxTemplate extends KonohaGrammar {
 	}
 
 	public TypedNode TypeSyntaxModule(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		System.out.println("Syntax : " + this.Name);
+		System.out.println("Node : " + UNode);
 		SyntaxAcceptor Acceptor = (SyntaxAcceptor) UNode.NodeList.get(SyntaxAcceptor.AcceptorOffset);
 		return Acceptor.TypeCheck(Gamma, UNode, TypeInfo);
 	}

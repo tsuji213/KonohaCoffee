@@ -1,23 +1,28 @@
 package org.KonohaScript.Parser;
 
+import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.TypeEnv;
 import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class intLiteral0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("intLiteral0 : " + NodeSize);
-		UntypedNode Node = new UntypedNode(Parser.NameSpace, TokenList.get(BeginIdx));
+		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$intLiteral");
 		Parser.Push(Node);
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		KonohaToken Token = UNode.KeyToken;
+		return new ConstNode(Gamma.IntType, Token, Integer.valueOf(Token.ParsedText));
 	}
 }
 
@@ -61,14 +66,16 @@ class stringLiteral0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("stringLiteral0 : " + NodeSize);
-		UntypedNode Node = new UntypedNode(Parser.NameSpace, TokenList.get(BeginIdx));
+		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$stringLiteral");
 		Parser.Push(Node);
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		KonohaToken Token = UNode.KeyToken;
+		/* FIXME: handling of escape sequence */
+		return new ConstNode(Gamma.StringType, Token, Token.ParsedText);
 	}
 }
 
@@ -113,14 +120,30 @@ class Symbol0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("Symbol0 : " + NodeSize);
-		UntypedNode Node = new UntypedNode(Parser.NameSpace, TokenList.get(BeginIdx));
+		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$Symbol");
 		Parser.Push(Node);
 		return EndIdx;
 	}
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		// case: Symbol is LocalVariable
+		String Name = UNode.KeyToken.ParsedText;
+		TypeInfo = Gamma.GetLocalType(Name);
+		if(TypeInfo != null) {
+			return new LocalNode(TypeInfo, UNode.KeyToken, Name);
+		}
+
+		// case: Symbol is MethodName
+		KonohaType BaseType = Gamma.GetLocalType("this");
+		KonohaMethod Method = BaseType.LookupMethod(Name, -1);
+		if(Method != null) {
+			KonohaType MethodType = Gamma.GammaNameSpace.LookupTypeInfo(KonohaMethod.class);
+			return new ConstNode(MethodType, UNode.KeyToken, Method);
+		}
+
+		// case: Symbol is undefined name
+		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + Name);
 	}
 }
 
@@ -165,8 +188,7 @@ class Type0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		System.out.println("Type0 : " + NodeSize);
-		UntypedNode Node = new UntypedNode(Parser.NameSpace, TokenList.get(BeginIdx));
-		Parser.Push(Node);
+		Parser.Push(TokenList.get(BeginIdx));
 		return EndIdx;
 	}
 
