@@ -1,22 +1,11 @@
 package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.TypedNode;
-
-class CompiledMethod extends KonohaMethod {
-	public Object	CompiledCode;
-
-	public CompiledMethod(KonohaMethod MethodInfo) {
-		super(MethodInfo.MethodFlag, MethodInfo.ClassInfo, MethodInfo.MethodName, MethodInfo.Param, null);
-	}
-
-	Object Invoke(Object[] Args) {
-		return null;
-	}
-}
 
 public abstract class CodeGenerator extends NodeVisitor {
 	KonohaArray		LocalVals;
@@ -27,7 +16,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 		this.MethodInfo = MethodInfo;
 	}
 
-	CompiledMethod Compile(TypedNode Block) {
+	KonohaMethodInvoker Compile(TypedNode Block) {
 		return null;
 	}
 

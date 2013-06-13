@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -410,8 +412,9 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 			fos = new FileOutputStream(file);
 			fos.write(ba);
 		} finally {
-			if(fos != null)
+			if(fos != null) {
 				fos.close();
+			}
 		}
 	}
 
@@ -434,7 +437,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 	}
 
 	@Override
-	public CompiledMethod Compile(TypedNode Block) {
+	public KonohaMethodInvoker Compile(TypedNode Block) {
 		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 
 			// String className = this.MethodInfo.ClassInfo.ShortClassName;
@@ -460,8 +463,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 			mv.visitEnd();
 		}
 
-		CompiledMethod mtd = new CompiledMethod(this.MethodInfo);
-		mtd.CompiledCode = "don't support";
+		KonohaMethodInvoker mtd = new NativeMethodInvoker(this.MethodInfo.Param, null/* FIXME */);
 		return mtd;
 	}
 
@@ -561,8 +563,9 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
 		for(String op : this.builder.binaryOperatorMap.keySet()) {
-			if(op.equals(methodName))
+			if(op.equals(methodName)) {
 				return true;
+			}
 		}
 		return false;
 	}

@@ -3,6 +3,7 @@ package org.KonohaScript.CodeGen;
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
@@ -35,6 +36,22 @@ import org.KonohaScript.SyntaxTree.SwitchNode;
 import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
+
+class ASTInterpreterMethodInvoker extends KonohaMethodInvoker {
+	ASTInterpreter	Interpreter;
+	KonohaMethod	Method;
+
+	public ASTInterpreterMethodInvoker(KonohaMethod Method, Object CompiledCode, ASTInterpreter Interpreter) {
+		super(Method.Param, CompiledCode);
+		this.Interpreter = Interpreter;
+		this.Method = Method;
+	}
+
+	@Override
+	public Object Invoke(Object[] Args) {
+		return this.Interpreter.Eval((TypedNode) this.CompiledCode, this.Method);
+	}
+}
 
 class InterpreterAndNodeAcceptor implements NodeVisitor.AndNodeAcceptor {
 	@Override
@@ -95,7 +112,8 @@ class InterpreterLetNodeAcceptor implements LetNodeAcceptor {
 		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
 		Visitor.EnterLet(Node);
 		Visitor.Visit(Node.ValueNode);
-		thisVisitor.LocalVariable.put(Node.VarToken.ParsedText, thisVisitor.Pop());
+		thisVisitor.LocalVariable.put(
+				Node.VarToken.ParsedText, thisVisitor.Pop());
 		Visitor.VisitList(Node.BlockNode);
 		return Visitor.ExitLet(Node);
 	}
@@ -129,16 +147,14 @@ class InterpreterLoopNodeAcceptor implements LoopNodeAcceptor {
 			}
 			try {
 				Visitor.VisitList(Node.LoopBody);
-			}
-			catch (LoopBreakException e) {
+			} catch (LoopBreakException e) {
 				if(e.Jump.TargetNode == null) {
 					e.Jump.TargetNode = Node;
 				} else if(e.Jump.TargetNode != Node) {
 					throw e;
 				}
 				break;
-			}
-			catch (LoopContinueException e) {
+			} catch (LoopContinueException e) {
 				if(e.Jump.TargetNode == null) {
 					e.Jump.TargetNode = Node;
 				} else if(e.Jump.TargetNode != Node) {
@@ -245,9 +261,8 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public CompiledMethod Compile(TypedNode Block) {
-		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
-		Mtd.CompiledCode = Block;
+	public KonohaMethodInvoker Compile(TypedNode Block) {
+		KonohaMethodInvoker Mtd = new ASTInterpreterMethodInvoker(this.MethodInfo, Block, this);
 		return Mtd;
 	}
 
@@ -288,11 +303,9 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		try {
 			Object Obj = KClass.newInstance();
 			this.push(Obj);
-		}
-		catch (InstantiationException e) {
+		} catch (InstantiationException e) {
 			e.printStackTrace();
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return true;
@@ -346,6 +359,9 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			args[n - i - 1] = this.Pop();
 		}
 		KonohaMethod Mtd = Node.Method;
+		if(Mtd.MethodInvoker != null) {
+			Mtd.DoCompilation();
+		}
 		Object Ret = Mtd.Eval(args);
 		this.push(Ret);
 		return true;
@@ -388,7 +404,8 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		} else {
 			assert (Node.LeftNode instanceof LocalNode);
 			LocalNode Left = (LocalNode) Node.LeftNode;
-			this.LocalVariable.put(Left.FieldName, Val);
+			this.LocalVariable.put(
+					Left.FieldName, Val);
 		}
 		this.push(Val);
 		return true;
@@ -396,12 +413,14 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.LocalVariable.put(Node.VarToken.ParsedText, null);
+		this.LocalVariable.put(
+				Node.VarToken.ParsedText, null);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		this.LocalVariable.put(Node.VarToken.ParsedText, null);
+		this.LocalVariable.put(
+				Node.VarToken.ParsedText, null);
 		return true;
 	}
 
@@ -509,20 +528,33 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		throw new RuntimeException(Node.ErrorMessage);
 	}
 
-	@Override
-	public Object EvalAtTopLevel(TypedNode Node) {
-		this.Prepare(null);
+	public Object Eval(TypedNode Node, KonohaMethod Method) {
+		KonohaArray Params = new KonohaArray();
+		if(Method != null) {
+			for(int i = 0; i < Method.Param.GetParamSize(); i++) {
+				Params.add(new Param(i, Method.GetParamType(Method.ClassInfo, i), Method.Param.ArgNames[i]));
+			}
+			this.Prepare(Method, Params);
+		} else {
+			this.Prepare(Method);
+		}
 		this.VisitList(Node);
 		Object Ret = this.Pop();
-		if(Ret == null) {
-			Ret = "";
-		}
-		System.out.println("EvalAtTopLevel::::::" + Ret.toString());
 		return Ret;
 	}
 
 	@Override
-	public KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
+	public Object EvalAtTopLevel(TypedNode Node) {
+		Object Ret = this.Eval(Node, null);
+		if(Ret == null) {
+			Ret = "";
+		}
+		//System.out.println("EvalAtTopLevel::::::" + Ret.toString());
+		return Ret;
+	}
+
+	@Override
+	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
 		this.Prepare(Method);
 		return this.Compile(Node);
 	}

@@ -81,11 +81,11 @@ class TopLevelDefinitionSyntax1 extends SyntaxAcceptor {
 // action: <Symbol:$type>, <Symbol:$identifier>, <Symbol:$ParamDeclList>
 class functionSignatureSyntax0 extends SyntaxAcceptor {
 
-	static final int	FunctionSignatureOffset	= SyntaxAcceptor.ListOffset;
-	static final int	MethodReturnTypeOffset	= FunctionSignatureOffset;
-	static final int	MethodClassOffset		= FunctionSignatureOffset + 1;
-	static final int	MethodNameOffset		= FunctionSignatureOffset + 2;
-	static final int	MethodParamOffset		= FunctionSignatureOffset + 3;
+	static final int FunctionSignatureOffset = SyntaxAcceptor.ListOffset;
+	static final int MethodReturnTypeOffset = FunctionSignatureOffset;
+	static final int MethodClassOffset = FunctionSignatureOffset + 1;
+	static final int MethodNameOffset = FunctionSignatureOffset + 2;
+	static final int MethodParamOffset = FunctionSignatureOffset + 3;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -153,8 +153,8 @@ class functionBodySyntax0 extends SyntaxAcceptor {
 
 // action: <Symbol:$functionSignature>, <Symbol:$functionBody>
 class functionDefinitionSyntax0 extends SyntaxAcceptor {
-	static final int	FunctionSignatureOffset	= SyntaxAcceptor.ListOffset;
-	static final int	FunctionBodyOffset		= SyntaxAcceptor.ListOffset + 1;
+	static final int FunctionSignatureOffset = SyntaxAcceptor.ListOffset;
+	static final int FunctionBodyOffset = SyntaxAcceptor.ListOffset + 1;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -182,8 +182,8 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 			KonohaMethod Method = (KonohaMethod) Def.DefInfo;
 			UntypedNode Body = UNode.GetAtNode(FunctionBodyOffset);
 			Method.ParsedTree = Body;
-			//XXX(ide) TypeCheck for FunctionBody is called when this method are called first time.
-			//Method.DoCompilation();
+			//FIXME(ide) TypeCheck for FunctionBody is called when this method are called first time.
+			Method.DoCompilation();
 			return FuncNode;
 		}
 		return null;
@@ -749,9 +749,9 @@ class blockSyntax0 extends SyntaxAcceptor {
 
 //action: <Symbol:"if">, <Symbol:"(">, <Symbol:$expression>, <Symbol:")">, <Symbol:$block>, <Symbol:"else">, <Symbol:$block>
 class ifStatementSyntax0 extends SyntaxAcceptor {
-	static int	IfConditionOffset	= ListOffset;
-	static int	IfThenBlockOffset	= IfConditionOffset + 1;
-	static int	IfElseBlockOffset	= IfConditionOffset + 2;
+	static int IfConditionOffset = ListOffset;
+	static int IfThenBlockOffset = IfConditionOffset + 1;
+	static int IfElseBlockOffset = IfConditionOffset + 2;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -778,19 +778,22 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return TypeCheckIf(Gamma, UNode, TypeInfo);
+		return ifStatementSyntax0.TypeCheckIf(Gamma, UNode, TypeInfo);
 	}
 
 	static public TypedNode TypeCheckIf(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode CondNode = UNode.TypeNodeAt(IfConditionOffset, Gamma, Gamma.BooleanType, 0);
-		if(CondNode.IsError())
+		if(CondNode.IsError()) {
 			return CondNode;
+		}
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThenBlockOffset, Gamma, TypeInfo, 0);
-		if(ThenNode.IsError())
+		if(ThenNode.IsError()) {
 			return ThenNode;
+		}
 		TypedNode ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
-		if(ElseNode.IsError())
+		if(ElseNode.IsError()) {
 			return ElseNode;
+		}
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
 	}
 
@@ -798,9 +801,9 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 
 // action: <Symbol:"if">, <Symbol:"(">, <Symbol:$expression>, <Symbol:")">, <Symbol:$block>
 class ifStatementSyntax1 extends SyntaxAcceptor {
-	static int	IfConditionOffset	= ListOffset;
-	static int	IfThenBlockOffset	= IfConditionOffset + 1;
-	static int	IfElseBlockOffset	= IfConditionOffset + 2;
+	static int IfConditionOffset = ListOffset;
+	static int IfThenBlockOffset = IfConditionOffset + 1;
+	static int IfElseBlockOffset = IfConditionOffset + 2;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -893,7 +896,7 @@ class continueStatementSyntax0 extends SyntaxAcceptor {
 // action: <Symbol:"return">, <Symbol:";">
 class returnStatementSyntax0 extends SyntaxAcceptor {
 
-	static int	ReturnExpressionOffset	= ListOffset;
+	static int ReturnExpressionOffset = ListOffset;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -913,7 +916,7 @@ class returnStatementSyntax0 extends SyntaxAcceptor {
 
 // action: <Symbol:"return">, <Symbol:$expression>, <Symbol:";">
 class returnStatementSyntax1 extends SyntaxAcceptor {
-	static int	ReturnExpressionOffset	= ListOffset;
+	static int ReturnExpressionOffset = ListOffset;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -931,7 +934,7 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return TypeCheckReturn(Gamma, UNode, TypeInfo);
+		return returnStatementSyntax1.TypeCheckReturn(Gamma, UNode, TypeInfo);
 	}
 
 	static TypedNode TypeCheckReturn(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
@@ -1032,8 +1035,8 @@ class leftHandSideExpressionSyntax1 extends SyntaxAcceptor {
 
 // action: <Symbol:$memberExpression>, <Symbol:$ParameterList>
 class callExpressionSyntax0 extends SyntaxAcceptor {
-	static final int	CallExpressionOffset	= CallExpressionTypeChecker.CallExpressionOffset;
-	static final int	CallParameterOffset		= CallExpressionTypeChecker.CallParameterOffset;
+	static final int CallExpressionOffset = CallExpressionTypeChecker.CallExpressionOffset;
+	static final int CallParameterOffset = CallExpressionTypeChecker.CallParameterOffset;
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {

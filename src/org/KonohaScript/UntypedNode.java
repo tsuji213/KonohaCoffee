@@ -30,12 +30,12 @@ import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class UntypedNode implements KonohaConst {
-	UntypedNode				Parent;
-	UntypedNode				PreviousNode;
-	UntypedNode				NextNode;
-	public KonohaNameSpace	NodeNameSpace;
-	public KonohaSyntax		Syntax;
-	public KonohaToken		KeyToken;
+	UntypedNode Parent;
+	UntypedNode PreviousNode;
+	UntypedNode NextNode;
+	public KonohaNameSpace NodeNameSpace;
+	public KonohaSyntax Syntax;
+	public KonohaToken KeyToken;
 
 	@Override
 	public String toString() {
@@ -73,7 +73,7 @@ public class UntypedNode implements KonohaConst {
 		this.NextNode = Node;
 	}
 
-	public KonohaArray	NodeList;
+	public KonohaArray NodeList;
 
 	public UntypedNode AddParsedNode(UntypedNode Node) {
 		if(this.NodeList == null) {
@@ -104,7 +104,6 @@ public class UntypedNode implements KonohaConst {
 		return Node;
 	}
 
-	@Deprecated
 	public void SetAtToken(int Index, KonohaToken Token) {
 		this.SetAt(Index, Token);
 	}
@@ -180,8 +179,8 @@ public class UntypedNode implements KonohaConst {
 		return EndIdx;
 	}
 
-	public final static int	LeftTerm	= 0;
-	public final static int	RightTerm	= 1;
+	public final static int LeftTerm = 0;
+	public final static int RightTerm = 1;
 
 	/* 1 + 2 * 3 */
 	/* 1 * 2 + 3 */

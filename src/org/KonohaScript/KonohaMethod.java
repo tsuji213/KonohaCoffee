@@ -24,29 +24,27 @@
 
 package org.KonohaScript;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class KonohaMethod extends KonohaDef implements KonohaConst {
 
-	public KonohaType	ClassInfo;
-	public String		MethodName;
-	int					MethodSymbolId;
-	int					CanonicalSymbolId;
-	public KonohaParam	Param;
-	Method				MethodRef;
-	public int			MethodFlag;
+	public KonohaType			ClassInfo;
+	public String				MethodName;
+	int							MethodSymbolId;
+	int							CanonicalSymbolId;
+	public KonohaParam			Param;
+	public KonohaMethodInvoker	MethodInvoker;
+	public int					MethodFlag;
 
 	// DoLazyComilation();
 
-	KonohaNameSpace		LazyNameSpace;
-	TokenList			SourceList;
+	KonohaNameSpace				LazyNameSpace;
+	TokenList					SourceList;
 	//FIXME merge ParsedTree field in SouceList.
-	public UntypedNode	ParsedTree;
+	public UntypedNode			ParsedTree;
 
 	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, Method MethodRef) {
 		this.MethodFlag = MethodFlag;
@@ -55,7 +53,10 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		this.MethodSymbolId = KonohaSymbol.GetSymbolId(MethodName);
 		this.CanonicalSymbolId = KonohaSymbol.GetCanonicalSymbolId(MethodName);
 		this.Param = Param;
-		this.MethodRef = MethodRef;
+		this.MethodInvoker = null;
+		if(MethodRef != null) {
+			this.MethodInvoker = new NativeMethodInvoker(Param, MethodRef);
+		}
 		this.ParsedTree = null;
 	}
 
@@ -103,7 +104,8 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return (this.MethodName.equals(Other.MethodName) && this.Param.Match(Other.Param));
 	}
 
-	public boolean Match(String MethodName, int ParamSize /*, int DataSize, KClass[] ParamData*/) {
+	public boolean Match(String MethodName, int ParamSize) {
+		// FIXME(ide) implement match function with strict rule
 		if(MethodName.equals(this.MethodName)) {
 			if(ParamSize == -1) {
 				return true;
@@ -115,52 +117,15 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return false;
 	}
 
-	boolean IsStaticInvocation() {
-		return Modifier.isStatic(this.MethodRef.getModifiers());
-	}
-
 	public Object Eval(Object[] ParamData) {
 		int ParamSize = this.Param.GetParamSize();
-		try {
-			if(this.IsStaticInvocation()) {
-				switch (ParamSize) {
-				case 0:
-					return this.MethodRef.invoke(null, ParamData[0]);
-				case 1:
-					return this.MethodRef.invoke(null, ParamData[0], ParamData[1]);
-				default:
-					return this.MethodRef.invoke(null, ParamData); // FIXME
-				}
-			} else {
-				switch (ParamSize) {
-				case 0:
-					return this.MethodRef.invoke(ParamData[0]);
-				case 1:
-					return this.MethodRef.invoke(ParamData[0], ParamData[1]);
-				default:
-					return this.MethodRef.invoke(ParamData[0], ParamData); // FIXME
-				}
-			}
-		}
-		catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		KonohaDebug.P("ParamSize: " + ParamSize);
-		return null;
+		return this.MethodInvoker.Invoke(ParamData);
 	}
 
-	public KonohaMethod DoCompilation() {
-		if(this.MethodRef != null) {
-			return this;
+	public void DoCompilation() {
+		if(this.MethodInvoker != null) {
+			return;
 		}
 		UntypedNode UNode = this.ParsedTree;
 		if(UNode == null) {
@@ -172,7 +137,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);
 		TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 		KonohaBuilder Builder = this.LazyNameSpace.GetBuilder();
-		return Builder.Build(TNode, this);
+		this.MethodInvoker = Builder.Build(TNode, this);
 	}
 
 }

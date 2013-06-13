@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -69,6 +71,17 @@ import org.jllvm.LLVMValue;
 import org.jllvm.LLVMVoidType;
 import org.jllvm.bindings.LLVMIntPredicate;
 
+class LLVMCompiledMethodInvoker extends KonohaMethodInvoker {
+	public LLVMCompiledMethodInvoker(KonohaParam Param, Object CompiledCode) {
+		super(Param, CompiledCode);
+	}
+
+	@Override
+	public Object Invoke(Object[] Args) {
+		return null;
+	}
+}
+
 public class LLVMCodeGen extends CodeGenerator {
 	private final LLVMBuilder	builder;
 
@@ -114,9 +127,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public CompiledMethod Compile(TypedNode Block) { //FIXME
-		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
-
+	public KonohaMethodInvoker Compile(TypedNode Block) { //FIXME
 		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
 			String fqMethodName = this.getFullyQualifiedMethodName(this.MethodInfo);
 			int argsSize = this.LocalVals.size();
@@ -137,7 +148,7 @@ public class LLVMCodeGen extends CodeGenerator {
 		this.builder.createBasicBlock("topBlock");
 
 		this.VisitBlock(Block.GetHeadNode());
-		Mtd.CompiledCode = "dont support";
+		KonohaMethodInvoker Mtd = new LLVMCompiledMethodInvoker(this.MethodInfo.Param, null/* FIXME */);
 		//this.builder.dumpFunction();
 
 		return Mtd;
@@ -226,13 +237,14 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	static final String[]	binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|",
-			"^", "<<", ">>"				};
+											"^", "<<", ">>" };
 
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
 		for(String op : binaryOpList) {
-			if(op.equals(methodName))
+			if(op.equals(methodName)) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -679,7 +691,7 @@ class LLVMBuilder {
 	}
 
 	public LLVMBuilder() {
-		initBuilder();
+		LLVMBuilder.initBuilder();
 
 		this.builder = new LLVMInstructionBuilder();
 		this.currentFunc = null;
@@ -958,11 +970,9 @@ class CmdLauncher { //output stderr stdout separately
 			if(proc.exitValue() != 0) {
 				System.out.println(stderrGetter.getRedirectedStr());
 			}
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -992,8 +1002,7 @@ class CmdLauncher { //output stderr stdout separately
 					this.redirectedStr = this.redirectedStr.concat(line + "\n");
 				}
 				this.br.close();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
