@@ -21,7 +21,6 @@ public abstract class CodeGenerator extends NodeVisitor {
 	}
 
 	Local FindLocalVariable(String Name) {
-
 		for(int i = 0; i < this.LocalVals.size(); i++) {
 			Local l = (Local) this.LocalVals.get(i);
 			if(l.Name.compareTo(Name) == 0) {

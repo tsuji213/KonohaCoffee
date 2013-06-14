@@ -115,7 +115,9 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected String pop() {
-		return (String) this.Program.remove(this.Program.size() - 1);
+		String poped = (String) this.Program.remove(this.Program.size() - 1);
+		//System.out.println(">> " + poped);
+		return poped;
 	}
 
 	protected String[] PopN(int n) {
@@ -214,6 +216,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 	}
 
 	protected void push(String Program) {
+		//System.out.println("<< " + Program);
 		this.Program.add(Program);
 	}
 

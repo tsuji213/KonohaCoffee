@@ -415,9 +415,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType BaseType, ApplyNode WorkingNode, KonohaArray NodeList) {
 		KonohaMethod Method = WorkingNode.Method;
-		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 1; ParamIdx++) {
+		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 2; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
-			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 1);
+			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 2);
 			TypedNode ParamNode;
 			if(UntypedParamNode != null) {
 				ParamNode = TypeEnv.TypeCheck(Gamma, UntypedParamNode, ParamType, DefaultTypeCheckPolicy);
