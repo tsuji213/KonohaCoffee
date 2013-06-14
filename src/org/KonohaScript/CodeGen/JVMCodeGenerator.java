@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaType;
@@ -381,7 +382,7 @@ class JVMBuilder implements Opcodes {
 
 }
 
-public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
+public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBuilder {
 
 	private final JVMBuilder					builder;
 	private final HashMap<String, ClassWriter>	classWriterMap;
@@ -756,6 +757,19 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes {
 	public boolean ExitError(ErrorNode Node) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public Object EvalAtTopLevel(TypedNode Node) {
+		this.Prepare(null);
+		KonohaMethodInvoker Invoker = this.Compile(Node);
+		return Invoker.Invoke(null);
+	}
+
+	@Override
+	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+		this.Prepare(Method);
+		return this.Compile(Node);
 	}
 
 }

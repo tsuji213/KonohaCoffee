@@ -112,8 +112,7 @@ class InterpreterLetNodeAcceptor implements LetNodeAcceptor {
 		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
 		Visitor.EnterLet(Node);
 		Visitor.Visit(Node.ValueNode);
-		thisVisitor.LocalVariable.put(
-				Node.VarToken.ParsedText, thisVisitor.Pop());
+		thisVisitor.LocalVariable.put(Node.VarToken.ParsedText, thisVisitor.Pop());
 		Visitor.VisitList(Node.BlockNode);
 		return Visitor.ExitLet(Node);
 	}
@@ -147,14 +146,16 @@ class InterpreterLoopNodeAcceptor implements LoopNodeAcceptor {
 			}
 			try {
 				Visitor.VisitList(Node.LoopBody);
-			} catch (LoopBreakException e) {
+			}
+			catch (LoopBreakException e) {
 				if(e.Jump.TargetNode == null) {
 					e.Jump.TargetNode = Node;
 				} else if(e.Jump.TargetNode != Node) {
 					throw e;
 				}
 				break;
-			} catch (LoopContinueException e) {
+			}
+			catch (LoopContinueException e) {
 				if(e.Jump.TargetNode == null) {
 					e.Jump.TargetNode = Node;
 				} else if(e.Jump.TargetNode != Node) {
@@ -303,9 +304,11 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		try {
 			Object Obj = KClass.newInstance();
 			this.push(Obj);
-		} catch (InstantiationException e) {
+		}
+		catch (InstantiationException e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return true;
@@ -404,8 +407,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		} else {
 			assert (Node.LeftNode instanceof LocalNode);
 			LocalNode Left = (LocalNode) Node.LeftNode;
-			this.LocalVariable.put(
-					Left.FieldName, Val);
+			this.LocalVariable.put(Left.FieldName, Val);
 		}
 		this.push(Val);
 		return true;
@@ -413,14 +415,12 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public void EnterLet(LetNode Node) {
-		this.LocalVariable.put(
-				Node.VarToken.ParsedText, null);
+		this.LocalVariable.put(Node.VarToken.ParsedText, null);
 	}
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		this.LocalVariable.put(
-				Node.VarToken.ParsedText, null);
+		this.LocalVariable.put(Node.VarToken.ParsedText, null);
 		return true;
 	}
 
@@ -534,10 +534,11 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			for(int i = 0; i < Method.Param.GetParamSize(); i++) {
 				Params.add(new Param(i, Method.GetParamType(Method.ClassInfo, i), Method.Param.ArgNames[i]));
 			}
-			this.Prepare(Method, Params);
 		} else {
-			this.Prepare(Method);
+			//FIXME
+			//Params.add(new Param(0, null, "this"));
 		}
+		this.Prepare(Method, Params);
 		this.VisitList(Node);
 		Object Ret = this.Pop();
 		return Ret;
