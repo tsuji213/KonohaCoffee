@@ -27,11 +27,16 @@ package org.KonohaScript;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public interface KonohaBuilder {
-
 	Object EvalAtTopLevel(TypedNode Node);
 
-	KonohaMethod Build(TypedNode Node, KonohaMethod Method);
+	KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method);
 
+}
+
+class DefaultKonohaMethodInvoker extends KonohaMethodInvoker {
+	public DefaultKonohaMethodInvoker(KonohaParam Param, Object CompiledCode) {
+		super(Param, CompiledCode);
+	}
 }
 
 class DefaultKonohaBuilder implements KonohaBuilder {
@@ -44,9 +49,8 @@ class DefaultKonohaBuilder implements KonohaBuilder {
 	}
 
 	@Override
-	public KonohaMethod Build(TypedNode Node, KonohaMethod Method) {
-		// Set.MethodRef HERE
-		return Method;
+	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+		return new DefaultKonohaMethodInvoker(Method.Param, null);
 	}
 
 }

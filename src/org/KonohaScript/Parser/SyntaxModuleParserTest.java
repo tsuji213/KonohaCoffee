@@ -11,6 +11,7 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.TypeEnv;
 import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.MiniKonoha.KonohaInt;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -123,29 +124,10 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
 	}
 
-	public static void main(String[] args) {
-		String source = "";
-		source = "void fibo(int a) {\n" + "  if(a < 3) {" + "    return 1;\n" + "  } \n" + "  return fibo(a-1)+fibo(a-2);\n"
-				+ "}";
-		//source = "f(b * c);";
-		//source = "int fibo(int a) {\n" + "  if(a < 3) {" + "    return 1;\n" + "  } \n" + "\n" + "}";
-		//source = "int fibo(int a) {  return (a - 100);}";
-		//source = "int f(int a) {  return g(a);}";
-		//source = "boolean add(int x) { return x + 1; }";
-		//source = "add(10);";
-		//source = "(10);";
-		//source = "20;";
-		//source = "10 + 20;";
-		//source = "if(a < b) { f(); } else { return 1; };";
-		//source = "if(a <= b) { return 1; };";
-		Konoha konoha = new Konoha(new SyntaxModuleParserTest(), "org.KonohaScript.CodeGen.ASTInterpreter");
-		KonohaNameSpace NameSpace = konoha.RootNameSpace;
-		TokenList BufferList = NameSpace.Tokenize(source, 0);
+	static void Test(SyntaxModule Mod, KonohaNameSpace NameSpace, String Source) {
+		TokenList BufferList = NameSpace.Tokenize(Source, 0);
 		TokenList TokenList = new TokenList();
 		NameSpace.PreProcess(BufferList, 0, BufferList.size(), TokenList);
-
-		SyntaxModule Mod = new SyntaxModule(NameSpace);
-		Mod.SetRootSyntax(new SourceCodeSyntax());
 		KonohaToken.DumpTokenList(0, "Dump::", TokenList, 0, TokenList.size());
 		UntypedNode UNode = Mod.Parse(TokenList, 0, TokenList.size());
 
@@ -155,5 +137,29 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		KonohaBuilder Builder = NameSpace.GetBuilder();
 		Object ResultValue = Builder.EvalAtTopLevel(TNode);
 		System.out.println(ResultValue);
+	}
+
+	public static void main(String[] args) {
+
+		Konoha konoha = new Konoha(new SyntaxModuleParserTest(), "org.KonohaScript.CodeGen.ASTInterpreter");
+		KonohaNameSpace NameSpace = konoha.DefaultNameSpace;
+
+		// Load Syntax
+		new KonohaInt().DefineMethod(NameSpace);
+
+		SyntaxModule Mod = new SyntaxModule(NameSpace);
+		Mod.SetRootSyntax(new SourceCodeSyntax());
+		//Test(Mod, NameSpace, "void fibo(int a) {\n  if(a < 3) {    return 1;\n  } \n  return fibo(a-1)+fibo(a-2);\n}");
+		//Test(Mod, NameSpace, "f(b * c);");
+		//Test(Mod, NameSpace, "int sub(int a) {  return (a - 100);}");
+		//Test(Mod, NameSpace, "int f(int a) {  return g(a);}");
+		Test(Mod, NameSpace, "int add(int x) { return x + 1; }");
+		Test(Mod, NameSpace, "add(10);");
+		//Test(Mod, NameSpace, "(10);");
+		//Test(Mod, NameSpace, "20;");
+		//Test(Mod, NameSpace, "10 + 20;");
+		//source = "10 + 20;";
+		//source = "if(a < b) { f(); } else { return 1; };";
+		//source = "if(a < b) { return 1; };";
 	}
 }

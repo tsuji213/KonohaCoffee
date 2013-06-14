@@ -56,22 +56,22 @@ class KParamMap {
 }
 
 class SymbolTable implements KonohaConst {
-	KonohaArray					ClassList;
-	HashMap<String, KonohaType>	ClassNameMap;
+	KonohaArray ClassList;
+	HashMap<String, KonohaType> ClassNameMap;
 
-	KonohaArray					PackageList;
-	KKeyIdMap					PackageMap;
+	KonohaArray PackageList;
+	KKeyIdMap PackageMap;
 
-	KonohaArray					FileIdList;
-	HashMap<String, Integer>	FileIdMap;
+	KonohaArray FileIdList;
+	HashMap<String, Integer> FileIdMap;
 
-	KonohaArray					SymbolList;
-	HashMap<String, Integer>	SymbolMap;
+	KonohaArray SymbolList;
+	HashMap<String, Integer> SymbolMap;
 
-	KonohaArray					ParamList;
-	KParamMap					ParamMap;
-	KonohaArray					SignatureList;
-	KParamMap					SignatureMap;
+	KonohaArray ParamList;
+	KParamMap ParamMap;
+	KonohaArray SignatureList;
+	KParamMap SignatureMap;
 
 	SymbolTable() {
 		this.ClassList = new KonohaArray(64);
@@ -131,19 +131,19 @@ class SymbolTable implements KonohaConst {
 
 public final class Konoha implements KonohaConst {
 
-	public KonohaNameSpace	RootNameSpace;
-	KonohaNameSpace			DefaultNameSpace;
-	SymbolTable				SymbolTable;
+	public KonohaNameSpace RootNameSpace;
+	public KonohaNameSpace DefaultNameSpace;
+	SymbolTable SymbolTable;
 
-	public final KonohaType	VoidType;
-	public final KonohaType	ObjectType;
-	public final KonohaType	BooleanType;
-	public final KonohaType	IntType;
-	public final KonohaType	StringType;
-	public final KonohaType	VarType;
+	public final KonohaType VoidType;
+	public final KonohaType ObjectType;
+	public final KonohaType BooleanType;
+	public final KonohaType IntType;
+	public final KonohaType StringType;
+	public final KonohaType VarType;
 
-	KonohaArray				EmptyList;
-	KonohaMap				ClassNameMap;
+	KonohaArray EmptyList;
+	KonohaMap ClassNameMap;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
 		this.SymbolTable = new SymbolTable();

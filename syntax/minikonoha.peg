@@ -75,10 +75,10 @@ $expressionStatement <- $expression ";"
 $expression <- $leftHandSideExpression $EQ $expression
 / $logicalOrExpression
 
-$leftHandSideExpression <- $callEpxression
+$leftHandSideExpression <- $callExpression
 / $newExpression
 
-$callEpxression <-  $memberExpression $ParameterList
+$callExpression <-  $memberExpression $ParameterList
 
 $memberExpression <- $primary $selector*
 

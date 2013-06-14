@@ -40,6 +40,17 @@ class SyntaxModule extends KonohaGrammar {
 		this.NameSpace = NS;
 	}
 
+	void Init() {
+		this.Cursor = 0;
+		this.EndIdx = 0;
+		this.ThunkPos = 0;
+		this.ThunkObjects.clear();
+		this.ThunkRangeBegins.clear();
+		this.ThunkRangeEnd.clear();
+		this.ThunkNodeSizes.clear();
+		this.UNodeStack.clear();
+	}
+
 	public int Match(String SyntaxName, TokenList TokenList) {
 		SyntaxTemplate Syn = (SyntaxTemplate) this.SyntaxTable.get(SyntaxName);
 		if(Syn != null) {
@@ -92,6 +103,7 @@ class SyntaxModule extends KonohaGrammar {
 	}
 
 	public UntypedNode Parse(TokenList TokenList, int BeginIdx, int EndIdx) {
+		this.Init();
 		this.EndIdx = this.MatchSyntax(TokenList, BeginIdx, EndIdx);
 		UntypedNode ret = null;
 		if(this.UNodeStack.size() > 0) {
@@ -202,29 +214,31 @@ abstract class SyntaxAcceptor {
 	public static final int	AcceptorOffset	= 0;
 	public static final int	ListOffset		= AcceptorOffset + 1;
 
-	UntypedNode CreateNode(SyntaxModule Parser, KonohaToken Token) {
+	UntypedNode CreateNodeWithSyntax(SyntaxModule Parser, KonohaToken Token, String SyntaxName) {
 		UntypedNode Node = new UntypedNode(Parser.NameSpace, Token);
 		Node.SetAtNode(AcceptorOffset, null);
 		Node.NodeList.set(AcceptorOffset, this);
+		Node.Syntax = Parser.NameSpace.GetSyntax(SyntaxName);
 		return Node;
 	}
 
-	static void CreateBinaryOperator(SyntaxModule Parser, int NodeSize, KonohaToken DefaultOperatorToken) {
+	TypedNode TypeBinaryOperator(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		return CallExpressionTypeChecker.TypeCheckMethodCall(Gamma, UNode, TypeInfo);
+	}
+
+	void CreateBinaryOperator(SyntaxModule Parser, int NodeSize, String SyntaxName) {
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		while(Index < NodeSize) {
-			UntypedNode Node = null;
-			if(DefaultOperatorToken != null) {
-				Node = new UntypedNode(Parser.NameSpace, DefaultOperatorToken);
-			} else {
-				KonohaToken OperatorToken = (KonohaToken) Parser.Get(Index, NodeSize);
-				Node = new UntypedNode(Parser.NameSpace, OperatorToken);
-				Index = Index + 1;
-			}
+			KonohaToken OperatorToken = (KonohaToken) Parser.Get(Index, NodeSize);
+			UntypedNode Node = this.CreateNodeWithSyntax(Parser, OperatorToken, SyntaxName);
+			Index = Index + 1;
+
 			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
-			Node.SetAtNode(0, Left);
-			Node.SetAtNode(1, Right);
+			Node.SetAtNode(ListOffset, Left);
+			Node.SetAtToken(ListOffset + 1, OperatorToken);
+			Node.SetAtNode(ListOffset + 2, Right);
 			Left = Node;
 			Index = Index + 1;
 		}

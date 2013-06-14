@@ -12,14 +12,9 @@ class DefaultLocalNodeAcceptor implements LocalNodeAcceptor {
 	}
 }
 
-public class LocalNode extends TypedNode {
-	/* TermToken->text */
-	public String	FieldName;
-
-	public LocalNode(KonohaType TypeInfo, KonohaToken SourceToken,
-			String FieldName) {
-		super(TypeInfo, SourceToken);
-		this.FieldName = FieldName;
+public class LocalNode extends FieldNode {
+	public LocalNode(KonohaType TypeInfo, KonohaToken SourceToken, String FieldName) {
+		super(TypeInfo, SourceToken, FieldName);
 	}
 
 	@Override

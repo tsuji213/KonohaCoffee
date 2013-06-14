@@ -1566,7 +1566,7 @@ class expressionSyntax extends SyntaxTemplate {
 /*
 [$leftHandSideExpression:
 	[
-		<Symbol:$callEpxression>
+		<Symbol:$callExpression>
 	]
 	[
 		<Symbol:$newExpression>
@@ -1581,7 +1581,7 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 	@Override
 	void Init(SyntaxModule Parser) {
 		Parser.AddSyntax(this, new newExpressionSyntax(), false);
-		Parser.AddSyntax(this, new callEpxressionSyntax(), false);
+		Parser.AddSyntax(this, new callExpressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new leftHandSideExpressionSyntax0();
@@ -1607,7 +1607,7 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $leftHandSideExpression");
-		if(Parser.Match("$callEpxression", TokenList) >= 0) {
+		if(Parser.Match("$callExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$leftHandSideExpression", Parser, pos0, NodeSize);
 		}
@@ -1622,16 +1622,16 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 }
 
 /*
-[$callEpxression:
+[$callExpression:
 	[
 		<Symbol:$memberExpression>
 		<Symbol:$ParameterList>
 	]
 ]
 */
-class callEpxressionSyntax extends SyntaxTemplate {
-	callEpxressionSyntax() {
-		super("$callEpxression");
+class callExpressionSyntax extends SyntaxTemplate {
+	callExpressionSyntax() {
+		super("$callExpression");
 	}
 
 	@Override
@@ -1640,10 +1640,10 @@ class callEpxressionSyntax extends SyntaxTemplate {
 		Parser.AddSyntax(this, new memberExpressionSyntax(), false);
 	}
 
-	public SyntaxAcceptor	Acceptor0	= new callEpxressionSyntax0();
+	public SyntaxAcceptor	Acceptor0	= new callExpressionSyntax0();
 
 	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
-		this.Report("Accept $callEpxression");
+		this.Report("Accept $callExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1654,16 +1654,16 @@ class callEpxressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		this.Report("Enter $callEpxression");
+		this.Report("Enter $callExpression");
 		if(Parser.Match("$memberExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$ParameterList", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				return this.action0("$callEpxression", Parser, pos0, NodeSize);
+				return this.action0("$callExpression", Parser, pos0, NodeSize);
 			}
 		}
-		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $callEpxression 0");
-		return this.Fail("$callEpxression", Parser);
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $callExpression 0");
+		return this.Fail("$callExpression", Parser);
 	}
 }
 

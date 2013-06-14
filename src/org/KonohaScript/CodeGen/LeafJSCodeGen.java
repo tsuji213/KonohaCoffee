@@ -2,9 +2,11 @@ package org.KonohaScript.CodeGen;
 
 import java.util.HashMap;
 
-import org.KonohaScript.KLib.*;
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -28,26 +30,38 @@ import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public class LeafJSCodeGen extends SourceCodeGen {
-	private final boolean	UseLetKeyword	= false;
+class JSCompiledMethodInvoker extends KonohaMethodInvoker {
+	public JSCompiledMethodInvoker(KonohaParam Param, Object CompiledCode) {
+		super(Param, CompiledCode);
+	}
 
-	private KonohaArray LocalVariableRenameTables;
+	@Override
+	public Object Invoke(Object[] Args) {
+		return null;
+	}
+}
+
+public class LeafJSCodeGen extends SourceCodeGen {
+	private final boolean		UseLetKeyword	= false;
+
+	private final KonohaArray	LocalVariableRenameTables;
 
 	public LeafJSCodeGen() {
 		super(null);
 		this.LocalVariableRenameTables = new KonohaArray();
 	}
 
-	private void AddLocalVariableRenameRule(String Name){
+	private void AddLocalVariableRenameRule(String Name) {
 		int nameUsedTimes = 0;
-		int N = LocalVariableRenameTables.size();
-		if(N == 0)
+		int N = this.LocalVariableRenameTables.size();
+		if(N == 0) {
 			return;
-		HashMap<String, Integer> map = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(N-1);
-		if(!map.containsKey(Name)){
-			for(int i = 0; i < N - 1; ++i){
+		}
+		HashMap<String, Integer> map = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(N - 1);
+		if(!map.containsKey(Name)) {
+			for(int i = 0; i < N - 1; ++i) {
 				HashMap<String, Integer> parent = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(i);
-				if(parent.containsKey(Name)){
+				if(parent.containsKey(Name)) {
 					nameUsedTimes++;
 				}
 			}
@@ -55,12 +69,12 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		}
 	}
 
-	private String GetRenamedLocalName(String originalName){
-		int N = LocalVariableRenameTables.size();
-		for(int i = N - 1; i >= 0; --i){
-			HashMap<String, Integer> map = (HashMap<String, Integer>) LocalVariableRenameTables.get(i);
-			if(map.containsKey(originalName)){
-				if(map.get(originalName) > 0){
+	private String GetRenamedLocalName(String originalName) {
+		int N = this.LocalVariableRenameTables.size();
+		for(int i = N - 1; i >= 0; --i) {
+			HashMap<String, Integer> map = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(i);
+			if(map.containsKey(originalName)) {
+				if(map.get(originalName) > 0) {
 					return originalName + map.get(originalName);
 				}
 			}
@@ -70,12 +84,13 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	Local AddLocal(KonohaType Type, String Name) {
-		AddLocalVariableRenameRule(Name);
+		this.AddLocalVariableRenameRule(Name);
 		return super.AddLocal(Type, Name);
 	};
 
-	@Override Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
-		AddLocalVariableRenameRule(Name);
+	@Override
+	Local AddLocalVarIfNotDefined(KonohaType Type, String Name) {
+		this.AddLocalVariableRenameRule(Name);
 		return super.AddLocalVarIfNotDefined(Type, Name);
 	};
 
@@ -96,8 +111,7 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	}
 
 	@Override
-	public CompiledMethod Compile(TypedNode Block) {
-		CompiledMethod Mtd = new CompiledMethod(this.MethodInfo);
+	public KonohaMethodInvoker Compile(TypedNode Block) {
 		this.VisitBlock(Block.GetHeadNode());
 		assert (this.getProgramSize() == 1);
 		String Source = this.pop();
@@ -124,27 +138,27 @@ public class LeafJSCodeGen extends SourceCodeGen {
 			FuncBuilder.append(";");
 			Source = FuncBuilder.toString();
 		}
-		Mtd.CompiledCode = Source;
+		KonohaMethodInvoker Mtd = new JSCompiledMethodInvoker(this.MethodInfo.Param, Source);
 		return Mtd;
 	}
 
 	@Override
-	protected boolean VisitBlock(TypedNode Node){
-		String highLevelIndent = indentGenerator.indentAndGet(1);
+	protected boolean VisitBlock(TypedNode Node) {
+		String highLevelIndent = this.indentGenerator.indentAndGet(1);
 		this.PushProgramSize();
 		boolean ret = true;
-		if(Node != null){
+		if(Node != null) {
 			ret &= this.Visit(Node);
-			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode){
+			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
 				ret &= this.Visit(n);
 			}
 		}
-		String currentLevelIndent = indentGenerator.indentAndGet(-1);
+		String currentLevelIndent = this.indentGenerator.indentAndGet(-1);
 
 		int Size = this.getProgramSize() - this.PopProgramSize();
 
-		String Block = PopNWithModifier(Size, true, "\n" + highLevelIndent, ";" , null);
-		push("{" + Block + "\n" + currentLevelIndent + "}");
+		String Block = this.PopNWithModifier(Size, true, "\n" + highLevelIndent, ";", null);
+		this.push("{" + Block + "\n" + currentLevelIndent + "}");
 		return ret;
 	}
 
@@ -348,8 +362,8 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = this.pop();
 		String CatchBlocks = this.PopNReverseWithPrefix(
-			Node.CatchBlock.size(),
-			"catch() ");
+				Node.CatchBlock.size(),
+				"catch() ");
 		String TryBlock = this.pop();
 		this.push("try " + TryBlock + "" + CatchBlocks + "finally "
 				+ FinallyBlock);

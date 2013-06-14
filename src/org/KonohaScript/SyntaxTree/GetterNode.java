@@ -13,15 +13,12 @@ class DefaultGetterNodeAcceptor implements GetterNodeAcceptor {
 	}
 }
 
-public class GetterNode extends TypedNode {
+public class GetterNode extends FieldNode {
 	public TypedNode	BaseNode;
-	public String		FieldName;
 
-	public GetterNode(KonohaType TypeInfo, KonohaToken FieldToken,
-			TypedNode BaseNode) {
-		super(TypeInfo, FieldToken);
+	public GetterNode(KonohaType TypeInfo, KonohaToken FieldToken, TypedNode BaseNode) {
+		super(TypeInfo, FieldToken, FieldToken.ParsedText);
 		this.BaseNode = BaseNode;
-		this.FieldName = FieldToken.ParsedText;
 	}
 
 	@Override
