@@ -2,11 +2,14 @@ package org.KonohaScript.CodeGen;
 
 import java.util.HashMap;
 
+import org.KonohaScript.Konoha;
+import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -41,8 +44,9 @@ class JSCompiledMethodInvoker extends KonohaMethodInvoker {
 	}
 }
 
-public class LeafJSCodeGen extends SourceCodeGen {
+public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 	private final boolean		UseLetKeyword	= false;
+	private final String GlobalObjectName = "global";
 
 	private final KonohaArray	LocalVariableRenameTables;
 
@@ -98,7 +102,9 @@ public class LeafJSCodeGen extends SourceCodeGen {
 	public void Prepare(KonohaMethod Method) {
 		this.LocalVals.clear();
 		this.MethodInfo = Method;
-		this.AddLocal(Method.ClassInfo, "this");
+		if(Method != null) {
+			this.AddLocal(Method.ClassInfo, "this");
+		}
 	}
 
 	@Override
@@ -112,10 +118,16 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	public KonohaMethodInvoker Compile(TypedNode Block) {
-		this.VisitBlock(Block.GetHeadNode());
-		assert (this.getProgramSize() == 1);
-		String Source = this.pop();
-		if(this.MethodInfo != null && this.MethodInfo.MethodName.length() > 0) {
+		String Source = null;
+		if(this.MethodInfo == null || this.MethodInfo.MethodName.length() == 0) {
+			this.VisitList(Block.GetHeadNode());
+			assert (this.getProgramSize() == 1);
+			Source = this.pop();
+		}else{
+			this.VisitBlock(Block.GetHeadNode());
+			assert (this.getProgramSize() == 1);
+			Source = this.pop();
+			
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
@@ -135,11 +147,29 @@ public class LeafJSCodeGen extends SourceCodeGen {
 			}
 			FuncBuilder.append(") ");
 			FuncBuilder.append(Source);
-			FuncBuilder.append(";");
 			Source = FuncBuilder.toString();
 		}
-		KonohaMethodInvoker Mtd = new JSCompiledMethodInvoker(this.MethodInfo.Param, Source);
+		KonohaMethodInvoker Mtd = new JSCompiledMethodInvoker(this.MethodInfo != null ? this.MethodInfo.Param : null, Source);
 		return Mtd;
+	}
+	
+	@Override
+	public boolean VisitList(TypedNode Node) {
+		String currentLevelIndent = this.indentGenerator.get();
+		this.PushProgramSize();
+		boolean ret = true;
+		if(Node != null) {
+			ret &= this.Visit(Node);
+			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
+				ret &= this.Visit(n);
+			}
+		}
+
+		int Size = this.getProgramSize() - this.PopProgramSize();
+
+		String Block = this.PopNWithModifier(Size, true, null, ";\n" + currentLevelIndent, null);
+		this.push(Block);
+		return ret;
 	}
 
 	@Override
@@ -164,18 +194,31 @@ public class LeafJSCodeGen extends SourceCodeGen {
 
 	@Override
 	public boolean ExitDefine(DefineNode Node) {
+		if(Node.DefInfo instanceof KonohaMethod) {
+			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
+			Mtd.DoCompilation();
+			this.push((String)Mtd.MethodInvoker.CompiledCode);
+		} else {
+			throw new NotSupportedCodeError();
+		}
+
 		return true;
 	}
 
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		this.push(Node.ConstValue.toString());
+		if(Node.SourceToken.ParsedText.equals("global")){
+			this.push(GlobalObjectName);
+		}else{
+			this.push(Node.ConstValue.toString());
+		}
 		return true;
 	}
 
 	@Override
 	public boolean ExitNew(NewNode Node) {
-		this.push("new " + Node.TypeInfo.ShortClassName.toString() + "()");
+		//FIXME constractor params
+		this.push("new " + Node.TypeInfo.ShortClassName + "()");
 		return true;
 	}
 
@@ -225,7 +268,11 @@ public class LeafJSCodeGen extends SourceCodeGen {
 					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
 					+ ")";
 			String thisNode = this.pop();
-			this.push(thisNode + "." + methodName + params);
+			if(thisNode.equals(GlobalObjectName)){
+				this.push(methodName + params);
+			}else{
+				this.push(thisNode + "." + methodName + params);
+			}
 		}
 		return true;
 	}
@@ -390,4 +437,28 @@ public class LeafJSCodeGen extends SourceCodeGen {
 		return false;
 	}
 
+	public static void main(String[] args) {
+		Konoha konoha = new Konoha(new MiniKonohaGrammar(), LeafJSCodeGen.class.getName());
+		//konoha.Eval("3", 0);
+		//konoha.Eval("int add(int x) { return x + 1; }", 0);
+		konoha.Eval("int one(int x) { return 1; };", 0);
+		konoha.Eval("one(0);", 0);
+		//konoha.Eval("1+1;", 0);
+	}
+
+	@Override
+	public Object EvalAtTopLevel(TypedNode Node) {
+		Object Ret = this.Build(Node, null).CompiledCode;
+		if(Ret == null) {
+			Ret = "";
+		}
+		System.out.println(Ret.toString());
+		return Ret;
+	}
+
+	@Override
+	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+		this.Prepare(Method);
+		return this.Compile(Node);
+	}
 }
