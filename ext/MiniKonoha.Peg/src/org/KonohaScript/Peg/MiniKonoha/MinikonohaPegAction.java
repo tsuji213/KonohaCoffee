@@ -118,7 +118,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 		System.err.println("@@@@@ " + UNode);
 		KonohaType BaseType = UNode.GetTokenType(MethodClassOffset, null);
 		if(BaseType == null) {
-			BaseType = UNode.NodeNameSpace.GetGlobalObject().TypeInfo;
+			BaseType = Gamma.GammaNameSpace.GetGlobalObject().TypeInfo;
 		}
 		String MethodName = UNode.GetTokenString(MethodNameOffset, "new"/* FIXME */);
 		int ParamSize = UNode.NodeList.size() - (MethodParamOffset + 1);
@@ -132,7 +132,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 			ArgNames[i] = ParamName;
 		}
 		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData, ArgNames);
-		KonohaMethod NewMethod = new KonohaMethod(0, BaseType, MethodName, Param, UNode.NodeNameSpace, null);
+		KonohaMethod NewMethod = new KonohaMethod(0, BaseType, MethodName, Param, Gamma.GammaNameSpace, null);
 		BaseType.DefineNewMethod(NewMethod);
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}

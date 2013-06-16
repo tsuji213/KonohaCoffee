@@ -8,6 +8,7 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.MiniKonoha.KonohaInt;
 import org.KonohaScript.Parser.KonohaGrammar;
+import org.KonohaScript.Parser.KonohaParser;
 import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
@@ -114,8 +115,25 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}
 
+	class PegParser extends KonohaParser {
+		SyntaxModule	Module;
+
+		public PegParser(SyntaxModule Module) {
+			this.Module = Module;
+		}
+
+		@Override
+		public UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, TokenList TokenList, int BeginIdx,
+				int EndIdx, int ParseOption) {
+			UntypedNode UNode = Module.Parse(TokenList, BeginIdx, EndIdx);
+			return UNode;
+		}
+	}
+
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
+
+		// Load Syntax
 		new KonohaTypeSyntax().LoadDefaultSyntax(NameSpace);
 
 		new KonohaSingleSymbolSyntax().LoadDefaultSyntax(NameSpace);
@@ -125,14 +143,22 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		NameSpace.DefineSyntax("$Symbol", KonohaConst.Term, this, "Symbol");
 
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
+
+		new KonohaInt().DefineMethod(NameSpace);
+
+		// Load Syntax Module
+		SyntaxModule Mod = new SyntaxModule(NameSpace);
+		Mod.SetRootSyntax(new SourceCodeSyntax());
+		KonohaParser PegParser = new PegParser(Mod);
+		NameSpace.LoadParser(PegParser);
 	}
 
-	static void Test(SyntaxModule Mod, KonohaNameSpace NameSpace, String Source) {
+	static void Test(KonohaNameSpace NameSpace, String Source) {
 		TokenList BufferList = NameSpace.Tokenize(Source, 0);
 		TokenList TokenList = new TokenList();
 		NameSpace.PreProcess(BufferList, 0, BufferList.size(), TokenList);
 		KonohaToken.DumpTokenList(0, "Dump::", TokenList, 0, TokenList.size());
-		UntypedNode UNode = Mod.Parse(TokenList, 0, TokenList.size());
+		UntypedNode UNode = NameSpace.Parser.ParseNewNode(NameSpace, null, TokenList, 0, TokenList.size(), AllowEmpty);
 
 		System.out.println("untyped tree: " + UNode);
 		TypeEnv Gamma = new TypeEnv(NameSpace, null);
@@ -147,17 +173,12 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		Konoha konoha = new Konoha(new SyntaxModuleParserTest(), "org.KonohaScript.CodeGen.LeafJSCodeGen");
 		KonohaNameSpace NameSpace = konoha.DefaultNameSpace;
 
-		// Load Syntax
-		new KonohaInt().DefineMethod(NameSpace);
-
-		SyntaxModule Mod = new SyntaxModule(NameSpace);
-		Mod.SetRootSyntax(new SourceCodeSyntax());
 		//Test(Mod, NameSpace, "void fibo(int a) {\n  if(a < 3) {    return 1;\n  } \n  return fibo(a-1)+fibo(a-2);\n}");
 		//Test(Mod, NameSpace, "f(b * c);");
 		//Test(Mod, NameSpace, "int sub(int a) {  return (a - 100);}");
 		//Test(Mod, NameSpace, "int f(int a) {  return g(a);}");
-		Test(Mod, NameSpace, "int add(int x) { return x + 1; }");
-		Test(Mod, NameSpace, "add(10);");
+		Test(NameSpace, "int add(int x) { return x + 1; }");
+		Test(NameSpace, "add(10);");
 		//Test(Mod, NameSpace, "(10);");
 		//Test(Mod, NameSpace, "20;");
 		//Test(Mod, NameSpace, "10 + 20;");

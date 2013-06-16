@@ -29,11 +29,11 @@ public final class LexicalConverter implements KonohaConst {
 
 	public void ResolveTokenSyntax(KonohaToken Token) {
 		Token.ResolvedObject = this.ns.GetSymbol(Token.ParsedText);
-		if (Token.ResolvedObject == null) {
+		if(Token.ResolvedObject == null) {
 			Token.ResolvedSyntax = this.ns.GetSyntax("$Symbol", this.TopLevel);
-		} else if (Token.ResolvedObject instanceof KonohaType) {
+		} else if(Token.ResolvedObject instanceof KonohaType) {
 			Token.ResolvedSyntax = this.ns.GetSyntax("$Type", this.TopLevel);
-		} else if (Token.ResolvedObject instanceof KonohaSyntax) {
+		} else if(Token.ResolvedObject instanceof KonohaSyntax) {
 			Token.ResolvedSyntax = (KonohaSyntax) Token.ResolvedObject;
 		} else {
 			Token.ResolvedSyntax = this.ns.GetSyntax("$Const", this.TopLevel);
@@ -42,13 +42,13 @@ public final class LexicalConverter implements KonohaConst {
 
 	static int Indent(String Text) {
 		int indent = 0;
-		for (int i = 0; i < Text.length(); i++) {
+		for(int i = 0; i < Text.length(); i++) {
 			char ch = Text.charAt(i);
-			if (ch == '\t') {
+			if(ch == '\t') {
 				indent = indent + 4;
 				continue;
 			}
-			if (ch == ' ') {
+			if(ch == ' ') {
 				indent = indent + 1;
 				continue;
 			}
@@ -79,14 +79,14 @@ public final class LexicalConverter implements KonohaConst {
 
 	public int Do(TokenList SourceList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		int c = BeginIdx;
-		while (c < EndIdx) {
+		while(c < EndIdx) {
 			KonohaToken Token = SourceList.get(c);
-			if (Token.ResolvedSyntax == null) {
+			if(Token.ResolvedSyntax == null) {
 				KonohaFunc Macro = this.ns.GetMacro(Token.ParsedText, this.TopLevel);
 				//KonohaDebug.P("symbol='"+Token.ParsedText+"', macro="+Macro);
-				if (Macro != null) {
+				if(Macro != null) {
 					int nextIdx = this.InvokeMacroFunc(Macro, SourceList, c, EndIdx, BufferList);
-					if (nextIdx == BreakPreProcess) {
+					if(nextIdx == BreakPreProcess) {
 						return c + 1;
 					}
 					c = nextIdx;
@@ -96,8 +96,8 @@ public final class LexicalConverter implements KonohaConst {
 			}
 			assert (Token.ResolvedSyntax != null);
 			c = c + 1;
-			if (Token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
-				if (this.SkipIndent)
+			if(Token.ResolvedSyntax == KonohaSyntax.IndentSyntax) {
+				if(this.SkipIndent)
 					continue;
 				this.LastIndent = Indent(Token.ParsedText);
 			}

@@ -130,10 +130,11 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 			return;
 		}
 		UntypedNode UNode = this.ParsedTree;
+		KonohaNameSpace NS = this.LazyNameSpace;
 		if(UNode == null) {
 			TokenList BufferList = new TokenList();
-			this.LazyNameSpace.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
-			UNode = UntypedNode.ParseNewNode(this.LazyNameSpace, null, BufferList, 0, BufferList.size(), AllowEmpty);
+			NS.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
+			UNode = NS.Parser.ParseNewNode(NS, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
 		}
 		TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);

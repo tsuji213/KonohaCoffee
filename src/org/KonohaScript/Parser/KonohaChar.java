@@ -100,7 +100,7 @@ public abstract class KonohaChar {
 			LowerAlpha, LowerAlpha, LowerAlpha, OpenBrace, Var, CloseBrace, Childer, 1, };
 
 	public static int FromJavaChar(char c) {
-		if (c < 128) {
+		if(c < 128) {
 			return cMatrix[c];
 		}
 		return Unicode;
