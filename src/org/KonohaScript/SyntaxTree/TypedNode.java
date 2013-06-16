@@ -24,8 +24,8 @@
 
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.Parser.KonohaToken;
 
 class NotSupportedNodeError extends RuntimeException {
 	private static final long	serialVersionUID	= 1L;

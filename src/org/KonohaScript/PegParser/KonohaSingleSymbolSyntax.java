@@ -2,13 +2,13 @@ package org.KonohaScript.PegParser;
 
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaDebug;
-import org.KonohaScript.KonohaGrammar;
 import org.KonohaScript.KonohaNameSpace;
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.TypeEnv;
-import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.KonohaGrammar;
+import org.KonohaScript.Parser.KonohaToken;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaSingleSymbolSyntax extends KonohaGrammar implements KonohaConst {

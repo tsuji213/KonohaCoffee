@@ -3,10 +3,10 @@ package org.KonohaScript.PegParser;
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.TypeEnv;
-import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public abstract class SyntaxTemplate {

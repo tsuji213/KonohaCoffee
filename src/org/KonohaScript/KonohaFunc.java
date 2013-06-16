@@ -26,19 +26,20 @@ package org.KonohaScript;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.KonohaScript.KLib.*;
+
+import org.KonohaScript.KLib.TokenList;
 
 public final class KonohaFunc {
-	Object callee;
-	Method method;
-	KonohaFunc  prev;
+	public Object	callee;
+	public Method	method;
+	KonohaFunc		prev;
 
-	static Method LookupMethod(Object Callee, String MethodName) {
-		if(MethodName != null) {
-//			KonohaDebug.P("looking up method : " + Callee.getClass().getSimpleName() + "." + MethodName);
+	public static Method LookupMethod(Object Callee, String MethodName) {
+		if (MethodName != null) {
+			// KonohaDebug.P("looking up method : " + Callee.getClass().getSimpleName() + "." + MethodName);
 			Method[] methods = Callee.getClass().getMethods();
-			for(int i = 0; i < methods.length; i++) {
-				if(MethodName.equals(methods[i].getName())) {
+			for (int i = 0; i < methods.length; i++) {
+				if (MethodName.equals(methods[i].getName())) {
 					return methods[i];
 				}
 			}
@@ -58,17 +59,16 @@ public final class KonohaFunc {
 	}
 
 	static boolean EqualsMethod(Method m1, Method m2) {
-		if(m1 == null) {
+		if (m1 == null) {
 			return (m2 == null) ? true : false;
-		}
-		else {
-			return (m2 == null) ? false: m1.equals(m2);
+		} else {
+			return (m2 == null) ? false : m1.equals(m2);
 		}
 	}
 
 	static KonohaFunc NewFunc(Object callee, String methodName, KonohaFunc prev) {
 		Method method = LookupMethod(callee, methodName);
-		if(prev != null && EqualsMethod(prev.method, method)) {
+		if (prev != null && EqualsMethod(prev.method, method)) {
 			return prev;
 		}
 		return new KonohaFunc(callee, method, prev);
@@ -79,11 +79,10 @@ public final class KonohaFunc {
 	}
 
 	KonohaFunc Duplicate() {
-		if(prev == null) {
-			return new KonohaFunc(callee, method, null);
-		}
-		else {
-			return new KonohaFunc(callee, method, prev.Duplicate());
+		if (this.prev == null) {
+			return new KonohaFunc(this.callee, this.method, null);
+		} else {
+			return new KonohaFunc(this.callee, this.method, this.prev.Duplicate());
 		}
 	}
 
@@ -94,15 +93,18 @@ public final class KonohaFunc {
 	int InvokeTokenFunc(KonohaNameSpace ns, String source, int pos, TokenList bufferToken) {
 		try {
 			//KonohaDebug.P("invoking: " + method + ", pos: " + pos + " < " + source.length());
-			Integer next = (Integer)method.invoke(callee, ns, source, pos, bufferToken);
+			Integer next = (Integer) this.method.invoke(this.callee, ns, source, pos, bufferToken);
 			return next.intValue();
-		} catch (IllegalArgumentException e) {
+		}
+		catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		}
+		catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return -1;
@@ -110,27 +112,9 @@ public final class KonohaFunc {
 		return 0;
 	}
 
-	int InvokeMacroFunc(LexicalConverter lex,  TokenList tokenList, int BeginIdx, int EndIdx, TokenList bufferToken) {
-		try {
-			Integer next = (Integer)method.invoke(callee, lex, tokenList, BeginIdx, EndIdx, bufferToken);
-			return next.intValue();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return EndIdx;
+	@Override
+	public String toString() {
+		return this.method.toString();
 	}
-
-	@Override public String toString() {
-		return method.toString();
-	}
-
 
 }
-

@@ -1,6 +1,7 @@
 package org.KonohaScript;
 
 import org.KonohaScript.KLib.*;
+import org.KonohaScript.Parser.KonohaToken;
 
 public class KonohaParam {
 	public final static int	MAX					= 16;

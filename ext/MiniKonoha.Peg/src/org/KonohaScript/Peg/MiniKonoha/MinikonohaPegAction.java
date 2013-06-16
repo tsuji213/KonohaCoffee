@@ -2,12 +2,12 @@ package org.KonohaScript.Peg.MiniKonoha;
 
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaParam;
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.TypeEnv;
-import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.KonohaToken;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.KonohaCallExpressionTypeChecker;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.SyntaxModule;

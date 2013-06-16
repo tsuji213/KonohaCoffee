@@ -1,7 +1,7 @@
 package org.KonohaScript.SyntaxTree;
 
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.Parser.KonohaToken;
 
 abstract class FieldNode extends TypedNode {
 	public String	FieldName;

@@ -2,11 +2,11 @@ package org.KonohaScript.PegParser;
 
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaMethod;
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.TypeEnv;
-import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.Parser.KonohaToken;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.GetterNode;

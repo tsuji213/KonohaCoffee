@@ -3,8 +3,8 @@ package org.KonohaScript.SyntaxTree;
 import org.KonohaScript.KLib.*;
 
 import org.KonohaScript.KonohaMethod;
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.SyntaxTree.NodeVisitor.ApplyNodeAcceptor;
 
 class DefaultApplyNodeAcceptor implements ApplyNodeAcceptor {

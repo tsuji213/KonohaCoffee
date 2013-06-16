@@ -25,6 +25,7 @@
 package org.KonohaScript.KLib;
 import java.util.ArrayList;
 import org.KonohaScript.*;
+import org.KonohaScript.Parser.KonohaToken;
 
 public final class TokenList {
 	private ArrayList<KonohaToken> List;

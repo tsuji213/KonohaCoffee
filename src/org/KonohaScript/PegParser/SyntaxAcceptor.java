@@ -1,10 +1,10 @@
 package org.KonohaScript.PegParser;
 
-import org.KonohaScript.KonohaToken;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.TypeEnv;
-import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.KonohaToken;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public abstract class SyntaxAcceptor {

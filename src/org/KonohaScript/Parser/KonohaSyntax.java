@@ -22,11 +22,15 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.Parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.KonohaScript.KonohaConst;
+import org.KonohaScript.KonohaFunc;
+import org.KonohaScript.KonohaNameSpace;
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;

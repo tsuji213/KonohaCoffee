@@ -2,11 +2,11 @@ package org.KonohaScript.MiniKonoha;
 
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaDebug;
-import org.KonohaScript.KonohaGrammar;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.Parser.KonohaGrammar;
 
 public class KonohaInt extends KonohaGrammar implements KonohaConst {
 

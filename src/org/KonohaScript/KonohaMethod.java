@@ -27,6 +27,8 @@ package org.KonohaScript;
 import java.lang.reflect.Method;
 
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.TypeEnv;
+import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class KonohaMethod extends KonohaDef implements KonohaConst {

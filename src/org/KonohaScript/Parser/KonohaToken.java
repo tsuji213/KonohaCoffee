@@ -22,17 +22,18 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.Parser;
 
-import org.KonohaScript.KLib.*;
+import org.KonohaScript.KonohaDebug;
+import org.KonohaScript.KLib.TokenList;
 
 public final class KonohaToken {
 
-	public long uline;
-	public String ParsedText;
+	public long		uline;
+	public String	ParsedText;
 
 	public boolean EqualsText(String text) {
-		return ParsedText.equals(text);
+		return this.ParsedText.equals(text);
 	}
 
 	public KonohaToken(String text) {
@@ -44,71 +45,75 @@ public final class KonohaToken {
 		this.uline = uline;
 	}
 
-	public String toString() { return ParsedText + "@" + (int)uline; }
+	@Override
+	public String toString() {
+		return this.ParsedText + "@" + (int) this.uline;
+	}
 
-	final static int ErrorTokenFlag = 1;
-	final static int GroupTokenFlag = (1 << 1);
-	int TokenFlag;
+	final static int	ErrorTokenFlag	= 1;
+	final static int	GroupTokenFlag	= (1 << 1);
+	int					TokenFlag;
 
 	public boolean IsErrorToken() {
-		return ((TokenFlag & ErrorTokenFlag) == ErrorTokenFlag);
+		return ((this.TokenFlag & ErrorTokenFlag) == ErrorTokenFlag);
 	}
 
 	public boolean IsGroupToken() {
-		return ((TokenFlag & GroupTokenFlag) == GroupTokenFlag);
+		return ((this.TokenFlag & GroupTokenFlag) == GroupTokenFlag);
 	}
 
-	public KonohaSyntax ResolvedSyntax;
-	Object ResolvedObject;
+	public KonohaSyntax	ResolvedSyntax;
+	public Object		ResolvedObject;
 
 	public void SetGroup(KonohaSyntax Syntax, TokenList GroupList) {
-		assert(Syntax != null);
-		ResolvedSyntax = Syntax;
-		ResolvedObject = GroupList;
-		TokenFlag |= GroupTokenFlag;
+		assert (Syntax != null);
+		this.ResolvedSyntax = Syntax;
+		this.ResolvedObject = GroupList;
+		this.TokenFlag |= GroupTokenFlag;
 	}
 
 	public TokenList GetGroupList() {
-		return (TokenList) ResolvedObject;
+		return (TokenList) this.ResolvedObject;
 	}
 
 	public String SetErrorMessage(String msg) {
-		ResolvedSyntax = KonohaSyntax.ErrorSyntax;
-		TokenFlag |= ErrorTokenFlag;
-		ResolvedObject = msg;
+		this.ResolvedSyntax = KonohaSyntax.ErrorSyntax;
+		this.TokenFlag |= ErrorTokenFlag;
+		this.ResolvedObject = msg;
 		return msg;
 	}
 
 	public String GetErrorMessage() {
-		return (String)ResolvedObject;
+		return (String) this.ResolvedObject;
 	}
 
 	// Debug
-	private final static String Tab = "  ";
+	private final static String	Tab	= "  ";
+
 	void Dump(int Level) {
-		String Syntax = (ResolvedSyntax == null) ? "null" : ResolvedSyntax.SyntaxName;
-		System.out.println("[" + Syntax + "+" + (int) uline + "] '" + ParsedText + "'");
-		if(IsGroupToken()) {
-			TokenList group = GetGroupList();
+		String Syntax = (this.ResolvedSyntax == null) ? "null" : this.ResolvedSyntax.SyntaxName;
+		System.out.println("[" + Syntax + "+" + (int) this.uline + "] '" + this.ParsedText + "'");
+		if (this.IsGroupToken()) {
+			TokenList group = this.GetGroupList();
 			DumpTokenList(Level + 1, null, group, 0, group.size());
 		}
 	}
 
 	public static void DumpTokenList(int Level, String Message, TokenList TokenList, int BeginIdx, int EndIdx) {
-		if(Message != null) {
-			KonohaDebug.Indent(Level, Tab);			
+		if (Message != null) {
+			KonohaDebug.Indent(Level, Tab);
 			System.out.println("Begin: " + Message);
 			Level++;
 		}
-		for(int i = BeginIdx; i < EndIdx; i++) {
+		for (int i = BeginIdx; i < EndIdx; i++) {
 			KonohaToken Token = TokenList.get(i);
-			KonohaDebug.Indent(Level, Tab);			
-			System.out.print("<"+i +"> ");
+			KonohaDebug.Indent(Level, Tab);
+			System.out.print("<" + i + "> ");
 			Token.Dump(Level);
 		}
-		if(Message != null) {
+		if (Message != null) {
 			Level--;
-			KonohaDebug.Indent(Level, Tab);			
+			KonohaDebug.Indent(Level, Tab);
 			System.out.println("End: " + Message);
 		}
 	}

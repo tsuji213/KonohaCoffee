@@ -1,4 +1,6 @@
-package org.KonohaScript;
+package org.KonohaScript.Parser;
+
+import org.KonohaScript.KonohaNameSpace;
 
 public class KonohaGrammar {
 
