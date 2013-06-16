@@ -384,7 +384,7 @@ void emitChild(ParserGenerator G, Syntax syn) {
         }
     }
     String[] keys = m.keys();
-    G.io.emit(1, "void Init(SyntaxModule Parser) {");
+    G.io.emit(1, "public void Init(SyntaxModule Parser) {");
     for (int i=0; i < keys.getsize(); i = i + 1) {
         String name = keys.get(i);
         G.io.emit(2, "Parser.AddSyntax(this, new ${name}(), false);");
@@ -462,21 +462,23 @@ void emitSyntax(IO aio, IO sio, Syntax syn) {
         emitAction(name, aio, subrules);
     }
 
-    G.io.emit(G.level, "class ${func}Syntax extends Syntax {");
+    G.io.emit(G.level, "class ${func}Syntax extends SyntaxTemplate {");
     G.io.emit(G.level+1, "${func}Syntax() {");
     G.io.emit(G.level+2, "super(\"${syn.name}\");");
     G.io.emit(G.level+1, "}");
     emitChild(G, syn);
     G.level = G.level + 1;
     for (int i=0; i < syn.rules.getsize(); i = i + 1) {
+        G.io.emit(G.level, "public SyntaxAcceptor Acceptor${i} = new ${func}Syntax${i}();");
+
         G.io.emit(G.level, "int action${i}(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {");
         G.EnterBlock();
-        G.io.emit(G.level, "Report(\"Accept ${syn.name}\");");
-        G.io.emit(G.level, "Parser.PushThunk(${func}Syntax${i}.Instance, BeginIdx, NodeSize);");
+        G.io.emitLog(G.level, "Accept ${syn.name}");
+        G.io.emit(G.level, "Parser.PushThunk(this.Acceptor${i}, BeginIdx, NodeSize);");
         G.io.emit(G.level, "return Parser.Cursor;");
         G.ExitBlock();
     }
-    G.io.emit(G.level, "int Match(SyntaxModule Parser, TokenList TokenList) {");
+    G.io.emit(G.level, "public int Match(SyntaxModule Parser, TokenList TokenList) {");
     G.io.emit(G.level+1, "int NodeSize = 0;");
     G.EnterBlock();
 
@@ -555,9 +557,12 @@ void main() {
     IO aio = new IO(new File(actionFile, "w"));
     IO sio = new IO(new File(syntaxFile, "w"));
 
-    sio.emit(0, "package org.KonohaScript.Parser;");
-    sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
+    sio.emit(0, "package org.KonohaScript.Peg.MiniKonoha;");
     sio.emit(0, "");
+    sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
+    sio.emit(0, "import org.KonohaScript.Parser.SyntaxAcceptor;");
+    sio.emit(0, "import org.KonohaScript.Parser.SyntaxModule;");
+    sio.emit(0, "import org.KonohaScript.Parser.SyntaxTemplate;");
 
     aio.emit(0, "package org.KonohaScript.Parser;");
     aio.emit(0, "import org.KonohaScript.KLib.TokenList;");

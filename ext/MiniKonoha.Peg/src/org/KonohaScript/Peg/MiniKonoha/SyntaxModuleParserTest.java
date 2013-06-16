@@ -1,4 +1,4 @@
-package org.KonohaScript.Parser;
+package org.KonohaScript.Peg.MiniKonoha;
 
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
@@ -12,6 +12,9 @@ import org.KonohaScript.TypeEnv;
 import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.MiniKonoha.KonohaInt;
+import org.KonohaScript.Parser.KonohaIntegerSyntax;
+import org.KonohaScript.Parser.KonohaSingleSymbolSyntax;
+import org.KonohaScript.Parser.SyntaxModule;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -32,9 +35,9 @@ final class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst {
 
 public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst {
 	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isWhitespace(ch)) {
+			if (!Character.isWhitespace(ch)) {
 				break;
 			}
 		}
@@ -44,14 +47,14 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 	public int IndentToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int LineStart = pos + 1;
 		pos = pos + 1;
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isWhitespace(ch)) {
+			if (!Character.isWhitespace(ch)) {
 				break;
 			}
 		}
 		String Text = "";
-		if(LineStart < pos) {
+		if (LineStart < pos) {
 			Text = SourceText.substring(LineStart, pos);
 		}
 		KonohaToken Token = new KonohaToken(Text);
@@ -62,9 +65,9 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 
 	public int SymbolToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
+			if (!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
 				break;
 			}
 		}
@@ -77,15 +80,15 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
-		while(pos < SourceText.length()) {
+		while (pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
-			if(ch == '"' && prev != '\\') {
+			if (ch == '"' && prev != '\\') {
 				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
-			if(ch == '\n') {
+			if (ch == '\n') {
 				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
 				ns.Message(KonohaConst.Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
@@ -104,7 +107,7 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 	public TypedNode TypeSymbol(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		// case: Symbol is LocalVariable
 		TypeInfo = Gamma.GetLocalType(UNode.KeyToken.ParsedText);
-		if(TypeInfo != null) {
+		if (TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
 		}
 		// case: Symbol is undefined name

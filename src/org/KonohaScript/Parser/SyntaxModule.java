@@ -12,10 +12,10 @@ import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-class SyntaxModule extends KonohaGrammar {
-	int				Cursor;
-	int				ThunkPos;
-	int				EndIdx;
+public class SyntaxModule extends KonohaGrammar {
+	public int		Cursor;
+	public int		ThunkPos;
+	public int		EndIdx;
 
 	KonohaArray		EntryPoints;
 	KonohaMap		SyntaxTable;
@@ -53,22 +53,22 @@ class SyntaxModule extends KonohaGrammar {
 
 	public int Match(String SyntaxName, TokenList TokenList) {
 		SyntaxTemplate Syn = (SyntaxTemplate) this.SyntaxTable.get(SyntaxName);
-		if(Syn != null) {
+		if (Syn != null) {
 			return Syn.Match(this, TokenList);
 		}
 		return -1;
 	}
 
 	public int MatchToken(String SyntaxName, TokenList TokenList, int Index) {
-		if(Index < this.EndIdx) {
+		if (Index < this.EndIdx) {
 			KonohaToken Token = TokenList.get(Index);
 			KonohaSyntax Syntax = Token.ResolvedSyntax;
 			//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
-			if(SyntaxName.equals(Syntax.SyntaxName)) {
+			if (SyntaxName.equals(Syntax.SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
 				return this.Cursor;
 			}
-			if(Syntax.SyntaxName.equals("$Symbol") && Token.ParsedText.equals(SyntaxName)) {
+			if (Syntax.SyntaxName.equals("$Symbol") && Token.ParsedText.equals(SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
 				return this.Cursor;
 			}
@@ -92,7 +92,7 @@ class SyntaxModule extends KonohaGrammar {
 
 	int ConstructSyntaxTree(TokenList TokenList, int BeginIdx, int EndIdx) {
 		int Pos = BeginIdx;
-		for(int i = 0; i < this.ThunkPos; i++) {
+		for (int i = 0; i < this.ThunkPos; i++) {
 			SyntaxAcceptor Action = (SyntaxAcceptor) this.ThunkObjects.get(i);
 			int Begin = ((Integer) this.ThunkRangeBegins.get(i)).intValue();
 			int End = ((Integer) this.ThunkRangeEnd.get(i)).intValue();
@@ -106,7 +106,7 @@ class SyntaxModule extends KonohaGrammar {
 		this.Init();
 		this.EndIdx = this.MatchSyntax(TokenList, BeginIdx, EndIdx);
 		UntypedNode ret = null;
-		if(this.UNodeStack.size() > 0) {
+		if (this.UNodeStack.size() > 0) {
 			ret = (UntypedNode) this.Pop();
 		}
 		return ret;
@@ -124,11 +124,11 @@ class SyntaxModule extends KonohaGrammar {
 		this.AddSyntax(null, Syntax, TopLevelSyntax);
 	}
 
-	void AddSyntax(SyntaxTemplate ParentSyntax, SyntaxTemplate Syntax, boolean TopLevelSyntax) {
-		if(TopLevelSyntax) {
+	public void AddSyntax(SyntaxTemplate ParentSyntax, SyntaxTemplate Syntax, boolean TopLevelSyntax) {
+		if (TopLevelSyntax) {
 			this.EntryPoints.add(Syntax);
 		}
-		if(!this.AlreadyRegistered(Syntax)) {
+		if (!this.AlreadyRegistered(Syntax)) {
 			this.SyntaxTable.put(Syntax.Name, Syntax);
 			this.NameSpace.DefineSyntax(Syntax.Name, 0, Syntax, "UNUSED", "SyntaxModule");
 			Syntax.Init(this);
@@ -141,9 +141,9 @@ class SyntaxModule extends KonohaGrammar {
 
 	public TokenList Filter(TokenList List, String SyntaxName) {
 		TokenList newList = new TokenList();
-		for(int i = 0; i < List.size(); i++) {
+		for (int i = 0; i < List.size(); i++) {
 			KonohaToken token = List.get(i);
-			if(!token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
+			if (!token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
 				newList.add(token);
 			}
 		}
@@ -152,7 +152,7 @@ class SyntaxModule extends KonohaGrammar {
 
 	public void DumpSyntax() {
 		String[] keys = this.SyntaxTable.keys();
-		for(int i = 0; i < this.SyntaxTable.size(); i++) {
+		for (int i = 0; i < this.SyntaxTable.size(); i++) {
 			SyntaxTemplate syntax = (SyntaxTemplate) this.SyntaxTable.get(keys[i]);
 			System.out.println(syntax.Name);
 		}
@@ -164,7 +164,7 @@ class SyntaxModule extends KonohaGrammar {
 		KonohaArray BeginIndexes = this.ThunkRangeBegins;
 		KonohaArray EndIndexes = this.ThunkRangeEnd;
 		KonohaArray NodeIndexes = this.ThunkNodeSizes;
-		while(BeginIndexes.size() <= thunkpos) {
+		while (BeginIndexes.size() <= thunkpos) {
 			Actions.add(null);
 			BeginIndexes.add(0);
 			EndIndexes.add(0);
@@ -192,7 +192,7 @@ class SyntaxModule extends KonohaGrammar {
 	}
 
 	public void ReAssign(int NodeSize, Object Value) {
-		while(NodeSize > 0) {
+		while (NodeSize > 0) {
 			this.Pop();
 			NodeSize = NodeSize - 1;
 		}
@@ -208,54 +208,4 @@ class SyntaxModule extends KonohaGrammar {
 	//		}
 	//	}
 
-}
-
-abstract class SyntaxAcceptor {
-	public static final int	AcceptorOffset	= 0;
-	public static final int	ListOffset		= AcceptorOffset + 1;
-
-	UntypedNode CreateNodeWithSyntax(SyntaxModule Parser, KonohaToken Token, String SyntaxName) {
-		UntypedNode Node = new UntypedNode(Parser.NameSpace, Token);
-		Node.SetAtNode(AcceptorOffset, null);
-		Node.NodeList.set(AcceptorOffset, this);
-		Node.Syntax = Parser.NameSpace.GetSyntax(SyntaxName);
-		return Node;
-	}
-
-	TypedNode TypeBinaryOperator(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return CallExpressionTypeChecker.TypeCheckMethodCall(Gamma, UNode, TypeInfo);
-	}
-
-	void CreateBinaryOperator(SyntaxModule Parser, int NodeSize, String SyntaxName) {
-		int Index = 0;
-		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		while(Index < NodeSize) {
-			KonohaToken OperatorToken = (KonohaToken) Parser.Get(Index, NodeSize);
-			UntypedNode Node = this.CreateNodeWithSyntax(Parser, OperatorToken, SyntaxName);
-			Index = Index + 1;
-
-			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
-			Node.SetAtNode(ListOffset, Left);
-			Node.SetAtToken(ListOffset + 1, OperatorToken);
-			Node.SetAtNode(ListOffset + 2, Right);
-			Left = Node;
-			Index = Index + 1;
-		}
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, Left);
-		}
-	}
-
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		return -1;
-	}
-
-	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
-	}
-
-	void Report(String Message, int NodeSize) {
-		//System.out.println(Message + " : " + NodeSize);
-	}
 }

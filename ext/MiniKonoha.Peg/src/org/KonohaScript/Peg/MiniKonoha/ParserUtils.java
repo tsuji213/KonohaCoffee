@@ -1,4 +1,4 @@
-package org.KonohaScript.Parser;
+package org.KonohaScript.Peg.MiniKonoha;
 
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaToken;
@@ -6,13 +6,16 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.TypeEnv;
 import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.SyntaxAcceptor;
+import org.KonohaScript.Parser.SyntaxModule;
+import org.KonohaScript.Parser.SyntaxTemplate;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class intLiteral0 extends SyntaxAcceptor {
 	@Override
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("intLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$intLiteral");
 		Parser.Push(Node);
@@ -20,7 +23,7 @@ class intLiteral0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaToken Token = UNode.KeyToken;
 		return new ConstNode(Gamma.IntType, Token, Integer.valueOf(Token.ParsedText));
 	}
@@ -32,7 +35,7 @@ class intLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	void Init(SyntaxModule Parser) {
+	public void Init(SyntaxModule Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new intLiteral0();
@@ -44,13 +47,14 @@ class intLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(SyntaxModule Parser, TokenList TokenList) {
+
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $intLiteral");
-		if(Parser.MatchToken("$IntegerLiteral", TokenList, Parser.Cursor) >= 0) {
+		if (Parser.MatchToken("$IntegerLiteral", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$intLiteral", Parser, pos0, NodeSize);
 		}
@@ -64,7 +68,7 @@ class intLiteralSyntax extends SyntaxTemplate {
 
 class stringLiteral0 extends SyntaxAcceptor {
 	@Override
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("stringLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$stringLiteral");
 		Parser.Push(Node);
@@ -72,7 +76,7 @@ class stringLiteral0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaToken Token = UNode.KeyToken;
 		/* FIXME: handling of escape sequence */
 		return new ConstNode(Gamma.StringType, Token, Token.ParsedText);
@@ -85,7 +89,7 @@ class stringLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	void Init(SyntaxModule Parser) {
+	public void Init(SyntaxModule Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new stringLiteral0();
@@ -97,13 +101,14 @@ class stringLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(SyntaxModule Parser, TokenList TokenList) {
+
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $stringLiteral");
-		if(Parser.MatchToken("$StringLiteral", TokenList, Parser.Cursor) >= 0) {
+		if (Parser.MatchToken("$StringLiteral", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$stringLiteral", Parser, pos0, NodeSize);
 		}
@@ -118,7 +123,7 @@ class stringLiteralSyntax extends SyntaxTemplate {
 class Symbol0 extends SyntaxAcceptor {
 
 	@Override
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("Symbol0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$Symbol");
 		Parser.Push(Node);
@@ -126,18 +131,18 @@ class Symbol0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		// case: Symbol is LocalVariable
 		String Name = UNode.KeyToken.ParsedText;
 		TypeInfo = Gamma.GetLocalType(Name);
-		if(TypeInfo != null) {
+		if (TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, Name);
 		}
 
 		// case: Symbol is MethodName
 		KonohaType BaseType = Gamma.GetLocalType("this");
 		KonohaMethod Method = BaseType.LookupMethod(Name, -1);
-		if(Method != null) {
+		if (Method != null) {
 			KonohaType MethodType = Gamma.GammaNameSpace.LookupTypeInfo(KonohaMethod.class);
 			return new ConstNode(MethodType, UNode.KeyToken, Method);
 		}
@@ -153,7 +158,7 @@ class SymbolSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	void Init(SyntaxModule Parser) {
+	public void Init(SyntaxModule Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new Symbol0();
@@ -165,13 +170,14 @@ class SymbolSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(SyntaxModule Parser, TokenList TokenList) {
+
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $Symbol");
-		if(Parser.MatchToken("$Symbol", TokenList, Parser.Cursor) >= 0) {
+		if (Parser.MatchToken("$Symbol", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$Symbol", Parser, pos0, NodeSize);
 		}
@@ -186,14 +192,14 @@ class SymbolSyntax extends SyntaxTemplate {
 class Type0 extends SyntaxAcceptor {
 
 	@Override
-	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("Type0", NodeSize);
 		Parser.Push(TokenList.get(BeginIdx));
 		return EndIdx;
 	}
 
 	@Override
-	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
 }
@@ -204,7 +210,7 @@ class TypeTokenSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	void Init(SyntaxModule Parser) {
+	public void Init(SyntaxModule Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new Type0();
@@ -216,13 +222,14 @@ class TypeTokenSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(SyntaxModule Parser, TokenList TokenList) {
+
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $Type");
-		if(Parser.MatchToken("$Type", TokenList, Parser.Cursor) >= 0) {
+		if (Parser.MatchToken("$Type", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$Type", Parser, pos0, NodeSize);
 		}
