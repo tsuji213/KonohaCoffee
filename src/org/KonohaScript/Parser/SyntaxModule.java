@@ -254,4 +254,8 @@ abstract class SyntaxAcceptor {
 	TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		return null;
 	}
+
+	void Report(String Message, int NodeSize) {
+		//System.out.println(Message + " : " + NodeSize);
+	}
 }

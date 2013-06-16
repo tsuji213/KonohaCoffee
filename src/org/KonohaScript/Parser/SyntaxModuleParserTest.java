@@ -141,7 +141,7 @@ public class SyntaxModuleParserTest extends KonohaGrammar implements KonohaConst
 
 	public static void main(String[] args) {
 
-		Konoha konoha = new Konoha(new SyntaxModuleParserTest(), "org.KonohaScript.CodeGen.ASTInterpreter");
+		Konoha konoha = new Konoha(new SyntaxModuleParserTest(), "org.KonohaScript.CodeGen.LeafJSCodeGen");
 		KonohaNameSpace NameSpace = konoha.DefaultNameSpace;
 
 		// Load Syntax

@@ -44,9 +44,9 @@ class JSCompiledMethodInvoker extends KonohaMethodInvoker {
 	}
 }
 
-public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
-	private final boolean		UseLetKeyword	= false;
-	private final String GlobalObjectName = "global";
+public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
+	private final boolean		UseLetKeyword		= false;
+	private final String		GlobalObjectName	= "global";
 
 	private final KonohaArray	LocalVariableRenameTables;
 
@@ -123,11 +123,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 			this.VisitList(Block.GetHeadNode());
 			assert (this.getProgramSize() == 1);
 			Source = this.pop();
-		}else{
+		} else {
 			this.VisitBlock(Block.GetHeadNode());
 			assert (this.getProgramSize() == 1);
 			Source = this.pop();
-			
+
 			Local thisNode = this.FindLocalVariable("this");
 			StringBuilder FuncBuilder = new StringBuilder();
 
@@ -152,7 +152,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 		KonohaMethodInvoker Mtd = new JSCompiledMethodInvoker(this.MethodInfo != null ? this.MethodInfo.Param : null, Source);
 		return Mtd;
 	}
-	
+
 	@Override
 	public boolean VisitList(TypedNode Node) {
 		String currentLevelIndent = this.indentGenerator.get();
@@ -197,7 +197,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 		if(Node.DefInfo instanceof KonohaMethod) {
 			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
 			Mtd.DoCompilation();
-			this.push((String)Mtd.MethodInvoker.CompiledCode);
+			this.push((String) Mtd.MethodInvoker.CompiledCode);
 		} else {
 			throw new NotSupportedCodeError();
 		}
@@ -207,9 +207,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 
 	@Override
 	public boolean ExitConst(ConstNode Node) {
-		if(Node.SourceToken.ParsedText.equals("global")){
-			this.push(GlobalObjectName);
-		}else{
+		if(Node.SourceToken.ParsedText.equals("global")) {
+			this.push(this.GlobalObjectName);
+		} else {
 			this.push(Node.ConstValue.toString());
 		}
 		return true;
@@ -264,13 +264,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 			String thisNode = this.pop();
 			this.push(thisNode + " " + methodName + " " + params);
 		} else {
-			String params = "("
-					+ this.PopNReverseAndJoin(Node.Params.size() - 1, ", ")
-					+ ")";
+			String params = "(" + this.PopNReverseAndJoin(Node.Params.size() - 1, ", ") + ")";
 			String thisNode = this.pop();
-			if(thisNode.equals(GlobalObjectName)){
+			if(thisNode.equals(this.GlobalObjectName)) {
 				this.push(methodName + params);
-			}else{
+			} else {
 				this.push(thisNode + "." + methodName + params);
 			}
 		}
@@ -301,8 +299,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
 		String Right = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ")
-				+ Node.SourceToken.ParsedText + " = " + Right);
+		this.push((this.UseLetKeyword ? "let " : "var ") + Node.SourceToken.ParsedText + " = " + Right);
 		return true;
 	}
 
@@ -408,12 +405,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 	@Override
 	public boolean ExitTry(TryNode Node) {
 		String FinallyBlock = this.pop();
-		String CatchBlocks = this.PopNReverseWithPrefix(
-				Node.CatchBlock.size(),
-				"catch() ");
+		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
 		String TryBlock = this.pop();
-		this.push("try " + TryBlock + "" + CatchBlocks + "finally "
-				+ FinallyBlock);
+		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
 		return true;
 	}
 
@@ -452,7 +446,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder{
 		if(Ret == null) {
 			Ret = "";
 		}
-		System.out.println(Ret.toString());
+		//System.out.println(Ret.toString());
 		return Ret;
 	}
 

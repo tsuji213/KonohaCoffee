@@ -13,7 +13,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 class intLiteral0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("intLiteral0 : " + NodeSize);
+		this.Report("intLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$intLiteral");
 		Parser.Push(Node);
 		return EndIdx;
@@ -65,7 +65,7 @@ class intLiteralSyntax extends SyntaxTemplate {
 class stringLiteral0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("stringLiteral0 : " + NodeSize);
+		this.Report("stringLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$stringLiteral");
 		Parser.Push(Node);
 		return EndIdx;
@@ -119,7 +119,7 @@ class Symbol0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("Symbol0 : " + NodeSize);
+		this.Report("Symbol0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$Symbol");
 		Parser.Push(Node);
 		return EndIdx;
@@ -187,7 +187,7 @@ class Type0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("Type0 : " + NodeSize);
+		this.Report("Type0", NodeSize);
 		Parser.Push(TokenList.get(BeginIdx));
 		return EndIdx;
 	}

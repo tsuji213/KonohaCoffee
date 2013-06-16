@@ -19,7 +19,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 class SourceCodeSyntax0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("SourceCodeSyntax0 : " + NodeSize);
+		this.Report("SourceCodeSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
 		while(Index < NodeSize) {
@@ -48,7 +48,7 @@ class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("TopLevelDefinitionSyntax0 : " + NodeSize);
+		this.Report("TopLevelDefinitionSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -65,7 +65,7 @@ class TopLevelDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("TopLevelDefinitionSyntax1 : " + NodeSize);
+		this.Report("TopLevelDefinitionSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -88,7 +88,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("functionSignatureSyntax0 : " + NodeSize);
+		this.Report("functionSignatureSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionSignature");
 		int Index = 0;
 		UNode.SetAtToken(MethodReturnTypeOffset, (KonohaToken) Parser.Get(Index, NodeSize)); // ReturnType
@@ -138,7 +138,7 @@ class functionBodySyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("functionBodySyntax0 : " + NodeSize);
+		this.Report("functionBodySyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -157,7 +157,7 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("functionDefinitionSyntax0 : " + NodeSize);
+		this.Report("functionDefinitionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionDefinition");
 		UNode.SetAtNode(FunctionSignatureOffset, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -194,7 +194,7 @@ class functionDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("functionDefinitionSyntax1 : " + NodeSize);
+		this.Report("functionDefinitionSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -209,7 +209,7 @@ class functionDefinitionSyntax1 extends SyntaxAcceptor {
 class ParamDeclListSyntax0 extends SyntaxAcceptor {
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParamDeclListSyntax0 : " + NodeSize);
+		this.Report("ParamDeclListSyntax0", NodeSize);
 		Parser.Push(new KonohaArray());
 		return EndIdx;
 	}
@@ -225,7 +225,7 @@ class ParamDeclListSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParamDeclListSyntax1 : " + NodeSize);
+		this.Report("ParamDeclListSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -241,7 +241,7 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParamDeclsSyntax0 : " + NodeSize);
+		this.Report("ParamDeclsSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
 		KonohaArray Param = (KonohaArray) Parser.Get(Index, NodeSize);
@@ -271,7 +271,7 @@ class ParamDeclSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParamDeclSyntax0 : " + NodeSize);
+		this.Report("ParamDeclSyntax0", NodeSize);
 		KonohaArray List = new KonohaArray();
 		int Index = 0;
 		KonohaToken TypeDecl = (KonohaToken) Parser.Get(Index, NodeSize);
@@ -294,7 +294,7 @@ class ParameterListSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParameterListSyntax0 : " + NodeSize);
+		this.Report("ParameterListSyntax0", NodeSize);
 		Parser.Push(new KonohaArray());
 		return EndIdx;
 	}
@@ -310,7 +310,7 @@ class ParameterListSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParameterListSyntax1 : " + NodeSize);
+		this.Report("ParameterListSyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -325,7 +325,7 @@ class ParametersSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParametersSyntax0 : " + NodeSize);
+		this.Report("ParametersSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
 		List.add(Parser.Get(Index, NodeSize));
@@ -351,7 +351,7 @@ class ParameterSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ParameterSyntax0 : " + NodeSize);
+		this.Report("ParameterSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -366,7 +366,7 @@ class literalSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("literalSyntax0 : " + NodeSize);
+		this.Report("literalSyntax0", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
 		return EndIdx;
@@ -383,7 +383,7 @@ class literalSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("literalSyntax1 : " + NodeSize);
+		this.Report("literalSyntax1", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
 		return EndIdx;
@@ -401,7 +401,7 @@ class literalSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("literalSyntax2 : " + NodeSize);
+		this.Report("literalSyntax2", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
 		return EndIdx;
@@ -419,7 +419,7 @@ class literalSyntax3 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("literalSyntax3 : " + NodeSize);
+		this.Report("literalSyntax3", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -436,7 +436,7 @@ class literalSyntax4 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("literalSyntax4 : " + NodeSize);
+		this.Report("literalSyntax4", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -453,7 +453,7 @@ class typeSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("typeSyntax0 : " + NodeSize);
+		this.Report("typeSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
@@ -470,7 +470,7 @@ class typeSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("typeSyntax1 : " + NodeSize);
+		this.Report("typeSyntax1", NodeSize);
 		int Index = 0;
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
@@ -503,7 +503,7 @@ class statementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax0 : " + NodeSize);
+		this.Report("statementSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -518,7 +518,7 @@ class statementSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax1 : " + NodeSize);
+		this.Report("statementSyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -533,7 +533,7 @@ class statementSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax2 : " + NodeSize);
+		this.Report("statementSyntax2", NodeSize);
 		return EndIdx;
 	}
 
@@ -548,7 +548,7 @@ class statementSyntax3 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax3 : " + NodeSize);
+		this.Report("statementSyntax3", NodeSize);
 		return EndIdx;
 	}
 
@@ -563,7 +563,7 @@ class statementSyntax4 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax4 : " + NodeSize);
+		this.Report("statementSyntax4", NodeSize);
 		return EndIdx;
 	}
 
@@ -578,7 +578,7 @@ class statementSyntax5 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax5 : " + NodeSize);
+		this.Report("statementSyntax5", NodeSize);
 		return EndIdx;
 	}
 
@@ -593,7 +593,7 @@ class statementSyntax6 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax6 : " + NodeSize);
+		this.Report("statementSyntax6", NodeSize);
 		return EndIdx;
 	}
 
@@ -608,7 +608,7 @@ class statementSyntax7 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementSyntax7 : " + NodeSize);
+		this.Report("statementSyntax7", NodeSize);
 		return EndIdx;
 	}
 
@@ -623,7 +623,7 @@ class variableSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("variableSyntax0 : " + NodeSize);
+		this.Report("variableSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -638,7 +638,7 @@ class EQSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("EQSyntax0 : " + NodeSize);
+		this.Report("EQSyntax0", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -655,7 +655,7 @@ class variableDeclarationSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("variableDeclarationSyntax0 : " + NodeSize);
+		this.Report("variableDeclarationSyntax0", NodeSize);
 		int Index = 0;
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
@@ -680,7 +680,7 @@ class variableDeclarationSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("variableDeclarationSyntax1 : " + NodeSize);
+		this.Report("variableDeclarationSyntax1", NodeSize);
 		int Index = 0;
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
@@ -709,7 +709,7 @@ class statementsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("statementsSyntax0 : " + NodeSize);
+		this.Report("statementsSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
 		while(Index < NodeSize) {
@@ -736,7 +736,7 @@ class blockSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("blockSyntax0 : " + NodeSize);
+		this.Report("blockSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -754,7 +754,7 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ifStatementSyntax0 : " + NodeSize);
+		this.Report("ifStatementSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -806,7 +806,7 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("ifStatementSyntax1 : " + NodeSize);
+		this.Report("ifStatementSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -834,7 +834,7 @@ class whileStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("whileStatementSyntax0 : " + NodeSize);
+		this.Report("whileStatementSyntax0", NodeSize);
 		int Index = 0;
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
@@ -863,7 +863,7 @@ class breakStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("breakStatementSyntax0 : " + NodeSize);
+		this.Report("breakStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$breakStatement");
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
@@ -880,7 +880,7 @@ class continueStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("continueStatementSyntax0 : " + NodeSize);
+		this.Report("continueStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$continueStatement");
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
@@ -899,7 +899,7 @@ class returnStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("returnStatementSyntax0 : " + NodeSize);
+		this.Report("returnStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$returnStatement");
 		UNode.SetAtNode(ReturnExpressionOffset, null);
 		Parser.ReAssign(NodeSize, UNode);
@@ -919,7 +919,7 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("returnStatementSyntax1 : " + NodeSize);
+		this.Report("returnStatementSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$returnStatement");
 		UNode.SetAtNode(ReturnExpressionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -950,7 +950,7 @@ class expressionStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("expressionStatementSyntax0 : " + NodeSize);
+		this.Report("expressionStatementSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -965,7 +965,7 @@ class expressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("expressionSyntax0 : " + NodeSize);
+		this.Report("expressionSyntax0", NodeSize);
 		int Index = 0;
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
@@ -992,7 +992,7 @@ class expressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("expressionSyntax1 : " + NodeSize);
+		this.Report("expressionSyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -1007,7 +1007,7 @@ class leftHandSideExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("leftHandSideExpressionSyntax0 : " + NodeSize);
+		this.Report("leftHandSideExpressionSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -1022,7 +1022,7 @@ class leftHandSideExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("leftHandSideExpressionSyntax1 : " + NodeSize);
+		this.Report("leftHandSideExpressionSyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -1039,7 +1039,7 @@ class callExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("callExpressionSyntax0 : " + NodeSize);
+		this.Report("callExpressionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$MethodCall"), "$callExpression");
 		UNode.SetAtNode(CallExpressionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -1068,7 +1068,7 @@ class memberExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("memberExpressionSyntax0 : " + NodeSize);
+		this.Report("memberExpressionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
@@ -1095,7 +1095,7 @@ class primarySyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("primarySyntax0 : " + NodeSize);
+		this.Report("primarySyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$primary");
 		Parser.Push(UNode);
 		return EndIdx;
@@ -1112,7 +1112,7 @@ class primarySyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("primarySyntax1 : " + NodeSize);
+		this.Report("primarySyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -1127,7 +1127,7 @@ class primarySyntax2 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("primarySyntax2 : " + NodeSize);
+		this.Report("primarySyntax2", NodeSize);
 		return EndIdx;
 	}
 
@@ -1142,7 +1142,7 @@ class primarySyntax3 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("primarySyntax3 : " + NodeSize);
+		this.Report("primarySyntax3", NodeSize);
 		return EndIdx;
 	}
 
@@ -1157,7 +1157,7 @@ class selectorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("selectorSyntax0 : " + NodeSize);
+		this.Report("selectorSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$ArrayAccessor"), "$selector");
 		UNode.SetAtNode(1, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -1179,7 +1179,7 @@ class selectorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("selectorSyntax1 : " + NodeSize);
+		this.Report("selectorSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$Selector"), "$selector");
 		UNode.SetAtNode(0, (UntypedNode) Parser.Get(Index, NodeSize));
@@ -1202,7 +1202,7 @@ class newExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("newExpressionSyntax0 : " + NodeSize);
+		this.Report("newExpressionSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -1217,7 +1217,7 @@ class newExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("newExpressionSyntax1 : " + NodeSize);
+		this.Report("newExpressionSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$newExpression");
 		Object[] List = new Object[NodeSize];
@@ -1244,7 +1244,7 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("logicalOrExpressionSyntax0 : " + NodeSize);
+		this.Report("logicalOrExpressionSyntax0", NodeSize);
 		KonohaToken OperatorToken = new KonohaToken("||");
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
@@ -1274,7 +1274,7 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("logicalAndExpressionSyntax0 : " + NodeSize);
+		this.Report("logicalAndExpressionSyntax0", NodeSize);
 		KonohaToken OperatorToken = new KonohaToken("&&");
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
@@ -1304,7 +1304,7 @@ class relationExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationExpressionSyntax0 : " + NodeSize);
+		this.Report("relationExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$relationExpression");
 		return EndIdx;
 	}
@@ -1320,7 +1320,7 @@ class relationExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationExpressionSyntax1 : " + NodeSize);
+		this.Report("relationExpressionSyntax1", NodeSize);
 		return EndIdx;
 	}
 
@@ -1335,7 +1335,7 @@ class relationOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax0 : " + NodeSize);
+		this.Report("relationOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("==", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1352,7 +1352,7 @@ class relationOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax1 : " + NodeSize);
+		this.Report("relationOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("!=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1369,7 +1369,7 @@ class relationOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax2 : " + NodeSize);
+		this.Report("relationOperatorSyntax2", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1386,7 +1386,7 @@ class relationOperatorSyntax3 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax3 : " + NodeSize);
+		this.Report("relationOperatorSyntax3", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1403,7 +1403,7 @@ class relationOperatorSyntax4 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax4 : " + NodeSize);
+		this.Report("relationOperatorSyntax4", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1420,7 +1420,7 @@ class relationOperatorSyntax5 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("relationOperatorSyntax5 : " + NodeSize);
+		this.Report("relationOperatorSyntax5", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1437,7 +1437,7 @@ class shiftOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("shiftOperatorSyntax0 : " + NodeSize);
+		this.Report("shiftOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<<", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1454,7 +1454,7 @@ class shiftOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("shiftOperatorSyntax1 : " + NodeSize);
+		this.Report("shiftOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">>", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1471,7 +1471,7 @@ class additiveOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("additiveOperatorSyntax0 : " + NodeSize);
+		this.Report("additiveOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("+", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1488,7 +1488,7 @@ class additiveOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("additiveOperatorSyntax1 : " + NodeSize);
+		this.Report("additiveOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("-", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1505,7 +1505,7 @@ class multiplicativeOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("multiplicativeOperatorSyntax0 : " + NodeSize);
+		this.Report("multiplicativeOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("*", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1522,7 +1522,7 @@ class multiplicativeOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("multiplicativeOperatorSyntax1 : " + NodeSize);
+		this.Report("multiplicativeOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("/", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1539,7 +1539,7 @@ class multiplicativeOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("multiplicativeOperatorSyntax2 : " + NodeSize);
+		this.Report("multiplicativeOperatorSyntax2", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("%", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
@@ -1556,7 +1556,7 @@ class additiveExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("additiveExpressionSyntax0 : " + NodeSize);
+		this.Report("additiveExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$additiveExpression");
 		return EndIdx;
 	}
@@ -1572,7 +1572,7 @@ class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("multiplicativeExpressionSyntax0 : " + NodeSize);
+		this.Report("multiplicativeExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$multiplicativeExpression");
 		return EndIdx;
 	}
@@ -1588,7 +1588,7 @@ class unaryExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("unaryExpressionSyntax0 : " + NodeSize);
+		this.Report("unaryExpressionSyntax0", NodeSize);
 		return EndIdx;
 	}
 
@@ -1603,7 +1603,7 @@ class identifierSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		System.out.println("identifierSyntax0 : " + NodeSize);
+		this.Report("identifierSyntax0", NodeSize);
 		return EndIdx;
 	}
 

@@ -157,7 +157,7 @@ public class KonohaType {
 		this.AddMethod(NewMethod);
 		return true;
 	}
-	
+
 	public boolean RegisterCompiledMethod(KonohaMethod NewMethod) {
 		for(int i = 0; i < this.ClassMethodList.size(); i++) {
 			KonohaMethod DefinedMethod = (KonohaMethod) this.ClassMethodList.get(i);
