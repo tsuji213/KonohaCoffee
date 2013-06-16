@@ -12,9 +12,9 @@ import org.KonohaScript.TypeEnv;
 import org.KonohaScript.UntypedNode;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.MiniKonoha.KonohaInt;
-import org.KonohaScript.Parser.KonohaIntegerSyntax;
-import org.KonohaScript.Parser.KonohaSingleSymbolSyntax;
-import org.KonohaScript.Parser.SyntaxModule;
+import org.KonohaScript.PegParser.KonohaIntegerSyntax;
+import org.KonohaScript.PegParser.KonohaSingleSymbolSyntax;
+import org.KonohaScript.PegParser.SyntaxModule;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 

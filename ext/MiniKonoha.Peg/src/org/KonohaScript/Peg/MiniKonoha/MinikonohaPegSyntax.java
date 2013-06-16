@@ -1,9 +1,9 @@
 package org.KonohaScript.Peg.MiniKonoha;
 
 import org.KonohaScript.KLib.TokenList;
-import org.KonohaScript.Parser.SyntaxAcceptor;
-import org.KonohaScript.Parser.SyntaxModule;
-import org.KonohaScript.Parser.SyntaxTemplate;
+import org.KonohaScript.PegParser.SyntaxAcceptor;
+import org.KonohaScript.PegParser.SyntaxModule;
+import org.KonohaScript.PegParser.SyntaxTemplate;
 
 /*
 [$SourceCode:

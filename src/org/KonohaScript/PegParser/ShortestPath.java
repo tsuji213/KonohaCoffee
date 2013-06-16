@@ -1,4 +1,4 @@
-package org.KonohaScript.Parser;
+package org.KonohaScript.PegParser;
 
 import java.util.ArrayList;
 

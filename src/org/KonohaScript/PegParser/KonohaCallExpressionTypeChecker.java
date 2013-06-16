@@ -1,4 +1,4 @@
-package org.KonohaScript.Parser;
+package org.KonohaScript.PegParser;
 
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaMethod;
