@@ -37,8 +37,8 @@ class SourceCodeSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $SourceCode");
-		while (true) {
-			if (Parser.Match("$TopLevelDefinition", TokenList) >= 0) {
+		while(true) {
+			if(Parser.Match("$TopLevelDefinition", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				continue;
 			}
@@ -91,12 +91,12 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $TopLevelDefinition");
-		if (Parser.Match("$statement", TokenList) >= 0) {
+		if(Parser.Match("$statement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $TopLevelDefinition 0");
-		if (Parser.Match("$functionDefinition", TokenList) >= 0) {
+		if(Parser.Match("$functionDefinition", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
@@ -141,11 +141,11 @@ class functionSignatureSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $functionSignature");
-		if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$identifier", TokenList) >= 0) {
+			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$ParamDeclList", TokenList) >= 0) {
+				if(Parser.Match("$ParamDeclList", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					return action0("$functionSignature", Parser, pos0, NodeSize);
 				}
@@ -188,7 +188,7 @@ class functionBodySyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $functionBody");
-		if (Parser.Match("$block", TokenList) >= 0) {
+		if(Parser.Match("$block", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$functionBody", Parser, pos0, NodeSize);
 		}
@@ -243,17 +243,17 @@ class functionDefinitionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $functionDefinition");
-		if (Parser.Match("$functionSignature", TokenList) >= 0) {
+		if(Parser.Match("$functionSignature", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$functionBody", TokenList) >= 0) {
+			if(Parser.Match("$functionBody", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return action0("$functionDefinition", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $functionDefinition 0");
-		if (Parser.Match("$functionSignature", TokenList) >= 0) {
+		if(Parser.Match("$functionSignature", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 				return action1("$functionDefinition", Parser, pos0, NodeSize);
 			}
 		}
@@ -308,16 +308,16 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $ParamDeclList");
-		if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 				return action0("$ParamDeclList", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParamDeclList 0");
-		if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$ParamDecls", TokenList) >= 0) {
+		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$ParamDecls", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 					return action1("$ParamDeclList", Parser, pos0, NodeSize);
 				}
 			}
@@ -360,11 +360,11 @@ class ParamDeclsSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $ParamDecls");
-		if (Parser.Match("$ParamDecl", TokenList) >= 0) {
+		if(Parser.Match("$ParamDecl", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.MatchToken("$Camma", TokenList, Parser.Cursor) >= 0) {
-					if (Parser.Match("$ParamDecl", TokenList) >= 0) {
+			while(true) {
+				if(Parser.MatchToken("$Camma", TokenList, Parser.Cursor) >= 0) {
+					if(Parser.Match("$ParamDecl", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -411,9 +411,9 @@ class ParamDeclSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $ParamDecl");
-		if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$identifier", TokenList) >= 0) {
+			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return action0("$ParamDecl", Parser, pos0, NodeSize);
 			}
@@ -469,16 +469,16 @@ class ParameterListSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $ParameterList");
-		if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 				return action0("$ParameterList", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParameterList 0");
-		if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$Parameters", TokenList) >= 0) {
+		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$Parameters", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 					return action1("$ParameterList", Parser, pos0, NodeSize);
 				}
 			}
@@ -521,11 +521,11 @@ class ParametersSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $Parameters");
-		if (Parser.Match("$Parameter", TokenList) >= 0) {
+		if(Parser.Match("$Parameter", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.MatchToken("$Camma", TokenList, Parser.Cursor) >= 0) {
-					if (Parser.Match("$Parameter", TokenList) >= 0) {
+			while(true) {
+				if(Parser.MatchToken("$Camma", TokenList, Parser.Cursor) >= 0) {
+					if(Parser.Match("$Parameter", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -570,7 +570,7 @@ class ParameterSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $Parameter");
-		if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.Match("$expression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$Parameter", Parser, pos0, NodeSize);
 		}
@@ -656,24 +656,24 @@ class literalSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $literal");
-		if (Parser.MatchToken("null", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("null", TokenList, Parser.Cursor) >= 0) {
 			return action0("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
-		if (Parser.MatchToken("true", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("true", TokenList, Parser.Cursor) >= 0) {
 			return action1("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
-		if (Parser.MatchToken("false", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("false", TokenList, Parser.Cursor) >= 0) {
 			return action2("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
-		if (Parser.Match("$intLiteral", TokenList) >= 0) {
+		if(Parser.Match("$intLiteral", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action3("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
-		if (Parser.Match("$stringLiteral", TokenList) >= 0) {
+		if(Parser.Match("$stringLiteral", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action4("$literal", Parser, pos0, NodeSize);
 		}
@@ -726,16 +726,16 @@ class typeSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $type");
-		if (Parser.Match("$Type", TokenList) >= 0) {
+		if(Parser.Match("$Type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$type", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $type 0");
-		if (Parser.Match("$Type", TokenList) >= 0) {
+		if(Parser.Match("$Type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.MatchToken("$LParenthesis", TokenList, Parser.Cursor) >= 0) {
-					if (Parser.MatchToken("$RParenthesis", TokenList, Parser.Cursor) >= 0) {
+			while(true) {
+				if(Parser.MatchToken("$LParenthesis", TokenList, Parser.Cursor) >= 0) {
+					if(Parser.MatchToken("$RParenthesis", TokenList, Parser.Cursor) >= 0) {
 						continue;
 					}
 				}
@@ -863,42 +863,42 @@ class statementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $statement");
-		if (Parser.Match("$block", TokenList) >= 0) {
+		if(Parser.Match("$block", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$variableDeclaration", TokenList) >= 0) {
+		if(Parser.Match("$variableDeclaration", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$expressionStatement", TokenList) >= 0) {
+		if(Parser.Match("$expressionStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action2("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$ifStatement", TokenList) >= 0) {
+		if(Parser.Match("$ifStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action3("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$whileStatement", TokenList) >= 0) {
+		if(Parser.Match("$whileStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action4("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$breakStatement", TokenList) >= 0) {
+		if(Parser.Match("$breakStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action5("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$continueStatement", TokenList) >= 0) {
+		if(Parser.Match("$continueStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action6("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if (Parser.Match("$returnStatement", TokenList) >= 0) {
+		if(Parser.Match("$returnStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action7("$statement", Parser, pos0, NodeSize);
 		}
@@ -939,7 +939,7 @@ class variableSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $variable");
-		if (Parser.Match("$identifier", TokenList) >= 0) {
+		if(Parser.Match("$identifier", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$variable", Parser, pos0, NodeSize);
 		}
@@ -979,7 +979,7 @@ class EQSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $EQ");
-		if (Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
 			return action0("$EQ", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $EQ 0");
@@ -1040,25 +1040,25 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $variableDeclaration");
-		if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$identifier", TokenList) >= 0) {
+			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 					return action0("$variableDeclaration", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $variableDeclaration 0");
-		if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$variable", TokenList) >= 0) {
+			if(Parser.Match("$variable", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$EQ", TokenList) >= 0) {
+				if(Parser.Match("$EQ", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.Match("$expression", TokenList) >= 0) {
+					if(Parser.Match("$expression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
-						if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+						if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 							return action1("$variableDeclaration", Parser, pos0, NodeSize);
 						}
 					}
@@ -1102,8 +1102,8 @@ class statementsSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $statements");
-		while (true) {
-			if (Parser.Match("$statement", TokenList) >= 0) {
+		while(true) {
+			if(Parser.Match("$statement", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				continue;
 			}
@@ -1146,10 +1146,10 @@ class blockSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $block");
-		if (Parser.MatchToken("$LCBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$statements", TokenList) >= 0) {
+		if(Parser.MatchToken("$LCBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$statements", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$RCBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$RCBrace", TokenList, Parser.Cursor) >= 0) {
 					return action0("$block", Parser, pos0, NodeSize);
 				}
 			}
@@ -1213,15 +1213,15 @@ class ifStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $ifStatement");
-		if (Parser.MatchToken("if", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-				if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("if", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.Match("$expression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-						if (Parser.Match("$block", TokenList) >= 0) {
+					if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+						if(Parser.Match("$block", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
-							if (Parser.MatchToken("else", TokenList, Parser.Cursor) >= 0) {
-								if (Parser.Match("$block", TokenList) >= 0) {
+							if(Parser.MatchToken("else", TokenList, Parser.Cursor) >= 0) {
+								if(Parser.Match("$block", TokenList) >= 0) {
 									NodeSize = NodeSize + 1;
 									return action0("$ifStatement", Parser, pos0, NodeSize);
 								}
@@ -1232,12 +1232,12 @@ class ifStatementSyntax extends SyntaxTemplate {
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ifStatement 0");
-		if (Parser.MatchToken("if", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-				if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("if", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.Match("$expression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-						if (Parser.Match("$block", TokenList) >= 0) {
+					if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+						if(Parser.Match("$block", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
 							return action1("$ifStatement", Parser, pos0, NodeSize);
 						}
@@ -1287,12 +1287,12 @@ class whileStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $whileStatement");
-		if (Parser.MatchToken("while", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-				if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("while", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.Match("$expression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-						if (Parser.Match("$block", TokenList) >= 0) {
+					if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+						if(Parser.Match("$block", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
 							return action0("$whileStatement", Parser, pos0, NodeSize);
 						}
@@ -1337,8 +1337,8 @@ class breakStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $breakStatement");
-		if (Parser.MatchToken("break", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("break", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 				return action0("$breakStatement", Parser, pos0, NodeSize);
 			}
 		}
@@ -1379,8 +1379,8 @@ class continueStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $continueStatement");
-		if (Parser.MatchToken("continue", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("continue", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 				return action0("$continueStatement", Parser, pos0, NodeSize);
 			}
 		}
@@ -1435,16 +1435,16 @@ class returnStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $returnStatement");
-		if (Parser.MatchToken("return", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("return", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 				return action0("$returnStatement", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $returnStatement 0");
-		if (Parser.MatchToken("return", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("return", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 					return action1("$returnStatement", Parser, pos0, NodeSize);
 				}
 			}
@@ -1487,9 +1487,9 @@ class expressionStatementSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $expressionStatement");
-		if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.Match("$expression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
 				return action0("$expressionStatement", Parser, pos0, NodeSize);
 			}
 		}
@@ -1546,18 +1546,18 @@ class expressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $expression");
-		if (Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
+		if(Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$EQ", TokenList) >= 0) {
+			if(Parser.Match("$EQ", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$expression", TokenList) >= 0) {
+				if(Parser.Match("$expression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					return action0("$expression", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $expression 0");
-		if (Parser.Match("$logicalOrExpression", TokenList) >= 0) {
+		if(Parser.Match("$logicalOrExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$expression", Parser, pos0, NodeSize);
 		}
@@ -1610,12 +1610,12 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $leftHandSideExpression");
-		if (Parser.Match("$callExpression", TokenList) >= 0) {
+		if(Parser.Match("$callExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$leftHandSideExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $leftHandSideExpression 0");
-		if (Parser.Match("$newExpression", TokenList) >= 0) {
+		if(Parser.Match("$newExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$leftHandSideExpression", Parser, pos0, NodeSize);
 		}
@@ -1658,9 +1658,9 @@ class callExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $callExpression");
-		if (Parser.Match("$memberExpression", TokenList) >= 0) {
+		if(Parser.Match("$memberExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$ParameterList", TokenList) >= 0) {
+			if(Parser.Match("$ParameterList", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return action0("$callExpression", Parser, pos0, NodeSize);
 			}
@@ -1704,10 +1704,10 @@ class memberExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $memberExpression");
-		if (Parser.Match("$primary", TokenList) >= 0) {
+		if(Parser.Match("$primary", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.Match("$selector", TokenList) >= 0) {
+			while(true) {
+				if(Parser.Match("$selector", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					continue;
 				}
@@ -1788,24 +1788,24 @@ class primarySyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $primary");
-		if (Parser.MatchToken("this", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("this", TokenList, Parser.Cursor) >= 0) {
 			return action0("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		if (Parser.Match("$identifier", TokenList) >= 0) {
+		if(Parser.Match("$identifier", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		if (Parser.Match("$literal", TokenList) >= 0) {
+		if(Parser.Match("$literal", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action2("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 					return action3("$primary", Parser, pos0, NodeSize);
 				}
 			}
@@ -1862,17 +1862,17 @@ class selectorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $selector");
-		if (Parser.MatchToken("$LParenthesis", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$expression", TokenList) >= 0) {
+		if(Parser.MatchToken("$LParenthesis", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.MatchToken("$RParenthesis", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.MatchToken("$RParenthesis", TokenList, Parser.Cursor) >= 0) {
 					return action0("$selector", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $selector 0");
-		if (Parser.MatchToken("$Dot", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$identifier", TokenList) >= 0) {
+		if(Parser.MatchToken("$Dot", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return action1("$selector", Parser, pos0, NodeSize);
 			}
@@ -1929,15 +1929,15 @@ class newExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $newExpression");
-		if (Parser.Match("$memberExpression", TokenList) >= 0) {
+		if(Parser.Match("$memberExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$newExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $newExpression 0");
-		if (Parser.MatchToken("new", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.MatchToken("new", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$type", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$ParameterList", TokenList) >= 0) {
+				if(Parser.Match("$ParameterList", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					return action1("$newExpression", Parser, pos0, NodeSize);
 				}
@@ -1981,11 +1981,11 @@ class logicalOrExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $logicalOrExpression");
-		if (Parser.Match("$logicalAndExpression", TokenList) >= 0) {
+		if(Parser.Match("$logicalAndExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.MatchToken("||", TokenList, Parser.Cursor) >= 0) {
-					if (Parser.Match("$logicalAndExpression", TokenList) >= 0) {
+			while(true) {
+				if(Parser.MatchToken("||", TokenList, Parser.Cursor) >= 0) {
+					if(Parser.Match("$logicalAndExpression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -2031,11 +2031,11 @@ class logicalAndExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $logicalAndExpression");
-		if (Parser.Match("$relationExpression", TokenList) >= 0) {
+		if(Parser.Match("$relationExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.MatchToken("&&", TokenList, Parser.Cursor) >= 0) {
-					if (Parser.Match("$relationExpression", TokenList) >= 0) {
+			while(true) {
+				if(Parser.MatchToken("&&", TokenList, Parser.Cursor) >= 0) {
+					if(Parser.Match("$relationExpression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -2094,18 +2094,18 @@ class relationExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $relationExpression");
-		if (Parser.Match("$additiveExpression", TokenList) >= 0) {
+		if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			if (Parser.Match("$relationOperator", TokenList) >= 0) {
+			if(Parser.Match("$relationOperator", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$additiveExpression", TokenList) >= 0) {
+				if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					return action0("$relationExpression", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationExpression 0");
-		if (Parser.Match("$additiveExpression", TokenList) >= 0) {
+		if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$relationExpression", Parser, pos0, NodeSize);
 		}
@@ -2200,27 +2200,27 @@ class relationOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $relationOperator");
-		if (Parser.MatchToken("==", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("==", TokenList, Parser.Cursor) >= 0) {
 			return action0("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if (Parser.MatchToken("!=", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("!=", TokenList, Parser.Cursor) >= 0) {
 			return action1("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if (Parser.MatchToken(">=", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken(">=", TokenList, Parser.Cursor) >= 0) {
 			return action2("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if (Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
 			return action3("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if (Parser.MatchToken("<=", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("<=", TokenList, Parser.Cursor) >= 0) {
 			return action4("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if (Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
 			return action5("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
@@ -2270,11 +2270,11 @@ class shiftOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $shiftOperator");
-		if (Parser.MatchToken("<<", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("<<", TokenList, Parser.Cursor) >= 0) {
 			return action0("$shiftOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
-		if (Parser.MatchToken(">>", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken(">>", TokenList, Parser.Cursor) >= 0) {
 			return action1("$shiftOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
@@ -2324,11 +2324,11 @@ class additiveOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $additiveOperator");
-		if (Parser.MatchToken("$Plus", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Plus", TokenList, Parser.Cursor) >= 0) {
 			return action0("$additiveOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $additiveOperator 0");
-		if (Parser.MatchToken("$Minus", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Minus", TokenList, Parser.Cursor) >= 0) {
 			return action1("$additiveOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $additiveOperator 0");
@@ -2389,15 +2389,15 @@ class multiplicativeOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $multiplicativeOperator");
-		if (Parser.MatchToken("$Star", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Star", TokenList, Parser.Cursor) >= 0) {
 			return action0("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
-		if (Parser.MatchToken("$Slash", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Slash", TokenList, Parser.Cursor) >= 0) {
 			return action1("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
-		if (Parser.MatchToken("$Percent", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Percent", TokenList, Parser.Cursor) >= 0) {
 			return action2("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
@@ -2439,12 +2439,12 @@ class additiveExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $additiveExpression");
-		if (Parser.Match("$multiplicativeExpression", TokenList) >= 0) {
+		if(Parser.Match("$multiplicativeExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.Match("$additiveOperator", TokenList) >= 0) {
+			while(true) {
+				if(Parser.Match("$additiveOperator", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.Match("$multiplicativeExpression", TokenList) >= 0) {
+					if(Parser.Match("$multiplicativeExpression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -2491,12 +2491,12 @@ class multiplicativeExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $multiplicativeExpression");
-		if (Parser.Match("$unaryExpression", TokenList) >= 0) {
+		if(Parser.Match("$unaryExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			while (true) {
-				if (Parser.Match("$multiplicativeOperator", TokenList) >= 0) {
+			while(true) {
+				if(Parser.Match("$multiplicativeOperator", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.Match("$unaryExpression", TokenList) >= 0) {
+					if(Parser.Match("$unaryExpression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
@@ -2541,7 +2541,7 @@ class unaryExpressionSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $unaryExpression");
-		if (Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
+		if(Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$unaryExpression", Parser, pos0, NodeSize);
 		}
@@ -2582,7 +2582,7 @@ class identifierSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $identifier");
-		if (Parser.Match("$Symbol", TokenList) >= 0) {
+		if(Parser.Match("$Symbol", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action0("$identifier", Parser, pos0, NodeSize);
 		}

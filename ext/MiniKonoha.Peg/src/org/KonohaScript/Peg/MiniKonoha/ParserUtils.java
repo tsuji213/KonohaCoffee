@@ -54,7 +54,7 @@ class intLiteralSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $intLiteral");
-		if (Parser.MatchToken("$IntegerLiteral", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$IntegerLiteral", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$intLiteral", Parser, pos0, NodeSize);
 		}
@@ -108,7 +108,7 @@ class stringLiteralSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $stringLiteral");
-		if (Parser.MatchToken("$StringLiteral", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$StringLiteral", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$stringLiteral", Parser, pos0, NodeSize);
 		}
@@ -135,14 +135,14 @@ class Symbol0 extends SyntaxAcceptor {
 		// case: Symbol is LocalVariable
 		String Name = UNode.KeyToken.ParsedText;
 		TypeInfo = Gamma.GetLocalType(Name);
-		if (TypeInfo != null) {
+		if(TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, Name);
 		}
 
 		// case: Symbol is MethodName
 		KonohaType BaseType = Gamma.GetLocalType("this");
 		KonohaMethod Method = BaseType.LookupMethod(Name, -1);
-		if (Method != null) {
+		if(Method != null) {
 			KonohaType MethodType = Gamma.GammaNameSpace.LookupTypeInfo(KonohaMethod.class);
 			return new ConstNode(MethodType, UNode.KeyToken, Method);
 		}
@@ -177,7 +177,7 @@ class SymbolSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $Symbol");
-		if (Parser.MatchToken("$Symbol", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Symbol", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$Symbol", Parser, pos0, NodeSize);
 		}
@@ -229,7 +229,7 @@ class TypeTokenSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $Type");
-		if (Parser.MatchToken("$Type", TokenList, Parser.Cursor) >= 0) {
+		if(Parser.MatchToken("$Type", TokenList, Parser.Cursor) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$Type", Parser, pos0, NodeSize);
 		}

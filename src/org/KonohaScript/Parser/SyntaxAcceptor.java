@@ -27,7 +27,7 @@ public abstract class SyntaxAcceptor {
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		while (Index < NodeSize) {
+		while(Index < NodeSize) {
 			KonohaToken OperatorToken = (KonohaToken) Parser.Get(Index, NodeSize);
 			UntypedNode Node = this.CreateNodeWithSyntax(Parser, OperatorToken, SyntaxName);
 			Index = Index + 1;
@@ -39,7 +39,7 @@ public abstract class SyntaxAcceptor {
 			Left = Node;
 			Index = Index + 1;
 		}
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, Left);
 		}
 	}

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SOURCE=
-for DIR in src
+for DIR in src ext
 do
 	for EXT in java
 	do
