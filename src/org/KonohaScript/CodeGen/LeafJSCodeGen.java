@@ -6,6 +6,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
@@ -444,7 +445,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node) {
+	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
 		Object Ret = this.Build(Node, null).CompiledCode;
 		if(Ret == null) {
 			Ret = "";

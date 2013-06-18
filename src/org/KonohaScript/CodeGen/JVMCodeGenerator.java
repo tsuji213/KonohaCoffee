@@ -10,6 +10,7 @@ import java.util.HashMap;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.KLib.KonohaArray;
@@ -760,7 +761,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node) {
+	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
 		this.Prepare(null);
 		KonohaMethodInvoker Invoker = this.Compile(Node);
 		return Invoker.Invoke(null);
