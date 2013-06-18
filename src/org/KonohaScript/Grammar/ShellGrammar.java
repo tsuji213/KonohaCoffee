@@ -99,8 +99,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return Tokens;
 	}
 
-	private String makeArgumentsString(ArrayList<String> Tokens){
-		
+	private ArrayList<String> makeArguments(ArrayList<String> Tokens){
+		ArrayList<String> Args = new ArrayList<String>();
 		int n = Tokens.size();
 		for(int i = 1; i < n; i++){
 			String tk = Tokens.get(i);
@@ -109,19 +109,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				break;
 			}
 		}
-		if(n > 0){
-			StringBuilder str = new StringBuilder();
-			str.append("[\"");
-			for(int i = 1; i < n; i++){
-				if(i > 1){
-					str.append("\", \"");
-				}
-				str.append(Tokens.get(i));
-			}
-			str.append("\"]");
-			return str.toString();
+		for(int i = 1; i < n; i++){
+			Args.add(Tokens.get(i));
 		}
-		return "[]";
+		return Args;
 	}
 
 	private String FindOutputFileName(ArrayList<String> Tokens){
@@ -158,25 +149,31 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int n = Commands.size();
 		for(int i = 0; i < n; i++){
 			ArrayList<String> Tokens = SplitIntoCommandTokens(Commands.get(i));
+			ArrayList<String> Args =  makeArguments(Tokens);
 			String procName = "p" + i;
 			SourceBuilder.append("SubProc " + procName + " = new SubProc(\"" + Tokens.get(0) + "\");\n");
-			SourceBuilder.append(procName + ".SetArguments(" + makeArgumentsString(Tokens) + ");\n");
+			//SourceBuilder.append(procName + ".SetArguments(" + makeArgumentsString(Tokens) + ");\n");
+			for(String arg : Args){
+				SourceBuilder.append(procName + ".AddArgument(\"" + arg + "\");\n");
+			}
 			if(i == 0){
 				String Input = FindInputFileName(Tokens);
 				if(Input != null){
-					SourceBuilder.append(procName + "." + "setInputStream(new InputFileStream(\"" + Input + "\"));\n");
+					//SourceBuilder.append(procName + "." + "SetInputStream(new InputFileStream(\"" + Input + "\"));\n");
+					SourceBuilder.append(procName + "." + "SetInputFileName(\"" + Input + "\");\n");
 				}
 			}
 			if(i > 0){
-				SourceBuilder.append("p" + (i-1) + ".pipe(p" + i + ");\n");
+				SourceBuilder.append("p" + (i-1) + ".Pipe(p" + i + ");\n");
 			}
 			if(i == n - 1){
 				String Output = FindOutputFileName(Tokens);
 				if(Output != null){
-					SourceBuilder.append(procName + "." + "setOutputStream(new OutputFileStream(\"" + Output + "\"));\n");
+					//SourceBuilder.append(procName + "." + "SetOutputStream(new OutputFileStream(\"" + Output + "\"));\n");
+					SourceBuilder.append(procName + "." + "SetOutputFileName(\"" + Output + "\");\n");
 				}
 			}
-			SourceBuilder.append(procName + ".fg();\n");
+			SourceBuilder.append(procName + ".Fg();\n");
 		}
 		System.out.println(SourceBuilder.toString());
 
