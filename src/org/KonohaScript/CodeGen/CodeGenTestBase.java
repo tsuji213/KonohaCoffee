@@ -17,8 +17,9 @@ import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
+import org.KonohaScript.Tester.KTestCase;
 
-abstract class CodeGeneratorTester {
+abstract class CodeGeneratorTester extends KTestCase {
 	CodeGenerator CreateCodeGen() {
 		return null;
 	}
@@ -93,31 +94,49 @@ abstract class CodeGeneratorTester {
 		return null;
 	}
 
-	public void Test(CodeGeneratorTester test) {
-		CodeGenTestBase TestRules = new CodeGenTestBase();
-		TestRules.testReturnConst(test);
-		TestRules.testAddOne(test);
-		TestRules.testIf(test);
-		TestRules.testMethodCall(test);
-		TestRules.testFibo(test);
-		TestRules.testTopLevelExpr(test);
+	CodeGenTestBase		TestRules;
+	CodeGeneratorTester	test;
 
-		TestRules.testConstInteger(test);
-		TestRules.testNegativeConstInteger(test);
-		TestRules.testConstIntegers(test);
-		TestRules.testConstBooleanTrue(test);
-		TestRules.testConstBooleanFalse(test);
-		TestRules.testConstBooleans(test);
-		TestRules.testConstString(test);
-		TestRules.testConstString2(test);
-		TestRules.testConstString3(test);
-		TestRules.testConstStrings(test);
+	public CodeGeneratorTester GetTester() {
+		return this;
+	}
+
+	@Override
+	public void Init() {
+		this.TestRules = new CodeGenTestBase();
+		this.test = this;
+	}
+
+	@Override
+	public void Exit() {
+	}
+
+	@Override
+	public void Test() {
+
+		this.TestRules.testReturnConst(this.test);
+		this.TestRules.testAddOne(this.test);
+		this.TestRules.testIf(this.test);
+		this.TestRules.testMethodCall(this.test);
+		this.TestRules.testFibo(this.test);
+		this.TestRules.testTopLevelExpr(this.test);
+
+		this.TestRules.testConstInteger(this.test);
+		this.TestRules.testNegativeConstInteger(this.test);
+		this.TestRules.testConstIntegers(this.test);
+		this.TestRules.testConstBooleanTrue(this.test);
+		this.TestRules.testConstBooleanFalse(this.test);
+		this.TestRules.testConstBooleans(this.test);
+		this.TestRules.testConstString(this.test);
+		this.TestRules.testConstString2(this.test);
+		this.TestRules.testConstString3(this.test);
+		this.TestRules.testConstStrings(this.test);
 
 		//TestRules.testIntegerValiable(test); //FIXME
 	}
 }
 
-public class CodeGenTestBase {
+public class CodeGenTestBase extends KTestCase {
 
 	public static final Konoha		KonohaContext	= new Konoha(new MiniKonohaGrammar(), null);
 	public final KonohaNameSpace	NameSpace		= KonohaContext.DefaultNameSpace;
@@ -128,7 +147,7 @@ public class CodeGenTestBase {
 	public final KonohaType			StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
-		if(Expected != null && Actual != null && !Expected.equals(Actual)) {
+		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
 			System.out.println("Test Failed!!" + TestName);
 			System.out.println("---  Actual:---");
 			System.out.println(Actual);
@@ -147,7 +166,7 @@ public class CodeGenTestBase {
 		Builder.Prepare(func1);
 		TypedNode Block = new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 1));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		this.Check("ReturnConstInt", Tester.testReturnConst(), Mtd);
+		this.AssertEqual(/*ReturnConstInt", */Tester.testReturnConst(), Mtd);
 	}
 
 	public void testAddOne(CodeGeneratorTester Tester) {
@@ -176,7 +195,7 @@ public class CodeGenTestBase {
 				null,
 				"n"), new ConstNode(this.IntTy, null, 1)));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		this.Check("AddOne", Tester.testAddOne(), Mtd);
+		this.AssertEqual(/*AddOne", */Tester.testAddOne(), Mtd);
 	}
 
 	public void testIf(CodeGeneratorTester Tester) {
@@ -201,16 +220,16 @@ public class CodeGenTestBase {
 		Builder.Prepare(func1, Params);
 
 		TypedNode Block = new IfNode(this.VoidTy,
-				/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(
-						this.IntTy,
-						null,
-						3)),
-				/* then */new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1)),
-				/* else */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 2))).Next(
-				/* */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 3)));
+		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(
+				this.IntTy,
+				null,
+				3)),
+		/* then */new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1)),
+		/* else */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 2))).Next(
+		/* */new ReturnNode(this.IntTy, new ConstNode(this.IntTy, null, 3)));
 
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		this.Check("If", Tester.testIf(), Mtd);
+		this.AssertEqual(/*If", */Tester.testIf(), Mtd);
 	}
 
 	public void testTopLevelExpr(CodeGeneratorTester Tester) {
@@ -225,13 +244,13 @@ public class CodeGenTestBase {
 		Builder.Prepare(GlobalFunction);
 
 		TypedNode Block = new IfNode(this.VoidTy,
-				/* cond */new ConstNode(this.BooleanTy, null, true),
-				/* then */new NewNode(this.ObjectTy),
-				/* else */new ReturnNode(this.IntTy, new ConstNode(this.BooleanTy, null, false)));
+		/* cond */new ConstNode(this.BooleanTy, null, true),
+		/* then */new NewNode(this.ObjectTy),
+		/* else */new ReturnNode(this.IntTy, new ConstNode(this.BooleanTy, null, false)));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("TopLevelExpr", Tester.testTopLevelExpr(), Program);
+		this.AssertEqual(/*TopLevelExpr",*/Tester.testTopLevelExpr(), Program);
 	}
 
 	void testMethodCall(CodeGeneratorTester Tester) {
@@ -277,9 +296,9 @@ public class CodeGenTestBase {
 						new ConstNode(this.IntTy, null, 36))));
 		Builder.Prepare(GlobalFunction);
 		KonohaMethodInvoker Mtd = Builder.Compile(Block1);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("MethodCall", Tester.testMethodCall(), Program);
+		this.AssertEqual(/*MethodCall,*/Tester.testMethodCall(), Program);
 	}
 
 	void testFibo(CodeGeneratorTester Tester) {
@@ -303,12 +322,12 @@ public class CodeGenTestBase {
 		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param3, null);
 
 		TypedNode Block2 = new IfNode(this.VoidTy,
-				/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(
-						this.IntTy,
-						null,
-						3)),
-				/* then */new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1)),
-				/* else */null).Next(new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(
+		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(
+				this.IntTy,
+				null,
+				3)),
+		/* then */new ReturnNode(this.VoidTy, new ConstNode(this.IntTy, null, 1)),
+		/* else */null).Next(new ReturnNode(this.IntTy, new ApplyNode(this.IntTy, null, intAdd, new ApplyNode(
 				this.IntTy,
 				null,
 				Fibo,
@@ -330,9 +349,9 @@ public class CodeGenTestBase {
 			Params.add(new Param(0, this.IntTy, "n"));
 			Builder.Prepare(Fibo, Params);
 			KonohaMethodInvoker Mtd = Builder.Compile(Block2);
-			assert (Mtd.CompiledCode instanceof String);
+			this.Assert(Mtd.CompiledCode instanceof String);
 			String Program = (String) Mtd.CompiledCode;
-			this.Check("Fibo", Tester.testFibo(), Program);
+			this.AssertEqual(/*Fibo, */Tester.testFibo(), Program);
 		}
 	}
 
@@ -351,9 +370,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.IntTy, null, 123);
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstInteger", Tester.testConstInteger(), Program);
+		this.AssertEqual(/*"ConstInteger", */Tester.testConstInteger(), Program);
 	}
 
 	public void testNegativeConstInteger(CodeGeneratorTester Tester) {
@@ -370,9 +389,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.IntTy, null, -123);
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("NegativeConstInteger", Tester.testNegativeConstInteger(), Program);
+		this.AssertEqual(/*"NegativeConstInteger", */Tester.testNegativeConstInteger(), Program);
 	}
 
 	public void testConstIntegers(CodeGeneratorTester Tester) {
@@ -389,9 +408,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.IntTy, null, 9999999).Next(new ConstNode(this.IntTy, null, -86757));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstIntegers", Tester.testConstIntegers(), Program);
+		this.AssertEqual(/*"ConstIntegers"*/Tester.testConstIntegers(), Program);
 	}
 
 	public void testConstBooleanTrue(CodeGeneratorTester Tester) {
@@ -408,9 +427,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.BooleanTy, null, true);
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstBooleanTrue", Tester.testConstBooleanTrue(), Program);
+		this.AssertEqual(/*"ConstBooleanTrue",*/Tester.testConstBooleanTrue(), Program);
 	}
 
 	public void testConstBooleanFalse(CodeGeneratorTester Tester) {
@@ -427,9 +446,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.BooleanTy, null, false);
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstBooleanFalse", Tester.testConstBooleanFalse(), Program);
+		this.AssertEqual(/*"ConstBooleanFalse",*/Tester.testConstBooleanFalse(), Program);
 	}
 
 	public void testConstBooleans(CodeGeneratorTester Tester) {
@@ -446,9 +465,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.BooleanTy, null, false).Next(new ConstNode(this.BooleanTy, null, true));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstBooleans", Tester.testConstBooleans(), Program);
+		this.AssertEqual(/*ConstBooleans", */Tester.testConstBooleans(), Program);
 	}
 
 	public void testConstString(CodeGeneratorTester Tester) {
@@ -465,9 +484,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.StringTy, null, "Hello World!!");
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstString", Tester.testConstString(), Program);
+		this.AssertEqual(/*ConstString", */Tester.testConstString(), Program);
 	}
 
 	public void testConstString2(CodeGeneratorTester Tester) {
@@ -484,9 +503,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.StringTy, null, "\"Hello World!!\"");
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstString2", Tester.testConstString2(), Program);
+		this.AssertEqual(/*ConstString2", */Tester.testConstString2(), Program);
 	}
 
 	public void testConstString3(CodeGeneratorTester Tester) {
@@ -503,9 +522,9 @@ public class CodeGenTestBase {
 
 		TypedNode Block = new ConstNode(this.StringTy, null, "こんにちは世界");
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstString3", Tester.testConstString3(), Program);
+		this.AssertEqual(/*ConstString3", */Tester.testConstString3(), Program);
 	}
 
 	public void testConstStrings(CodeGeneratorTester Tester) {
@@ -525,9 +544,9 @@ public class CodeGenTestBase {
 				null,
 				"こんにちは世界"));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("ConstStrings", Tester.testConstStrings(), Program);
+		this.AssertEqual(/*ConstStrings", */Tester.testConstStrings(), Program);
 	}
 
 	public void testIntegerValiable(CodeGeneratorTester Tester) {
@@ -547,8 +566,20 @@ public class CodeGenTestBase {
 				null,
 				123));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
-		assert (Mtd.CompiledCode instanceof String);
+		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.Check("IntegerValiable", Tester.testIntegerValiable(), Program);
+		this.AssertEqual(/*IntegerValiable", */Tester.testIntegerValiable(), Program);
+	}
+
+	@Override
+	public void Init() {
+	}
+
+	@Override
+	public void Exit() {
+	}
+
+	@Override
+	public void Test() {
 	}
 }

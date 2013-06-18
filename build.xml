@@ -2,18 +2,27 @@
 	<!-- directory / file definition -->
 	<property name="source" value="src" />
 	<property name="build" value="bin" />
-	<property name="jarfile" value="konoha.jar" />
+	<!-- <property name="jarfile" value="konoha.jar" /> -->
 
 	<!-- ================================== -->
 	<!--                BUILD               -->
 	<!-- ================================== -->
 	<target name="build">
 		<mkdir dir="bin" />
-		<javac srcdir="src" destdir="bin" debug="on"
+		<mkdir dir="bin/konoha" />
+		<javac srcdir="src" destdir="bin/konoha" debug="on"
 			target="1.6" source="1.6" includeantruntime="false">
 			<classpath path="third-party/asm-all-4.0.jar" />
 			<classpath path="third-party/jllvm.jar" />
 			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+		</javac>
+		<mkdir dir="bin/MiniKonoha.Peg" />
+		<javac srcdir="ext/MiniKonoha.Peg/" destdir="bin/MiniKonoha.Peg" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+			<classpath path="bin/konoha" />
 		</javac>
 	</target>
 
@@ -25,10 +34,9 @@
 			<fileset dir="bin" includes="**/*.class" />
 			<zipfileset src="third-party/asm-all-4.0.jar" />
 			<zipfileset src="third-party/jllvm.jar" />
-			<manifest>
-				<attribute name="Main-Class" value="org.KonohaScript.KonohaShell" />
-
-			</manifest>
+			<manifest>				<attribute name="Main-Class" value="org.KonohaScript.KonohaShell" />			</manifest>		</jar>
+		<jar jarfile="MiniKonoha.Peg.jar">
+			<fileset dir="bin/MiniKonoha.Peg" includes="**/*.class" />
 		</jar>
 	</target>
 
@@ -38,6 +46,35 @@
 	<target name="clean">
 		<delete dir="bin" />
 		<delete file="konoha.jar" />
+		<delete file="MiniKonoha.Peg.jar" />
+		<delete file="konoha-test.jar" />
+	</target>
+	<!-- ================================== -->
+	<!--              TEST-BUILD            -->
+	<!-- ================================== -->
+	<target name="test-build" depends="build">
+		<mkdir dir="bin/test" />
+		<javac srcdir="." destdir="bin/test" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<classpath path="third-party/asm-all-4.0.jar" />
+			<classpath path="third-party/jllvm.jar" />
+			<classpath path="bin/konoha" />
+		<classpath path="bin/MiniKonoha.Peg" />
+			<include name="**/*Test.java" />
+			<include name="KonohaTester/**/*Test.java" />
+		</javac>
+	</target>
+	<!-- ================================== -->
+	<!--               TEST                 -->
+	<!-- ================================== -->
+	<target name="test" depends="build,test-build">
+		<jar jarfile="konoha-test.jar">
+			<fileset dir="bin" includes="**/*.class" />
+			<zipfileset src="third-party/asm-all-4.0.jar" />
+			<zipfileset src="third-party/jllvm.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
+			</manifest>
+		</jar>
 	</target>
 </project>
-
