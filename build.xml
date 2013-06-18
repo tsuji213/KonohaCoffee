@@ -16,6 +16,8 @@
 			<classpath path="third-party/jllvm.jar" />
 			<include name="**/*.java" />
 			<exclude name="**/*Test.java" />
+			<exclude name="**/*TestBase.java" />
+			<exclude name="**/Tester/*.java" />
 		</javac>
 		<mkdir dir="bin/MiniKonoha.Peg" />
 		<javac srcdir="ext/MiniKonoha.Peg/" destdir="bin/MiniKonoha.Peg" debug="on"
@@ -59,19 +61,20 @@
 			<classpath path="third-party/asm-all-4.0.jar" />
 			<classpath path="third-party/jllvm.jar" />
 			<classpath path="bin/konoha" />
+			<classpath path="bin/test" />
 		<classpath path="bin/MiniKonoha.Peg" />
 			<include name="**/*Test.java" />
-			<include name="KonohaTester/**/*Test.java" />
+			<include name="**/*TestBase.java" />
+			<include name="**/Tester/*.java" />
+			<include name="Test/**/*.java" />
 		</javac>
 	</target>
 	<!-- ================================== -->
 	<!--               TEST                 -->
 	<!-- ================================== -->
-	<target name="test" depends="build,test-build">
+	<target name="test" depends="build,jar,test-build">
 		<jar jarfile="konoha-test.jar">
-			<fileset dir="bin" includes="**/*.class" />
-			<zipfileset src="third-party/asm-all-4.0.jar" />
-			<zipfileset src="third-party/jllvm.jar" />
+			<fileset dir="bin/test" includes="**/*.class" />
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>

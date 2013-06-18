@@ -5,6 +5,8 @@ public abstract class KTestRunnerBase {
 		try {
 			TestCase.Init();
 			TestCase.Test();
+		}
+		catch (Exception e) {
 		} finally {
 			TestCase.Exit();
 		}

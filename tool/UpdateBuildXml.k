@@ -70,15 +70,27 @@ void GenerateTestRunner(String src, String ext) {
 	for (int i=0; i < files1.getlength(); i = i + 1) {
 		list.add(files1.get(i));
 	}
-	File file = new File("KonohaTester/src/org/KonohaScript/Tester/KTestRunner.java", "w");
+	File file = new File("Test/src/org/KonohaScript/Tester/KTestRunner.java", "w");
 	file.println("package org.KonohaScript.Tester;");
 	file.println("");
+	for (int i=0; i < list.getlength(); i = i + 1) {
+		String name = list.get(i);
+		File f = new File(name, "r");
+		String pkg = f.readLine().trim().split(" ").get(1).replace(";", ".");
+		String l = name.split("/").pop();
+		String cname = l.split(".").get(0);
+		file.println("import ${pkg}${cname};");
+	}
+
 	file.println("public class KTestRunner extends KTestRunnerBase {");
 	file.println("	public static void main(String[] args) {");
 	file.println("		KTestRunner Runner = new KTestRunner();");
 
 	for (int i=0; i < list.getlength(); i = i + 1) {
-		String l = list.get(i).split("/").pop();
+		String name = list.get(i);
+		File f = new File(name, "r");
+		String pkg = f.readLine().trim().split(" ").get(1).replace(";", ".");
+		String l = name.split("/").pop();
 		String cname = l.split(".").get(0);
 		file.println("		Runner.Run(new ${cname}());");
 	}
@@ -111,6 +123,8 @@ void main() {
 	xml.println("			<classpath path=\"third-party/jllvm.jar\" />");
 	xml.println("			<include name=\"**/*.java\" />");
 	xml.println("			<exclude name=\"**/*Test.java\" />");
+	xml.println("			<exclude name=\"**/*TestBase.java\" />");
+	xml.println("			<exclude name=\"**/Tester/*.java\" />");
 	xml.println("		</javac>");
 
 	String[] extlibs = $(find ${ext} -maxdepth 2 -name .settings).trim().split("\n");
@@ -176,24 +190,26 @@ void main() {
 	xml.println("			<classpath path=\"third-party/asm-all-4.0.jar\" />");
 	xml.println("			<classpath path=\"third-party/jllvm.jar\" />");
 	xml.println("			<classpath path=\"${bin}/konoha\" />");
+	xml.println("			<classpath path=\"${bin}/test\" />");
 	for (int i=0; i < extlibs.getsize(); i = i + 1) {
 		String e = extlibs.get(i);
 		String libname = library(e.substring(0, e.getlength() - ".settings".getlength()));
 		xml.println("		<classpath path=\"${bin}/${libname}\" />");
 	}
 	xml.println("			<include name=\"**/*Test.java\" />");
-	xml.println("			<include name=\"KonohaTester/**/*Test.java\" />");
+	xml.println("			<include name=\"**/*TestBase.java\" />");
+	xml.println("			<include name=\"**/Tester/*.java\" />");
+	xml.println("			<include name=\"Test/**/*.java\" />");
 	xml.println("		</javac>");
 	xml.println("	</target>");
 
+	String testbin = bin + "/test";
 	xml.println("	<!-- ================================== -->");
 	xml.println("	<!--               TEST                 -->");
 	xml.println("	<!-- ================================== -->");
-	xml.println("	<target name=\"test\" depends=\"build,test-build\">");
+	xml.println("	<target name=\"test\" depends=\"build,jar,test-build\">");
 	xml.println("		<jar jarfile=\"konoha-test.jar\">");
-	xml.println("			<fileset dir=\"bin\" includes=\"**/*.class\" />");
-	xml.println("			<zipfileset src=\"third-party/asm-all-4.0.jar\" />");
-	xml.println("			<zipfileset src=\"third-party/jllvm.jar\" />");
+	xml.println("			<fileset dir=\"${testbin}\" includes=\"**/*.class\" />");
 	xml.println("			<manifest>");
 	xml.println("				<attribute name=\"Main-Class\" value=\"org.KonohaScript.Tester.KTestRunner\" />");
 	xml.println("			</manifest>");
@@ -205,4 +221,3 @@ void main() {
 }
 
 main();
-
