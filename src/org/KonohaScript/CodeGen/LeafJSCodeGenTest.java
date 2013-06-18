@@ -91,8 +91,42 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	}
 
 	@Override
-	Object testIntegerValiable() {
-		return "{\n" + "    var lovalVar;\n" + "}";
+	Object testBinaryOps() {
+		return "{\n" + "    1024 + -256;\n" + "    1024 - -256;\n" + "    1024 * -256;\n" + "    1024 / -256;\n"
+				+ "    1024 < -256;\n" + "    1024 <= -256;\n" + "    1024 > -256;\n" + "    1024 >= -256;\n"
+				+ "    1024 == -256;\n" + "    1024 != -256;\n" + "}";
+	}
+
+	@Override
+	Object testCondLogicalOps() {
+		return "{\n" + "    1024 < -256 && 1024 != -256;\n" + "    1024 >= -256 && 1024 != -256;\n"
+				+ "    true && 1024 > -256;\n" + "    false && 1024 > -256;\n" + "    1024 < -256 || 1024 != -256;\n"
+				+ "    1024 >= -256 || 1024 != -256;\n" + "    true || 1024 > -256;\n" + "    false || 1024 > -256;\n" + "}";
+	}
+
+	@Override
+	Object testReturnConstBoolean() {
+		return "{\n" + "    return true;\n" + "}";
+	}
+
+	@Override
+	Object testReturnConstString() {
+		return "{\n" + "    return Hello World;\n" + "}";
+	}
+
+	@Override
+	Object testThrow() {
+		return "{\n" + "    throw IOException;\n" + "}";
+	}
+
+	@Override
+	Object testError() { //FIXME
+		return "{\n" + "    throw IOException;\n" + "}";
+	}
+
+	@Override
+	Object testAssign() {
+		return "{\n" + "    var localVar = 123;\n" + "    localVar = 1024;\n" + "}";
 	}
 
 	@Override

@@ -8,14 +8,19 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.Parser.KonohaToken;
+import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
+import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.ThrowNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 import org.KonohaScript.Tester.KTestCase;
 
@@ -90,7 +95,31 @@ abstract class CodeGeneratorTester extends KTestCase {
 	}
 
 	//test case: variable
-	Object testIntegerValiable() {
+	Object testAssign() {
+		return null;
+	}
+
+	Object testBinaryOps() {
+		return null;
+	}
+
+	Object testCondLogicalOps() {
+		return null;
+	}
+
+	Object testReturnConstBoolean() {
+		return null;
+	}
+
+	Object testReturnConstString() {
+		return null;
+	}
+
+	Object testThrow() {
+		return null;
+	}
+
+	Object testError() {
 		return null;
 	}
 
@@ -132,7 +161,15 @@ abstract class CodeGeneratorTester extends KTestCase {
 		this.TestRules.testConstString3(this.test);
 		this.TestRules.testConstStrings(this.test);
 
-		//TestRules.testIntegerValiable(test); //FIXME
+		this.TestRules.testBinaryOps(this.test);
+		this.TestRules.testCondLogicalOps(this.test);
+		this.TestRules.testReturnConstBoolean(this.test);
+		this.TestRules.testReturnConstString(this.test);
+
+		this.TestRules.testThrow(this.test);
+		this.TestRules.testError(this.test);
+
+		this.TestRules.testAssign(this.test);
 	}
 }
 
@@ -147,7 +184,7 @@ public class CodeGenTestBase extends KTestCase {
 	public final KonohaType			StringTy		= KonohaContext.StringType;
 
 	void Check(String TestName, Object Expected, Object Actual) {
-		if (Expected != null && Actual != null && !Expected.equals(Actual)) {
+		if(Expected != null && Actual != null && !Expected.equals(Actual)) {
 			System.out.println("Test Failed!!" + TestName);
 			System.out.println("---  Actual:---");
 			System.out.println(Actual);
@@ -319,7 +356,7 @@ public class CodeGenTestBase extends KTestCase {
 
 		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", Param1, null);
 		KonohaMethod intSub = new KonohaMethod(0, this.IntTy, "-", Param1, null);
-		KonohaMethod intLt = new KonohaMethod(0, this.BooleanTy, "<", Param3, null);
+		KonohaMethod intLt = new KonohaMethod(0, this.IntTy, "<", Param3, null);
 
 		TypedNode Block2 = new IfNode(this.VoidTy,
 		/* cond */new ApplyNode(this.BooleanTy, null, intLt, new LocalNode(this.IntTy, null, "n"), new ConstNode(
@@ -549,7 +586,251 @@ public class CodeGenTestBase extends KTestCase {
 		this.AssertEqual(/*ConstStrings", */Tester.testConstStrings(), Program);
 	}
 
-	public void testIntegerValiable(CodeGeneratorTester Tester) {
+	public void testBinaryOps(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = { this.VoidTy };
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		// Binary operations: ReceiverType = int, ReturnType= int, ParamType = int
+		KonohaType[] int_int_type = { this.IntTy, this.IntTy }; //retType, paramType
+		String[] binaryArgData = { "x" };
+		KonohaParam int_int_param = new KonohaParam(2, int_int_type, binaryArgData);
+
+		KonohaMethod intAdd = new KonohaMethod(0, this.IntTy, "+", int_int_param, null); //Receiver Type: Return Type, Params Type
+		KonohaMethod intSub = new KonohaMethod(0, this.IntTy, "-", int_int_param, null);
+		KonohaMethod intMul = new KonohaMethod(0, this.IntTy, "*", int_int_param, null);
+		KonohaMethod intDiv = new KonohaMethod(0, this.IntTy, "/", int_int_param, null);
+
+		// Binary operations: ReceiverType = int, ReturnType= Boolean, ParamType = int
+		KonohaType[] bool_int_type = { this.BooleanTy, this.IntTy };
+		KonohaParam bool_int_param = new KonohaParam(2, bool_int_type, binaryArgData);
+
+		KonohaMethod intLT = new KonohaMethod(0, this.IntTy, "<", bool_int_param, null);
+		KonohaMethod intLTEQ = new KonohaMethod(0, this.IntTy, "<=", bool_int_param, null);
+		KonohaMethod intGT = new KonohaMethod(0, this.IntTy, ">", bool_int_param, null);
+		KonohaMethod intGTEQ = new KonohaMethod(0, this.IntTy, ">=", bool_int_param, null);
+		KonohaMethod intEQ = new KonohaMethod(0, this.IntTy, "==", bool_int_param, null); //FIXME
+		KonohaMethod intNEQ = new KonohaMethod(0, this.IntTy, "!=", bool_int_param, null); //FIXME
+
+		TypedNode Block = new ApplyNode(this.IntTy, null, intAdd, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+				this.IntTy,
+				null,
+				-256))
+				.Next(new ApplyNode(this.IntTy, null, intSub, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.IntTy, null, intMul, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.IntTy, null, intDiv, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.
+
+				Next(new ApplyNode(this.BooleanTy, null, intLT, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.BooleanTy, null, intLTEQ, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.BooleanTy, null, intGT, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.BooleanTy, null, intGTEQ, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.BooleanTy, null, intEQ, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)))
+				.Next(new ApplyNode(this.BooleanTy, null, intNEQ, new ConstNode(this.IntTy, null, 1024), new ConstNode(
+						this.IntTy,
+						null,
+						-256)));
+
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*BinaryOps", */Tester.testBinaryOps(), Program);
+	}
+
+	public void testCondLogicalOps(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = { this.VoidTy };
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		// Binary operations: ReceiverType = int, ReturnType= Boolean, ParamType = int
+		KonohaType[] bool_int_type = { this.BooleanTy, this.IntTy };
+		String[] binaryArgData = { "x" };
+		KonohaParam bool_int_param = new KonohaParam(2, bool_int_type, binaryArgData);
+
+		KonohaMethod intLT = new KonohaMethod(0, this.IntTy, "<", bool_int_param, null);
+		KonohaMethod intGT = new KonohaMethod(0, this.IntTy, ">", bool_int_param, null);
+		KonohaMethod intGTEQ = new KonohaMethod(0, this.IntTy, ">=", bool_int_param, null);
+		KonohaMethod intNEQ = new KonohaMethod(0, this.IntTy, "!=", bool_int_param, null); //FIXME
+
+		TypedNode Block = new AndNode(this.BooleanTy, null, new ApplyNode(this.BooleanTy, null, intLT, new ConstNode(
+				this.IntTy,
+				null,
+				1024), new ConstNode(this.IntTy, null, -256)), new ApplyNode(this.BooleanTy, null, intNEQ, new ConstNode(
+				this.IntTy,
+				null,
+				1024), new ConstNode(this.IntTy, null, -256)))
+				.Next(new AndNode(this.BooleanTy, null, new ApplyNode(this.BooleanTy, null, intGTEQ, new ConstNode(
+						this.IntTy,
+						null,
+						1024), new ConstNode(this.IntTy, null, -256)), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intNEQ,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.Next(new AndNode(this.BooleanTy, null, new ConstNode(this.BooleanTy, null, true), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intGT,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.Next(new AndNode(this.BooleanTy, null, new ConstNode(this.BooleanTy, null, false), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intGT,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.
+
+				Next(new OrNode(this.BooleanTy, null, new ApplyNode(this.BooleanTy, null, intLT, new ConstNode(
+						this.IntTy,
+						null,
+						1024), new ConstNode(this.IntTy, null, -256)), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intNEQ,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.Next(new OrNode(this.BooleanTy, null, new ApplyNode(this.BooleanTy, null, intGTEQ, new ConstNode(
+						this.IntTy,
+						null,
+						1024), new ConstNode(this.IntTy, null, -256)), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intNEQ,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.Next(new OrNode(this.BooleanTy, null, new ConstNode(this.BooleanTy, null, true), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intGT,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))))
+				.Next(new OrNode(this.BooleanTy, null, new ConstNode(this.BooleanTy, null, false), new ApplyNode(
+						this.BooleanTy,
+						null,
+						intGT,
+						new ConstNode(this.IntTy, null, 1024),
+						new ConstNode(this.IntTy, null, -256))));
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*CondLogicalOps", */Tester.testCondLogicalOps(), Program);
+	}
+
+	public void testReturnConstBoolean(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ReturnNode(this.BooleanTy, new ConstNode(this.BooleanTy, null, true));
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*ReturnConstBoolean", */Tester.testReturnConstBoolean(), Program);
+	}
+
+	public void testReturnConstString(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ReturnNode(this.StringTy, new ConstNode(this.StringTy, null, "Hello World"));
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*ReturnConstString", */Tester.testReturnConstString(), Program);
+	}
+
+	public void testThrow(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ThrowNode(this.VoidTy, new ConstNode(this.StringTy, null, "IOException"));
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*Throw", */Tester.testThrow(), Program);
+	}
+
+	public void testError(CodeGeneratorTester Tester) {
+		CodeGenerator Builder = Tester.CreateCodeGen();
+
+		KonohaType[] ParamData = new KonohaType[1];
+		ParamData[0] = this.VoidTy;
+		String[] ArgData1 = new String[0];
+		KonohaParam Param = new KonohaParam(1, ParamData, ArgData1);
+
+		KonohaMethod GlobalFunction = new KonohaMethod(0, this.VoidTy, "", Param, null);
+
+		Builder.Prepare(GlobalFunction);
+
+		TypedNode Block = new ErrorNode(this.VoidTy, new KonohaToken("printlg", 123), "invalid symbol");
+		KonohaMethodInvoker Mtd = Builder.Compile(Block);
+		this.Assert(Mtd.CompiledCode instanceof String);
+		String Program = (String) Mtd.CompiledCode;
+		this.AssertEqual(/*Error", */Tester.testError(), Program);
+	}
+
+	public void testAssign(CodeGeneratorTester Tester) {
 		CodeGenerator Builder = Tester.CreateCodeGen();
 
 		KonohaType[] ParamData = new KonohaType[1];
@@ -564,22 +845,31 @@ public class CodeGenTestBase extends KTestCase {
 		TypedNode Block = new AssignNode(this.IntTy, null, new LocalNode(this.IntTy, null, "localVar"), new ConstNode(
 				this.IntTy,
 				null,
-				123));
+				123)).Next(new AssignNode(this.IntTy, null, new LocalNode(this.IntTy, null, "localVar"), new ConstNode(
+				this.IntTy,
+				null,
+				1024)));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
 		this.Assert(Mtd.CompiledCode instanceof String);
 		String Program = (String) Mtd.CompiledCode;
-		this.AssertEqual(/*IntegerValiable", */Tester.testIntegerValiable(), Program);
+		this.AssertEqual(/*Assign", */Tester.testAssign(), Program);
 	}
 
 	@Override
 	public void Init() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void Exit() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void Test() {
+		// TODO Auto-generated method stub
+
 	}
 }
