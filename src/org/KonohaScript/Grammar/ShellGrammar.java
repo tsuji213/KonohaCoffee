@@ -53,17 +53,32 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	private ArrayList<String> SplitIntoCommands(String CommandLine) {
 		ArrayList<String> Commands = new ArrayList<String>();
+		boolean inQuate = false;
+		boolean inDoubleQuate = false;
 		int start = 0;
 		for(int pos = 0; pos < CommandLine.length(); pos++) {
 			char ch = CommandLine.charAt(pos);
 			if(ch == '\\') {
 				pos++;
 				continue;
-			}else if(ch == '|') {
-				Commands.add(CommandLine.substring(start, pos - 1));
-				start = pos + 1;
-			}else if(ch == ' ' && start == pos) {
-				start++;
+			}
+			if(inQuate || inDoubleQuate){
+				if(inDoubleQuate && ch == '"'){
+					inDoubleQuate = false;
+				}else if(inQuate && ch == '\''){
+					inQuate = false;
+				}
+			}else{
+				if(ch == '|') {
+					Commands.add(CommandLine.substring(start, pos - 1));
+					start = pos + 1;
+				}else if(ch == ' ' && start == pos) {
+					start++;
+				}else if(ch == '"'){
+					inDoubleQuate = true;
+				}else if(ch == '\''){
+					inQuate = true;
+				}
 			}
 		}
 		if(start < CommandLine.length() - 1){
@@ -76,6 +91,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		ArrayList<String> Tokens = new ArrayList<String>();
 		int start = 0;
 		int pos = 0;
+		boolean inQuate = false;
+		boolean inDoubleQuate = false;
+		StringBuilder TokenBuilder = new StringBuilder();
 		while(Command.charAt(pos) == ' '){
 			pos++;
 		}
@@ -83,18 +101,41 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			char ch = Command.charAt(pos);
 			if(ch == '\\') {
 				pos++;
+				TokenBuilder.append(Command.charAt(pos));
 				continue;
-			}else if(ch == ' ') {
-				if(start == pos) {
-					start++;
+			}
+			if(inQuate || inDoubleQuate){
+				if(inDoubleQuate && ch == '"'){
+					inDoubleQuate = false;
+				}else if(inQuate && ch == '\''){
+					inQuate = false;
+				}else if(inQuate && ch == '"'){
+					TokenBuilder.append("\\\"");
 				}else{
-					Tokens.add(Command.substring(start, pos).replaceAll("\\\\(.)", "$1"));
-					start = pos + 1;
+					TokenBuilder.append(ch);
+				}
+			}else{
+				if(ch == ' ') {
+					if(start == pos) {
+						start++;
+					}else{
+						//Tokens.add(Command.substring(start, pos).replaceAll("\\\\(.)", "$1"));
+						Tokens.add(TokenBuilder.toString());
+						TokenBuilder.delete(0, TokenBuilder.length());
+						start = pos + 1;
+					}
+				}else if(ch == '"'){
+					inDoubleQuate = true;
+				}else if(ch == '\''){
+					inQuate = true;
+				}else{
+					TokenBuilder.append(ch);
 				}
 			}
 		}
 		if(start < Command.length() - 1){
-			Tokens.add(Command.substring(start).replaceAll("\\\\(.)", "$1"));
+			Tokens.add(TokenBuilder.toString());
+			TokenBuilder.delete(0, TokenBuilder.length());
 		}
 		return Tokens;
 	}

@@ -17,7 +17,7 @@ public class ShellTest extends KTestCase {
 	@Override
 	public void Test() {
 		Konoha konoha = new Konoha(new ShellGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
-		konoha.Eval("$(ls -la | grep .txt > listoftext.txt)", 0);
+		konoha.Eval("$(echo 'ls -la | grep \\'.txt\\' > \"listoftext.txt\"')", 0);
 	}
 
 	public static void main(String[] args) {
