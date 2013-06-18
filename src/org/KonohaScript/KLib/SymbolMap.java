@@ -10,6 +10,15 @@ public class SymbolMap {
 		// TODO (tsuji213)
 	}
 }
+
+class SymbolMapTest {
+	public static void main(String[] args) {
+		// Create Map
+		// set Value with Some Key
+		// get Value from Map
+		// check Value
+	}
+}
 ////-------------------------------------------------------------------------
 ////KHashMap
 //
