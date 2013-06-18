@@ -6,7 +6,7 @@ import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Grammer.MiniKonohaGrammar;
+import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.SyntaxTree.AndNode;

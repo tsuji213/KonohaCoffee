@@ -1,4 +1,4 @@
-package org.KonohaScript.Grammer;
+package org.KonohaScript.Grammar;
 
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.KonohaArray;

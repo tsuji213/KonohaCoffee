@@ -8,7 +8,7 @@ import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Grammer.MiniKonohaGrammar;
+import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -433,7 +433,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	public static void main(String[] args) {
 		Konoha konoha = new Konoha(new MiniKonohaGrammar(), LeafJSCodeGen.class.getName());
-		//konoha.Eval("3", 0);
+		konoha.Eval("123456", 0);
 		//konoha.Eval("int add(int x) { return x + 1; }", 0);
 		konoha.Eval("int one(int x) { return 1; };", 0);
 		konoha.Eval("one(0);", 0);

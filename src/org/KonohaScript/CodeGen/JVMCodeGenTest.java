@@ -7,7 +7,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Grammer.MiniKonohaGrammar;
+import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
