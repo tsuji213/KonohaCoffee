@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.*;
 
+import org.KonohaScript.Grammer.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
-import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 
 @KonohaPure
 class KConsole {

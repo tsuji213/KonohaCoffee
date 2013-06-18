@@ -31,9 +31,9 @@ package org.KonohaScript;
 
 import java.util.HashMap;
 
+import org.KonohaScript.Grammer.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
-import org.KonohaScript.MiniKonoha.MiniKonohaGrammar;
 import org.KonohaScript.Parser.KonohaGrammar;
 
 class KKeyIdMap {

@@ -1,4 +1,4 @@
-package org.KonohaScript.MiniKonoha;
+package org.KonohaScript.Grammer;
 
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaDebug;

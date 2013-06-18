@@ -27,7 +27,8 @@ package org.KonohaScript;
 import org.KonohaScript.KLib.KonohaMap;
 
 public class KonohaObject {
-	public KonohaType				TypeInfo;
+	public KonohaType	TypeInfo;
+	// TODO (tsuji213) replace KonohaMap => SymbolMap
 	public KonohaMap	prototypes;
 
 	KonohaObject(KonohaType TypeInfo) {
@@ -36,14 +37,14 @@ public class KonohaObject {
 	}
 
 	public Object get(String FieldName) {
-		if(this.prototypes == null) {
+		if (this.prototypes == null) {
 			return null;
 		}
 		return this.prototypes.get(FieldName);
 	}
 
 	public void set(String FieldName, Object Obj) {
-		if(this.prototypes == null) {
+		if (this.prototypes == null) {
 			this.prototypes = new KonohaMap();
 		}
 		this.prototypes.put(FieldName, Obj);
