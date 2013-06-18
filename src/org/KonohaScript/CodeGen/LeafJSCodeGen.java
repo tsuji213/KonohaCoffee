@@ -301,7 +301,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	@Override
 	public boolean ExitAssign(AssignNode Node) {
 		String Right = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ") + Node.SourceToken.ParsedText + " = " + Right);
+		String Left = this.pop();
+		this.push((this.UseLetKeyword ? "let " : "var ") + Left + " = " + Right);
 		return true;
 	}
 
@@ -416,7 +417,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	@Override
 	public boolean ExitThrow(ThrowNode Node) {
 		String Expr = this.pop();
-		this.push("throw " + Expr + ";");
+		this.push("throw " + Expr);
 		return false;
 	}
 
@@ -428,8 +429,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean ExitError(ErrorNode Node) {
-		String Expr = this.pop();
-		this.push("throw new Exception(" + Expr + ");");
+		String Expr = Node.ErrorMessage;
+		this.push("throw new Exception(" + Expr + ")");
 		return false;
 	}
 

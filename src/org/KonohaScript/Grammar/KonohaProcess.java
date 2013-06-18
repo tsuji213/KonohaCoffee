@@ -49,9 +49,9 @@ public abstract class KonohaProcess {
 	}
 
 	public KonohaProcess(String ProcessType) {
-		if (ProcessType.equals("PIPE")) {
+		if(ProcessType.equals("PIPE")) {
 
-		} else if (ProcessType.equals("REDIRECT")) {
+		} else if(ProcessType.equals("REDIRECT")) {
 
 		} else {
 			throw new RuntimeException();

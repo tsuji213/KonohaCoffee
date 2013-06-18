@@ -35,7 +35,7 @@ public abstract class KTestCase implements TestAssert {
 	}
 
 	private void Check(boolean Actual, boolean Expected) {
-		if (Actual != Expected) {
+		if(Actual != Expected) {
 			PrintErrorInfo(4);
 		}
 	}
