@@ -110,16 +110,16 @@ class KonohaProcess {
 		
 		subProc1.pipe(subProc2);
 //		subProc1.writeToFile("log.txt");
-		System.out.print(subProc2.getStdout());
-		System.err.print(subProc2.getStderr());
+		assert true: subProc2.getStdout();
+		assert true: subProc2.getStderr();
 		
 		String Args3[] = {"public"};
 		KonohaProcess subProc3 = new KonohaProcess("grep");
 		subProc3.setArgument(Args3);
 		subProc3.start();
 		subProc3.readFromFile("src/org/KonohaScript/KonohaNameSpace.java");
-		System.out.print(subProc3.getStdout());
-		System.err.print(subProc3.getStderr());
+		assert true: subProc3.getStdout();
+		assert true: subProc3.getStderr();
 	}
 	
 	public KonohaProcess(String command) {
