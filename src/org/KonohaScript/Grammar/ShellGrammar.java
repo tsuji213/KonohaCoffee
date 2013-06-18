@@ -45,12 +45,12 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		ParsedTokenList.add(Token);
 		return pos;
 	}
-	
+
 	/*
 	 * Command: command name & arguments & redirect
 	 * CommandLine: piped commands
 	 */
-	
+
 	private ArrayList<String> SplitIntoCommands(String CommandLine) {
 		ArrayList<String> Commands = new ArrayList<String>();
 		int start = 0;
@@ -71,7 +71,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		return Commands;
 	}
-	
+
 	private ArrayList<String> SplitIntoCommandTokens(String Command){
 		ArrayList<String> Tokens = new ArrayList<String>();
 		int start = 0;
@@ -91,30 +91,57 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 					Tokens.add(Command.substring(start, pos).replaceAll("\\\\(.)", "$1"));
 					start = pos + 1;
 				}
-			} 
+			}
 		}
 		if(start < Command.length() - 1){
 			Tokens.add(Command.substring(start).replaceAll("\\\\(.)", "$1"));
 		}
 		return Tokens;
 	}
-	
+
 	private String makeArgumentsString(ArrayList<String> Tokens){
-		StringBuilder str = new StringBuilder();
-		str.append("[\"");
-		for(int i = 1; i < Tokens.size(); i++){
-			if(i > 1){
-				str.append("\", \"");
-			}
+		
+		int n = Tokens.size();
+		for(int i = 1; i < n; i++){
 			String tk = Tokens.get(i);
 			if(tk.equals(">") || tk.equals("<")){
-				i++;
-				continue;
+				n = i;
+				break;
 			}
-			str.append(tk);
 		}
-		str.append("\"]");
-		return str.toString();
+		if(n > 0){
+			StringBuilder str = new StringBuilder();
+			str.append("[\"");
+			for(int i = 1; i < n; i++){
+				if(i > 1){
+					str.append("\", \"");
+				}
+				str.append(Tokens.get(i));
+			}
+			str.append("\"]");
+			return str.toString();
+		}
+		return "[]";
+	}
+
+	private String FindOutputFileName(ArrayList<String> Tokens){
+		for(int i = 1; i < Tokens.size(); i++){
+			String tk = Tokens.get(i);
+			if(tk.equals(">") && i + 1 < Tokens.size()){
+				return Tokens.get(i + 1);
+			}
+		}
+		return null;
+	}
+
+	private String FindInputFileName(ArrayList<String> Tokens){
+		for(int i = 1; i < Tokens.size(); i++){
+			String tk = Tokens.get(i);
+			if(tk.equals("<") && i + 1 < Tokens.size()){
+				return Tokens.get(i + 1);
+			}
+		}
+		return null;
 	}
 
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -122,35 +149,46 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		String CommandLine = ShellToken.ParsedText.substring(2, ShellToken.ParsedText.length() - 1);
 
 		//KonohaDebug.P("Shell: " + CommandLine);
-		
+
 		// split commandline by pipe
 		ArrayList<String> Commands = SplitIntoCommands(CommandLine);
-		
+
 		StringBuilder SourceBuilder = new StringBuilder();
-		
-		int i = 0;
-		for(String str : Commands){
-			ArrayList<String> Tokens = SplitIntoCommandTokens(str);
+
+		int n = Commands.size();
+		for(int i = 0; i < n; i++){
+			ArrayList<String> Tokens = SplitIntoCommandTokens(Commands.get(i));
 			String procName = "p" + i;
 			SourceBuilder.append("SubProc " + procName + " = new SubProc(\"" + Tokens.get(0) + "\");\n");
 			SourceBuilder.append(procName + ".SetArguments(" + makeArgumentsString(Tokens) + ");\n");
+			if(i == 0){
+				String Input = FindInputFileName(Tokens);
+				if(Input != null){
+					SourceBuilder.append(procName + "." + "setInputStream(new InputFileStream(\"" + Input + "\"));\n");
+				}
+			}
 			if(i > 0){
 				SourceBuilder.append("p" + (i-1) + ".pipe(p" + i + ");\n");
 			}
+			if(i == n - 1){
+				String Output = FindOutputFileName(Tokens);
+				if(Output != null){
+					SourceBuilder.append(procName + "." + "setOutputStream(new OutputFileStream(\"" + Output + "\"));\n");
+				}
+			}
 			SourceBuilder.append(procName + ".fg();\n");
-			i++;
 		}
 		System.out.println(SourceBuilder.toString());
-		
+
 		KonohaNameSpace ns = UNode.NodeNameSpace;
-		
+
 		TokenList BufferList = ns.Tokenize(SourceBuilder.toString(), ShellToken.uline);
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode ShellUNode = ns.Parser.ParseNewNode(ns, null, BufferList, next, BufferList.size(), KonohaConst.AllowEmpty);
 		UNode.AddParsedNode(ShellUNode);
 		System.out.println("untyped tree: " + ShellUNode);
-		
+
 		return BeginIdx + 1;
 	}
 
