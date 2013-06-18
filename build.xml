@@ -81,5 +81,7 @@
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>
 		</jar>
+		<java jar="konoha-test.jar" fork="true">
+		</java>
 	</target>
 </project>

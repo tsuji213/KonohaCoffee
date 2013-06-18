@@ -222,6 +222,8 @@ void main() {
 	xml.println("			</manifest>");
 
 	xml.println("		</jar>");
+	xml.println("		<java jar=\"konoha-test.jar\" fork=\"true\">");
+	xml.println("		</java>");
 	xml.println("	</target>");
 
 	xml.println("</project>");

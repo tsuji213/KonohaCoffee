@@ -7,6 +7,10 @@ public abstract class KTestRunnerBase {
 			TestCase.Test();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+		}
+		catch (Error e) {
+			e.printStackTrace();
 		} finally {
 			TestCase.Exit();
 		}
