@@ -294,7 +294,7 @@ public final class KonohaNameSpace implements KonohaConst {
 			TypeEnv Gamma = new TypeEnv(this, null);
 			TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = this.GetBuilder();
-			ResultValue = Builder.EvalAtTopLevel(TNode);
+			ResultValue = Builder.EvalAtTopLevel(TNode, this.GetGlobalObject());
 			UNode = UNode.NextNode;
 		}
 		return ResultValue;

@@ -13,7 +13,7 @@ import org.KonohaScript.Tester.KTestCase;
 
 public class SyntaxModuleParserTest extends KTestCase {
 
-	void CompileAndCheck(KonohaNameSpace NameSpace, String Source) {
+	Object CompileAndCheck(KonohaNameSpace NameSpace, String Source) {
 		TokenList BufferList = NameSpace.Tokenize(Source, 0);
 		TokenList TokenList = new TokenList();
 		NameSpace.PreProcess(BufferList, 0, BufferList.size(), TokenList);
@@ -24,8 +24,9 @@ public class SyntaxModuleParserTest extends KTestCase {
 		TypeEnv Gamma = new TypeEnv(NameSpace, null);
 		TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
 		KonohaBuilder Builder = NameSpace.GetBuilder();
-		Object ResultValue = Builder.EvalAtTopLevel(TNode);
-		System.out.println(ResultValue);
+		Object ResultValue = Builder.EvalAtTopLevel(TNode, NameSpace.GetGlobalObject());
+
+		return ResultValue;
 	}
 
 	Konoha			konoha;
@@ -33,7 +34,7 @@ public class SyntaxModuleParserTest extends KTestCase {
 
 	@Override
 	public void Init() {
-		konoha = new Konoha(new MiniKonohaGrammer(), "org.KonohaScript.CodeGen.LeafJSCodeGen");
+		konoha = new Konoha(new MiniKonohaGrammer(), "org.KonohaScript.CodeGen.ASTInterpreter");
 		NameSpace = konoha.DefaultNameSpace;
 
 	}
@@ -48,8 +49,8 @@ public class SyntaxModuleParserTest extends KTestCase {
 		//CompileAndCheck(Mod, NameSpace, "f(b * c);");
 		//CompileAndCheck(Mod, NameSpace, "int sub(int a) {  return (a - 100);}");
 		//CompileAndCheck(Mod, NameSpace, "int f(int a) {  return g(a);}");
-		CompileAndCheck(NameSpace, "int add(int x) { return x + 1; }");
-		CompileAndCheck(NameSpace, "add(10);");
+		AssertEqual(CompileAndCheck(NameSpace, "int add(int x) { return x + 1; }"), null);
+		AssertEqual(CompileAndCheck(NameSpace, "add(10);"), new Integer(11));
 		//CompileAndCheck(Mod, NameSpace, "(10);");
 		//CompileAndCheck(Mod, NameSpace, "20;");
 		//CompileAndCheck(Mod, NameSpace, "10 + 20;");
@@ -57,5 +58,12 @@ public class SyntaxModuleParserTest extends KTestCase {
 		//source = "if(a < b) { f(); } else { return 1; };";
 		//source = "if(a < b) { return 1; };";
 
+	}
+
+	public static void main(String[] args) {
+		SyntaxModuleParserTest Test = new SyntaxModuleParserTest();
+		Test.Init();
+		Test.Test();
+		Test.Exit();
 	}
 }

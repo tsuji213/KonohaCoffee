@@ -27,7 +27,7 @@ package org.KonohaScript;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public interface KonohaBuilder {
-	Object EvalAtTopLevel(TypedNode Node);
+	Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject);
 
 	KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method);
 
@@ -44,7 +44,7 @@ class DefaultKonohaBuilder implements KonohaBuilder {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node) {
+	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
 		return null; // return value of eval
 	}
 

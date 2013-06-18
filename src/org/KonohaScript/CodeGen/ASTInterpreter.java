@@ -1,12 +1,11 @@
 package org.KonohaScript.CodeGen;
 
-import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaObject;
+import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.SyntaxTree.AndNode;
@@ -49,7 +48,13 @@ class ASTInterpreterMethodInvoker extends KonohaMethodInvoker {
 
 	@Override
 	public Object Invoke(Object[] Args) {
-		return this.Interpreter.Eval((TypedNode) this.CompiledCode, this.Method);
+		KonohaParam Param = this.Method.Param;
+		assert (Param.GetParamSize() == Args.length - 1);
+		this.Interpreter.BindLocalVariable("this", Args[0]);
+		for(int i = 1; i < Args.length; i++) {
+			this.Interpreter.BindLocalVariable(Param.ArgNames[i - 1], Args[i]);
+		}
+		return this.Interpreter.Eval((TypedNode) this.CompiledCode, this.Method, null);
 	}
 }
 
@@ -210,6 +215,10 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	public ASTInterpreter() {
 		super(null);
 		this.Init();
+	}
+
+	public void BindLocalVariable(String FieldName, Object Value) {
+		this.LocalVariable.put(FieldName, Value);
 	}
 
 	public ASTInterpreter(KonohaMethod MethodInfo) {
@@ -528,25 +537,31 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		throw new RuntimeException(Node.ErrorMessage);
 	}
 
-	public Object Eval(TypedNode Node, KonohaMethod Method) {
+	public Object Eval(TypedNode Node, KonohaMethod Method, KonohaObject GlobalObject) {
 		KonohaArray Params = new KonohaArray();
 		if(Method != null) {
 			for(int i = 0; i < Method.Param.GetParamSize(); i++) {
 				Params.add(new Param(i, Method.GetParamType(Method.ClassInfo, i), Method.Param.ArgNames[i]));
 			}
 		} else {
+			this.BindLocalVariable("this", GlobalObject);
 			//FIXME
 			//Params.add(new Param(0, null, "this"));
 		}
 		this.Prepare(Method, Params);
-		this.VisitList(Node);
+		try {
+			this.VisitList(Node);
+		}
+		catch (ReturnException e) {
+			/* do nothing */
+		}
 		Object Ret = this.Pop();
 		return Ret;
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node) {
-		Object Ret = this.Eval(Node, null);
+	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
+		Object Ret = this.Eval(Node, null, GlobalObject);
 		if(Ret == null) {
 			Ret = "";
 		}
@@ -560,10 +575,10 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		return this.Compile(Node);
 	}
 
-	public static void main(String[] args) {
-		Konoha konoha = new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
-		konoha.Eval("3 + 1", 0);
-		//konoha.Eval("int add(int x) { return x + 1; }", 0);
-		konoha.Eval("add(10);", 0);
-	}
+	//	public static void main(String[] args) {
+	//		Konoha konoha = new Konoha(new MiniKonohaGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
+	//		konoha.Eval("3 + 1", 0);
+	//		//konoha.Eval("int add(int x) { return x + 1; }", 0);
+	//		konoha.Eval("add(10);", 0);
+	//	}
 }
