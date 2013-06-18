@@ -23,33 +23,41 @@
  ***************************************************************************/
 
 package org.KonohaScript.KLib;
+
 import java.util.ArrayList;
-//import java.util.HashMap;
 
 public final class KonohaArray {
-	private ArrayList<Object> List;
+	private final ArrayList<Object>	List;
+
 	public KonohaArray() {
 		this.List = new ArrayList<Object>();
 	}
+
 	public KonohaArray(int DefaultSize) {
 		this.List = new ArrayList<Object>(DefaultSize);
 	}
+
 	public int size() {
-		return List.size();
+		return this.List.size();
 	}
+
 	public void add(Object Value) {
-		List.add(Value);
+		this.List.add(Value);
 	}
+
 	public Object get(int index) {
-		return List.get(index);
+		return this.List.get(index);
 	}
+
 	public void set(int index, Object Value) {
-		List.set(index, Value);
+		this.List.set(index, Value);
 	}
+
 	public Object remove(int index) {
-		return List.remove(index);
+		return this.List.remove(index);
 	}
+
 	public void clear() {
-		List.clear();
+		this.List.clear();
 	}
 }

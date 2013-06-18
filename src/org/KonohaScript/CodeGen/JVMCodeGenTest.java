@@ -15,12 +15,13 @@ import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
+import org.KonohaScript.Tester.KTestCase;
 
 class TestClassLoader extends ClassLoader {
 
 }
 
-public class JVMCodeGenTest {
+public class JVMCodeGenTest extends KTestCase {
 
 	public static final Konoha		KonohaContext	= new Konoha(new MiniKonohaGrammar(), null);
 	public static final KonohaType	VoidTy			= KonohaContext.VoidType;
@@ -139,31 +140,74 @@ public class JVMCodeGenTest {
 		Builder.Compile(Block2);
 	}
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalArgumentException,
-			SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		JVMCodeGenerator Builder = new JVMCodeGenerator();
+	JVMCodeGenerator	Builder;
 
-		testReturnConst(Builder);
-		testAddOne(Builder);
-		testIf(Builder);
-		testFibo(Builder);
+	@Override
+	public void Init() {
+		this.Builder = new JVMCodeGenerator();
 
-		Builder.OutputClassFile("Script", "./bin/org/KonohaScript/CodeGen/");
-		ClassLoader cl = new TestClassLoader();
-		Class<?> c = cl.loadClass("org.KonohaScript.CodeGen.Script");
+	}
 
-		Object ret1 = c.getMethod("testReturnConst").invoke(null);
-		System.out.println(ret1);
-		assert ((Integer) ret1 == 1);
-		Object ret2 = c.getMethod("testAddOne", int.class).invoke(null, 1);
-		System.out.println(ret2);
-		assert ((Integer) ret2 == 2);
-		Object ret3 = c.getMethod("testIf", int.class).invoke(null, 1);
-		System.out.println(ret3);
-		assert ((Integer) ret3 == 1);
-		Object ret4 = c.getMethod("testFibo", int.class).invoke(null, 10);
-		System.out.println(ret4);
-		assert ((Integer) ret3 == 55);
+	@Override
+	public void Exit() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void Test() {
+
+		testReturnConst(this.Builder);
+		testAddOne(this.Builder);
+		testIf(this.Builder);
+		testFibo(this.Builder);
+
+		try {
+			this.Builder.OutputClassFile("Script", "./bin/org/KonohaScript/CodeGen/");
+			ClassLoader cl = new TestClassLoader();
+			Class<?> c = cl.loadClass("org.KonohaScript.CodeGen.Script");
+
+			Object ret1 = c.getMethod("testReturnConst").invoke(null);
+			System.out.println(ret1);
+			this.AssertEqual(((Integer) ret1).intValue(), 1);
+			Object ret2 = c.getMethod("testAddOne", int.class).invoke(null, 1);
+			System.out.println(ret2);
+			this.AssertEqual(((Integer) ret2).intValue(), 2);
+
+			Object ret3 = c.getMethod("testIf", int.class).invoke(null, 1);
+			System.out.println(ret3);
+			this.AssertEqual(((Integer) ret3).intValue(), 1);
+
+			Object ret4 = c.getMethod("testFibo", int.class).invoke(null, 10);
+			System.out.println(ret4);
+			this.AssertEqual(((Integer) ret4).intValue(), 55);
+		}
+		catch (IOException e) {
+		}
+		catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

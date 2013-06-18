@@ -1,16 +1,16 @@
 package org.KonohaScript;
 
 public final class KonohaDebug {
-	public final static boolean UseBuiltInTest = true;
+	public final static boolean	UseBuiltInTest	= true;
 
 	public static void P(String msg) {
-		System.out.println("DEBUG: "+ msg);
-//		Exception e = new Exception();
-//		e.printStackTrace();
+		System.out.println("DEBUG: " + msg);
+		//		Exception e = new Exception();
+		//		e.printStackTrace();
 	}
 
 	public static void TODO(String msg) {
-		System.out.println("TODO: "+ msg);
+		System.out.println("TODO: " + msg);
 	}
 
 	public static void Indent(int Level, String Tab) {

@@ -47,4 +47,15 @@ public abstract class KonohaProcess {
 		//TODO(sekiguchi)
 		return null;
 	}
+
+	public KonohaProcess(String ProcessType) {
+		if (ProcessType.equals("PIPE")) {
+
+		} else if (ProcessType.equals("REDIRECT")) {
+
+		} else {
+			throw new RuntimeException();
+		}
+	}
+
 }

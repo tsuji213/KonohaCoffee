@@ -55,6 +55,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		this.LocalVariableRenameTables = new KonohaArray();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void AddLocalVariableRenameRule(String Name) {
 		int nameUsedTimes = 0;
 		int N = this.LocalVariableRenameTables.size();
@@ -76,6 +77,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	private String GetRenamedLocalName(String originalName) {
 		int N = this.LocalVariableRenameTables.size();
 		for(int i = N - 1; i >= 0; --i) {
+			@SuppressWarnings("unchecked")
 			HashMap<String, Integer> map = (HashMap<String, Integer>) this.LocalVariableRenameTables.get(i);
 			if(map.containsKey(originalName)) {
 				if(map.get(originalName) > 0) {

@@ -63,8 +63,8 @@ public interface KonohaConst {
 
 	// Syntax
 	public final static int		Term							= 1;
-	public final static int		UniaryOperator					= 1;/* same as Term for readability */
-	public final static int		Statement						= 1;/* same as Term for readability */
+	public final static int		UniaryOperator					= 1;										/* same as Term for readability */
+	public final static int		Statement						= 1;										/* same as Term for readability */
 	public final static int		BinaryOperator					= 1 << 1;
 	public final static int		SuffixOperator					= 1 << 2;
 	public final static int		LeftJoin						= 1 << 3;
@@ -72,12 +72,12 @@ public interface KonohaConst {
 	public final static int		PrecedenceShift					= 5;
 	public final static int		Precedence_CStyleValue			= (1 << PrecedenceShift);
 	public final static int		Precedence_CPPStyleScope		= (50 << PrecedenceShift);
-	public final static int		Precedence_CStyleSuffixCall		= (100 << PrecedenceShift);	/*x(); x[]; x.x x->x x++ */
-	public final static int		Precedence_CStylePrefixOperator	= (200 << PrecedenceShift);	/*++x; --x; sizeof x &x +x -x !x (T)x  */
+	public final static int		Precedence_CStyleSuffixCall		= (100 << PrecedenceShift);				/*x(); x[]; x.x x->x x++ */
+	public final static int		Precedence_CStylePrefixOperator	= (200 << PrecedenceShift);				/*++x; --x; sizeof x &x +x -x !x (T)x  */
 	//	Precedence_CppMember      = 300;  /* .x ->x */
-	public final static int		Precedence_CStyleMUL			= (400 << PrecedenceShift);	/* x * x; x / x; x % x*/
-	public final static int		Precedence_CStyleADD			= (500 << PrecedenceShift);	/* x + x; x - x */
-	public final static int		Precedence_CStyleSHIFT			= (600 << PrecedenceShift);	/* x << x; x >> x */
+	public final static int		Precedence_CStyleMUL			= (400 << PrecedenceShift);				/* x * x; x / x; x % x*/
+	public final static int		Precedence_CStyleADD			= (500 << PrecedenceShift);				/* x + x; x - x */
+	public final static int		Precedence_CStyleSHIFT			= (600 << PrecedenceShift);				/* x << x; x >> x */
 	public final static int		Precedence_CStyleCOMPARE		= (700 << PrecedenceShift);
 	public final static int		Precedence_CStyleEquals			= (800 << PrecedenceShift);
 	public final static int		Precedence_CStyleBITAND			= (900 << PrecedenceShift);
