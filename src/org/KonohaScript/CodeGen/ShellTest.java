@@ -2,12 +2,25 @@ package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.Konoha;
 import org.KonohaScript.Grammar.ShellGrammar;
+import org.KonohaScript.Tester.KTestCase;
 
-public class ShellTest extends ASTInterpreter {
-	public static void main(String[] args) {
+public class ShellTest extends KTestCase {
+
+	@Override
+	public void Init() {
+	}
+
+	@Override
+	public void Exit() {
+	}
+
+	@Override
+	public void Test() {
 		Konoha konoha = new Konoha(new ShellGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
 		konoha.Eval("$(ls -la)", 0);
-		//konoha.Eval("int add(int x) { return x + 1; }", 0);
-		//konoha.Eval("add(10);", 0);
+	}
+
+	public static void main(String[] args) {
+		new ShellTest().Test();
 	}
 }

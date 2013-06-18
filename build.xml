@@ -75,6 +75,8 @@
 	<target name="test" depends="build,jar,test-build">
 		<jar jarfile="konoha-test.jar">
 			<fileset dir="bin/test" includes="**/*.class" />
+			<zipfileset src="konoha.jar" />
+		<zipfileset src="MiniKonoha.Peg.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>

@@ -176,8 +176,8 @@ void main() {
 		String e = extlibs.get(i);
 		String libname = library(e.substring(0, e.getlength() - ".settings".getlength()));
 		xml.println("		<delete file=\"${libname}.jar\" />");
-		xml.println("		<delete file=\"konoha-test.jar\" />");
 	}
+	xml.println("		<delete file=\"konoha-test.jar\" />");
 	xml.println("	</target>");
 
 	xml.println("	<!-- ================================== -->");
@@ -210,6 +210,13 @@ void main() {
 	xml.println("	<target name=\"test\" depends=\"build,jar,test-build\">");
 	xml.println("		<jar jarfile=\"konoha-test.jar\">");
 	xml.println("			<fileset dir=\"${testbin}\" includes=\"**/*.class\" />");
+	xml.println("			<zipfileset src=\"konoha.jar\" />");
+	for (int i=0; i < extlibs.getsize(); i = i + 1) {
+		String e = extlibs.get(i);
+		String libname = library(e.substring(0, e.getlength() - ".settings".getlength()));
+		xml.println("		<zipfileset src=\"${libname}.jar\" />");
+	}
+
 	xml.println("			<manifest>");
 	xml.println("				<attribute name=\"Main-Class\" value=\"org.KonohaScript.Tester.KTestRunner\" />");
 	xml.println("			</manifest>");

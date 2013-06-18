@@ -3,7 +3,7 @@ package org.KonohaScript.Peg.MiniKonoha;
 import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Grammer.KonohaInt;
+import org.KonohaScript.Grammar.KonohaInt;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaParser;
