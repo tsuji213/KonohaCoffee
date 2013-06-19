@@ -135,9 +135,6 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 	}
 
 	public static void main(String[] args) {
-		LeafJSCodeGenTest tester = new LeafJSCodeGenTest();
-		tester.Init();
-		tester.Test();
-		tester.Exit();
+		new LeafJSCodeGenTest().Execute();
 	}
 }

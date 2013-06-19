@@ -11,7 +11,7 @@ import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 import org.KonohaScript.Tester.KTestCase;
 
-public class SyntaxModuleParserTest extends KTestCase {
+public class MiniKonohaGrammerTest extends KTestCase {
 
 	Object CompileAndCheck(KonohaNameSpace NameSpace, String Source) {
 		TokenList BufferList = NameSpace.Tokenize(Source, 0);
@@ -61,9 +61,6 @@ public class SyntaxModuleParserTest extends KTestCase {
 	}
 
 	public static void main(String[] args) {
-		SyntaxModuleParserTest Test = new SyntaxModuleParserTest();
-		Test.Init();
-		Test.Test();
-		Test.Exit();
+		new MiniKonohaGrammerTest().Execute();
 	}
 }
