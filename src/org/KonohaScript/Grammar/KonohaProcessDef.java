@@ -9,15 +9,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
 
 public class KonohaProcessDef implements KonohaConst {
 
 	public void DefineMethod(KonohaNameSpace ns) {
-		KonohaType BaseClass = ns.LookupTypeInfo(Process.class);
+		KonohaType BaseClass = ns.LookupHostLangType(Process.class);
 		
 		// define Constructor
 		String MN_NewProcess = "NewProcess";
