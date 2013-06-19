@@ -1,6 +1,6 @@
 package org.KonohaScript.Tester;
 
-public abstract class KTestRunnerBase {
+public class KTestRunnerBase {
 	void Run(KTestCase TestCase) {
 		try {
 			TestCase.Init();
