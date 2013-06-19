@@ -7,6 +7,7 @@ package org.KonohaScript.JUtils;
  * @author masa
  * 
  */
+
 public @interface KonohaPure {
 	
 }

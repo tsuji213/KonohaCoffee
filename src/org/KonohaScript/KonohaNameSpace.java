@@ -150,10 +150,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
-		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-				Callee,
-				MethodName,
-				null));
+		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -224,7 +221,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public KonohaObject GetGlobalObject() {
 		Object GlobalObject = this.GetDefinedSymbol(KonohaConst.GlobalConstName);
 		if(GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
-			GlobalObject = this.CreateGlobalObject(KonohaConst.SingletonClass, "*GlobalType*");
+			GlobalObject = this.CreateGlobalObject(KonohaConst.SingletonClass, "global");
 			this.DefineSymbol(KonohaConst.GlobalConstName, GlobalObject);
 		}
 		return (KonohaObject) GlobalObject;
@@ -294,8 +291,8 @@ public final class KonohaNameSpace implements KonohaConst {
 		return ResultValue;
 	}
 
-	// Builder
 
+	// Builder
 	private KonohaBuilder	Builder;
 
 	public KonohaBuilder GetBuilder() {
@@ -308,9 +305,9 @@ public final class KonohaNameSpace implements KonohaConst {
 		return this.Builder;
 	}
 
-	private Object LoadClass(String Name) {
+	private Object LoadClass(String ClassName) {
 		try {
-			Class<?> ClassInfo = Class.forName(Name);
+			Class<?> ClassInfo = Class.forName(ClassName);
 			return ClassInfo.newInstance();
 		}
 		catch (ClassNotFoundException e1) {
