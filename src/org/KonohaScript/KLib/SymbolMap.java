@@ -1,22 +1,60 @@
 package org.KonohaScript.KLib;
 
 public class SymbolMap {
+
+	public Object[] list;
+	
+	public class List{
+		int key;
+		Object value;
+		Object next;
+	}
+
+	public Object MakeFreeList(int s,int e){
+		for(int i = s; i < e-1; i++){
+			this.list[i] = new List;
+		}
+	}
+	
 	public Object Get(int KeySymbol) {
 		// TODO (tsuji213)
+		if(this.list[KeySymbol].key == KeySymbol){
+			return this.list[KeySymbol].value;	
+		}
+		
+		public Object nextlist = this.list[KeySymbol].next;
+		while(nextlist != null){
+			if(nextlist.key == KeySymbol){
+				return this.list[KeySymbol].value;
+			}
+			nextlist = sublist.next;
+		}
 		return null;
 	}
 
 	public void Set(int KeySymbol, Object Value) {
 		// TODO (tsuji213)
+		if(this.list[KeySymbol].value == null){
+			this.list[KeySymbol].key = KeySymbol;
+			this.list[KeySymbol].value = Value;
+		}else{
+			public Object sublist = new List;
+			sublist.key = KeySymbol;
+			sublist.value = Value;
+			sublist.next = this.list[KeySymbol].next;
+			this.list[KeySymbol].next = sublist;
+		}
+		
+		}
 	}
 }
 
 class SymbolMapTest {
 	public static void main(String[] args) {
-		// Create Map
-		// set Value with Some Key
-		// get Value from Map
-		// check Value
+		SymbolMap test = new SymbolMap();// Create Map
+		test.Set(KeySymbol, Value)// set Value with Some Key
+		Object testvalue = test.Get(KeySymbol)// get Value from Map
+		if(testvalue == Value) return;// check Value
 	}
 }
 ////-------------------------------------------------------------------------
