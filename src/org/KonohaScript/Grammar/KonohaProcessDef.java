@@ -9,43 +9,87 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
+import org.KonohaScript.KonohaParam;
+import org.KonohaScript.KonohaType;
 
-public class KonohaProcessDef {
+public class KonohaProcessDef implements KonohaConst {
 
 	public void DefineMethod(KonohaNameSpace ns) {
-		//TODO(sekiguchi)
+		KonohaType BaseClass = ns.LookupTypeInfo(Process.class);
+		
+		// define Constructor
+		String MN_NewProcess = "NewProcess";
+		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
+		BaseClass.DefineMethod(0, MN_NewProcess, 
+				Process_String_Param, this, MN_NewProcess);	//FIXME
+		
+		// define SetArgument()
+		String MN_SetArgument = "SetArgument";
+		KonohaParam void_Strings_Param = KonohaParam.ParseOf(ns, "void String[] x");
+		BaseClass.DefineMethod(0, MN_SetArgument, 
+				void_Strings_Param, this, MN_SetArgument);	
+		
+		KonohaParam void_String_Param = KonohaParam.ParseOf(ns, "void String x");
+		BaseClass.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
+		
+		// define Start()
+		String MN_Start = "Start";
+		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void");	//FIXME
+		BaseClass.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
+	
+		// define Pipe()
+		String MN_Pipe = "Pipe";
+		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void Process x");
+		BaseClass.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
+		
+		// define ReadFromFile()
+		String MN_ReadFromFile = "ReadFromFile";
+		BaseClass.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);	
+		
+		// define GetOut()
+		String MN_GetOut = "GetOut";
+		KonohaParam String_Param = KonohaParam.ParseOf(ns, "String");
+		BaseClass.DefineMethod(0, MN_GetOut, String_Param, this, MN_GetOut);
+		
+		// define GetError()
+		String MN_GetError = "GetError";
+		BaseClass.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
+		
+		//define WaitFor()
+		String MN_WaitFor = "WaitFor";
+		KonohaParam void_int_Param = KonohaParam.ParseOf(ns, "void int x");
+		BaseClass.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
+		
+		// define GetRetValue()
+		String MN_GetRetValue = "GetRetValue";
+		KonohaParam int_Param = KonohaParam.ParseOf(ns, "int");
+		BaseClass.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
+	}
+	
+
+	public static Process NewProcess(String Command) {
+		return new Process(Command);
 	}
 
-	public static KonohaProcess NewKonohaProcess(String Command) {
-		return new KonohaProcess(Command);
-	}
-
-	public static void SetArgument(KonohaProcess Process, String[] Args) {
+	public static void SetArgument(Process Process, String[] Args) {
 		Process.setArgument(Args);
 	}
 
-	public static void SetArgument(KonohaProcess Process, String Arg) {
+	public static void SetArgument(Process Process, String Arg) {
 		Process.setArgument(Arg);
 	}
 
-	public static void BackGround() {
-		//TODO(sekiguchi)
-	}
-
-	public static void ForeGround() {
-		//TODO(sekiguchi)
-	}
-
-	public static void Start(KonohaProcess Process) {
+	public static void Start(Process Process) {
 		Process.start();
 	}
 
-	public static void Pipe(KonohaProcess Process, KonohaProcess dest) {
+	public static void Pipe(Process Process, Process dest) {
 		Process.pipe(dest);
 	}
 
-	public static void ReadFromFile(KonohaProcess Process, String fileName) {
+	public static void ReadFromFile(Process Process, String fileName) {
 		Process.readFromFile(fileName);
 	}
 
@@ -54,30 +98,25 @@ public class KonohaProcessDef {
 		return 0;
 	}
 
-	public static String GetResult() {
-		//TODO(sekiguchi)
-		return null;
-	}
-
-	public static String GetOut(KonohaProcess Process) {
+	public static String GetOut(Process Process) {
 		return Process.getStdout();
 	}
 
-	public static String GetError(KonohaProcess Process) {
+	public static String GetError(Process Process) {
 		return Process.getStderr();
 	}
 	
-	public static void waitFor(KonohaProcess Process, long time) {
+	public static void WaitFor(Process Process, int time) {
 		Process.waitFor(time);
 	}
 	
-	public static int getRetValue(KonohaProcess Process) {
+	public static int GetRetValue(Process Process) {
 		return Process.getRet();
 	}
 }
 
-class KonohaProcess {
-	private Process					proc;
+class Process {
+	private java.lang.Process					proc;
 
 	private OutputStream			stdin	= null;
 	private InputStream				stdout	= null;
@@ -86,7 +125,7 @@ class KonohaProcess {
 	private final String			command;
 	private final ArrayList<String>	Arguments;
 
-	public KonohaProcess(String command) {
+	public Process(String command) {
 		this.command = command;
 		this.Arguments = new ArrayList<String>();
 	}
@@ -120,7 +159,7 @@ class KonohaProcess {
 		}
 	}
 
-	public void pipe(KonohaProcess destProc) {
+	public void pipe(Process destProc) {
 		new StreamSetter(this.stdout, destProc.stdin).start();
 	}
 

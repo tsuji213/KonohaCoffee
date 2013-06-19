@@ -13,7 +13,7 @@ public class KonohaProcessTest extends KTestCase {
 	}
 
 	void testEchoWithNoArgument() {
-		KonohaProcess Proc1 = new KonohaProcess("echo");
+		Process Proc1 = new Process("echo");
 		Proc1.start();
 		Proc1.waitFor();
 		this.AssertEqual(Proc1.getStdout(), "\n");
@@ -21,7 +21,7 @@ public class KonohaProcessTest extends KTestCase {
 	}
 
 	void testSimpleEcho() {
-		KonohaProcess Proc1 = new KonohaProcess("echo");
+		Process Proc1 = new Process("echo");
 		String Args1[] = { "1234" };
 		Proc1.setArgument(Args1);
 		Proc1.start();
@@ -31,12 +31,12 @@ public class KonohaProcessTest extends KTestCase {
 	}
 
 	void testPipe() {
-		KonohaProcess Proc1 = new KonohaProcess("echo");
+		Process Proc1 = new Process("echo");
 		String Args1[] = { "1:2:3" };
 		Proc1.setArgument(Args1);
 		Proc1.start();
 
-		KonohaProcess Proc2 = new KonohaProcess("cut");
+		Process Proc2 = new Process("cut");
 		String Args2[] = { "-d", ":", "-f", "2" };
 		Proc2.setArgument(Args2);
 		Proc2.start();
