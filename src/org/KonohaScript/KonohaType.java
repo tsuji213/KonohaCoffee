@@ -60,7 +60,7 @@ public class KonohaType {
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
 		if(ClassInfo != Object.class) {
-			this.SuperClass = KonohaContext.LookupTypeInfo(ClassInfo.getSuperclass());
+			this.SuperClass = KonohaContext.LookupHostLangType(ClassInfo.getSuperclass());
 		}
 	}
 
@@ -83,13 +83,13 @@ public class KonohaType {
 	// }
 
 	static KonohaMethod ConvertMethod(Konoha KonohaContext, Method Method) {
-		KonohaType ThisType = KonohaContext.LookupTypeInfo(Method.getClass());
+		KonohaType ThisType = KonohaContext.LookupHostLangType(Method.getClass());
 		Class<?>[] ParamTypes = Method.getParameterTypes();
 		KonohaType[] ParamData = new KonohaType[ParamTypes.length + 1];
 		String[] ArgNames = new String[ParamTypes.length + 1];
-		ParamData[0] = KonohaContext.LookupTypeInfo(Method.getReturnType());
+		ParamData[0] = KonohaContext.LookupHostLangType(Method.getReturnType());
 		for(int i = 0; i < ParamTypes.length; i++) {
-			ParamData[i + 1] = KonohaContext.LookupTypeInfo(ParamTypes[i]);
+			ParamData[i + 1] = KonohaContext.LookupHostLangType(ParamTypes[i]);
 			ArgNames[i] = "arg" + i;
 		}
 		KonohaParam Param = new KonohaParam(ParamData.length, ParamData, ArgNames);

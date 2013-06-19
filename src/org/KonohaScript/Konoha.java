@@ -163,7 +163,7 @@ public final class Konoha implements KonohaConst {
 		}
 	}
 
-	KonohaType LookupTypeInfo(Class<?> ClassInfo) {
+	KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType) this.ClassNameMap.get(ClassInfo.getName());
 		if(TypeInfo == null) {
 			TypeInfo = new KonohaType(this, ClassInfo);

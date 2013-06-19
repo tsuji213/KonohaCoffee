@@ -66,7 +66,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	// class
 	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
-			return this.KonohaContext.LookupTypeInfo(Class.forName(ClassName));
+			return this.KonohaContext.LookupHostLangType(Class.forName(ClassName));
 
 		}
 		catch (ClassNotFoundException e) {
@@ -75,7 +75,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public final KonohaType LookupTypeInfo(Class<?> ClassInfo) {
-		return this.KonohaContext.LookupTypeInfo(ClassInfo);
+		return this.KonohaContext.LookupHostLangType(ClassInfo);
 	}
 
 	KonohaFunc MergeFunc(KonohaFunc f, KonohaFunc f2) {
