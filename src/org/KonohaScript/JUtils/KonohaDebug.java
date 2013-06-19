@@ -1,4 +1,4 @@
-package org.KonohaScript;
+package org.KonohaScript.JUtils;
 
 public final class KonohaDebug {
 	public final static boolean	UseBuiltInTest	= true;

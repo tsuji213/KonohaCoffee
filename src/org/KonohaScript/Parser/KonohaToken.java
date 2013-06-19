@@ -24,7 +24,7 @@
 
 package org.KonohaScript.Parser;
 
-import org.KonohaScript.KonohaDebug;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public final class KonohaToken {

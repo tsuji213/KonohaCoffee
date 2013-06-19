@@ -24,6 +24,7 @@
 
 package org.KonohaScript;
 
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;

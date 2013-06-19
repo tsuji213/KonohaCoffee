@@ -1,8 +1,8 @@
 package org.KonohaScript.PegParser;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaToken;

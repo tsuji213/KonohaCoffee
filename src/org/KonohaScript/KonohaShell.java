@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
+import org.KonohaScript.JUtils.KonohaPure;
 import org.KonohaScript.KLib.KonohaArray;
 
 @KonohaPure

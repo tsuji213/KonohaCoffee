@@ -27,6 +27,7 @@ package org.KonohaScript;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public final class KonohaFunc {

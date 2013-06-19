@@ -1,4 +1,4 @@
-package org.KonohaScript;
+package org.KonohaScript.JUtils;
 
 public interface KonohaConst {
 

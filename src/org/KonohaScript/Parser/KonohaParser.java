@@ -1,8 +1,8 @@
 package org.KonohaScript.Parser;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaNameSpace;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public class KonohaParser implements KonohaConst {

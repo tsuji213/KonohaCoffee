@@ -26,6 +26,7 @@ package org.KonohaScript;
 
 import java.lang.reflect.Method;
 
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;

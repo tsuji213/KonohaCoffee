@@ -23,6 +23,7 @@
  ***************************************************************************/
 
 package org.KonohaScript;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.*;
 
 public final class KonohaSymbol implements KonohaConst {

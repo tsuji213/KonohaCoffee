@@ -24,12 +24,12 @@
 
 package org.KonohaScript.Grammar;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;

@@ -2,10 +2,10 @@ package org.KonohaScript.Parser;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaFunc;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 
 public final class LexicalConverter implements KonohaConst {

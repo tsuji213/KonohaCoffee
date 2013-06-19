@@ -24,9 +24,8 @@
 
 package org.KonohaScript;
 
-import java.util.HashMap;
-
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.Parser.KonohaGrammar;
@@ -172,10 +171,8 @@ public final class Konoha implements KonohaConst {
 		return TypeInfo;
 	}
 
-	// public int GetSymbol(String key, boolean isnew) {
-	// return this.SymbolTable.GetSymbol(key, isnew);
-	// }
-
+	
+	
 	public void Define(String Symbol, Object Value) {
 		this.RootNameSpace.DefineSymbol(Symbol, Value);
 	}
