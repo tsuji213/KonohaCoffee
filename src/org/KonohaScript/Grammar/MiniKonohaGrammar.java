@@ -134,13 +134,13 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		while(pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
 			if(ch == '"' && prev != '\\') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
 			if(ch == '\n') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				ns.Message(Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
 				return pos;
