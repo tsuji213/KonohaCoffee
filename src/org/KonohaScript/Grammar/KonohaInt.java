@@ -14,7 +14,7 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 	}
 
 	public void DefineMethod(KonohaNameSpace ns) {
-		KonohaType BaseClass = ns.LookupTypeInfo(Integer.class);
+		KonohaType BaseClass = ns.LookupHostLangType(Integer.class);
 		KonohaParam BinaryParam = KonohaParam.ParseOf(ns, "int int x");
 		KonohaParam UniaryParam = KonohaParam.ParseOf(ns, "int");
 

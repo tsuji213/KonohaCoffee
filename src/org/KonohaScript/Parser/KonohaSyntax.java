@@ -191,7 +191,7 @@ class CommonSyntax {
 
 	public TypedNode TypeValue(TypeEnv Gamma, UntypedNode Node, KonohaType ReqType) {
 		KonohaToken KeyToken = Node.KeyToken;
-		KonohaType TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
+		KonohaType TypeInfo = Node.NodeNameSpace.LookupHostLangType(KeyToken.ResolvedObject.getClass());
 		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
 	}
 

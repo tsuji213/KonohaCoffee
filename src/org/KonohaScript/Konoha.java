@@ -148,12 +148,12 @@ public final class Konoha implements KonohaConst {
 		this.ClassNameMap = new KonohaMap();
 		this.RootNameSpace = new KonohaNameSpace(this, null);
 
-		this.VoidType    = this.RootNameSpace.LookupTypeInfo(Void.class);
-		this.ObjectType  = this.RootNameSpace.LookupTypeInfo(Object.class);
-		this.BooleanType = this.RootNameSpace.LookupTypeInfo(Boolean.class);
-		this.IntType     = this.RootNameSpace.LookupTypeInfo(Integer.class);
-		this.StringType  = this.RootNameSpace.LookupTypeInfo(String.class);
-		this.VarType     = this.RootNameSpace.LookupTypeInfo(Object.class);
+		this.VoidType    = this.RootNameSpace.LookupHostLangType(Void.class);
+		this.ObjectType  = this.RootNameSpace.LookupHostLangType(Object.class);
+		this.BooleanType = this.RootNameSpace.LookupHostLangType(Boolean.class);
+		this.IntType     = this.RootNameSpace.LookupHostLangType(Integer.class);
+		this.StringType  = this.RootNameSpace.LookupHostLangType(String.class);
+		this.VarType     = this.RootNameSpace.LookupHostLangType(Object.class);
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);

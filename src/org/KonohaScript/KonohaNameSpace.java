@@ -45,8 +45,8 @@ public final class KonohaNameSpace implements KonohaConst {
 	public KonohaParser					Parser;
 	public static final KonohaParser	DefaultParser	= new KonohaParser();
 
-	public KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
-		this.KonohaContext = konoha;
+	public KonohaNameSpace(Konoha KonohaContext, KonohaNameSpace ParentNameSpace) {
+		this.KonohaContext = KonohaContext;
 		this.ParentNameSpace = ParentNameSpace;
 		this.Parser = DefaultParser;
 
@@ -65,7 +65,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	// class
-	public final KonohaType LookupTypeInfo(String ClassName) {
+	@Deprecated public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
 			return this.KonohaContext.LookupHostLangType(Class.forName(ClassName));
 
@@ -75,7 +75,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		return null;
 	}
 
-	public final KonohaType LookupTypeInfo(Class<?> ClassInfo) {
+	public final KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		return this.KonohaContext.LookupHostLangType(ClassInfo);
 	}
 
@@ -130,16 +130,9 @@ public final class KonohaNameSpace implements KonohaConst {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
+	
 	static final String	MacroPrefix		= "@$"; // FIXME: use different symbol tables
 	static final String	TopLevelPrefix	= "#";
-
-	// KFunc GetDefinedMacroFunc(String Symbol) {
-	// if(DefinedSymbolTable != null) {
-	// Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
-	// return (object instanceof KFunc) ? (KFunc)object : null;
-	// }
-	// return null;
-	// }
 
 	public KonohaFunc GetMacro(String Symbol, boolean TopLevel) {
 		if(TopLevel) {
