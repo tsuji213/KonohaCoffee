@@ -83,8 +83,8 @@ $callExpression <-  $memberExpression $ParameterList
 $memberExpression <- $primary $selector*
 
 $primary <- "this"
-/ $identifier
 / $literal
+/ $identifier
 / "(" $expression ")"
 
 $selector <- "[" $expression "]"
@@ -100,15 +100,15 @@ $logicalAndExpression <- $relationExpression ("&&" $relationExpression)*
 $relationExpression <- $additiveExpression $relationOperator $additiveExpression
 / $additiveExpression
 
-$relationOperator <- "=="
-/ "!="
-/ ">="
+$relationOperator <- "=" "="
+/ "!" "="
+/ ">" "="
 / ">"
-/ "<="
+/ "<" "="
 / "<"
 
-$shiftOperator <- "<<"
-/ ">>"
+$shiftOperator <- "<"  "<"
+/ ">"  ">"
 
 $additiveOperator <- "+"
 / "-"

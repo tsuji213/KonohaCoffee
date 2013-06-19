@@ -1112,7 +1112,7 @@ class primarySyntax0 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$identifier>
+//action: <Symbol:$literal>
 class primarySyntax1 extends SyntaxAcceptor {
 
 	@Override
@@ -1127,7 +1127,7 @@ class primarySyntax1 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$literal>
+// action: <Symbol:$identifier>
 class primarySyntax2 extends SyntaxAcceptor {
 
 	@Override
@@ -1331,7 +1331,7 @@ class relationExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
 
@@ -1584,7 +1584,7 @@ class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
 

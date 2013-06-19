@@ -2,8 +2,8 @@ package org.KonohaScript.Peg.MiniKonoha;
 
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
@@ -43,18 +43,65 @@ public class MiniKonohaGrammerTest extends KTestCase {
 	public void Exit() {
 	}
 
+	void testLiteral() {
+		AssertEqual(CompileAndCheck(NameSpace, "20;"), new Integer(20));
+		AssertEqual(CompileAndCheck(NameSpace, "(10);"), new Integer(10));
+		AssertEqual(CompileAndCheck(NameSpace, "true;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "false;"), Boolean.FALSE);
+		//AssertEqual(CompileAndCheck(NameSpace, "\"abcd\";"), "abcd");
+	}
+
+	void testInteger() {
+		AssertEqual(CompileAndCheck(NameSpace, "21 + 13;"), new Integer(21 + 13));
+		AssertEqual(CompileAndCheck(NameSpace, "21 - 13;"), new Integer(21 - 13));
+		AssertEqual(CompileAndCheck(NameSpace, "21 * 13;"), new Integer(21 * 13));
+		AssertEqual(CompileAndCheck(NameSpace, "21 / 13;"), new Integer(21 / 13));
+		AssertEqual(CompileAndCheck(NameSpace, "21 % 13;"), new Integer(21 % 13));
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 == 13;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 == 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 == 13;"), Boolean.FALSE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 != 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 != 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 != 13;"), Boolean.TRUE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 <  13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 <  13;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 <  13;"), Boolean.FALSE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 <= 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 <= 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 <= 13;"), Boolean.FALSE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 >  13;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 >  13;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 >  13;"), Boolean.TRUE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "11 >= 13;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "13 >= 13;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "21 >= 13;"), Boolean.TRUE);
+	}
+
+	void testMethodDefinition() {
+		AssertEqual(CompileAndCheck(NameSpace, "int add(int x) { return x + 1; }"), null);
+		AssertEqual(CompileAndCheck(NameSpace, "int add2(int a) {  return add(a + 2);}"), null);
+		AssertEqual(CompileAndCheck(NameSpace, "int fibo(int a) { if(a < 3) {return 1;  }  return fibo(a-1)+fibo(a-2);}"), null);
+	}
+
+	void testMethodCall() {
+		AssertEqual(CompileAndCheck(NameSpace, "add(10);"), new Integer(11));
+		AssertEqual(CompileAndCheck(NameSpace, "add2(10);"), new Integer(13));
+		AssertEqual(CompileAndCheck(NameSpace, "fibo(1);"), new Integer(1));
+		AssertEqual(CompileAndCheck(NameSpace, "fibo(10);"), new Integer(55));
+	}
+
 	@Override
 	public void Test() {
-		//CompileAndCheck(Mod, NameSpace, "void fibo(int a) {\n  if(a < 3) {    return 1;\n  } \n  return fibo(a-1)+fibo(a-2);\n}");
-		//CompileAndCheck(Mod, NameSpace, "f(b * c);");
-		//CompileAndCheck(Mod, NameSpace, "int sub(int a) {  return (a - 100);}");
-		//CompileAndCheck(Mod, NameSpace, "int f(int a) {  return g(a);}");
-		AssertEqual(CompileAndCheck(NameSpace, "int add(int x) { return x + 1; }"), null);
-		AssertEqual(CompileAndCheck(NameSpace, "add(10);"), new Integer(11));
-		//CompileAndCheck(Mod, NameSpace, "(10);");
-		//CompileAndCheck(Mod, NameSpace, "20;");
-		//CompileAndCheck(Mod, NameSpace, "10 + 20;");
-		//source = "10 + 20;";
+		testLiteral();
+		testInteger();
+		testMethodDefinition();
+		testMethodCall();
 		//source = "if(a < b) { f(); } else { return 1; };";
 		//source = "if(a < b) { return 1; };";
 

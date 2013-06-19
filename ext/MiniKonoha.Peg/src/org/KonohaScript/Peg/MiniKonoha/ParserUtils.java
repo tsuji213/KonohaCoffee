@@ -143,7 +143,7 @@ class Symbol0 extends SyntaxAcceptor {
 		KonohaType BaseType = Gamma.GetLocalType("this");
 		KonohaMethod Method = BaseType.LookupMethod(Name, -1);
 		if(Method != null) {
-			KonohaType MethodType = Gamma.GammaNameSpace.LookupTypeInfo(KonohaMethod.class);
+			KonohaType MethodType = Gamma.GammaNameSpace.LookupHostLangType(KonohaMethod.class);
 			return new ConstNode(MethodType, UNode.KeyToken, Method);
 		}
 

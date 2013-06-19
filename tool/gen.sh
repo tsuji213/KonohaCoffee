@@ -9,4 +9,4 @@ fi
 filename=$1
 konoha syntax/parser.k ${filename}
 #mv ${filename}.action.java src/org/KonohaScript/Parser/
-mv *PegSyntax.java src/org/KonohaScript/Parser/
+#mv *PegSyntax.java src/org/KonohaScript/Parser/

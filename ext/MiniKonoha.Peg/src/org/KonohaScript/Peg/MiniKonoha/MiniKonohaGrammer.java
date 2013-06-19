@@ -1,9 +1,9 @@
 package org.KonohaScript.Peg.MiniKonoha;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.KonohaInt;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaParser;
@@ -82,13 +82,13 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 		while(pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
 			if(ch == '"' && prev != '\\') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
 			if(ch == '\n') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				ns.Message(KonohaConst.Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
 				return pos;
@@ -142,7 +142,7 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
 
-		new KonohaInt().DefineMethod(NameSpace);
+		new KonohaInt().MakeDefinition(NameSpace);
 
 		// Load Syntax Module
 		SyntaxModule Mod = new SyntaxModule(NameSpace);

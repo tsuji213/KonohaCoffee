@@ -63,7 +63,7 @@ public class SyntaxModule extends KonohaGrammar {
 		if(Index < this.EndIdx) {
 			KonohaToken Token = TokenList.get(Index);
 			KonohaSyntax Syntax = Token.ResolvedSyntax;
-			//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
+			System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
 			if(SyntaxName.equals(Syntax.SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
 				return this.Cursor;

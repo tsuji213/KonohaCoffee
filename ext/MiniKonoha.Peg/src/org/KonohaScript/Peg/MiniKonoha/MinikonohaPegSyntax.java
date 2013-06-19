@@ -1725,10 +1725,10 @@ class memberExpressionSyntax extends SyntaxTemplate {
 		<Symbol:"this">
 	]
 	[
-		<Symbol:$identifier>
+		<Symbol:$literal>
 	]
 	[
-		<Symbol:$literal>
+		<Symbol:$identifier>
 	]
 	[
 		<Symbol:"(">
@@ -1792,12 +1792,12 @@ class primarySyntax extends SyntaxTemplate {
 			return action0("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		if(Parser.Match("$identifier", TokenList) >= 0) {
+		if(Parser.Match("$literal", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action1("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		if(Parser.Match("$literal", TokenList) >= 0) {
+		if(Parser.Match("$identifier", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return action2("$primary", Parser, pos0, NodeSize);
 		}
@@ -2117,19 +2117,23 @@ class relationExpressionSyntax extends SyntaxTemplate {
 /*
 [$relationOperator:
 	[
-		<Symbol:"==">
+		<Symbol:"=">
+		<Symbol:"=">
 	]
 	[
-		<Symbol:"!=">
+		<Symbol:"!">
+		<Symbol:"=">
 	]
 	[
-		<Symbol:">=">
+		<Symbol:">">
+		<Symbol:"=">
 	]
 	[
 		<Symbol:">">
 	]
 	[
-		<Symbol:"<=">
+		<Symbol:"<">
+		<Symbol:"=">
 	]
 	[
 		<Symbol:"<">
@@ -2200,24 +2204,32 @@ class relationOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $relationOperator");
-		if(Parser.MatchToken("==", TokenList, Parser.Cursor) >= 0) {
-			return action0("$relationOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+				return action0("$relationOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if(Parser.MatchToken("!=", TokenList, Parser.Cursor) >= 0) {
-			return action1("$relationOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$Exclamation", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+				return action1("$relationOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if(Parser.MatchToken(">=", TokenList, Parser.Cursor) >= 0) {
-			return action2("$relationOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+				return action2("$relationOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
 			return action3("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		if(Parser.MatchToken("<=", TokenList, Parser.Cursor) >= 0) {
-			return action4("$relationOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
+				return action4("$relationOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
@@ -2231,10 +2243,12 @@ class relationOperatorSyntax extends SyntaxTemplate {
 /*
 [$shiftOperator:
 	[
-		<Symbol:"<<">
+		<Symbol:"<">
+		<Symbol:"<">
 	]
 	[
-		<Symbol:">>">
+		<Symbol:">">
+		<Symbol:">">
 	]
 ]
 */
@@ -2270,12 +2284,16 @@ class shiftOperatorSyntax extends SyntaxTemplate {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		Report("Enter $shiftOperator");
-		if(Parser.MatchToken("<<", TokenList, Parser.Cursor) >= 0) {
-			return action0("$shiftOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
+				return action0("$shiftOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
-		if(Parser.MatchToken(">>", TokenList, Parser.Cursor) >= 0) {
-			return action1("$shiftOperator", Parser, pos0, NodeSize);
+		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
+				return action1("$shiftOperator", Parser, pos0, NodeSize);
+			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
 		return Fail("$shiftOperator", Parser);

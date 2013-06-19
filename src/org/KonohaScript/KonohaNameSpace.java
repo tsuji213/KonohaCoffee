@@ -130,7 +130,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
-	
+
 	static final String	MacroPrefix		= "@$"; // FIXME: use different symbol tables
 	static final String	TopLevelPrefix	= "#";
 

@@ -560,11 +560,11 @@ void main() {
 	sio.emit(0, "package org.KonohaScript.Peg.MiniKonoha;");
 	sio.emit(0, "");
 	sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
-	sio.emit(0, "import org.KonohaScript.Parser.SyntaxAcceptor;");
-	sio.emit(0, "import org.KonohaScript.Parser.SyntaxModule;");
-	sio.emit(0, "import org.KonohaScript.Parser.SyntaxTemplate;");
+	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxAcceptor;");
+	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxModule;");
+	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxTemplate;");
 
-	aio.emit(0, "package org.KonohaScript.Parser;");
+	aio.emit(0, "package org.KonohaScript.Peg.MiniKonoha;");
 	aio.emit(0, "import org.KonohaScript.KLib.TokenList;");
 	aio.emit(0, "import org.KonohaScript.TypeEnv;");
 	aio.emit(0, "import org.KonohaScript.KonohaType;");

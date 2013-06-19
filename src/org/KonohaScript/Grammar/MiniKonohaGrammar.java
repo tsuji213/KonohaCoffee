@@ -779,6 +779,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 
-		new KonohaInt().DefineMethod(NameSpace);
+		new KonohaInt().MakeDefinition(NameSpace);
 	}
 }

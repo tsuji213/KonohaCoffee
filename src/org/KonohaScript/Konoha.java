@@ -171,12 +171,12 @@ public final class Konoha implements KonohaConst {
 		return TypeInfo;
 	}
 
-	
-	
+
+
 	public void Define(String Symbol, Object Value) {
 		this.RootNameSpace.DefineSymbol(Symbol, Value);
 	}
-	
+
 	public void Eval(String text, long uline) {
 		this.DefaultNameSpace.Eval(text, uline);
 	}

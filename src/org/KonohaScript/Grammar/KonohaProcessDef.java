@@ -9,11 +9,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import org.KonohaScript.KonohaDef;
 import org.KonohaScript.KonohaNameSpace;
 
-public class KonohaProcessDef {
+public class KonohaProcessDef extends KonohaDef {
 
-	public void DefineMethod(KonohaNameSpace ns) {
+	@Override
+	public void MakeDefinition(KonohaNameSpace ns) {
 		//TODO(sekiguchi)
 	}
 
