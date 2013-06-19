@@ -120,8 +120,8 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	}
 
 	public Object Eval(Object[] ParamData) {
-		int ParamSize = this.Param.GetParamSize();
-		KonohaDebug.P("ParamSize: " + ParamSize);
+		//int ParamSize = this.Param.GetParamSize();
+		//KonohaDebug.P("ParamSize: " + ParamSize);
 		return this.MethodInvoker.Invoke(ParamData);
 	}
 

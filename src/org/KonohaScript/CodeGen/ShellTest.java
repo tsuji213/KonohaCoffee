@@ -5,7 +5,7 @@ import org.KonohaScript.Grammar.ShellGrammar;
 import org.KonohaScript.Tester.KTestCase;
 
 public class ShellTest extends KTestCase {
-	
+
 	Konoha konoha;
 
 	@Override

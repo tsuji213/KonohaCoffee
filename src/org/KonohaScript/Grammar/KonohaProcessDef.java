@@ -88,7 +88,7 @@ class KonohaProcess {
 	}
 
 	public void setArgument(String[] Args) {
-		for (int i = 0; i < Args.length; i++) {
+		for(int i = 0; i < Args.length; i++) {
 			this.setArgument(Args[i]);
 		}
 	}
@@ -97,7 +97,7 @@ class KonohaProcess {
 		int size = this.Arguments.size() + 1;
 		String[] cmd = new String[size];
 		cmd[0] = this.command;
-		for (int i = 1; i < size; i++) {
+		for(int i = 1; i < size; i++) {
 			cmd[i] = this.Arguments.get(i - 1);
 		}
 
@@ -198,7 +198,7 @@ class StreamGetter extends Thread {
 	public void run() {
 		String line = null;
 		try {
-			while ((line = this.br.readLine()) != null) {
+			while((line = this.br.readLine()) != null) {
 				this.result = this.result + line + "\n";
 			}
 			this.br.close();
@@ -227,9 +227,9 @@ class StreamSetter extends Thread {
 		try {
 			byte[] buffer = new byte[512];
 			int read = 0;
-			while (read > -1) {
+			while(read > -1) {
 				read = this.fis.read(buffer, 0, buffer.length);
-				if (read > -1) {
+				if(read > -1) {
 					this.os.write(buffer, 0, read);
 				}
 			}
@@ -257,9 +257,9 @@ class Pipe extends Thread {
 		try {
 			byte[] buffer = new byte[512];
 			int read = 0;
-			while (read > -1) {
+			while(read > -1) {
 				read = this.input.read(buffer, 0, buffer.length);
-				if (read > -1) {
+				if(read > -1) {
 					this.output.write(buffer, 0, read);
 				}
 			}

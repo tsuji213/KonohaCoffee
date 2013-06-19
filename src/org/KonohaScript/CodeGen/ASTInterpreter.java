@@ -364,7 +364,6 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean ExitApply(ApplyNode Node) {
-		System.out.println("Exit Apply");
 		int n = Node.Params.size();
 		Object[] args = new Object[n];
 		for(int i = 0; i < n; ++i) {
