@@ -1,10 +1,8 @@
 package org.KonohaScript.Grammar;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,14 +45,6 @@ public class KonohaProcessDef {
 		Process.pipe(dest);
 	}
 
-	public static void WriteToFile(KonohaProcess Process, String fileName) {
-		Process.writeToFile(fileName);
-	}
-
-	public static void WriteErrorToFile(KonohaProcess Process, String fileName) {
-		Process.writeErrorToFile(fileName);
-	}
-
 	public static void ReadFromFile(KonohaProcess Process, String fileName) {
 		Process.readFromFile(fileName);
 	}
@@ -81,24 +71,20 @@ public class KonohaProcessDef {
 class KonohaProcess {
 	private Process					proc;
 
-	public OutputStream				stdin			= null;
-	public InputStream				stdout			= null;
-	public InputStream				stderr			= null;
-
-	private StreamSetter			stdinSetter		= null;
-	private StreamGetter			stdoutGetter	= null;
-	private StreamGetter			stderrGetter	= null;
+	private OutputStream			stdin	= null;
+	private InputStream				stdout	= null;
+	private InputStream				stderr	= null;
 
 	private final String			command;
-	private final ArrayList<String>	argsArray;
+	private final ArrayList<String>	Arguments;
 
 	public KonohaProcess(String command) {
 		this.command = command;
-		this.argsArray = new ArrayList<String>();
+		this.Arguments = new ArrayList<String>();
 	}
 
 	public void setArgument(String Arg) {
-		this.argsArray.add(Arg);
+		this.Arguments.add(Arg);
 	}
 
 	public void setArgument(String[] Args) {
@@ -108,11 +94,11 @@ class KonohaProcess {
 	}
 
 	public void start() {
-		int size = this.argsArray.size() + 1;
+		int size = this.Arguments.size() + 1;
 		String[] cmd = new String[size];
 		cmd[0] = this.command;
 		for (int i = 1; i < size; i++) {
-			cmd[i] = this.argsArray.get(i - 1);
+			cmd[i] = this.Arguments.get(i - 1);
 		}
 
 		try {
@@ -130,46 +116,12 @@ class KonohaProcess {
 		new Pipe(this.stdout, destProc.stdin).start();
 	}
 
-	public void writeToFile(String fileName) {
-		this.stdoutGetter = new StreamGetter(this.stdout);
-		this.stdoutGetter.start();
-		try {
-			this.stdoutGetter.join();
-			BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
-			bw.write(this.stdoutGetter.getResult());
-			bw.close();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void writeErrorToFile(String fileName) {
-		this.stderrGetter = new StreamGetter(this.stderr);
-		this.stderrGetter.start();
-		try {
-			this.stderrGetter.join();
-			BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
-			bw.write(this.stderrGetter.getResult());
-			bw.close();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public void readFromFile(String fileName) {
 		try {
 			FileInputStream fis = new FileInputStream(fileName);
-			this.stdinSetter = new StreamSetter(this.stdin, fis);
-			this.stdinSetter.start();
-			this.stdinSetter.join();
+			StreamSetter stdinSetter = new StreamSetter(this.stdin, fis);
+			stdinSetter.start();
+			stdinSetter.join();
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -179,28 +131,24 @@ class KonohaProcess {
 		}
 	}
 
-	public String getStdout() {
-		this.stdoutGetter = new StreamGetter(this.stdout);
-		this.stdoutGetter.start();
+	private String getResult(InputStream ins) {
+		StreamGetter stdoutGetter = new StreamGetter(ins);
+		stdoutGetter.start();
 		try {
-			this.stdoutGetter.join();
-			return this.stdoutGetter.getResult();
+			stdoutGetter.join();
+			return stdoutGetter.getResult();
 		}
 		catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	public String getStdout() {
+		return this.getResult(this.stdout);
+	}
+
 	public String getStderr() {
-		this.stderrGetter = new StreamGetter(this.stderr);
-		this.stderrGetter.start();
-		try {
-			this.stderrGetter.join();
-			return this.stderrGetter.getResult();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		return this.getResult(this.stderr);
 	}
 
 	public void waitFor() {
@@ -276,9 +224,9 @@ class StreamSetter extends Thread {
 
 	@Override
 	public void run() {
-		byte[] buffer = new byte[512];
-		int read = 0;
 		try {
+			byte[] buffer = new byte[512];
+			int read = 0;
 			while (read > -1) {
 				read = this.fis.read(buffer, 0, buffer.length);
 				if (read > -1) {
@@ -294,6 +242,7 @@ class StreamSetter extends Thread {
 	}
 }
 
+// copied from http://blog.art-of-coding.eu/piping-between-processes/
 class Pipe extends Thread {
 	private final InputStream	input;
 	private final OutputStream	output;
@@ -307,7 +256,7 @@ class Pipe extends Thread {
 	public void run() {
 		try {
 			byte[] buffer = new byte[512];
-			int read = 1;
+			int read = 0;
 			while (read > -1) {
 				read = this.input.read(buffer, 0, buffer.length);
 				if (read > -1) {

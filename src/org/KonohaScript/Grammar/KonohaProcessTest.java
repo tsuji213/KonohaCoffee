@@ -6,14 +6,10 @@ public class KonohaProcessTest extends KTestCase {
 
 	@Override
 	public void Init() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void Exit() {
-		// TODO Auto-generated method stub
-
 	}
 
 	void testEchoWithNoArgument() {
