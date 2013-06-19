@@ -100,16 +100,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public int MemberToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		int start = pos;
-		for(; pos < SourceText.length(); pos++) {
-			char ch = SourceText.charAt(pos);
-			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
-				break;
-			}
+		int start = pos + 1;
+		pos = SymbolToken(ns, SourceText, start, ParsedTokenList);
+		if(pos > start){
+			KonohaToken Token = ParsedTokenList.get(ParsedTokenList.size() - 1);
+			Token.ResolvedSyntax = KonohaSyntax.MemberSyntax;
 		}
-		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
-		Token.ResolvedSyntax = KonohaSyntax.MemberSyntax;
-		ParsedTokenList.add(Token);
 		return pos;
 	}
 
