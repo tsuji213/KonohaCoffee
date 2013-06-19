@@ -66,6 +66,14 @@ public class KonohaProcessDef {
 	public static String GetError(KonohaProcess Process) {
 		return Process.getStderr();
 	}
+	
+	public static void waitFor(KonohaProcess Process, long time) {
+		Process.waitFor(time);
+	}
+	
+	public static int getRetValue(KonohaProcess Process) {
+		return Process.getRet();
+	}
 }
 
 class KonohaProcess {
@@ -113,13 +121,13 @@ class KonohaProcess {
 	}
 
 	public void pipe(KonohaProcess destProc) {
-		new Pipe(this.stdout, destProc.stdin).start();
+		new StreamSetter(this.stdout, destProc.stdin).start();
 	}
 
 	public void readFromFile(String fileName) {
 		try {
 			FileInputStream fis = new FileInputStream(fileName);
-			StreamSetter stdinSetter = new StreamSetter(this.stdin, fis);
+			StreamSetter stdinSetter = new StreamSetter(fis, this.stdin);
 			stdinSetter.start();
 			stdinSetter.join();
 		}
@@ -132,11 +140,11 @@ class KonohaProcess {
 	}
 
 	private String getResult(InputStream ins) {
-		StreamGetter stdoutGetter = new StreamGetter(ins);
-		stdoutGetter.start();
+		StreamGetter streamGetter = new StreamGetter(ins);
+		streamGetter.start();
 		try {
-			stdoutGetter.join();
-			return stdoutGetter.getResult();
+			streamGetter.join();
+			return streamGetter.getResult();
 		}
 		catch (InterruptedException e) {
 			throw new RuntimeException(e);
@@ -171,7 +179,7 @@ class KonohaProcess {
 			catch (InterruptedException e1) {
 				e1.printStackTrace();
 			} finally {
-				this.proc.destroy();
+				kill();
 			}
 		}
 	}
@@ -213,41 +221,12 @@ class StreamGetter extends Thread {
 	}
 }
 
-class StreamSetter extends Thread {
-	private final OutputStream		os;
-	private final FileInputStream	fis;
-
-	public StreamSetter(OutputStream os, FileInputStream fis) {
-		this.os = os;
-		this.fis = fis;
-	}
-
-	@Override
-	public void run() {
-		try {
-			byte[] buffer = new byte[512];
-			int read = 0;
-			while(read > -1) {
-				read = this.fis.read(buffer, 0, buffer.length);
-				if(read > -1) {
-					this.os.write(buffer, 0, read);
-				}
-			}
-			this.fis.close();
-			this.os.close();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-}
-
 // copied from http://blog.art-of-coding.eu/piping-between-processes/
-class Pipe extends Thread {
+class StreamSetter extends Thread {
 	private final InputStream	input;
 	private final OutputStream	output;
 
-	public Pipe(InputStream input, OutputStream output) {
+	public StreamSetter(InputStream input, OutputStream output) {
 		this.input = input;
 		this.output = output;
 	}
