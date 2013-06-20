@@ -13,7 +13,9 @@ import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.SyntaxModule;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -42,7 +44,6 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-
 		/* do nothing */
 		return null;
 	}
@@ -221,6 +222,7 @@ class ParamDeclListSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -267,6 +269,7 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/*do nothing*/
 		return null;
 	}
 }
@@ -290,6 +293,7 @@ class ParamDeclSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -306,6 +310,7 @@ class ParameterListSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -321,6 +326,7 @@ class ParameterListSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -347,6 +353,7 @@ class ParametersSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -362,6 +369,7 @@ class ParameterSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -477,28 +485,23 @@ class typeSyntax1 extends SyntaxAcceptor {
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("typeSyntax1", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken BaseTypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		int i = EndIdx;
-		// Type
-		while(i > 0) {
-			KonohaToken Open = TokenList.get(i - 1);
-			KonohaToken Close = TokenList.get(i - 0);
-			if(!(Open.ParsedText.equals("[") && Close.ParsedText.equals("]"))) {
-				break;
-			}
-			// Type = Array of Type
-			i = i - 2;
+		int i = NodeSize;
+		while(NodeSize > 1) {
+			KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
+			//FIXME Create BaseTypeToken[TypeToken] class
+			//BaseTypeToken = ;
+			i = i - 1;
 		}
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
+		Parser.ReAssign(NodeSize, BaseTypeToken);
+
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -509,11 +512,13 @@ class statementSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -524,11 +529,13 @@ class statementSyntax1 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax1", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -539,11 +546,13 @@ class statementSyntax2 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax2", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -554,11 +563,13 @@ class statementSyntax3 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax3", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -569,11 +580,13 @@ class statementSyntax4 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax4", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -584,11 +597,13 @@ class statementSyntax5 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax5", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -599,11 +614,13 @@ class statementSyntax6 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax6", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -614,11 +631,13 @@ class statementSyntax7 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax7", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -629,11 +648,13 @@ class variableSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -644,68 +665,86 @@ class EQSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("EQSyntax0", NodeSize);
-		KonohaToken KeyToken = TokenList.get(BeginIdx);
+		KonohaToken KeyToken = new KonohaToken("=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:$type>, <Symbol:$identifier>, <Symbol:";">
 class variableDeclarationSyntax0 extends SyntaxAcceptor {
+	static int	VarDeclTypeOffset	= SyntaxAcceptor.ListOffset;
+	static int	VarDeclNameOffset	= VarDeclTypeOffset + 1;
 
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableDeclarationSyntax0", NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$variableDeclaration");
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtToken(Index, VarType);
+		UNode.SetAtToken(Index, VarName);
+		UNode.SetAtToken(Index, null);
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+		if(VarType.equals(Gamma.VarType)) {
+			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
+		}
+		assert (VarName != null);
+		return new LetNode(VarType, VarToken, null, null);
 	}
 }
 
 // action: <Symbol:$type>, <Symbol:$variable>, <Symbol:$EQ>, <Symbol:$expression>, <Symbol:";">
 class variableDeclarationSyntax1 extends SyntaxAcceptor {
+	static int	VarDeclTypeOffset	= SyntaxAcceptor.ListOffset;
+	static int	VarDeclNameOffset	= VarDeclTypeOffset + 1;
+	static int	VarDeclExprOffset	= VarDeclNameOffset + 1;
 
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableDeclarationSyntax1", NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$variableDeclaration");
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarExpr = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtToken(Index, VarType);
+		UNode.SetAtToken(Index, VarName);
+		UNode.SetAtToken(Index, VarExpr);
+
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+
+		TypedNode Expr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
+		assert (VarName != null);
+		return new LetNode(VarType, VarToken, Expr, null);
 	}
 }
 
@@ -731,7 +770,7 @@ class statementsSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -746,7 +785,7 @@ class blockSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -781,7 +820,7 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return ifStatementSyntax0.TypeCheckIf(Gamma, UNode, TypeInfo);
 	}
 
@@ -794,9 +833,12 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 		if(ThenNode.IsError()) {
 			return ThenNode;
 		}
-		TypedNode ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
-		if(ElseNode.IsError()) {
-			return ElseNode;
+		TypedNode ElseNode = null;
+		if(UNode.GetAtNode(IfElseBlockOffset) != null) {
+			ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
+			if(ElseNode.IsError()) {
+				return ElseNode;
+			}
 		}
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
 	}
@@ -829,36 +871,34 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return ifStatementSyntax0.TypeCheckIf(Gamma, UNode, TypeInfo);
 	}
 }
 
 // action: <Symbol:"while">, <Symbol:"(">, <Symbol:$expression>, <Symbol:")">, <Symbol:$block>
 class whileStatementSyntax0 extends SyntaxAcceptor {
+	static int	WhileCondOffset	= ListOffset;
+	static int	WhileBodyOffset	= WhileCondOffset + 1;
 
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("whileStatementSyntax0", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$whileStatement");
-		UNode.SetAtNode(0, (UntypedNode) List[0]);
-		UNode.SetAtNode(1, (UntypedNode) List[1]);
+		UntypedNode Cond = (UntypedNode) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
+		UntypedNode Body = (UntypedNode) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
+		UNode.SetAtNode(0, Cond);
+		UNode.SetAtNode(1, Body);
 
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, UNode);
-		}
-		throw new RuntimeException("NotSupported");
-		//return EndIdx;
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -875,7 +915,7 @@ class breakStatementSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -892,7 +932,7 @@ class continueStatementSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -913,7 +953,7 @@ class returnStatementSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return returnStatementSyntax1.TypeCheckReturn(Gamma, UNode, TypeInfo);
 	}
 }
@@ -937,7 +977,7 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return returnStatementSyntax1.TypeCheckReturn(Gamma, UNode, TypeInfo);
 	}
 
@@ -960,34 +1000,35 @@ class expressionStatementSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
 
 // action: <Symbol:$leftHandSideExpression>, <Symbol:$EQ>, <Symbol:$expression>
 class expressionSyntax0 extends SyntaxAcceptor {
+	static int	AssignmentLeftOffset	= ListOffset;
+	static int	AssignmentExprOffset	= AssignmentLeftOffset + 1;
 
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("expressionSyntax0", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$expression");
+
+		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		UntypedNode Expr = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtNode(AssignmentLeftOffset, Left);
+		UNode.SetAtNode(AssignmentExprOffset, Expr);
+		Parser.ReAssign(NodeSize, UNode);
+
+		return EndIdx;
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1002,7 +1043,7 @@ class expressionSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1017,7 +1058,7 @@ class leftHandSideExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1032,7 +1073,7 @@ class leftHandSideExpressionSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1063,7 +1104,7 @@ class callExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return KonohaCallExpressionTypeChecker.TypeCheckMethodCall(Gamma, UNode, TypeInfo);
 	}
 }
@@ -1090,7 +1131,7 @@ class memberExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1107,7 +1148,7 @@ class primarySyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1122,7 +1163,7 @@ class primarySyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1137,7 +1178,7 @@ class primarySyntax2 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1152,7 +1193,7 @@ class primarySyntax3 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1174,7 +1215,7 @@ class selectorSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1197,7 +1238,7 @@ class selectorSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1212,34 +1253,36 @@ class newExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
 
 // action: <Symbol:"new">, <Symbol:$type>, <Symbol:$ParameterList>
 class newExpressionSyntax1 extends SyntaxAcceptor {
+	static int	NewTypeOffset	= ListOffset;
+	static int	NewParamOffset	= NewTypeOffset + 1;
 
 	@Override
 	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("newExpressionSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$newExpression");
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtNode(0, (UntypedNode) List[0]);
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
+		UNode.SetAtToken(NewTypeOffset, TypeToken);
+		for(int i = 0; i < ParamList.size(); i++) {
+			UntypedNode Param = (UntypedNode) ParamList.get(i);
+			UNode.SetAtNode(NewParamOffset + i, Param);
 		}
-		throw new RuntimeException();
-		//return EndIdx;
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1269,7 +1312,7 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1299,7 +1342,7 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1315,7 +1358,7 @@ class relationExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
@@ -1330,7 +1373,7 @@ class relationExpressionSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
@@ -1347,7 +1390,7 @@ class relationOperatorSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1364,7 +1407,7 @@ class relationOperatorSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1381,7 +1424,7 @@ class relationOperatorSyntax2 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1398,7 +1441,7 @@ class relationOperatorSyntax3 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1415,7 +1458,7 @@ class relationOperatorSyntax4 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1432,7 +1475,7 @@ class relationOperatorSyntax5 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1449,7 +1492,7 @@ class shiftOperatorSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1466,7 +1509,7 @@ class shiftOperatorSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1483,7 +1526,7 @@ class additiveOperatorSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1500,7 +1543,7 @@ class additiveOperatorSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1517,7 +1560,7 @@ class multiplicativeOperatorSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1534,7 +1577,7 @@ class multiplicativeOperatorSyntax1 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1551,7 +1594,7 @@ class multiplicativeOperatorSyntax2 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1567,7 +1610,7 @@ class additiveExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
@@ -1583,7 +1626,7 @@ class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
@@ -1598,7 +1641,7 @@ class unaryExpressionSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }
@@ -1613,7 +1656,7 @@ class identifierSyntax0 extends SyntaxAcceptor {
 	}
 
 	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) { /*FIXME*/
 		return null;
 	}
 }

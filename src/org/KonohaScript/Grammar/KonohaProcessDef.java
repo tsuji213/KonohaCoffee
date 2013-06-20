@@ -19,12 +19,12 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
-		KonohaType BaseClass = ns.LookupHostLangType(Process.class);
+		KonohaType BaseClass = ns.LookupHostLangType(KonohaProcess.class);
 
 		// define Constructor
-		String MN_NewProcess = "NewProcess";
-		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
-		BaseClass.DefineMethod(0, MN_NewProcess, Process_String_Param, this, MN_NewProcess); //FIXME
+		String MN_newKonohaProcess = "newKonohaProcess";
+		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "KonohaProcess String x");
+		BaseClass.DefineMethod(0, MN_newKonohaProcess, Process_String_Param, this, MN_newKonohaProcess); //FIXME
 
 		// define SetArgument()
 		String MN_SetArgument = "SetArgument";
@@ -36,12 +36,12 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 		// define Start()
 		String MN_Start = "Start";
-		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void"); //FIXME
+		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void");
 		BaseClass.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
 
 		// define Pipe()
 		String MN_Pipe = "Pipe";
-		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void Process x");
+		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
 		BaseClass.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
 		// define ReadFromFile()
@@ -57,7 +57,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		String MN_GetError = "GetError";
 		BaseClass.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
 
-		//define WaitFor()
+		// define WaitFor()
 		String MN_WaitFor = "WaitFor";
 		KonohaParam void_int_Param = KonohaParam.ParseOf(ns, "void int x");
 		BaseClass.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
@@ -68,27 +68,27 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		BaseClass.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
 	}
 
-	public static Process NewProcess(String Command) {
-		return new Process(Command);
+	public static KonohaProcess newProcess(String Command) {
+		return new KonohaProcess(Command);
 	}
 
-	public static void SetArgument(Process Process, String[] Args) {
+	public static void SetArgument(KonohaProcess Process, String[] Args) {
 		Process.setArgument(Args);
 	}
 
-	public static void SetArgument(Process Process, String Arg) {
+	public static void SetArgument(KonohaProcess Process, String Arg) {
 		Process.setArgument(Arg);
 	}
 
-	public static void Start(Process Process) {
+	public static void Start(KonohaProcess Process) {
 		Process.start();
 	}
 
-	public static void Pipe(Process Process, Process dest) {
+	public static void Pipe(KonohaProcess Process, KonohaProcess dest) {
 		Process.pipe(dest);
 	}
 
-	public static void ReadFromFile(Process Process, String fileName) {
+	public static void ReadFromFile(KonohaProcess Process, String fileName) {
 		Process.readFromFile(fileName);
 	}
 
@@ -97,34 +97,34 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		return 0;
 	}
 
-	public static String GetOut(Process Process) {
+	public static String GetOut(KonohaProcess Process) {
 		return Process.getStdout();
 	}
 
-	public static String GetError(Process Process) {
+	public static String GetError(KonohaProcess Process) {
 		return Process.getStderr();
 	}
 
-	public static void WaitFor(Process Process, int time) {
+	public static void WaitFor(KonohaProcess Process, int time) {
 		Process.waitFor(time);
 	}
 
-	public static int GetRetValue(Process Process) {
+	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
 	}
 }
 
-class Process {
-	private java.lang.Process		proc;
+class KonohaProcess {
+	private Process					proc;
 
 	private OutputStream			stdin	= null;
 	private InputStream				stdout	= null;
 	private InputStream				stderr	= null;
 
-	private final String			command;
-	private final ArrayList<String>	Arguments;
+	private String			command;
+	private ArrayList<String>	Arguments;
 
-	public Process(String command) {
+	public KonohaProcess(String command) {
 		this.command = command;
 		this.Arguments = new ArrayList<String>();
 	}
@@ -134,7 +134,7 @@ class Process {
 	}
 
 	public void setArgument(String[] Args) {
-		for (int i = 0; i < Args.length; i++) {
+		for(int i = 0; i < Args.length; i++) {
 			this.setArgument(Args[i]);
 		}
 	}
@@ -143,7 +143,7 @@ class Process {
 		int size = this.Arguments.size() + 1;
 		String[] cmd = new String[size];
 		cmd[0] = this.command;
-		for (int i = 1; i < size; i++) {
+		for(int i = 1; i < size; i++) {
 			cmd[i] = this.Arguments.get(i - 1);
 		}
 
@@ -158,7 +158,7 @@ class Process {
 		}
 	}
 
-	public void pipe(Process destProc) {
+	public void pipe(KonohaProcess destProc) {
 		new StreamSetter(this.stdout, destProc.stdin).start();
 	}
 
@@ -232,20 +232,20 @@ class Process {
 }
 
 class StreamGetter extends Thread {
-	private final BufferedReader	br;
-	private String					result;
+	private BufferedReader	br;
+	private StringBuilder	sBuilder;
 
 	public StreamGetter(InputStream is) {
 		this.br = new BufferedReader(new InputStreamReader(is));
-		this.result = "";
+		this.sBuilder = new StringBuilder();
 	}
 
 	@Override
 	public void run() {
 		String line = null;
 		try {
-			while ((line = this.br.readLine()) != null) {
-				this.result = this.result + line + "\n";
+			while((line = this.br.readLine()) != null) {
+				this.sBuilder.append(line + "\n");
 			}
 			this.br.close();
 		}
@@ -255,14 +255,14 @@ class StreamGetter extends Thread {
 	}
 
 	public String getResult() {
-		return this.result;
+		return this.sBuilder.toString();
 	}
 }
 
 // copied from http://blog.art-of-coding.eu/piping-between-processes/
 class StreamSetter extends Thread {
-	private final InputStream	input;
-	private final OutputStream	output;
+	private InputStream	input;
+	private OutputStream	output;
 
 	public StreamSetter(InputStream input, OutputStream output) {
 		this.input = input;
@@ -274,9 +274,9 @@ class StreamSetter extends Thread {
 		try {
 			byte[] buffer = new byte[512];
 			int read = 0;
-			while (read > -1) {
+			while(read > -1) {
 				read = this.input.read(buffer, 0, buffer.length);
-				if (read > -1) {
+				if(read > -1) {
 					this.output.write(buffer, 0, read);
 				}
 			}

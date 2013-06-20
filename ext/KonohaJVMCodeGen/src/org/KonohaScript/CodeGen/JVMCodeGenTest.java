@@ -18,7 +18,6 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 import org.KonohaScript.Tester.KTestCase;
 
 class TestClassLoader extends ClassLoader {
-
 }
 
 public class JVMCodeGenTest extends KTestCase {
