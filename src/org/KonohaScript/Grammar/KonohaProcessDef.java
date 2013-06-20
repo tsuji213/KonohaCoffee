@@ -109,6 +109,15 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
 	}
+	
+	// main()
+	public static void main(String[] args) {
+		KonohaProcess proc1 = new KonohaProcess("ls", true);
+		proc1.setArgument("/root");
+		proc1.start();
+		System.out.print("<<stdout>>\n" + proc1.getStdout());
+		System.err.print("<<stderr>>\n" + proc1.getStderr());
+	}
 }
 
 class StreamGetter extends Thread {

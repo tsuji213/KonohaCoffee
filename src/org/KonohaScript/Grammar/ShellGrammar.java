@@ -237,7 +237,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		//KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return null;
 	}
-	
+
 	// new $Symbol()
 	public int ParseNew(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		if(!UNode.KeyToken.ParsedText.equals("new")){

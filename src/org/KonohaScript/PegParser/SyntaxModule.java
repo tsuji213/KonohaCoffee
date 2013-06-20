@@ -52,9 +52,21 @@ public class SyntaxModule extends KonohaGrammar {
 	}
 
 	public int Match(String SyntaxName, TokenList TokenList) {
-		SyntaxTemplate Syn = (SyntaxTemplate) this.SyntaxTable.get(SyntaxName);
-		if(Syn != null) {
-			return Syn.Match(this, TokenList);
+		Object Syntax = this.SyntaxTable.get(SyntaxName);
+		if(Syntax != null) {
+			if(Syntax instanceof KonohaArray) {
+				KonohaArray List = (KonohaArray) Syntax;
+				for(int i = 0; i < List.size(); i++) {
+					SyntaxTemplate Syn = (SyntaxTemplate) List.get(i);
+					int Index = Syn.Match(this, TokenList);
+					if(Index >= 0) {
+						return Index;
+					}
+				}
+			} else {
+				SyntaxTemplate Syn = (SyntaxTemplate) Syntax;
+				return Syn.Match(this, TokenList);
+			}
 		}
 		return -1;
 	}
@@ -136,18 +148,20 @@ public class SyntaxModule extends KonohaGrammar {
 		}
 	}
 
-	void Freeze() {
-	}
-
-	public TokenList Filter(TokenList List, String SyntaxName) {
-		TokenList newList = new TokenList();
-		for(int i = 0; i < List.size(); i++) {
-			KonohaToken token = List.get(i);
-			if(!token.ResolvedSyntax.SyntaxName.equals(SyntaxName)) {
-				newList.add(token);
+	public void MixSyntax(SyntaxTemplate ParentSyntax, SyntaxTemplate Syntax, boolean TopLevelSyntax) {
+		if(this.AlreadyRegistered(ParentSyntax)) {
+			Object Parent = this.SyntaxTable.get(ParentSyntax.Name);
+			if(Parent instanceof KonohaArray) {
+				KonohaArray List = (KonohaArray) Parent;
+				List.add(ParentSyntax);
+			} else {
+				KonohaArray List = new KonohaArray();
+				List.add(Parent);
+				List.add(ParentSyntax);
 			}
+		} else {
+			this.AddSyntax(ParentSyntax, Syntax, TopLevelSyntax);
 		}
-		return newList;
 	}
 
 	public void DumpSyntax() {
@@ -198,14 +212,4 @@ public class SyntaxModule extends KonohaGrammar {
 		}
 		this.Push(Value);
 	}
-
-	//	void ComputePriority(KonohaToken Token, int[] priority) {
-	//		for(int i = 0; i < priority.length; i++) {
-	//			priority[i] = i;
-	//		}
-	//		if(Token.ResolvedSyntax != null) {
-	//			//String HintInfo = Token.ResolvedSyntax.SyntaxName;
-	//		}
-	//	}
-
 }

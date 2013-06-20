@@ -16,15 +16,15 @@ public final class KonohaStringSyntax extends KonohaGrammar implements KonohaCon
 		int start = pos + 1;
 		char prev = '"';
 		pos = start;
-		while (pos < SourceText.length()) {
+		while(pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
-			if (ch == '"' && prev != '\\') {
+			if(ch == '"' && prev != '\\') {
 				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
-			if (ch == '\n') {
+			if(ch == '\n') {
 				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				ns.Message(KonohaConst.Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);

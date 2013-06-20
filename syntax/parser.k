@@ -146,7 +146,7 @@ class SymbolElement extends Element {
 	@Override void emit(ParserGenerator G) {
 
 		if(name.startsWith("$")) {
-			String func = name;
+			String func = name.replace("#", "");
 			G.io.emit(G.level, "if(Parser.Match(\"${func}\", TokenList) >= 0) {");
 			G.io.emit(G.level, "NodeSize = NodeSize + 1;");
 		} else {
@@ -368,7 +368,7 @@ void emitChild(ParserGenerator G, Syntax syn) {
 		Element e = a.pop();
 		if(e instanceof SymbolElement) {
 			SymbolElement se = e as SymbolElement;
-			if(se.name.startsWith("$") && se.name.startsWith("$token") == false) {
+			if(se.name.startsWith("$") && se.name.startsWith("$#") == false) {
 				m.set(se.name.replace("$", "") + "Syntax", se.name);
 			}
 		}
@@ -428,9 +428,9 @@ void emitAction(String name, IO aio, Array[Element] subrules) {
 	G.io.emit(G.level, "class ${name} extends SyntaxAcceptor {");
 	G.EnterBlock();
 	G.io.emit(G.level, "static final ${name} Instance = new ${name}();");
-	G.io.emit(G.level, "@Override int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {");
+	G.io.emit(G.level, "@Override public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {");
 	G.EnterBlock();
-	G.io.emit(G.level, "System.out.println(\"${name} : \" + NodeSize);");
+	G.io.emit(G.level, "Report(\"${name}\", NodeSize);");
 	G.io.emit(G.level, "int Index = 0;");
 	G.io.emit(G.level, "Object[] List = new Object[NodeSize];");
 	for (int j=0; j < subrules.getsize(); j = j + 1) {
@@ -440,7 +440,7 @@ void emitAction(String name, IO aio, Array[Element] subrules) {
 	emitActionEpiloge(subrules, G);
 	G.io.emit(G.level, "return EndIdx;");
 	G.ExitBlock();
-	G.io.emit(G.level, "@Override TypedNode TypeCheck(SyntaxModule Parser, TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {");
+	G.io.emit(G.level, "@Override public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {");
 	G.EnterBlock();
 	G.io.emit(G.level, "return null;");
 	G.ExitBlock();
@@ -455,6 +455,7 @@ void emitSyntax(IO aio, IO sio, Syntax syn) {
 	G.io.emit(G.level, "*/");
 
 	String func = syn.name.replace("$", "");
+	func = func.replace("#", "");
 	for (int i=0; i < syn.rules.getsize(); i = i + 1) {
 		String name = func + "Syntax" + i;
 
@@ -509,6 +510,7 @@ void main() {
 	String syntaxFile = peg + ".syntax.java";
 	actionFile = f(actionFile);
 	syntaxFile = f(syntaxFile);
+	String filename = f(peg).split(".").get(0);
 	System.p("OutputFile(1):" + actionFile);
 	System.p("OutputFile(2):" + syntaxFile);
 
@@ -557,18 +559,20 @@ void main() {
 	IO aio = new IO(new File(actionFile, "w"));
 	IO sio = new IO(new File(syntaxFile, "w"));
 
-	sio.emit(0, "package org.KonohaScript.Peg.MiniKonoha;");
+	sio.emit(0, "package org.KonohaScript.Peg.${filename};");
 	sio.emit(0, "");
 	sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxAcceptor;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxModule;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxTemplate;");
 
-	aio.emit(0, "package org.KonohaScript.Peg.MiniKonoha;");
-	aio.emit(0, "import org.KonohaScript.KLib.TokenList;");
-	aio.emit(0, "import org.KonohaScript.TypeEnv;");
+	aio.emit(0, "package org.KonohaScript.Peg.${filename};");
 	aio.emit(0, "import org.KonohaScript.KonohaType;");
-	aio.emit(0, "import org.KonohaScript.UntypedNode;");
+	aio.emit(0, "import org.KonohaScript.KLib.TokenList;");
+	aio.emit(0, "import org.KonohaScript.Parser.TypeEnv;");
+	aio.emit(0, "import org.KonohaScript.Parser.UntypedNode;");
+	aio.emit(0, "import org.KonohaScript.PegParser.SyntaxAcceptor;");
+	aio.emit(0, "import org.KonohaScript.PegParser.SyntaxModule;");
 	aio.emit(0, "import org.KonohaScript.SyntaxTree.TypedNode;");
 	aio.emit(0, "");
 
