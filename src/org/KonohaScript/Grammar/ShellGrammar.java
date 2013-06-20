@@ -2,6 +2,7 @@ package org.KonohaScript.Grammar;
 
 import java.util.ArrayList;
 
+import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
@@ -11,6 +12,7 @@ import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
@@ -242,7 +244,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			return -1;
 		}
 		int ClassIdx = BeginIdx + 1;
-		System.out.println(UNode.KeyToken.ParsedText);
+		//System.out.println(UNode.KeyToken.ParsedText);
 
 		int ParamIdx = UNode.MatchSyntax(MiniKonohaGrammar.MethodCallName, "$Type", TokenList, ClassIdx, EndIdx, ParseOption);
 		if(ParamIdx == -1) {
@@ -257,9 +259,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
-		UNode.KeyToken.ResolvedSyntax = UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$New");
-		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
-		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
+		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$New");
+		KonohaDebug.P("new " + UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null).ShortClassName + "();");
 		return NextIdx;
 	}
 
@@ -267,23 +268,13 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")){
 			return null;
 		}
-//		KonohaDebug.P("(>_<) typing method calls: " + UNode);
-//		KonohaArray NodeList = UNode.NodeList;
-//		assert (NodeList.size() > 1);
-//		assert (NodeList.get(0) instanceof UntypedNode);
-//		UntypedNode UntypedBaseNode = (UntypedNode) NodeList.get(0);
-//		if(UntypedBaseNode == null) {
-//		} else {
-//			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
-//			if(BaseNode.IsError())
-//				return BaseNode;
-//			return this.TypeFindingMethod(Gamma, UNode, BaseNode, TypeInfo);
-//		}
-		String TypeName = UNode.GetAtNode(MiniKonohaGrammar.MethodCallName).KeyToken.ParsedText;
-		TypedNode NewNode = new NewNode(UNode.NodeNameSpace.LookupTypeInfo(TypeName));
-		NewNode.SourceToken = UNode.KeyToken;
-		//NewNode
-		return NewNode;
+		KonohaType BaseType = UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null);
+		NewNode Node = new NewNode(BaseType);
+		int ParamSize = UNode.NodeList.size() - MiniKonohaGrammar.MethodCallParam;
+		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
+		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+		CallNode.Append(Node);
+		return Node;
 	}
 
 	@Override

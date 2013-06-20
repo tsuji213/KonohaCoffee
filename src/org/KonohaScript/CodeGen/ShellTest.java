@@ -50,8 +50,9 @@ public class ShellTest extends KTestCase {
 		this.AssertEqual(ShellGrammar.FindOutputFileName(ShellGrammar.SplitIntoCommandTokens("grep .txt > listoftext.txt")), "listoftext.txt");
 		this.AssertEqual(ShellGrammar.FindInputFileName(ShellGrammar.SplitIntoCommandTokens("find '<test>' < list.txt")), "list.txt");
 		
-		//this.konoha.Eval("$(ls -la | grep .txt > listoftext.txt) ", 0);
-		this.konoha.Eval("Process p0 = new Process(\"ls\");" +
+		this.konoha.Eval("int num = 100;", 0);
+		//this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
+		/*this.konoha.Eval("Process p0 = new Process(\"ls\");" +
 				"p0.AddArgument(\"-la\");" +
 				"p0.Fg();" +
 				"Process p1 = new Process(\"grep\");" +
@@ -59,7 +60,7 @@ public class ShellTest extends KTestCase {
 				"p0.Pipe(p1);" +
 				"p1.SetOutputFileName(\"listoftext.txt\");" +
 				"p1.Fg();", 0);
-		
+		*/
 		/*
 		Process p0 = new Process("ls");
 		p0.AddArgument("-la");

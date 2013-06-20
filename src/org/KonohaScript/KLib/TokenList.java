@@ -24,7 +24,7 @@
 
 package org.KonohaScript.KLib;
 import java.util.ArrayList;
-import org.KonohaScript.*;
+
 import org.KonohaScript.Parser.KonohaToken;
 
 public final class TokenList {
@@ -40,5 +40,10 @@ public final class TokenList {
 	}
 	public KonohaToken get(int index) {
 		return List.get(index);
+	}
+	
+	@Override
+	public String toString() {
+		return List.toString();
 	}
 }

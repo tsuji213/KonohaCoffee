@@ -42,7 +42,9 @@ import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -604,6 +606,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return EndIdx;
 	}
 
+	static int	AssignmentLeftOffset	= 1;
+	static int	AssignmentExprOffset	= 2;
+	static int	VarDeclTypeOffset	= 0;
+	static int	VarDeclNameOffset	= 1;
+	
 	public int ParseVarDecl(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		//KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
 		int SymbolIdx = BeginIdx + 1;
@@ -623,8 +630,16 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public TypedNode TypeVarDecl(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		assert (UNode.KeyToken.ResolvedSyntax == KonohaSyntax.TypeSyntax);
-		return null; // TODO
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+		if(VarType.equals(Gamma.VarType)) {
+			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
+		}
+		assert (VarName != null);
+		
+		TypedNode Value = UNode.TypeNodeAt(2, Gamma, VarType, 0);
+		return new LetNode(VarType, VarToken, Value, null);
 	}
 
 	public final static int	MethodDeclReturn	= 0;
