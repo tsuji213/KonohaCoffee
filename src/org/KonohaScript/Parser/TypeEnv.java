@@ -48,9 +48,11 @@ public class TypeEnv implements KonohaConst {
 
 	public KonohaMethod	Method;
 	public KonohaType	ReturnType;
+	public KonohaType	ThisType;
 
 	void InitMethod(KonohaMethod Method) {
 		this.ReturnType = Method.GetReturnType(Method.ClassInfo);
+		this.ThisType = Method.ClassInfo;
 		if(!Method.Is(StaticMethod)) {
 			this.AppendLocalType(Method.ClassInfo, "this");
 			KonohaParam Param = Method.Param;

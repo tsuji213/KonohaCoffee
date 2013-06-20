@@ -48,7 +48,7 @@ public class MiniKonohaGrammerTest extends KTestCase {
 		AssertEqual(CompileAndCheck(NameSpace, "(10);"), new Integer(10));
 		AssertEqual(CompileAndCheck(NameSpace, "true;"), Boolean.TRUE);
 		AssertEqual(CompileAndCheck(NameSpace, "false;"), Boolean.FALSE);
-		//AssertEqual(CompileAndCheck(NameSpace, "\"abcd\";"), "abcd");
+		AssertEqual(CompileAndCheck(NameSpace, "\"abcd\";"), "abcd");
 	}
 
 	void testInteger() {
@@ -96,14 +96,25 @@ public class MiniKonohaGrammerTest extends KTestCase {
 		//AssertEqual(CompileAndCheck(NameSpace, "fibo(6);"), new Integer(8));
 	}
 
+	void testLogicalOperator() {
+		AssertEqual(CompileAndCheck(NameSpace, "true  && true ;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "true  && false;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "false && false;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "false && true ;"), Boolean.FALSE);
+
+		AssertEqual(CompileAndCheck(NameSpace, "true  || true ;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "true  || false;"), Boolean.TRUE);
+		AssertEqual(CompileAndCheck(NameSpace, "false || false;"), Boolean.FALSE);
+		AssertEqual(CompileAndCheck(NameSpace, "false || true ;"), Boolean.TRUE);
+	}
+
 	@Override
 	public void Test() {
 		testLiteral();
 		testInteger();
 		testMethodDefinition();
 		testMethodCall();
-		//source = "if(a < b) { f(); } else { return 1; };";
-		//source = "if(a < b) { return 1; };";
+		//testLogicalOperator();
 
 	}
 

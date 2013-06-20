@@ -74,8 +74,8 @@ public class KonohaCallExpressionTypeChecker {
 		return Gamma.NewErrorNode(KeyToken, "undefined method: " + MethodName + " in " + ReciverType.ShortClassName);
 	}
 
-	static TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType ReciverType, ApplyNode CallNode, KonohaArray NodeList,
-			int ParamSize) {
+	public static TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType ReciverType, ApplyNode CallNode,
+			KonohaArray NodeList, int ParamSize) {
 		KonohaMethod Method = CallNode.Method;
 		for(int ParamIdx = 0; ParamIdx < ParamSize; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(ReciverType, ParamIdx);
