@@ -310,8 +310,10 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	@Override
 	public boolean ExitNew(NewNode Node) {
 		KonohaType TypeInfo = Node.TypeInfo;
-		Class<?> KClass = TypeInfo.DefaultNullValue.getClass();
+		// FIXME It seems that I cannot get type infomation from DefaultNullValue.
+		Class<?> KClass = TypeInfo.HostedClassInfo;//TypeInfo.DefaultNullValue.getClass();
 		try {
+			// FIXME Enable using constractor with parameters
 			Object Obj = KClass.newInstance();
 			this.push(Obj);
 		}

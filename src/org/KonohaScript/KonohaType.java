@@ -43,7 +43,7 @@ public class KonohaType {
 	Object				LocalSpec;
 
 	// Java Implementation Only
-	Class<?>			HostedClassInfo	= null;
+	public Class<?>			HostedClassInfo	= null;
 
 	public KonohaType(Konoha KonohaContext, int ClassFlag, String ClassName, Object Spec) {
 		this.KonohaContext = KonohaContext;

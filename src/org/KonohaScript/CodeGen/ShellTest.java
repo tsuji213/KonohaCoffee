@@ -18,7 +18,7 @@ public class ShellTest extends KTestCase {
 	@Override
 	public void Exit() {
 	}
-	
+
 	public static String Join(ArrayList<String> list, String delim) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < list.size(); i++) {
@@ -29,7 +29,7 @@ public class ShellTest extends KTestCase {
 		}
 		return builder.toString();
 	}
-	
+
 	public static String Join(String[] list, String delim) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < list.length; i++) {
@@ -49,9 +49,9 @@ public class ShellTest extends KTestCase {
 		this.AssertEqual(Join(ShellGrammar.SplitIntoCommandTokens("echo '1 2|3 4'"), ","), "echo,1 2|3 4");
 		this.AssertEqual(ShellGrammar.FindOutputFileName(ShellGrammar.SplitIntoCommandTokens("grep .txt > listoftext.txt")), "listoftext.txt");
 		this.AssertEqual(ShellGrammar.FindInputFileName(ShellGrammar.SplitIntoCommandTokens("find '<test>' < list.txt")), "list.txt");
-		
-		this.konoha.Eval("int num = 100;", 0);
-		//this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
+
+		//this.konoha.Eval("int num = 100;", 0);
+		this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
 		/*this.konoha.Eval("Process p0 = new Process(\"ls\");" +
 				"p0.AddArgument(\"-la\");" +
 				"p0.Fg();" +
