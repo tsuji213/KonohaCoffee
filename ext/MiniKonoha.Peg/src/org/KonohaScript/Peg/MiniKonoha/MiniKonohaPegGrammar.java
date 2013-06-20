@@ -32,7 +32,7 @@ final class KonohaTypeSyntax extends PegGrammar implements KonohaConst {
 	}
 }
 
-public class MiniKonohaGrammer extends PegGrammar implements KonohaConst {
+public class MiniKonohaPegGrammar extends PegGrammar implements KonohaConst {
 	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);

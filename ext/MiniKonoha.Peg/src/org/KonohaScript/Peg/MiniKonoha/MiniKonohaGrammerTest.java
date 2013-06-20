@@ -1,47 +1,8 @@
 package org.KonohaScript.Peg.MiniKonoha;
 
-import org.KonohaScript.Konoha;
-import org.KonohaScript.KonohaBuilder;
-import org.KonohaScript.KonohaNameSpace;
-import org.KonohaScript.JUtils.KonohaConst;
-import org.KonohaScript.KLib.TokenList;
-import org.KonohaScript.Parser.KonohaToken;
-import org.KonohaScript.Parser.TypeEnv;
-import org.KonohaScript.Parser.UntypedNode;
-import org.KonohaScript.SyntaxTree.TypedNode;
-import org.KonohaScript.Tester.KTestCase;
+import org.KonohaScript.Tester.KParserTester;
 
-public class MiniKonohaGrammerTest extends KTestCase {
-
-	Object CompileAndCheck(KonohaNameSpace NameSpace, String Source) {
-		TokenList BufferList = NameSpace.Tokenize(Source, 0);
-		TokenList TokenList = new TokenList();
-		NameSpace.PreProcess(BufferList, 0, BufferList.size(), TokenList);
-		KonohaToken.DumpTokenList(0, "Dump::", TokenList, 0, TokenList.size());
-		UntypedNode UNode = NameSpace.Parser.ParseNewNode(NameSpace, null, TokenList, 0, TokenList.size(), 0);
-
-		System.out.println("untyped tree: " + UNode);
-		TypeEnv Gamma = new TypeEnv(NameSpace, null);
-		TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
-		KonohaBuilder Builder = NameSpace.GetBuilder();
-		Object ResultValue = Builder.EvalAtTopLevel(TNode, NameSpace.GetGlobalObject());
-
-		return ResultValue;
-	}
-
-	Konoha			konoha;
-	KonohaNameSpace	NameSpace;
-
-	@Override
-	public void Init() {
-		konoha = new Konoha(new MiniKonohaGrammer(), "org.KonohaScript.CodeGen.ASTInterpreter");
-		NameSpace = konoha.DefaultNameSpace;
-
-	}
-
-	@Override
-	public void Exit() {
-	}
+public class MiniKonohaGrammerTest extends KParserTester {
 
 	void testLiteral() {
 		AssertEqual(CompileAndCheck(NameSpace, "20;"), new Integer(20));
@@ -120,5 +81,11 @@ public class MiniKonohaGrammerTest extends KTestCase {
 
 	public static void main(String[] args) {
 		new MiniKonohaGrammerTest().Execute();
+	}
+
+	@Override
+	public void Init() {
+		// TODO Auto-generated method stub
+
 	}
 }

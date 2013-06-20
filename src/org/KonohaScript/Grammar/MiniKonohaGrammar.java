@@ -346,9 +346,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	MethodCallParam		= 2;
 
 	/**
-	 * $Symbol [ "." $Symbol ] ()
-	 * => [(reciever:$Symbol), method@0, (...)]
-	 * @return 
+	 * $Symbol [ "." $Symbol ] () => [(reciever:$Symbol), method@0, (...)]
+	 * 
+	 * @return
 	 */
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
@@ -608,8 +608,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	static int	AssignmentLeftOffset	= 1;
 	static int	AssignmentExprOffset	= 2;
-	static int	VarDeclTypeOffset	= 0;
-	static int	VarDeclNameOffset	= 1;
+	static int	VarDeclTypeOffset		= 0;
+	static int	VarDeclNameOffset		= 1;
 
 	public int ParseVarDecl(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		//KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
@@ -637,7 +637,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
 		}
 		assert (VarName != null);
-		
+
 		TypedNode Value = UNode.TypeNodeAt(2, Gamma, VarType, 0);
 		return new LetNode(VarType, VarToken, Value, null);
 	}
@@ -716,6 +716,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
+		this.InitGrammarProfile(NameSpace);
 		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
 		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
 		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
