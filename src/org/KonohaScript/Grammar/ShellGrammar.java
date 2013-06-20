@@ -258,8 +258,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
+
 		//NameSpace.DefineMacro("$", this, "ShellMacro");
 
 		new KonohaProcessDef().MakeDefinition(NameSpace);
+		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(Process.class));
 	}
 }
