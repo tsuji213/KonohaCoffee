@@ -343,7 +343,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	MethodCallName		= 1;
 	public final static int	MethodCallParam		= 2;
 
-	// $Symbol [ "." $Symbol ] ()
+	/**
+	 * $Symbol [ "." $Symbol ] ()
+	 * => [(reciever:$Symbol), method@0, (...)]
+	 * @return 
+	 */
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
 		System.out.println(UNode.KeyToken.ParsedText);

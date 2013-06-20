@@ -11,6 +11,7 @@ import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
+import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
@@ -215,23 +216,6 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 	}
 
-	/*
-	public int ShellMacro(LexicalConverter Lexer, TokenList SourceList, int BeginIdx, int EndIdx, TokenList BufferList) {
-		KonohaToken ShellToken = SourceList.get(BeginIdx);
-		String CommandLine = ShellToken.ParsedText.substring(2, ShellToken.ParsedText.length() - 1);
-
-		KonohaNameSpace ns = ShellToken.ResolvedSyntax.PackageNameSpace;
-		TokenList ParsedList = ParseShellCommandLine(ns, CommandLine, ShellToken.uline);
-		int next = ParsedList.size();
-		ns.PreProcess(ParsedList, 0, next, ParsedList);
-
-		for(int i = 0; i < ParsedList.size(); i++){
-			BufferList.add(ParsedList.get(i));
-		}
-		return BeginIdx + 1;
-	}
-	*/
-
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		KonohaToken ShellToken = TokenList.get(BeginIdx);
 		String CommandLine = ShellToken.ParsedText.substring(2, ShellToken.ParsedText.length() - 2);
@@ -273,13 +257,16 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
-		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
+		UNode.KeyToken.ResolvedSyntax = UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$New");
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
 		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
 		return NextIdx;
 	}
 
 	public TypedNode TypeNew(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")){
+			return null;
+		}
 //		KonohaDebug.P("(>_<) typing method calls: " + UNode);
 //		KonohaArray NodeList = UNode.NodeList;
 //		assert (NodeList.size() > 1);
@@ -292,7 +279,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 //				return BaseNode;
 //			return this.TypeFindingMethod(Gamma, UNode, BaseNode, TypeInfo);
 //		}
-		return null;
+		String TypeName = UNode.GetAtNode(MiniKonohaGrammar.MethodCallName).KeyToken.ParsedText;
+		TypedNode NewNode = new NewNode(UNode.NodeNameSpace.LookupTypeInfo(TypeName));
+		NewNode.SourceToken = UNode.KeyToken;
+		//NewNode
+		return NewNode;
 	}
 
 	@Override
@@ -302,6 +293,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
+		NameSpace.DefineSyntax("$New", Term, this, "New");
 		
 		new KonohaProcessDef().MakeDefinition(NameSpace);
 		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
