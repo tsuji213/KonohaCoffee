@@ -762,7 +762,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
 		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
-		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StrngLiteral");
+		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
 
 		NameSpace.DefineSyntax("{}", Statement, this, "Block");
