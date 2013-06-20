@@ -13,6 +13,7 @@ import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.KonohaIntegerSyntax;
 import org.KonohaScript.PegParser.KonohaSingleSymbolSyntax;
+import org.KonohaScript.PegParser.KonohaStringSyntax;
 import org.KonohaScript.PegParser.SyntaxModule;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -34,9 +35,9 @@ final class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst {
 
 public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isWhitespace(ch)) {
+			if (!Character.isWhitespace(ch)) {
 				break;
 			}
 		}
@@ -46,14 +47,14 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 	public int IndentToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int LineStart = pos + 1;
 		pos = pos + 1;
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isWhitespace(ch)) {
+			if (!Character.isWhitespace(ch)) {
 				break;
 			}
 		}
 		String Text = "";
-		if(LineStart < pos) {
+		if (LineStart < pos) {
 			Text = SourceText.substring(LineStart, pos);
 		}
 		KonohaToken Token = new KonohaToken(Text);
@@ -64,38 +65,14 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 
 	public int SymbolToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
-		for(; pos < SourceText.length(); pos++) {
+		for (; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
-			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
+			if (!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
 				break;
 			}
 		}
 		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
 		ParsedTokenList.add(Token);
-		return pos;
-	}
-
-	public int StringLiteralToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		int start = pos + 1;
-		char prev = '"';
-		pos = start;
-		while(pos < SourceText.length()) {
-			char ch = SourceText.charAt(pos);
-			if(ch == '"' && prev != '\\') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
-				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
-				ParsedTokenList.add(token);
-				return pos + 1;
-			}
-			if(ch == '\n') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
-				ns.Message(KonohaConst.Error, token, "expected \" to close the string literal");
-				ParsedTokenList.add(token);
-				return pos;
-			}
-			pos = pos + 1;
-			prev = ch;
-		}
 		return pos;
 	}
 
@@ -106,7 +83,7 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 	public TypedNode TypeSymbol(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		// case: Symbol is LocalVariable
 		TypeInfo = Gamma.GetLocalType(UNode.KeyToken.ParsedText);
-		if(TypeInfo != null) {
+		if (TypeInfo != null) {
 			return new LocalNode(TypeInfo, UNode.KeyToken, UNode.KeyToken.ParsedText);
 		}
 		// case: Symbol is undefined name
@@ -137,10 +114,10 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 		new KonohaSingleSymbolSyntax().LoadDefaultSyntax(NameSpace);
 		NameSpace.AddTokenFunc(" \t\n", this, "WhiteSpaceToken");
 		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
-		NameSpace.AddTokenFunc("\"", this, "StringLiteralToken");
 		NameSpace.DefineSyntax("$Symbol", KonohaConst.Term, this, "Symbol");
 
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
+		new KonohaStringSyntax().LoadDefaultSyntax(NameSpace);
 
 		new KonohaInt().MakeDefinition(NameSpace);
 
