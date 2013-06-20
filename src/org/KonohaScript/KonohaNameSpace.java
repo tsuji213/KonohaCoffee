@@ -39,16 +39,15 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
 
-	public Konoha						KonohaContext;
-	KonohaNameSpace						ParentNameSpace;
-	KonohaArray							ImportedNameSpaceList;
-	public KonohaParser					Parser;
-	public static final KonohaParser	DefaultParser	= new KonohaParser();
+	public Konoha		KonohaContext;
+	KonohaNameSpace		ParentNameSpace;
+	KonohaArray			ImportedNameSpaceList;
+	public KonohaParser	Parser;
 
 	public KonohaNameSpace(Konoha KonohaContext, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = KonohaContext;
 		this.ParentNameSpace = ParentNameSpace;
-		this.Parser = DefaultParser;
+		this.Parser = null;
 
 		if(ParentNameSpace != null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
@@ -65,7 +64,8 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	// class
-	@Deprecated public final KonohaType LookupTypeInfo(String ClassName) {
+	@Deprecated
+	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
 			return this.KonohaContext.LookupHostLangType(Class.forName(ClassName));
 
@@ -130,7 +130,6 @@ public final class KonohaNameSpace implements KonohaConst {
 		return new KonohaTokenizer(this, text, uline).Tokenize();
 	}
 
-
 	static final String	MacroPrefix		= "@$"; // FIXME: use different symbol tables
 	static final String	TopLevelPrefix	= "#";
 
@@ -150,7 +149,10 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
-		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(Callee, MethodName, null));
+		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
+				Callee,
+				MethodName,
+				null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -290,7 +292,6 @@ public final class KonohaNameSpace implements KonohaConst {
 		}
 		return ResultValue;
 	}
-
 
 	// Builder
 	private KonohaBuilder	Builder;

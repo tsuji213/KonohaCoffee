@@ -6,7 +6,7 @@ import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public class KonohaParser implements KonohaConst {
-	public void AddSyntax(KonohaNameSpace NameSpace, KonohaGrammar Grammar, boolean TopLevel) {
+	public void AddSyntax(KonohaNameSpace NameSpace, KonohaGrammar ParentGrammar, KonohaGrammar Grammar, boolean TopLevel) {
 		// FIXME
 	}
 

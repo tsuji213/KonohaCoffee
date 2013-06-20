@@ -34,13 +34,13 @@ public class KonohaProcess {
 		this.commandList = new ArrayList<String>();
 		this.enableSyscallTrace = enableSyscallTrace;
 
-		if (this.enableSyscallTrace) {
+		if(this.enableSyscallTrace) {
 			String currentLogdirPath = createLogDirectory();
 			String logNameHeader = createLogNameHeader();
 			logFilePath = new String(currentLogdirPath + "/" + logNameHeader + ".log");
 
 			String[] straceCmd = {"strace", "-t", "-f", "-F", "-o", logFilePath};
-			for (int i = 0; i < straceCmd.length; i++) {
+			for(int i = 0; i < straceCmd.length; i++) {
 				this.commandList.add(straceCmd[i]);
 			}
 		}
@@ -86,7 +86,7 @@ public class KonohaProcess {
 	public void start() {
 		int size = this.commandList.size();
 		String[] cmd = new String[size];
-		for (int i = 0; i < size; i++) {
+		for(int i = 0; i < size; i++) {
 			cmd[i] = this.commandList.get(i);
 		}
 

@@ -5,7 +5,6 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.KonohaInt;
 import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
-import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
@@ -33,7 +32,7 @@ final class KonohaTypeSyntax extends PegGrammar implements KonohaConst {
 	}
 }
 
-public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
+public class MiniKonohaGrammer extends PegGrammar implements KonohaConst {
 	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);

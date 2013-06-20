@@ -7,7 +7,7 @@ import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxModule;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxTemplate;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -15,7 +15,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 class intLiteral0 extends SyntaxAcceptor {
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("intLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$intLiteral");
 		Parser.Push(Node);
@@ -35,19 +35,19 @@ class intLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	public void Init(SyntaxModule Parser) {
+	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new intLiteral0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $intLiteral");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
@@ -68,7 +68,7 @@ class intLiteralSyntax extends SyntaxTemplate {
 
 class stringLiteral0 extends SyntaxAcceptor {
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("stringLiteral0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$stringLiteral");
 		Parser.Push(Node);
@@ -89,19 +89,19 @@ class stringLiteralSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	public void Init(SyntaxModule Parser) {
+	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new stringLiteral0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $stringLiteral");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
@@ -123,7 +123,7 @@ class stringLiteralSyntax extends SyntaxTemplate {
 class Symbol0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("Symbol0", NodeSize);
 		UntypedNode Node = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$Symbol");
 		Parser.Push(Node);
@@ -158,19 +158,19 @@ class SymbolSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	public void Init(SyntaxModule Parser) {
+	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new Symbol0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Symbol");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
@@ -192,7 +192,7 @@ class SymbolSyntax extends SyntaxTemplate {
 class Type0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("Type0", NodeSize);
 		Parser.Push(TokenList.get(BeginIdx));
 		return EndIdx;
@@ -210,19 +210,19 @@ class TypeTokenSyntax extends SyntaxTemplate {
 	}
 
 	@Override
-	public void Init(SyntaxModule Parser) {
+	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new Type0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		this.Report("Accept $Type");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;

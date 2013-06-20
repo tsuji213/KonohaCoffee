@@ -4,8 +4,8 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxModule;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 // action: <Symbol:"class">, <Symbol:$#Symbol>, <Symbol:$#block>
@@ -15,7 +15,7 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 	static final int	ClassBlockOffset		= ClassNameOffset + 2;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		Report("ClassDefinitionSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ClassDefinitionSyntax");
 		int Index = 0;
@@ -43,7 +43,7 @@ class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 	static final int	ClassBlockOffset		= ClassNameOffset + 2;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		Report("ClassDefinitionSyntax1", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ClassDefinitionSyntax");
 		int Index = 0;
@@ -68,11 +68,9 @@ class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 
 // action: <Symbol:$ClassDefinition>
 class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
-	static final TopLevelDefinitionSyntax0	Instance	= new TopLevelDefinitionSyntax0();
-
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		Report("TopLevelDefinitionSyntax2", NodeSize);
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+		Report("TopLevelDefinitionSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}

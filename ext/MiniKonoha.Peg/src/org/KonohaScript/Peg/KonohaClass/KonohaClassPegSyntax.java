@@ -1,8 +1,9 @@
 package org.KonohaScript.Peg.KonohaClass;
 
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxModule;
 import org.KonohaScript.PegParser.SyntaxTemplate;
 
 /*
@@ -25,13 +26,12 @@ class ClassDefinitionSyntax extends SyntaxTemplate {
 		super("$ClassDefinition");
 	}
 
-	@Override
-	public void Init(SyntaxModule Parser) {
+	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new ClassDefinitionSyntax0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		Report("Accept $ClassDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
@@ -39,14 +39,14 @@ class ClassDefinitionSyntax extends SyntaxTemplate {
 
 	public SyntaxAcceptor	Acceptor1	= new ClassDefinitionSyntax1();
 
-	int action1(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		Report("Accept $ClassDefinition");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
@@ -90,21 +90,20 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 		super("$TopLevelDefinition");
 	}
 
-	@Override
-	public void Init(SyntaxModule Parser) {
-		Parser.AddSyntax(this, new ClassDefinitionSyntax(), false);
+	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
+		Parser.AddSyntax(NameSpace, this, new ClassDefinitionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new TopLevelDefinitionSyntax0();
 
-	int action0(String SyntaxName, SyntaxModule Parser, int BeginIdx, int NodeSize) {
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
 		Report("Accept $TopLevelDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
 
 	@Override
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 		int NodeSize = 0;
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;

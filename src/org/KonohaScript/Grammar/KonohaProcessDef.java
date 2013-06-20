@@ -109,7 +109,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
 	}
-	
+
 	// main()
 	public static void main(String[] args) {
 		KonohaProcess proc1 = new KonohaProcess("ls", true);
