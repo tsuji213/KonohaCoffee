@@ -17,6 +17,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	MiniKonohaGrammar MiniKonoha = new MiniKonohaGrammar();
 
+	public static final String ProcessClassName = Process.class.getSimpleName();
+
 	// $(ls -la | grep .txt)
 	public int ShellToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
@@ -52,7 +54,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	 * CommandLine: piped commands
 	 */
 
-	private ArrayList<String> SplitIntoCommands(String CommandLine) {
+	public static ArrayList<String> SplitIntoCommands(String CommandLine) {
 		ArrayList<String> Commands = new ArrayList<String>();
 		boolean inQuate = false;
 		boolean inDoubleQuate = false;
@@ -88,7 +90,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return Commands;
 	}
 
-	private ArrayList<String> SplitIntoCommandTokens(String Command){
+	public static ArrayList<String> SplitIntoCommandTokens(String Command){
 		ArrayList<String> Tokens = new ArrayList<String>();
 		int start = 0;
 		int pos = 0;
@@ -141,7 +143,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return Tokens;
 	}
 
-	private ArrayList<String> makeArguments(ArrayList<String> Tokens){
+	public static ArrayList<String> makeArguments(ArrayList<String> Tokens){
 		ArrayList<String> Args = new ArrayList<String>();
 		int n = Tokens.size();
 		for(int i = 1; i < n; i++){
@@ -157,7 +159,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return Args;
 	}
 
-	private String FindOutputFileName(ArrayList<String> Tokens){
+	public static String FindOutputFileName(ArrayList<String> Tokens){
 		for(int i = 1; i < Tokens.size(); i++){
 			String tk = Tokens.get(i);
 			if(tk.equals(">") && i + 1 < Tokens.size()){
@@ -167,7 +169,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return null;
 	}
 
-	private String FindInputFileName(ArrayList<String> Tokens){
+	public static String FindInputFileName(ArrayList<String> Tokens){
 		for(int i = 1; i < Tokens.size(); i++){
 			String tk = Tokens.get(i);
 			if(tk.equals("<") && i + 1 < Tokens.size()){
@@ -177,7 +179,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return null;
 	}
 
-	private TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
+	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
 		// split commandline by pipe
 		ArrayList<String> Commands = SplitIntoCommands(CommandLine);
 
@@ -188,7 +190,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			ArrayList<String> Tokens = SplitIntoCommandTokens(Commands.get(i));
 			ArrayList<String> Args =  makeArguments(Tokens);
 			String procName = "p" + i;
-			SourceBuilder.append("Process " + procName + " = new Process(\"" + Tokens.get(0) + "\");\n");
+			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
 			for(String arg : Args){
 				SourceBuilder.append(procName + ".AddArgument(\"" + arg + "\");\n");
 			}
@@ -256,8 +258,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
+
 		//NameSpace.DefineMacro("$", this, "ShellMacro");
 
 		new KonohaProcessDef().MakeDefinition(NameSpace);
+		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(Process.class));
 	}
 }

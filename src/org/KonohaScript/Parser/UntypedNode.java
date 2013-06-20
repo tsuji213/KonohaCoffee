@@ -171,11 +171,11 @@ public class UntypedNode implements KonohaConst {
 		KonohaSyntax Syntax = KeyToken.ResolvedSyntax;
 		while(Syntax != null) {
 			this.Syntax = Syntax;
-			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
+			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
 			int NextIdx = Syntax.InvokeParseFunc(this, TokenList, BeginIdx, EndIdx, ((Syntax.ParentSyntax == null) ? 0
 					: HasNextPattern));
 			if(NextIdx != NoMatch) {
-				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
+				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
 				return NextIdx;
 			}
 			if(this.Syntax == KonohaSyntax.ErrorSyntax) {
