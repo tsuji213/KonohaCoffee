@@ -18,7 +18,7 @@ public class ShellTest extends KTestCase {
 	@Override
 	public void Exit() {
 	}
-	
+
 	public static String Join(ArrayList<String> list, String delim) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < list.size(); i++) {
@@ -29,7 +29,7 @@ public class ShellTest extends KTestCase {
 		}
 		return builder.toString();
 	}
-	
+
 	public static String Join(String[] list, String delim) {
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < list.length; i++) {

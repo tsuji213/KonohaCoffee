@@ -6,6 +6,10 @@ import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public class KonohaParser implements KonohaConst {
+	public void AddSyntax(KonohaNameSpace NameSpace, KonohaGrammar Grammar, boolean TopLevel) {
+		// FIXME
+	}
+
 	public UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, TokenList TokenList, int BeginIdx, int EndIdx,
 			int ParseOption) {
 		UntypedNode LeftNode = null;

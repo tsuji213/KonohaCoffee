@@ -103,8 +103,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public int MemberToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos + 1;
-		pos = SymbolToken(ns, SourceText, start, ParsedTokenList);
-		if(pos > start){
+		pos = this.SymbolToken(ns, SourceText, start, ParsedTokenList);
+		if(pos > start) {
 			KonohaToken Token = ParsedTokenList.get(ParsedTokenList.size() - 1);
 			Token.ResolvedSyntax = KonohaSyntax.MemberSyntax;
 		}
@@ -610,7 +610,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	static int	AssignmentExprOffset	= 2;
 	static int	VarDeclTypeOffset	= 0;
 	static int	VarDeclNameOffset	= 1;
-	
+
 	public int ParseVarDecl(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		//KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
 		int SymbolIdx = BeginIdx + 1;
@@ -716,10 +716,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-		// If this grammar define toplevel syntax, we need to create own KonohaParser or
-		// call KonohaGrammer.LoadDefaultSyntax().
-		super.LoadDefaultSyntax(NameSpace);
-
 		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
 		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
 		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);

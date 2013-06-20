@@ -41,7 +41,7 @@ public final class TokenList {
 	public KonohaToken get(int index) {
 		return List.get(index);
 	}
-	
+
 	@Override
 	public String toString() {
 		return List.toString();

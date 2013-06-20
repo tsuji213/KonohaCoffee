@@ -1,0 +1,4 @@
+$ClassDefinition <- "class" $#Symbol $#block
+/ "class" $#Symbol "extends" $#type
+
+$TopLevelDefinition <- $ClassDefinition
