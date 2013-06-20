@@ -12,6 +12,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 
+
 public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	@Override

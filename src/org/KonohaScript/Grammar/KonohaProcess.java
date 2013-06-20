@@ -16,61 +16,64 @@ public class KonohaProcess {
 	private InputStream				stdout	= null;
 	private InputStream				stderr	= null;
 
+	private String commandName;
 	private ArrayList<String>	commandList;
 	private boolean enableSyscallTrace = false;
 	private final String logdirPath = "/tmp/strace-log";
 	private String logFilePath;
-
-	public KonohaProcess() {
-		this.commandList = new ArrayList<String>();
-	}
-
+//	private Logger logger;
+	
+	
 	public KonohaProcess(String command) {
 		this.commandList = new ArrayList<String>();
 		this.commandList.add(command);
 	}
-
+	
 	public KonohaProcess(String command, boolean enableSyscallTrace) {
 		this.commandList = new ArrayList<String>();
 		this.enableSyscallTrace = enableSyscallTrace;
-
-		if(this.enableSyscallTrace) {
+		
+		if (this.enableSyscallTrace) {
+			this.commandName = command;
+//			this.logger = Logger.getLogger("D-Shell"); 
+			
 			String currentLogdirPath = createLogDirectory();
 			String logNameHeader = createLogNameHeader();
 			logFilePath = new String(currentLogdirPath + "/" + logNameHeader + ".log");
-
+			
 			String[] straceCmd = {"strace", "-t", "-f", "-F", "-o", logFilePath};
-			for(int i = 0; i < straceCmd.length; i++) {
+			for (int i = 0; i < straceCmd.length; i++) {
 				this.commandList.add(straceCmd[i]);
 			}
 		}
 		this.commandList.add(command);
 	}
-
+	
 	private String createLogDirectory() {
 		Calendar cal = Calendar.getInstance();
-		String subdirName = "";
-
-		subdirName = subdirName.concat(cal.get(Calendar.YEAR) + "-");
-		subdirName = subdirName.concat((cal.get(Calendar.MONTH) + 1) + "-");
-		subdirName = subdirName.concat(cal.get(Calendar.DATE) + "");
-
-		String subdirPath = new String(logdirPath + "/" + subdirName);
+		StringBuilder pathBuilder = new StringBuilder();
+		
+		pathBuilder.append(logdirPath + "/");
+		pathBuilder.append(cal.get(Calendar.YEAR) + "-");
+		pathBuilder.append((cal.get(Calendar.MONTH) + 1) + "-");
+		pathBuilder.append(cal.get(Calendar.DATE));
+		
+		String subdirPath = pathBuilder.toString();
 		File subdir = new File(subdirPath);
 		subdir.mkdirs();
-
+		
 		return subdirPath;
 	}
-
+	
 	private String createLogNameHeader() {
 		Calendar cal = Calendar.getInstance();
-		String logNameHeader = "";
-
-		logNameHeader = logNameHeader.concat(cal.get((Calendar.HOUR) + 1) + ":");
-		logNameHeader = logNameHeader.concat(cal.get(Calendar.MINUTE) + "-");
-		logNameHeader = logNameHeader.concat(cal.get(Calendar.MILLISECOND) + "");
-
-		return logNameHeader;
+		StringBuilder logNameHeader = new StringBuilder();
+		
+		logNameHeader.append(cal.get((Calendar.HOUR) + 1) + ":");
+		logNameHeader.append(cal.get(Calendar.MINUTE) + "-");
+		logNameHeader.append(cal.get(Calendar.MILLISECOND));
+	
+		return logNameHeader.toString();
 	}
 
 	public void setArgument(String Arg) {
@@ -83,10 +86,10 @@ public class KonohaProcess {
 		}
 	}
 
-	public void start() {
+	public void start() {		
 		int size = this.commandList.size();
 		String[] cmd = new String[size];
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			cmd[i] = this.commandList.get(i);
 		}
 
@@ -172,4 +175,37 @@ public class KonohaProcess {
 	public void kill() {
 		this.proc.destroy();
 	}
+	
+//	public void parseTraceLog() {
+//		System.out.println("show systemcall error!!");
+//		logger.error("error happened at " + commandName);
+//		try {
+//			BufferedReader br = new BufferedReader(new FileReader(this.logFilePath));
+//			
+//			String regex1 = "^[1-9][0-9]* .+(.+) = -[1-9].+";
+//			Pattern p1 = Pattern.compile(regex1);
+//			
+//			String regex2 = "^.+(.+/locale.+).+";
+//			Pattern p2 = Pattern.compile(regex2);
+//			
+//			String regex3 = "(^[1-9][0-9]*)( *)([0-9][0-9]:[0-9][0-9]:[0-9][0-9])( *)(.+)";
+//			Pattern p3 = Pattern.compile(regex3);
+//			
+//			Matcher m1, m2, m3;
+//			
+//			String line;
+//			while((line = br.readLine()) != null){
+//				m1 = p1.matcher(line);
+//				if (m1.find()) {
+//					m3 = p3.matcher(line);
+//					logger.error(m3.replaceAll("[pid $1] [time $3] $5"));
+//				}
+//			}
+//			br.close();
+//		} catch (FileNotFoundException e) {
+//			throw new RuntimeException(e);
+//		} catch (IOException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 }
