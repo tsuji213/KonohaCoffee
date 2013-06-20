@@ -6,8 +6,8 @@ import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
-import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.PegParser;
+import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.SyntaxTemplate;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -32,10 +32,6 @@ class intLiteral0 extends SyntaxAcceptor {
 class intLiteralSyntax extends SyntaxTemplate {
 	public intLiteralSyntax() {
 		super("$intLiteral");
-	}
-
-	@Override
-	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new intLiteral0();
@@ -86,10 +82,6 @@ class stringLiteral0 extends SyntaxAcceptor {
 class stringLiteralSyntax extends SyntaxTemplate {
 	public stringLiteralSyntax() {
 		super("$stringLiteral");
-	}
-
-	@Override
-	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new stringLiteral0();
@@ -157,10 +149,6 @@ class SymbolSyntax extends SyntaxTemplate {
 		super("$Symbol");
 	}
 
-	@Override
-	public void Init(PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new Symbol0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -207,10 +195,6 @@ class Type0 extends SyntaxAcceptor {
 class TypeTokenSyntax extends SyntaxTemplate {
 	public TypeTokenSyntax() {
 		super("$Type");
-	}
-
-	@Override
-	public void Init(PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new Type0();

@@ -1,5 +1,6 @@
 package org.KonohaScript.PegParser;
 
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
@@ -19,7 +20,7 @@ public abstract class SyntaxTemplate extends KonohaGrammar {
 		this.Childrens = null;
 	}
 
-	public void Init(PegParser Module) {
+	public void Init(KonohaNameSpace NameSpace, PegParser Module) {
 	}
 
 	public int Fail(String SyntaxName, PegParser Parser) {
@@ -43,7 +44,7 @@ public abstract class SyntaxTemplate extends KonohaGrammar {
 		//System.out.println(Message);
 	}
 
-	public TypedNode TypeSyntaxModule(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypePegParser(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		//System.out.println("Syntax : " + this.Name);
 		//System.out.println("Node : " + UNode);
 		SyntaxAcceptor Acceptor = (SyntaxAcceptor) UNode.NodeList.get(SyntaxAcceptor.AcceptorOffset);

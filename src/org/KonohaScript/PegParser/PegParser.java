@@ -142,12 +142,13 @@ public class PegParser extends KonohaParser {
 
 	void AddSyntax(SyntaxTemplate ParentSyntax, SyntaxTemplate Syntax, boolean TopLevelSyntax) {
 		if(TopLevelSyntax) {
+			this.RootSyntax = Syntax;
 			this.EntryPoints.add(Syntax);
 		}
 		if(!this.AlreadyRegistered(Syntax)) {
 			this.SyntaxTable.put(Syntax.Name, Syntax);
 			this.NameSpace.DefineSyntax(Syntax.Name, 0, Syntax, "UNUSED", "PegParser");
-			Syntax.Init(this);
+			Syntax.Init(this.NameSpace, this);
 
 		}
 	}

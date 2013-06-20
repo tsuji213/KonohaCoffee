@@ -53,6 +53,6 @@ public abstract class SyntaxAcceptor {
 	}
 
 	public void Report(String Message, int NodeSize) {
-		//System.out.println(Message + " : " + NodeSize);
+		System.out.println(Message + " : " + NodeSize);
 	}
 }
