@@ -90,4 +90,12 @@ public class KonohaInt extends KonohaDef implements KonohaConst {
 	public static boolean IntGeInt(int x, int y) {
 		return x >= y;
 	}
+
+	public static boolean IntEqInt(int x, int y) {
+		return x == y;
+	}
+
+	public static boolean IntNeInt(int x, int y) {
+		return x != y;
+	}
 }

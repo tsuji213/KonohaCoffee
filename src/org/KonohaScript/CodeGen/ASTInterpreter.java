@@ -370,7 +370,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			args[n - i - 1] = this.Pop();
 		}
 		KonohaMethod Mtd = Node.Method;
-		if(Mtd.MethodInvoker != null) {
+		if(Mtd.MethodInvoker == null) {
 			Mtd.DoCompilation();
 		}
 		Object Ret = Mtd.Eval(args);

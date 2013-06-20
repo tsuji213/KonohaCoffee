@@ -116,6 +116,11 @@ public class UntypedNode implements KonohaConst {
 		return (UntypedNode) this.NodeList.get(Index);
 	}
 
+	public KonohaToken GetAtToken(int Index) {
+		KonohaToken Token = (KonohaToken) this.NodeList.get(Index);
+		return Token;
+	}
+
 	public final KonohaType GetTokenType(int Index, KonohaType DefType) {
 		KonohaToken Token = (KonohaToken) this.NodeList.get(Index);
 		if(Token != null && Token.ResolvedObject instanceof KonohaType) {
