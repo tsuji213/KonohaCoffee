@@ -251,6 +251,49 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		//KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return null;
 	}
+	
+	// new $Symbol()
+	public int ParseNew(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		if(!UNode.KeyToken.ParsedText.equals("new")){
+			return -1;
+		}
+		int ClassIdx = BeginIdx + 1;
+		System.out.println(UNode.KeyToken.ParsedText);
+
+		int ParamIdx = UNode.MatchSyntax(MiniKonohaGrammar.MethodCallName, "$Type", TokenList, ClassIdx, EndIdx, ParseOption);
+		if(ParamIdx == -1) {
+			return -1;
+		}
+		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
+		if(NextIdx == -1) {
+			return -1;
+		}
+
+		KonohaToken GroupToken = TokenList.get(ParamIdx);
+		TokenList GroupList = GroupToken.GetGroupList();
+		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
+
+		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
+		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
+		// SymbolIdx, ParamIdx, BlockIdx, NextIdx, EndIdx);
+		return NextIdx;
+	}
+
+	public TypedNode TypeNew(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+//		KonohaDebug.P("(>_<) typing method calls: " + UNode);
+//		KonohaArray NodeList = UNode.NodeList;
+//		assert (NodeList.size() > 1);
+//		assert (NodeList.get(0) instanceof UntypedNode);
+//		UntypedNode UntypedBaseNode = (UntypedNode) NodeList.get(0);
+//		if(UntypedBaseNode == null) {
+//		} else {
+//			TypedNode BaseNode = TypeEnv.TypeCheckEachNode(Gamma, UntypedBaseNode, Gamma.VarType, 0);
+//			if(BaseNode.IsError())
+//				return BaseNode;
+//			return this.TypeFindingMethod(Gamma, UNode, BaseNode, TypeInfo);
+//		}
+		return null;
+	}
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
@@ -258,10 +301,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
-
-		//NameSpace.DefineMacro("$", this, "ShellMacro");
-
+		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
+		
 		new KonohaProcessDef().MakeDefinition(NameSpace);
-		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(Process.class));
+		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
 	}
 }

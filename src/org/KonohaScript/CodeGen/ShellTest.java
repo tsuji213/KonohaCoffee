@@ -12,7 +12,7 @@ public class ShellTest extends KTestCase {
 
 	@Override
 	public void Init() {
-		this.konoha = new Konoha(new ShellGrammar(), "org.KonohaScript.CodeGen.ASTInterpreter");
+		this.konoha = new Konoha(new ShellGrammar(), ASTInterpreter.class.getName());
 	}
 
 	@Override
