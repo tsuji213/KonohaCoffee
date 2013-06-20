@@ -60,4 +60,9 @@ public final class KonohaArray {
 	public void clear() {
 		this.List.clear();
 	}
+	
+	@Override
+	public String toString() {
+		return List.toString();
+	}
 }

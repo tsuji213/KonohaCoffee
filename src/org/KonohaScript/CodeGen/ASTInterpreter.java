@@ -117,7 +117,8 @@ class InterpreterLetNodeAcceptor implements LetNodeAcceptor {
 		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
 		Visitor.EnterLet(Node);
 		Visitor.Visit(Node.ValueNode);
-		thisVisitor.LocalVariable.put(Node.VarToken.ParsedText, thisVisitor.Pop());
+		Object Value = thisVisitor.Pop();
+		thisVisitor.LocalVariable.put(Node.VarToken.ParsedText, Value);
 		Visitor.VisitList(Node.BlockNode);
 		return Visitor.ExitLet(Node);
 	}
@@ -428,7 +429,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean ExitLet(LetNode Node) {
-		this.LocalVariable.put(Node.VarToken.ParsedText, null);
+		//this.LocalVariable.put(Node.VarToken.ParsedText, null);
 		return true;
 	}
 
@@ -554,8 +555,11 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		catch (ReturnException e) {
 			/* do nothing */
 		}
-		Object Ret = this.Pop();
-		return Ret;
+		if(this.Evaled.size() > 0){
+			Object Ret = this.Pop();
+			return Ret;
+		}
+		return null;
 	}
 
 	@Override
