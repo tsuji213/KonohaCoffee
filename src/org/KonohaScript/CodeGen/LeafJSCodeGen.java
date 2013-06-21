@@ -216,7 +216,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitNew(NewNode Node) {
-		//FIXME constractor params
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		this.push("new " + Node.TypeInfo.ShortClassName + "()");
 		return true;
 	}
@@ -288,8 +291,6 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitAssign(AssignNode Node) {
-		//FIXME (ide) left hand side of AssignNode is already defined variable
-		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
 		Node.LeftNode.Evaluate(this);
 		Node.RightNode.Evaluate(this);
 		String Right = this.pop();

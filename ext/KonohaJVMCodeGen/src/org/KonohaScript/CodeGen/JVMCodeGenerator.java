@@ -445,6 +445,10 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	@Override
 	public boolean VisitNew(NewNode Node) {
 		// TODO Auto-generated method stub
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		return false;
 	}
 

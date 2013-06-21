@@ -164,6 +164,10 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean VisitNew(NewNode Node) {
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		KonohaType TypeInfo = Node.TypeInfo;
 		// FIXME It seems that I cannot get type infomation from DefaultNullValue.
 		Class<?> KClass = TypeInfo.HostedClassInfo;//TypeInfo.DefaultNullValue.getClass();

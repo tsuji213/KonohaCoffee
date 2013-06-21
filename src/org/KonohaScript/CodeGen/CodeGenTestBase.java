@@ -282,7 +282,7 @@ public class CodeGenTestBase extends KTestCase {
 
 		TypedNode Block = new IfNode(this.VoidTy,
 		/* cond */new ConstNode(this.BooleanTy, null, true),
-		/* then */new NewNode(this.ObjectTy),
+		/* then */new NewNode(this.ObjectTy, null),
 		/* else */new ReturnNode(this.IntTy, new ConstNode(this.BooleanTy, null, false)));
 		KonohaMethodInvoker Mtd = Builder.Compile(Block);
 		this.Assert(Mtd.CompiledCode instanceof String);

@@ -167,6 +167,10 @@ public class LLVMCodeGen extends CodeGenerator {
 
 	@Override
 	public boolean VisitNew(NewNode Node) {
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		LLVMValue heapValue = this.builder.createHeapAllocation(Node.TypeInfo.ShortClassName);
 		this.builder.pushValue(heapValue);
 		return true;

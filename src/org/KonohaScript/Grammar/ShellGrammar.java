@@ -18,16 +18,16 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
-	MiniKonohaGrammar MiniKonoha = new MiniKonohaGrammar();
+	MiniKonohaGrammar			MiniKonoha			= new MiniKonohaGrammar();
 
-	public static final String ProcessClassName = Process.class.getSimpleName();
+	public static final String	ProcessClassName	= Process.class.getSimpleName();
 
 	// $(ls -la | grep .txt)
 	public int ShellToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
 		int level = 1;
 		pos++;
-		if(SourceText.charAt(pos) != '('){
+		if(SourceText.charAt(pos) != '(') {
 			return -1;
 		}
 		for(; pos < SourceText.length(); pos++) {
@@ -38,9 +38,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			}
 			if(ch == '(') {
 				level++;
-			}else if(ch == ')') {
+			} else if(ch == ')') {
 				level--;
-				if(level < 0){
+				if(level < 0) {
 					pos++;
 					break;
 				}
@@ -68,39 +68,39 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				pos++;
 				continue;
 			}
-			if(inQuate || inDoubleQuate){
-				if(inDoubleQuate && ch == '"'){
+			if(inQuate || inDoubleQuate) {
+				if(inDoubleQuate && ch == '"') {
 					inDoubleQuate = false;
-				}else if(inQuate && ch == '\''){
+				} else if(inQuate && ch == '\'') {
 					inQuate = false;
 				}
-			}else{
+			} else {
 				if(ch == '|') {
 					Commands.add(CommandLine.substring(start, pos - 1));
 					start = pos + 1;
-				}else if(ch == ' ' && start == pos) {
+				} else if(ch == ' ' && start == pos) {
 					start++;
-				}else if(ch == '"'){
+				} else if(ch == '"') {
 					inDoubleQuate = true;
-				}else if(ch == '\''){
+				} else if(ch == '\'') {
 					inQuate = true;
 				}
 			}
 		}
-		if(start < CommandLine.length() - 1){
+		if(start < CommandLine.length() - 1) {
 			Commands.add(CommandLine.substring(start));
 		}
 		return Commands;
 	}
 
-	public static ArrayList<String> SplitIntoCommandTokens(String Command){
+	public static ArrayList<String> SplitIntoCommandTokens(String Command) {
 		ArrayList<String> Tokens = new ArrayList<String>();
 		int start = 0;
 		int pos = 0;
 		boolean inQuate = false;
 		boolean inDoubleQuate = false;
 		StringBuilder TokenBuilder = new StringBuilder();
-		while(Command.charAt(pos) == ' '){
+		while(Command.charAt(pos) == ' ') {
 			pos++;
 		}
 		for(; pos < Command.length(); pos++) {
@@ -110,72 +110,72 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				TokenBuilder.append(Command.charAt(pos));
 				continue;
 			}
-			if(inQuate || inDoubleQuate){
-				if(inDoubleQuate && ch == '"'){
+			if(inQuate || inDoubleQuate) {
+				if(inDoubleQuate && ch == '"') {
 					inDoubleQuate = false;
-				}else if(inQuate && ch == '\''){
+				} else if(inQuate && ch == '\'') {
 					inQuate = false;
-				}else if(inQuate && ch == '"'){
+				} else if(inQuate && ch == '"') {
 					TokenBuilder.append("\\\"");
-				}else{
+				} else {
 					TokenBuilder.append(ch);
 				}
-			}else{
+			} else {
 				if(ch == ' ') {
 					if(start == pos) {
 						start++;
-					}else{
+					} else {
 						//Tokens.add(Command.substring(start, pos).replaceAll("\\\\(.)", "$1"));
 						Tokens.add(TokenBuilder.toString());
 						TokenBuilder.delete(0, TokenBuilder.length());
 						start = pos + 1;
 					}
-				}else if(ch == '"'){
+				} else if(ch == '"') {
 					inDoubleQuate = true;
-				}else if(ch == '\''){
+				} else if(ch == '\'') {
 					inQuate = true;
-				}else{
+				} else {
 					TokenBuilder.append(ch);
 				}
 			}
 		}
-		if(start < Command.length() - 1){
+		if(start < Command.length() - 1) {
 			Tokens.add(TokenBuilder.toString());
 			TokenBuilder.delete(0, TokenBuilder.length());
 		}
 		return Tokens;
 	}
 
-	public static ArrayList<String> makeArguments(ArrayList<String> Tokens){
+	public static ArrayList<String> makeArguments(ArrayList<String> Tokens) {
 		ArrayList<String> Args = new ArrayList<String>();
 		int n = Tokens.size();
-		for(int i = 1; i < n; i++){
+		for(int i = 1; i < n; i++) {
 			String tk = Tokens.get(i);
-			if(tk.equals(">") || tk.equals("<")){
+			if(tk.equals(">") || tk.equals("<")) {
 				n = i;
 				break;
 			}
 		}
-		for(int i = 1; i < n; i++){
+		for(int i = 1; i < n; i++) {
 			Args.add(Tokens.get(i));
 		}
 		return Args;
 	}
 
-	public static String FindOutputFileName(ArrayList<String> Tokens){
-		for(int i = 1; i < Tokens.size(); i++){
+	public static String FindOutputFileName(ArrayList<String> Tokens) {
+		for(int i = 1; i < Tokens.size(); i++) {
 			String tk = Tokens.get(i);
-			if(tk.equals(">") && i + 1 < Tokens.size()){
+			if(tk.equals(">") && i + 1 < Tokens.size()) {
 				return Tokens.get(i + 1);
 			}
 		}
 		return null;
 	}
 
-	public static String FindInputFileName(ArrayList<String> Tokens){
-		for(int i = 1; i < Tokens.size(); i++){
+	public static String FindInputFileName(ArrayList<String> Tokens) {
+		for(int i = 1; i < Tokens.size(); i++) {
 			String tk = Tokens.get(i);
-			if(tk.equals("<") && i + 1 < Tokens.size()){
+			if(tk.equals("<") && i + 1 < Tokens.size()) {
 				return Tokens.get(i + 1);
 			}
 		}
@@ -189,26 +189,27 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		StringBuilder SourceBuilder = new StringBuilder();
 
 		int n = Commands.size();
-		for(int i = 0; i < n; i++){
+		for(int i = 0; i < n; i++) {
 			ArrayList<String> Tokens = SplitIntoCommandTokens(Commands.get(i));
-			ArrayList<String> Args =  makeArguments(Tokens);
+			ArrayList<String> Args = makeArguments(Tokens);
 			String procName = "p" + i;
-			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
-			for(String arg : Args){
+			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0)
+					+ "\");\n");
+			for(String arg : Args) {
 				SourceBuilder.append(procName + ".AddArgument(\"" + arg + "\");\n");
 			}
-			if(i == 0){
+			if(i == 0) {
 				String Input = FindInputFileName(Tokens);
-				if(Input != null){
+				if(Input != null) {
 					SourceBuilder.append(procName + "." + "SetInputFileName(\"" + Input + "\");\n");
 				}
 			}
-			if(i > 0){
-				SourceBuilder.append("p" + (i-1) + ".Pipe(p" + i + ");\n");
+			if(i > 0) {
+				SourceBuilder.append("p" + (i - 1) + ".Pipe(p" + i + ");\n");
 			}
-			if(i == n - 1){
+			if(i == n - 1) {
 				String Output = FindOutputFileName(Tokens);
-				if(Output != null){
+				if(Output != null) {
 					SourceBuilder.append(procName + "." + "SetOutputFileName(\"" + Output + "\");\n");
 				}
 			}
@@ -240,7 +241,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	// new $Symbol()
 	public int ParseNew(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		if(!UNode.KeyToken.ParsedText.equals("new")){
+		if(!UNode.KeyToken.ParsedText.equals("new")) {
 			return -1;
 		}
 		int ClassIdx = BeginIdx + 1;
@@ -265,11 +266,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	public TypedNode TypeNew(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")){
+		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")) {
 			return null;
 		}
 		KonohaType BaseType = UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null);
-		NewNode Node = new NewNode(BaseType);
+		NewNode Node = new NewNode(BaseType, UNode.KeyToken);
 		int ParamSize = UNode.NodeList.size() - MiniKonohaGrammar.MethodCallParam;
 		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
 		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
@@ -279,13 +280,13 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-		MiniKonoha.LoadDefaultSyntax(NameSpace);
+		this.MiniKonoha.LoadDefaultSyntax(NameSpace);
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
 		NameSpace.DefineSyntax("$New", Term, this, "New");
-		
+
 		new KonohaProcessDef().MakeDefinition(NameSpace);
 		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
 	}

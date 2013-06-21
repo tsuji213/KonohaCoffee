@@ -1,11 +1,20 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.Parser.KonohaToken;
 
-public class NewNode extends TypedNode {
+public class NewNode extends TypedNode implements CallableNode {
+	public KonohaArray	Params; /* [this, arg1, arg2, ...] */
 
-	public NewNode(KonohaType TypeInfo) {
-		super(TypeInfo, null/* fixme */);
+	public NewNode(KonohaType TypeInfo, KonohaToken KeyToken) {
+		super(TypeInfo, KeyToken);
+		this.Params = new KonohaArray();
+	}
+
+	@Override
+	public void Append(TypedNode Expr) {
+		this.Params.add(Expr);
 	}
 
 	@Override
