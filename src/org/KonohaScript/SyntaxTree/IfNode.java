@@ -1,18 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
-
-class DefaultIfNodeAcceptor implements IfNodeAcceptor {
-	@Override
-	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-		Visitor.EnterIf(Node);
-		Visitor.Visit(Node.CondExpr);
-		Visitor.VisitList(Node.ThenNode);
-		Visitor.VisitList(Node.ElseNode);
-		return Visitor.ExitIf(Node);
-	}
-}
 
 public class IfNode extends TypedNode {
 	public TypedNode	CondExpr;
@@ -29,7 +17,7 @@ public class IfNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.IfNodeAcceptor.Invoke(this, Visitor);
+		return Visitor.VisitIf(this);
 	}
 
 }

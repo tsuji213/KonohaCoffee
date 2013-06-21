@@ -26,7 +26,7 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 		Index = Index + 1;
 		UNode.SetAtToken(ClassNameOffset, ClassName.KeyToken);
 		UNode.SetAtNode(ClassParentNameOffset, null);
-		if (Block.size() > 0) {
+		if(Block.size() > 0) {
 			UNode.SetAtNode(ClassBlockOffset, (UntypedNode) Block.get(0));
 		} else {
 			UNode.SetAtNode(ClassBlockOffset, null);

@@ -162,9 +162,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		this.PushProgramSize();
 		boolean ret = true;
 		if(Node != null) {
-			ret &= this.Visit(Node);
+			ret &= Node.Evaluate(this);
 			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
-				ret &= this.Visit(n);
+				ret &= n.Evaluate(this);
 			}
 		}
 
@@ -181,9 +181,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		this.PushProgramSize();
 		boolean ret = true;
 		if(Node != null) {
-			ret &= this.Visit(Node);
+			ret &= Node.Evaluate(this);
 			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
-				ret &= this.Visit(n);
+				ret &= n.Evaluate(this);
 			}
 		}
 		String currentLevelIndent = this.indentGenerator.indentAndGet(-1);
@@ -196,7 +196,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitDefine(DefineNode Node) {
+	public boolean VisitDefine(DefineNode Node) {
 		if(Node.DefInfo instanceof KonohaMethod) {
 			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
 			Mtd.DoCompilation();
@@ -209,59 +209,46 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitConst(ConstNode Node) {
-		if(Node.SourceToken.ParsedText.equals("global")) {
-			this.push(this.GlobalObjectName);
-		} else {
-			this.push(Node.ConstValue.toString());
-		}
+	public boolean VisitConst(ConstNode Node) {
+		this.push(Node.ConstValue.toString());
 		return true;
 	}
 
 	@Override
-	public boolean ExitNew(NewNode Node) {
+	public boolean VisitNew(NewNode Node) {
 		//FIXME constractor params
 		this.push("new " + Node.TypeInfo.ShortClassName + "()");
 		return true;
 	}
 
 	@Override
-	public boolean ExitNull(NullNode Node) {
+	public boolean VisitNull(NullNode Node) {
 		this.push("null");
 		return true;
 	}
 
 	@Override
-	public void EnterLocal(LocalNode Node) {
+	public boolean VisitLocal(LocalNode Node) {
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.FieldName);
-	}
-
-	@Override
-	public boolean ExitLocal(LocalNode Node) {
 		this.push(Node.FieldName);
 		return true;
 	}
 
 	@Override
-	public void EnterGetter(GetterNode Node) {
-		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
-		assert (local != null);
-	}
-
-	@Override
-	public boolean ExitGetter(GetterNode Node) {
-		// String Expr = Node.TermToken.ParsedText;
-		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
-		// push(Expr);
-		// FIXME
-		this.push(Node.SourceToken.ParsedText);
+	public boolean VisitGetter(GetterNode Node) {
+		Node.BaseNode.Evaluate(this);
+		this.push(this.pop() + "." + Node.FieldName);
 		return true;
 
 	}
 
 	@Override
-	public boolean ExitApply(ApplyNode Node) {
+	public boolean VisitApply(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		if(this.isMethodBinaryOperator(Node)) {
 			String params = this.pop();
 			String thisNode = this.pop();
@@ -279,7 +266,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitAnd(AndNode Node) {
+	public boolean VisitAnd(AndNode Node) {
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
 		String Right = this.pop();
 		String Left = this.pop();
 		this.push(Left + " && " + Right);
@@ -287,7 +276,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitOr(OrNode Node) {
+	public boolean VisitOr(OrNode Node) {
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
+
 		String Right = this.pop();
 		String Left = this.pop();
 		this.push(Left + " || " + Right);
@@ -295,12 +287,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterAssign(AssignNode Node) {
+	public boolean VisitAssign(AssignNode Node) {
+		//FIXME (ide) left hand side of AssignNode is already defined variable
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
-	}
-
-	@Override
-	public boolean ExitAssign(AssignNode Node) {
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
 		String Right = this.pop();
 		String Left = this.pop();
 		this.push((this.UseLetKeyword ? "let " : "var ") + Left + " = " + Right);
@@ -308,12 +299,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterLet(LetNode Node) {
+	public boolean VisitLet(LetNode Node) {
+		Node.ValueNode.Evaluate(this);
+		this.VisitList(Node.BlockNode);
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
-	}
-
-	@Override
-	public boolean ExitLet(LetNode Node) {
 		String Block = this.pop();
 		String Right = this.pop();
 		this.push(Node.VarToken.ParsedText + " = " + Right + Block);
@@ -337,7 +326,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	// }
 
 	@Override
-	public boolean ExitIf(IfNode Node) {
+	public boolean VisitIf(IfNode Node) {
+		Node.CondExpr.Evaluate(this);
+		this.VisitBlock(Node.ThenNode);
+		this.VisitBlock(Node.ElseNode);
+
 		String ElseBlock = this.pop();
 		String ThenBlock = this.pop();
 		String CondExpr = this.pop();
@@ -350,7 +343,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitSwitch(SwitchNode Node) {
+	public boolean VisitSwitch(SwitchNode Node) {
+		Node.CondExpr.Evaluate(this);
+		for(int i = 0; i < Node.Blocks.size(); i++) {
+			TypedNode Block = (TypedNode) Node.Blocks.get(i);
+			this.VisitList(Block);
+		}
+
 		int Size = Node.Labels.size();
 		String Exprs = "";
 		for(int i = 0; i < Size; i = i + 1) {
@@ -364,7 +363,10 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitLoop(LoopNode Node) {
+	public boolean VisitLoop(LoopNode Node) {
+		Node.CondExpr.Evaluate(this);
+		Node.IterationExpr.Evaluate(this);
+		this.VisitList(Node.LoopBody);
 		String LoopBody = this.pop();
 		String IterExpr = this.pop();
 		String CondExpr = this.pop();
@@ -374,14 +376,15 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitReturn(ReturnNode Node) {
+	public boolean VisitReturn(ReturnNode Node) {
+		Node.Expr.Evaluate(this);
 		String Expr = this.pop();
 		this.push("return " + Expr);
 		return false;
 	}
 
 	@Override
-	public boolean ExitLabel(LabelNode Node) {
+	public boolean VisitLabel(LabelNode Node) {
 		String Label = Node.Label;
 		if(Label.compareTo("continue") == 0) {
 			this.push("");
@@ -394,7 +397,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitJump(JumpNode Node) {
+	public boolean VisitJump(JumpNode Node) {
 		String Label = Node.Label;
 		if(Label.compareTo("continue") == 0) {
 			this.push("continue;");
@@ -407,7 +410,15 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitTry(TryNode Node) {
+	public boolean VisitTry(TryNode Node) {
+		this.VisitList(Node.TryBlock);
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
+			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			this.VisitList(Block);
+		}
+		this.VisitList(Node.FinallyBlock);
+
 		String FinallyBlock = this.pop();
 		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
 		String TryBlock = this.pop();
@@ -416,20 +427,21 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public boolean ExitThrow(ThrowNode Node) {
+	public boolean VisitThrow(ThrowNode Node) {
+		Node.Expr.Evaluate(this);
 		String Expr = this.pop();
 		this.push("throw " + Expr);
 		return false;
 	}
 
 	@Override
-	public boolean ExitFunction(FunctionNode Node) {
+	public boolean VisitFunction(FunctionNode Node) {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public boolean ExitError(ErrorNode Node) {
+	public boolean VisitError(ErrorNode Node) {
 		String Expr = Node.ErrorMessage;
 		this.push("throw new Exception(" + Expr + ")");
 		return false;
