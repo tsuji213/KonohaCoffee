@@ -63,7 +63,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		}
 		this.ParsedTree = null;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

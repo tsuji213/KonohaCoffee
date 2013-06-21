@@ -22,8 +22,9 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.ObjectModel;
 
+import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaMap;
 
 public class KonohaObject {
@@ -31,7 +32,7 @@ public class KonohaObject {
 	// TODO (tsuji213) replace KonohaMap => SymbolMap
 	public KonohaMap	prototypes;
 
-	KonohaObject(KonohaType TypeInfo) {
+	public KonohaObject(KonohaType TypeInfo) {
 		this.TypeInfo = TypeInfo;
 		this.prototypes = null;
 	}
