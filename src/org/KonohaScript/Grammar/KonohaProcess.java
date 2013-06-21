@@ -24,33 +24,33 @@ public class KonohaProcess {
 	private final String logdirPath = "/tmp/strace-log";
 	private String logFilePath;
 //	private Logger logger;
-	
-	
+
+
 	public KonohaProcess(String command) {
 		this.commandList = new ArrayList<String>();
 		this.commandList.add(command);
 	}
-	
+
 	public KonohaProcess(String command, boolean enableSyscallTrace) {
 		this.commandList = new ArrayList<String>();
 		this.enableSyscallTrace = enableSyscallTrace;
 		
-		if (this.enableSyscallTrace) {
+		if(this.enableSyscallTrace) {
 			this.commandName = command;
-//			this.logger = Logger.getLogger("D-Shell"); 
+//			this.logger = Logger.getLogger("D-Shell");
 			
 			String currentLogdirPath = createLogDirectory();
 			String logNameHeader = createLogNameHeader();
 			logFilePath = new String(currentLogdirPath + "/" + logNameHeader + ".log");
 			
 			String[] straceCmd = {"strace", "-t", "-f", "-F", "-o", logFilePath};
-			for (int i = 0; i < straceCmd.length; i++) {
+			for(int i = 0; i < straceCmd.length; i++) {
 				this.commandList.add(straceCmd[i]);
 			}
 		}
 		this.commandList.add(command);
 	}
-	
+
 	private String createLogDirectory() {
 		Calendar cal = Calendar.getInstance();
 		StringBuilder pathBuilder = new StringBuilder();
@@ -66,7 +66,7 @@ public class KonohaProcess {
 		
 		return subdirPath;
 	}
-	
+
 	private String createLogNameHeader() {
 		Calendar cal = Calendar.getInstance();
 		StringBuilder logNameHeader = new StringBuilder();
@@ -74,7 +74,7 @@ public class KonohaProcess {
 		logNameHeader.append(cal.get((Calendar.HOUR) + 1) + ":");
 		logNameHeader.append(cal.get(Calendar.MINUTE) + "-");
 		logNameHeader.append(cal.get(Calendar.MILLISECOND));
-	
+
 		return logNameHeader.toString();
 	}
 
@@ -91,7 +91,7 @@ public class KonohaProcess {
 	public void start() {		
 		int size = this.commandList.size();
 		String[] cmd = new String[size];
-		for (int i = 0; i < size; i++) {
+		for(int i = 0; i < size; i++) {
 			cmd[i] = this.commandList.get(i);
 		}
 
@@ -177,7 +177,7 @@ public class KonohaProcess {
 	public void kill() {
 		this.proc.destroy();
 	}
-	
+
 //	public void parseTraceLog() {
 //		System.out.println("show systemcall error!!");
 //		logger.error("error happened at " + commandName);
@@ -198,7 +198,7 @@ public class KonohaProcess {
 //			String line;
 //			while((line = br.readLine()) != null){
 //				m1 = p1.matcher(line);
-//				if (m1.find()) {
+//				if(m1.find()) {
 //					m3 = p3.matcher(line);
 //					logger.error(m3.replaceAll("[pid $1] [time $3] $5"));
 //				}
