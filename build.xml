@@ -51,7 +51,7 @@
 		<jar jarfile="konoha.jar">
 			<fileset dir="bin" includes="**/*.class" />
 			<manifest>
-				<attribute name="Main-Class" value="org.KonohaScript.KonohaShell" />
+				<attribute name="Main-Class" value="org.KonohaScript.CommandTool.KonohaShell" />
 			</manifest>
 		</jar>
 		<jar jarfile="KonohaJVMCodeGen.jar">

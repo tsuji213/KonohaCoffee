@@ -157,14 +157,14 @@ public final class Konoha implements KonohaConst {
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
-		if(BuilderClassName != null) {
+		if (BuilderClassName != null) {
 			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 		}
 	}
 
 	KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType) this.ClassNameMap.get(ClassInfo.getName());
-		if(TypeInfo == null) {
+		if (TypeInfo == null) {
 			TypeInfo = new KonohaType(this, ClassInfo);
 			this.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
 		}
@@ -179,7 +179,7 @@ public final class Konoha implements KonohaConst {
 		this.DefaultNameSpace.Eval(text, uline);
 	}
 
-	public void Load(String fileName) {
+	public void Load(String FileName) {
 		// TODO (kkuramitsu)
 		// System.out.println("Eval: " + text);
 		// DefaultNameSpace.Tokenize(text, uline);

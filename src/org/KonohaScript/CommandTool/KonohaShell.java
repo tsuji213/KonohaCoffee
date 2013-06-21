@@ -1,4 +1,4 @@
-package org.KonohaScript;
+package org.KonohaScript.CommandTool;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+import org.KonohaScript.Konoha;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.JUtils.HostLang;
 import org.KonohaScript.KLib.KonohaArray;
