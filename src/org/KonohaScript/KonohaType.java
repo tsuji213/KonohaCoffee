@@ -118,6 +118,9 @@ public class KonohaType {
 	}
 
 	public void AddMethod(KonohaMethod Method) {
+		if(this.ClassMethodList == this.KonohaContext.EmptyList){
+			this.ClassMethodList = new KonohaArray();
+		}
 		this.ClassMethodList.add(Method);
 	}
 
