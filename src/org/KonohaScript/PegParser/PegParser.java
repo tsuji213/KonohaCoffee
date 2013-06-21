@@ -156,6 +156,7 @@ public class PegParser extends KonohaParser {
 	public void MixSyntax(SyntaxTemplate ParentSyntax, SyntaxTemplate Syntax, boolean TopLevelSyntax) {
 		if(this.AlreadyRegistered(ParentSyntax)) {
 			Object Parent = this.SyntaxTable.get(ParentSyntax.Name);
+			ParentSyntax.Init(this.NameSpace, this);
 			if(Parent instanceof KonohaArray) {
 				KonohaArray List = (KonohaArray) Parent;
 				List.add(ParentSyntax);
@@ -163,6 +164,7 @@ public class PegParser extends KonohaParser {
 				KonohaArray List = new KonohaArray();
 				List.add(Parent);
 				List.add(ParentSyntax);
+				this.SyntaxTable.put(ParentSyntax.Name, List);
 			}
 		} else {
 			this.AddSyntax(ParentSyntax, Syntax, TopLevelSyntax);

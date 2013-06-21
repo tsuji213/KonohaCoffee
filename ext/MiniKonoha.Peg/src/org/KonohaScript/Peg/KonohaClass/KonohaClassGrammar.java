@@ -11,6 +11,6 @@ public class KonohaClassGrammar extends KonohaGrammar {
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
 		//FIXME
 		PegParser PegParser = (PegParser) NameSpace.Parser;
-		PegParser.AddSyntax(NameSpace, new TopLevelDefinitionSyntax(), new ClassDefinitionSyntax(), false);
+		PegParser.MixSyntax(new TopLevelDefinitionSyntax(), new ClassDefinitionSyntax(), false);
 	}
 }

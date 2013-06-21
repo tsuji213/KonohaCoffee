@@ -79,13 +79,13 @@ public class MiniKonohaGrammerTest extends KParserTester {
 
 	}
 
+	@Override
+	public void Init() {
+		Init(new MiniKonohaPegGrammar());
+	}
+
 	public static void main(String[] args) {
 		new MiniKonohaGrammerTest().Execute();
 	}
 
-	@Override
-	public void Init() {
-		// TODO Auto-generated method stub
-
-	}
 }
