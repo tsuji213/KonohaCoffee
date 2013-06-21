@@ -52,7 +52,7 @@ public class ShellTest extends KTestCase {
 
 		//this.konoha.Eval("int num = 100;", 0);
 		//this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
-		this.konoha.Eval("Process p0 = new Process();p0.SetArgument(\"ls\");", 0);
+		this.konoha.Eval("Process p0 = new Process(\"ls\");p0.SetArgument(\"-la\");", 0);
 		/*
 		this.konoha.Eval("Process p0 = new Process();" +
 				"p0.SetArgument(\"ls\");" +

@@ -1,5 +1,7 @@
 package org.KonohaScript.CodeGen;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
@@ -164,22 +166,38 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 
 	@Override
 	public boolean VisitNew(NewNode Node) {
+		Class<?>[] ParamTypes = new Class<?>[Node.Params.size()];
+		Object[] ParamObjects = new Object[Node.Params.size()];
 		for(int i = 0; i < Node.Params.size(); i++) {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
+			ParamObjects[i] = this.Pop();
+			ParamTypes[i] = Param.TypeInfo.HostedClassInfo;
 		}
 		KonohaType TypeInfo = Node.TypeInfo;
 		// FIXME It seems that I cannot get type infomation from DefaultNullValue.
 		Class<?> KClass = TypeInfo.HostedClassInfo;//TypeInfo.DefaultNullValue.getClass();
 		try {
 			// FIXME Enable using constractor with parameters
-			Object Obj = KClass.newInstance();
+			Object Obj = KClass.getConstructor(ParamTypes).newInstance(ParamObjects);
 			this.push(Obj);
 		}
 		catch (InstantiationException e) {
 			e.printStackTrace();
 		}
 		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+		catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		catch (SecurityException e) {
 			e.printStackTrace();
 		}
 		return true;

@@ -7,6 +7,7 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaToken;
@@ -266,6 +267,25 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return NextIdx;
 	}
 
+	private TypedNode TypeNewEachParam(TypeEnv Gamma, KonohaType BaseType, NewNode WorkingNode, KonohaArray NodeList) {
+		int ParamSize = NodeList.size() - MiniKonohaGrammar.MethodCallParam;
+		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
+		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 2; ParamIdx++) {
+			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
+			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 2);
+			TypedNode ParamNode;
+			if(UntypedParamNode != null) {
+				ParamNode = TypeEnv.TypeCheck(Gamma, UntypedParamNode, ParamType, DefaultTypeCheckPolicy);
+			} else {
+				ParamNode = Gamma.GetDefaultTypedNode(ParamType);
+			}
+			if(ParamNode.IsError())
+				return ParamNode;
+			WorkingNode.Append(ParamNode);
+		}
+		return WorkingNode;
+	}
+	
 	public TypedNode TypeNew(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")) {
 			return null;
@@ -275,6 +295,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int ParamSize = UNode.NodeList.size() - MiniKonohaGrammar.MethodCallParam;
 		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
 		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+		this.TypeNewEachParam(Gamma, BaseType, Node, UNode.NodeList);
 		CallNode.Append(Node);
 		return Node;
 	}
