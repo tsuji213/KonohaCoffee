@@ -24,7 +24,11 @@ public class KonohaProcess {
 	private final String logdirPath = "/tmp/strace-log";
 	private String logFilePath;
 //	private Logger logger;
+
 	
+	public KonohaProcess() {
+		this.commandList = new ArrayList<String>();
+	}
 	
 	public KonohaProcess(String command) {
 		this.commandList = new ArrayList<String>();

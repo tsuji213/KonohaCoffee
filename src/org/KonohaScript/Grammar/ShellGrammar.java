@@ -193,9 +193,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			ArrayList<String> Tokens = SplitIntoCommandTokens(Commands.get(i));
 			ArrayList<String> Args =  makeArguments(Tokens);
 			String procName = "p" + i;
-			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
+			//SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
+			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "();\n");
+			SourceBuilder.append(procName + ".SetArgument(\"" + Tokens.get(0) + "\");\n");
 			for(String arg : Args){
-				SourceBuilder.append(procName + ".AddArgument(\"" + arg + "\");\n");
+				SourceBuilder.append(procName + ".SetArgument(\"" + arg + "\");\n");
 			}
 			if(i == 0){
 				String Input = FindInputFileName(Tokens);
@@ -285,7 +287,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
 		NameSpace.DefineSyntax("$New", Term, this, "New");
-		
+
 		new KonohaProcessDef().MakeDefinition(NameSpace);
 		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
 	}
