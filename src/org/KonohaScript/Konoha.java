@@ -128,7 +128,7 @@ public final class Konoha implements KonohaConst {
 
 	public KonohaNameSpace	RootNameSpace;
 	public KonohaNameSpace	DefaultNameSpace;
-//	SymbolTable				SymbolTable;
+	//	SymbolTable				SymbolTable;
 
 	public final KonohaType	VoidType;
 	public final KonohaType	ObjectType;
@@ -141,19 +141,19 @@ public final class Konoha implements KonohaConst {
 	final KonohaMap			ClassNameMap;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
-//		this.SymbolTable = new SymbolTable();
-//		this.SymbolTable.Init(this);
+		//		this.SymbolTable = new SymbolTable();
+		//		this.SymbolTable.Init(this);
 
 		this.EmptyList = new KonohaArray();
 		this.ClassNameMap = new KonohaMap();
 		this.RootNameSpace = new KonohaNameSpace(this, null);
 
-		this.VoidType    = this.RootNameSpace.LookupHostLangType(Void.class);
-		this.ObjectType  = this.RootNameSpace.LookupHostLangType(Object.class);
+		this.VoidType = this.RootNameSpace.LookupHostLangType(Void.class);
+		this.ObjectType = this.RootNameSpace.LookupHostLangType(Object.class);
 		this.BooleanType = this.RootNameSpace.LookupHostLangType(Boolean.class);
-		this.IntType     = this.RootNameSpace.LookupHostLangType(Integer.class);
-		this.StringType  = this.RootNameSpace.LookupHostLangType(String.class);
-		this.VarType     = this.RootNameSpace.LookupHostLangType(Object.class);
+		this.IntType = this.RootNameSpace.LookupHostLangType(Integer.class);
+		this.StringType = this.RootNameSpace.LookupHostLangType(String.class);
+		this.VarType = this.RootNameSpace.LookupHostLangType(Object.class);
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
@@ -171,8 +171,6 @@ public final class Konoha implements KonohaConst {
 		return TypeInfo;
 	}
 
-
-
 	public void Define(String Symbol, Object Value) {
 		this.RootNameSpace.DefineSymbol(Symbol, Value);
 	}
@@ -182,6 +180,7 @@ public final class Konoha implements KonohaConst {
 	}
 
 	public void Load(String fileName) {
+		// TODO (kkuramitsu)
 		// System.out.println("Eval: " + text);
 		// DefaultNameSpace.Tokenize(text, uline);
 	}

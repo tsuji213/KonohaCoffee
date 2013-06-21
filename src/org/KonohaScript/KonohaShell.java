@@ -6,13 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Scanner;
 
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
-import org.KonohaScript.JUtils.KonohaPure;
+import org.KonohaScript.JUtils.HostLang;
 import org.KonohaScript.KLib.KonohaArray;
 
-@KonohaPure
+@HostLang
 class KConsole {
 	public final InputStream	stdin	= System.in;
 	public final PrintStream	stdout	= System.out;
