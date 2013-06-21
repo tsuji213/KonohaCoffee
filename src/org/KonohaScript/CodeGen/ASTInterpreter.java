@@ -23,11 +23,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.AssignNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.LetNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.LoopNodeAcceptor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -55,122 +50,6 @@ class ASTInterpreterMethodInvoker extends KonohaMethodInvoker {
 			this.Interpreter.BindLocalVariable(Param.ArgNames[i - 1], Args[i]);
 		}
 		return this.Interpreter.Eval((TypedNode) this.CompiledCode, this.Method, null);
-	}
-}
-
-class InterpreterAndNodeAcceptor implements NodeVisitor.AndNodeAcceptor {
-	@Override
-	public boolean Invoke(AndNode Node, NodeVisitor Visitor) {
-		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
-		Visitor.EnterAnd(Node);
-		Visitor.Visit(Node.LeftNode);
-		if(thisVisitor.Pop() == Boolean.TRUE) {
-			Visitor.Visit(Node.RightNode);
-			if(thisVisitor.Pop() == Boolean.TRUE) {
-				thisVisitor.push(Boolean.TRUE);
-			} else {
-				thisVisitor.push(Boolean.FALSE);
-			}
-		} else {
-			thisVisitor.push(Boolean.FALSE);
-		}
-		return Visitor.ExitAnd(Node);
-	}
-}
-
-class InterpreterOrNodeAcceptor implements NodeVisitor.OrNodeAcceptor {
-	@Override
-	public boolean Invoke(OrNode Node, NodeVisitor Visitor) {
-		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
-		Visitor.EnterOr(Node);
-		Visitor.Visit(Node.LeftNode);
-		if(thisVisitor.Pop() == Boolean.TRUE) {
-			thisVisitor.push(Boolean.TRUE);
-		} else {
-			Visitor.Visit(Node.RightNode);
-			if(thisVisitor.Pop() == Boolean.TRUE) {
-				thisVisitor.push(Boolean.TRUE);
-			} else {
-				thisVisitor.push(Boolean.FALSE);
-			}
-		}
-		return Visitor.ExitOr(Node);
-	}
-}
-
-class InterpreterAssignNodeAcceptor implements AssignNodeAcceptor {
-	@Override
-	public boolean Invoke(AssignNode Node, NodeVisitor Visitor) {
-		Visitor.EnterAssign(Node);
-		if(Node.LeftNode instanceof GetterNode) {
-			GetterNode Left = (GetterNode) Node.LeftNode;
-			Visitor.Visit(Left.BaseNode);
-		}
-		Visitor.Visit(Node.RightNode);
-		return Visitor.ExitAssign(Node);
-	}
-}
-
-class InterpreterLetNodeAcceptor implements LetNodeAcceptor {
-	@Override
-	public boolean Invoke(LetNode Node, NodeVisitor Visitor) {
-		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
-		Visitor.EnterLet(Node);
-		Visitor.Visit(Node.ValueNode);
-		Object Value = thisVisitor.Pop();
-		thisVisitor.LocalVariable.put(Node.VarToken.ParsedText, Value);
-		Visitor.VisitList(Node.BlockNode);
-		return Visitor.ExitLet(Node);
-	}
-}
-
-class InterpreterIfNodeAcceptor implements IfNodeAcceptor {
-	@Override
-	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
-		Visitor.EnterIf(Node);
-		Visitor.Visit(Node.CondExpr);
-		if(thisVisitor.Pop() == Boolean.TRUE) {
-			Visitor.VisitList(Node.ThenNode);
-		} else {
-			Visitor.VisitList(Node.ElseNode);
-		}
-		return Visitor.ExitIf(Node);
-	}
-}
-
-class InterpreterLoopNodeAcceptor implements LoopNodeAcceptor {
-
-	@Override
-	public boolean Invoke(LoopNode Node, NodeVisitor Visitor) {
-		ASTInterpreter thisVisitor = (ASTInterpreter) Visitor;
-		Visitor.EnterLoop(Node);
-		while(true) {
-			Visitor.Visit(Node.CondExpr);
-			if(thisVisitor.Pop() == Boolean.FALSE) {
-				break;
-			}
-			try {
-				Visitor.VisitList(Node.LoopBody);
-			}
-			catch (LoopBreakException e) {
-				if(e.Jump.TargetNode == null) {
-					e.Jump.TargetNode = Node;
-				} else if(e.Jump.TargetNode != Node) {
-					throw e;
-				}
-				break;
-			}
-			catch (LoopContinueException e) {
-				if(e.Jump.TargetNode == null) {
-					e.Jump.TargetNode = Node;
-				} else if(e.Jump.TargetNode != Node) {
-					throw e;
-				}
-			}
-			Visitor.Visit(Node.IterationExpr);
-		}
-		return Visitor.ExitLoop(Node);
 	}
 }
 
@@ -231,18 +110,6 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		this.Evaled = new KonohaArray();
 		this.Labels = new KonohaArray();
 		this.LocalVariable = new KonohaMap();
-
-		this.AndNodeAcceptor = new InterpreterAndNodeAcceptor();
-		this.OrNodeAcceptor = new InterpreterOrNodeAcceptor();
-		this.AssignNodeAcceptor = new InterpreterAssignNodeAcceptor();
-		this.LetNodeAcceptor = new InterpreterLetNodeAcceptor();
-		this.IfNodeAcceptor = new InterpreterIfNodeAcceptor();
-		this.LoopNodeAcceptor = new InterpreterLoopNodeAcceptor();
-	}
-
-	@Override
-	public boolean Visit(TypedNode Node) {
-		return Node.Evaluate(this);
 	}
 
 	public Object Pop() {
@@ -278,11 +145,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterDefine(DefineNode Node) {
-	}
-
-	@Override
-	public boolean ExitDefine(DefineNode Node) {
+	public boolean VisitDefine(DefineNode Node) {
 		if(Node.DefInfo instanceof KonohaMethod) {
 			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
 			Mtd.DoCompilation();
@@ -294,21 +157,17 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterConst(ConstNode Node) {
-	}
-
-	@Override
-	public boolean ExitConst(ConstNode Node) {
+	public boolean VisitConst(ConstNode Node) {
 		this.push(Node.ConstValue);
 		return true;
 	}
 
 	@Override
-	public void EnterNew(NewNode Node) {
-	}
-
-	@Override
-	public boolean ExitNew(NewNode Node) {
+	public boolean VisitNew(NewNode Node) {
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		KonohaType TypeInfo = Node.TypeInfo;
 		// FIXME It seems that I cannot get type infomation from DefaultNullValue.
 		Class<?> KClass = TypeInfo.HostedClassInfo;//TypeInfo.DefaultNullValue.getClass();
@@ -327,33 +186,22 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterNull(NullNode Node) {
-	}
-
-	@Override
-	public boolean ExitNull(NullNode Node) {
+	public boolean VisitNull(NullNode Node) {
 		KonohaType TypeInfo = Node.TypeInfo;
 		this.push(TypeInfo.DefaultNullValue);
 		return true;
 	}
 
 	@Override
-	public void EnterLocal(LocalNode Node) {
-	}
-
-	@Override
-	public boolean ExitLocal(LocalNode Node) {
+	public boolean VisitLocal(LocalNode Node) {
 		Object Obj = this.LocalVariable.get(Node.FieldName);
 		this.push(Obj);
 		return true;
 	}
 
 	@Override
-	public void EnterGetter(GetterNode Node) {
-	}
-
-	@Override
-	public boolean ExitGetter(GetterNode Node) {
+	public boolean VisitGetter(GetterNode Node) {
+		Node.BaseNode.Evaluate(this);
 		Object Base = this.Pop();
 		assert (Base instanceof KonohaObject);
 		KonohaObject Obj = (KonohaObject) Base;
@@ -362,15 +210,13 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterApply(ApplyNode Node) {
-	}
-
-	@Override
-	public boolean ExitApply(ApplyNode Node) {
+	public boolean VisitApply(ApplyNode Node) {
 		int n = Node.Params.size();
 		Object[] args = new Object[n];
-		for(int i = 0; i < n; ++i) {
-			args[n - i - 1] = this.Pop();
+		for(int i = 0; i < n; i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+			args[i] = this.Pop();
 		}
 		KonohaMethod Mtd = Node.Method;
 		if(Mtd.MethodInvoker == null) {
@@ -382,34 +228,44 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterAnd(AndNode Node) {
-	}
-
-	@Override
-	public boolean ExitAnd(AndNode Node) {
-		/* do nothing */
+	public boolean VisitAnd(AndNode Node) {
+		Node.LeftNode.Evaluate(this);
+		if(this.Pop() == Boolean.TRUE) {
+			Node.RightNode.Evaluate(this);
+			if(this.Pop() == Boolean.TRUE) {
+				this.push(Boolean.TRUE);
+			} else {
+				this.push(Boolean.FALSE);
+			}
+		} else {
+			this.push(Boolean.FALSE);
+		}
 		return true;
 	}
 
 	@Override
-	public void EnterOr(OrNode Node) {
-	}
-
-	@Override
-	public boolean ExitOr(OrNode Node) {
-		/* do nothing */
+	public boolean VisitOr(OrNode Node) {
+		Node.LeftNode.Evaluate(this);
+		if(this.Pop() == Boolean.TRUE) {
+			this.push(Boolean.TRUE);
+		} else {
+			Node.RightNode.Evaluate(this);
+			if(this.Pop() == Boolean.TRUE) {
+				this.push(Boolean.TRUE);
+			} else {
+				this.push(Boolean.FALSE);
+			}
+		}
 		return true;
 	}
 
 	@Override
-	public void EnterAssign(AssignNode Node) {
-	}
-
-	@Override
-	public boolean ExitAssign(AssignNode Node) {
+	public boolean VisitAssign(AssignNode Node) {
+		Node.RightNode.Evaluate(this);
 		Object Val = this.Pop();
 		if(Node.LeftNode instanceof GetterNode) {
 			GetterNode Left = (GetterNode) Node.LeftNode;
+			Left.BaseNode.Evaluate(this);
 			Object Base = this.Pop();
 			assert (Base instanceof KonohaObject);
 			KonohaObject Obj = (KonohaObject) Base;
@@ -425,72 +281,83 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterLet(LetNode Node) {
+	public boolean VisitLet(LetNode Node) {
 		this.LocalVariable.put(Node.VarToken.ParsedText, null);
-	}
-
-	@Override
-	public boolean ExitLet(LetNode Node) {
-		//this.LocalVariable.put(Node.VarToken.ParsedText, null);
+		Node.ValueNode.Evaluate(this);
+		Object Value = this.Pop();
+		this.LocalVariable.put(Node.VarToken.ParsedText, Value);
+		this.VisitList(Node.BlockNode);
 		return true;
 	}
 
 	@Override
-	public void EnterIf(IfNode Node) {
-	}
-
-	@Override
-	public boolean ExitIf(IfNode Node) {
-		/* do nothing */
+	public boolean VisitIf(IfNode Node) {
+		Node.CondExpr.Evaluate(this);
+		if(this.Pop() == Boolean.TRUE) {
+			this.VisitList(Node.ThenNode);
+		} else {
+			this.VisitList(Node.ElseNode);
+		}
 		return true;
 	}
 
 	@Override
-	public void EnterSwitch(SwitchNode Node) {
-	}
+	public boolean VisitSwitch(SwitchNode Node) {
+		Node.CondExpr.Evaluate(this);
+		for(int i = 0; i < Node.Blocks.size(); i++) {
+			TypedNode Block = (TypedNode) Node.Blocks.get(i);
+			this.VisitList(Block);
+		}
 
-	@Override
-	public boolean ExitSwitch(SwitchNode Node) {
 		throw new NotSupportedCodeError();
 		// return true;
 	}
 
 	@Override
-	public void EnterLoop(LoopNode Node) {
-	}
-
-	@Override
-	public boolean ExitLoop(LoopNode Node) {
-		/* do nothing */
+	public boolean VisitLoop(LoopNode Node) {
+		while(true) {
+			Node.CondExpr.Evaluate(this);
+			if(this.Pop() == Boolean.FALSE) {
+				break;
+			}
+			try {
+				this.VisitList(Node.LoopBody);
+			}
+			catch (LoopBreakException e) {
+				if(e.Jump.TargetNode == null) {
+					e.Jump.TargetNode = Node;
+				} else if(e.Jump.TargetNode != Node) {
+					throw e;
+				}
+				break;
+			}
+			catch (LoopContinueException e) {
+				if(e.Jump.TargetNode == null) {
+					e.Jump.TargetNode = Node;
+				} else if(e.Jump.TargetNode != Node) {
+					throw e;
+				}
+			}
+			Node.IterationExpr.Evaluate(this);
+		}
 		return true;
 	}
 
 	@Override
-	public void EnterReturn(ReturnNode Node) {
-	}
-
-	@Override
-	public boolean ExitReturn(ReturnNode Node) {
+	public boolean VisitReturn(ReturnNode Node) {
+		Node.Expr.Evaluate(this);
 		this.push(this.Pop());
 		throw new ReturnException();
 	}
 
 	@Override
-	public void EnterLabel(LabelNode Node) {
-	}
-
-	@Override
-	public boolean ExitLabel(LabelNode Node) {
+	public boolean VisitLabel(LabelNode Node) {
 		throw new NotSupportedCodeError();
 		// return true;
 	}
 
 	@Override
-	public void EnterJump(JumpNode Node) {
-	}
-
-	@Override
-	public boolean ExitJump(JumpNode Node) {
+	public boolean VisitJump(JumpNode Node) {
 		if(Node.Label == "break") {
 			throw new LoopBreakException(Node);
 		} else if(Node.Label == "continue") {
@@ -501,41 +368,34 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public void EnterTry(TryNode Node) {
-	}
+	public boolean VisitTry(TryNode Node) {
+		this.VisitList(Node.TryBlock);
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
+			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			this.VisitList(Block);
+		}
+		this.VisitList(Node.FinallyBlock);
 
-	@Override
-	public boolean ExitTry(TryNode Node) {
 		throw new NotSupportedCodeError();
 		// return true;
 	}
 
 	@Override
-	public void EnterThrow(ThrowNode Node) {
-	}
-
-	@Override
-	public boolean ExitThrow(ThrowNode Node) {
+	public boolean VisitThrow(ThrowNode Node) {
+		Node.Expr.Evaluate(this);
 		throw new NotSupportedCodeError();
 		// return false;
 	}
 
 	@Override
-	public void EnterFunction(FunctionNode Node) {
-	}
-
-	@Override
-	public boolean ExitFunction(FunctionNode Node) {
+	public boolean VisitFunction(FunctionNode Node) {
 		throw new NotSupportedCodeError();
 		// return true;
 	}
 
 	@Override
-	public void EnterError(ErrorNode Node) {
-	}
-
-	@Override
-	public boolean ExitError(ErrorNode Node) {
+	public boolean VisitError(ErrorNode Node) {
 		throw new RuntimeException(Node.ErrorMessage);
 	}
 
@@ -557,7 +417,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		catch (ReturnException e) {
 			/* do nothing */
 		}
-		if(this.Evaled.size() > 0){
+		if(this.Evaled.size() > 0) {
 			Object Ret = this.Pop();
 			return Ret;
 		}

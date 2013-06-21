@@ -1,7 +1,7 @@
 package org.KonohaScript.Tester;
 
 public class KTestRunnerBase {
-	static boolean	DEBUG	= true;
+	static boolean	DEBUG	= !true;
 
 	void Run(KTestCase TestCase) {
 		if(DEBUG) {

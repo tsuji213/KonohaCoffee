@@ -37,6 +37,7 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		//FIXME
 		return null;
 	}
 }
@@ -67,6 +68,7 @@ class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		//FIXME
 		return null;
 	}
 }

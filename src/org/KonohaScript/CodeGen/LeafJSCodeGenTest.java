@@ -25,7 +25,7 @@ public class LeafJSCodeGenTest extends CodeGeneratorTester {
 
 	@Override
 	Object testMethodCall() {
-		return null;
+		return "int.p(int.fibo(36).toString());";
 	}
 
 	@Override

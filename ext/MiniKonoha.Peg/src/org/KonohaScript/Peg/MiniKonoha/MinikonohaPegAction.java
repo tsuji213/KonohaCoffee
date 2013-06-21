@@ -9,8 +9,8 @@ import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.KonohaCallExpressionTypeChecker;
-import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.PegParser;
+import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -1347,7 +1347,7 @@ class newExpressionSyntax1 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaType BaseType = UNode.GetTokenType(NewTypeOffset, null);
-		NewNode Node = new NewNode(BaseType);
+		NewNode Node = new NewNode(BaseType, UNode.KeyToken);
 		int ParamSize = UNode.NodeList.size() - NewParamOffset;
 		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
 		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
