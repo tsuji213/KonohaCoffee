@@ -5,11 +5,12 @@ import java.lang.reflect.InvocationTargetException;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
-import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaParam;
+import org.KonohaScript.KonohaSymbol;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -223,7 +224,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 		Object Base = this.Pop();
 		assert (Base instanceof KonohaObject);
 		KonohaObject Obj = (KonohaObject) Base;
-		this.push(Obj.get(Node.FieldName));
+		this.push(Obj.GetField(KonohaSymbol.GetSymbolId(Node.FieldName)));
 		return true;
 	}
 
@@ -287,7 +288,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 			Object Base = this.Pop();
 			assert (Base instanceof KonohaObject);
 			KonohaObject Obj = (KonohaObject) Base;
-			Obj.set(Left.FieldName, Val);
+			Obj.SetField(KonohaSymbol.GetSymbolId(Left.FieldName), Val);
 			this.push(Val);
 		} else {
 			assert (Node.LeftNode instanceof LocalNode);

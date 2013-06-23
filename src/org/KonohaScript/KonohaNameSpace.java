@@ -28,6 +28,7 @@ import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.Parser.KonohaChar;
 import org.KonohaScript.Parser.KonohaParser;
 import org.KonohaScript.Parser.KonohaSyntax;
@@ -150,9 +151,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-				Callee,
-				MethodName,
-				null));
+			Callee,
+			MethodName,
+			null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -252,7 +253,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-				.Do(tokenList, BeginIdx, EndIdx, BufferList);
+		.Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {

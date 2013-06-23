@@ -269,7 +269,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	private TypedNode TypeNewEachParam(TypeEnv Gamma, KonohaType BaseType, NewNode WorkingNode, KonohaArray NodeList) {
 		int ParamSize = NodeList.size() - MiniKonohaGrammar.MethodCallParam;
-		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
+		KonohaMethod Method = BaseType.LookupMethod("New", ParamSize);
 		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 2; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
 			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 2);
@@ -293,7 +293,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		KonohaType BaseType = UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null);
 		NewNode Node = new NewNode(BaseType, UNode.KeyToken);
 		int ParamSize = UNode.NodeList.size() - MiniKonohaGrammar.MethodCallParam;
-		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
+		KonohaMethod Method = BaseType.LookupMethod("New", ParamSize);
 		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
 		this.TypeNewEachParam(Gamma, BaseType, Node, UNode.NodeList);
 		CallNode.Append(Node);
@@ -309,7 +309,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
 		NameSpace.DefineSyntax("$New", Term, this, "New");
 
-		new KonohaProcessDef().MakeDefinition(NameSpace);
 		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
+		new KonohaProcessDef().MakeDefinition(NameSpace);
 	}
 }

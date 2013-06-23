@@ -22,31 +22,30 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ***************************************************************************/
 
-package org.KonohaScript;
+package org.KonohaScript.ObjectModel;
 
-import org.KonohaScript.KLib.KonohaMap;
+import org.KonohaScript.KonohaType;
 
 public class KonohaObject {
 	public KonohaType	TypeInfo;
-	// TODO (tsuji213) replace KonohaMap => SymbolMap
-	public KonohaMap	prototypes;
+	SymbolMap			prototype;
 
-	KonohaObject(KonohaType TypeInfo) {
+	public KonohaObject(KonohaType TypeInfo) {
 		this.TypeInfo = TypeInfo;
-		this.prototypes = null;
+		this.prototype = null;
 	}
 
-	public Object get(String FieldName) {
-		if(this.prototypes == null) {
+	public Object GetField(int SymbolId) {
+		if(this.prototype == null) {
 			return null;
 		}
-		return this.prototypes.get(FieldName);
+		return this.prototype.Get(SymbolId);
 	}
 
-	public void set(String FieldName, Object Obj) {
-		if(this.prototypes == null) {
-			this.prototypes = new KonohaMap();
+	public void SetField(int SymbolId, Object Obj) {
+		if(this.prototype == null) {
+			this.prototype = new SymbolMap();
 		}
-		this.prototypes.put(FieldName, Obj);
+		this.prototype.Set(SymbolId, Obj);
 	}
 }
