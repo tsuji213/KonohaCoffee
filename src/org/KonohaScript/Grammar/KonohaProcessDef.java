@@ -1,11 +1,5 @@
 package org.KonohaScript.Grammar;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-
 import org.KonohaScript.KonohaDef;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
@@ -20,8 +14,8 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		KonohaType BaseClass = ns.LookupHostLangType(KonohaProcess.class);
 
 		// define Constructor
-		String MN_newKonohaProcess = "newKonohaProcess";
-		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "KonohaProcess String x");
+		String MN_newKonohaProcess = "New";
+		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
 		BaseClass.DefineMethod(0, MN_newKonohaProcess, Process_String_Param, this, MN_newKonohaProcess); //FIXME
 
 		// define SetArgument()
@@ -66,7 +60,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		BaseClass.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
 	}
 
-	public static KonohaProcess newProcess(String Command) {
+	public static KonohaProcess New(String Command) {
 		return new KonohaProcess(Command);
 	}
 
@@ -112,11 +106,11 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	}
 
 	// main()
-	public static void main(String[] args) {
-		KonohaProcess proc1 = new KonohaProcess("ls", true);
-		proc1.setArgument("/root");
-		proc1.start();
-		System.out.print("<<stdout>>\n" + proc1.getStdout());
-		System.err.print("<<stderr>>\n" + proc1.getStderr());
-	}
+//	public static void main(String[] args) {
+//		KonohaProcess proc1 = new KonohaProcess("ls", true);
+//		proc1.setArgument("/root");
+//		proc1.start();
+//		System.out.print("<<stdout>>\n" + proc1.getStdout());
+//		System.err.print("<<stderr>>\n" + proc1.getStderr());
+//	}
 }

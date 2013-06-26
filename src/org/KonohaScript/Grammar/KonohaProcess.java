@@ -25,6 +25,9 @@ public class KonohaProcess {
 	private String logFilePath;
 //	private Logger logger;
 
+	public KonohaProcess() {
+		this.commandList = new ArrayList<String>();
+	}
 
 	public KonohaProcess(String command) {
 		this.commandList = new ArrayList<String>();
@@ -34,15 +37,15 @@ public class KonohaProcess {
 	public KonohaProcess(String command, boolean enableSyscallTrace) {
 		this.commandList = new ArrayList<String>();
 		this.enableSyscallTrace = enableSyscallTrace;
-		
+
 		if(this.enableSyscallTrace) {
 			this.commandName = command;
 //			this.logger = Logger.getLogger("D-Shell");
-			
+
 			String currentLogdirPath = createLogDirectory();
 			String logNameHeader = createLogNameHeader();
 			logFilePath = new String(currentLogdirPath + "/" + logNameHeader + ".log");
-			
+
 			String[] straceCmd = {"strace", "-t", "-f", "-F", "-o", logFilePath};
 			for(int i = 0; i < straceCmd.length; i++) {
 				this.commandList.add(straceCmd[i]);
@@ -54,23 +57,23 @@ public class KonohaProcess {
 	private String createLogDirectory() {
 		Calendar cal = Calendar.getInstance();
 		StringBuilder pathBuilder = new StringBuilder();
-		
+
 		pathBuilder.append(logdirPath + "/");
 		pathBuilder.append(cal.get(Calendar.YEAR) + "-");
 		pathBuilder.append((cal.get(Calendar.MONTH) + 1) + "-");
 		pathBuilder.append(cal.get(Calendar.DATE));
-		
+
 		String subdirPath = pathBuilder.toString();
 		File subdir = new File(subdirPath);
 		subdir.mkdirs();
-		
+
 		return subdirPath;
 	}
 
 	private String createLogNameHeader() {
 		Calendar cal = Calendar.getInstance();
 		StringBuilder logNameHeader = new StringBuilder();
-		
+
 		logNameHeader.append(cal.get((Calendar.HOUR) + 1) + ":");
 		logNameHeader.append(cal.get(Calendar.MINUTE) + "-");
 		logNameHeader.append(cal.get(Calendar.MILLISECOND));
@@ -88,7 +91,7 @@ public class KonohaProcess {
 		}
 	}
 
-	public void start() {		
+	public void start() {
 		int size = this.commandList.size();
 		String[] cmd = new String[size];
 		for(int i = 0; i < size; i++) {
@@ -183,18 +186,18 @@ public class KonohaProcess {
 //		logger.error("error happened at " + commandName);
 //		try {
 //			BufferedReader br = new BufferedReader(new FileReader(this.logFilePath));
-//			
+//
 //			String regex1 = "^[1-9][0-9]* .+(.+) = -[1-9].+";
 //			Pattern p1 = Pattern.compile(regex1);
-//			
+//
 //			String regex2 = "^.+(.+/locale.+).+";
 //			Pattern p2 = Pattern.compile(regex2);
-//			
+//
 //			String regex3 = "(^[1-9][0-9]*)( *)([0-9][0-9]:[0-9][0-9]:[0-9][0-9])( *)(.+)";
 //			Pattern p3 = Pattern.compile(regex3);
-//			
+//
 //			Matcher m1, m2, m3;
-//			
+//
 //			String line;
 //			while((line = br.readLine()) != null){
 //				m1 = p1.matcher(line);

@@ -51,22 +51,26 @@ public class ShellTest extends KTestCase {
 		this.AssertEqual(ShellGrammar.FindInputFileName(ShellGrammar.SplitIntoCommandTokens("find '<test>' < list.txt")), "list.txt");
 
 		//this.konoha.Eval("int num = 100;", 0);
-		this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
-		/*this.konoha.Eval("Process p0 = new Process(\"ls\");" +
-				"p0.AddArgument(\"-la\");" +
+		//this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
+		this.konoha.Eval("Process p0 = new Process(\"ls\");p0.SetArgument(\"-la\");", 0);
+		/*
+		this.konoha.Eval("Process p0 = new Process();" +
+				"p0.SetArgument(\"ls\");" +
+				"p0.SetArgument(\"-la\");" +
 				"p0.Fg();" +
-				"Process p1 = new Process(\"grep\");" +
-				"p1.AddArgument(\".txt\");" +
+				"Process p1 = new Process();" +
+				"p1.SetArgument(\"grep\");" +
+				"p1.SetArgument(\".txt\");" +
 				"p0.Pipe(p1);" +
 				"p1.SetOutputFileName(\"listoftext.txt\");" +
 				"p1.Fg();", 0);
 		*/
 		/*
 		Process p0 = new Process("ls");
-		p0.AddArgument("-la");
+		p0.SetArgument("-la");
 		p0.Fg();
 		Process p1 = new Process("grep");
-		p1.AddArgument(".txt");
+		p1.SetArgument(".txt");
 		p0.Pipe(p1);
 		p1.SetOutputFileName("listoftext.txt");
 		p1.Fg();
