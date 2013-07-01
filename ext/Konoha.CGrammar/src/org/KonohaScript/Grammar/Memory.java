@@ -16,7 +16,7 @@ public class Memory {
 	}
 
 	Pointer AllocaHeap(int Size, int Num) {
-		System.out.println("malloc("+Size*Num+");");
+		//System.out.println("malloc("+Size*Num+");");
 		int TotalSize = 4 + Size * Num;
 		MemoryBlock block = new MemoryBlock(this, this.Heap, this.CurrentHeapPos, TotalSize);
 		this.CurrentHeapPos += TotalSize;
