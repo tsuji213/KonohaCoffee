@@ -42,6 +42,13 @@
 			<exclude name="**/*Test.java" />
 			<classpath path="bin/konoha" />
 		</javac>
+		<mkdir dir="bin/Konoha.CGrammar" />
+		<javac srcdir="ext/Konoha.CGrammar/" destdir="bin/Konoha.CGrammar" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+			<classpath path="bin/konoha" />
+		</javac>
 	</target>
 
 	<!-- ================================== -->
@@ -65,6 +72,9 @@
 		<jar jarfile="MiniKonoha.Peg.jar">
 			<fileset dir="bin/MiniKonoha.Peg" includes="**/*.class" />
 		</jar>
+		<jar jarfile="Konoha.CGrammar.jar">
+			<fileset dir="bin/Konoha.CGrammar" includes="**/*.class" />
+		</jar>
 	</target>
 
 	<!-- ================================== -->
@@ -76,6 +86,7 @@
 		<delete file="KonohaJVMCodeGen.jar" />
 		<delete file="KonohaLLVMCodeGen.jar" />
 		<delete file="MiniKonoha.Peg.jar" />
+		<delete file="Konoha.CGrammar" />
 		<delete file="konoha-test.jar" />
 	</target>
 	<!-- ================================== -->
@@ -90,6 +101,7 @@
 			<classpath path="bin/KonohaJVMCodeGen" />
 			<classpath path="bin/KonohaLLVMCodeGen" />
 			<classpath path="bin/MiniKonoha.Peg" />
+			<classpath path="bin/Konoha.CGrammar" />
 			<include name="**/*Test.java" />
 			<include name="**/*TestBase.java" />
 			<include name="**/Tester/*.java" />
@@ -106,6 +118,7 @@
 			<zipfileset src="KonohaJVMCodeGen.jar" />
 			<zipfileset src="KonohaLLVMCodeGen.jar" />
 			<zipfileset src="MiniKonoha.Peg.jar" />
+			<zipfileset src="Konoha.CGrammar.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>
