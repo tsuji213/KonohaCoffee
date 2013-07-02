@@ -1,11 +1,15 @@
 package org.KonohaScript.Parser;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaNameSpace;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 
 public class KonohaParser implements KonohaConst {
+	public void AddSyntax(KonohaNameSpace NameSpace, KonohaGrammar ParentGrammar, KonohaGrammar Grammar, boolean TopLevel) {
+		// FIXME
+	}
+
 	public UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, TokenList TokenList, int BeginIdx, int EndIdx,
 			int ParseOption) {
 		UntypedNode LeftNode = null;

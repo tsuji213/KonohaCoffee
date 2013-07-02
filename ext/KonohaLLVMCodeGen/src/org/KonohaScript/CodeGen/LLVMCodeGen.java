@@ -26,11 +26,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.AndNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.OrNodeAcceptor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.SwitchNodeAcceptor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -88,26 +83,6 @@ public class LLVMCodeGen extends CodeGenerator {
 	public LLVMCodeGen() {
 		super(null);
 		this.builder = new LLVMBuilder();
-
-		// initialize LLVMNodeAcceptor
-		this.IfNodeAcceptor = new LLVMIfNodeAcceptor(this, this.builder);
-		this.SwitchNodeAcceptor = new LLVMSwitchNodeAcceptor(this, this.builder);
-	}
-
-	@Override
-	public boolean Visit(TypedNode Node) {
-		return Node.Evaluate(this);
-	}
-
-	public boolean VisitBlock(TypedNode Node) {
-		boolean ret = true;
-		if(Node != null) {
-			ret &= this.Visit(Node);
-			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
-				ret &= this.Visit(n);
-			}
-		}
-		return ret;
 	}
 
 	@Override
@@ -147,7 +122,7 @@ public class LLVMCodeGen extends CodeGenerator {
 		}
 		this.builder.createBasicBlock("topBlock");
 
-		this.VisitBlock(Block.GetHeadNode());
+		this.VisitList(Block);
 		KonohaMethodInvoker Mtd = new LLVMCompiledMethodInvoker(this.MethodInfo.Param, null/* FIXME */);
 		//this.builder.dumpFunction();
 
@@ -176,12 +151,12 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public boolean ExitDefine(DefineNode Node) { //TODO:
+	public boolean VisitDefine(DefineNode Node) { //TODO:
 		return true;
 	}
 
 	@Override
-	public boolean ExitConst(ConstNode Node) {
+	public boolean VisitConst(ConstNode Node) {
 		String typeName = Node.TypeInfo.ShortClassName;
 		Object value = Node.ConstValue;
 		LLVMValue constValue = this.builder.createConstValue(typeName, value);
@@ -191,14 +166,18 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public boolean ExitNew(NewNode Node) {
+	public boolean VisitNew(NewNode Node) {
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		LLVMValue heapValue = this.builder.createHeapAllocation(Node.TypeInfo.ShortClassName);
 		this.builder.pushValue(heapValue);
 		return true;
 	}
 
 	@Override
-	public boolean ExitNull(NullNode Node) {
+	public boolean VisitNull(NullNode Node) {
 		LLVMType nullType = this.builder.convertTypeNameToLLVMType(Node.TypeInfo.ShortClassName);
 		LLVMValue nullValue = this.builder.createConstNull(nullType);
 		this.builder.pushValue(nullValue);
@@ -207,12 +186,8 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public void EnterLocal(LocalNode Node) { //FIXME
+	public boolean VisitLocal(LocalNode Node) { //TODO: support scope
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.FieldName);
-	}
-
-	@Override
-	public boolean ExitLocal(LocalNode Node) { //TODO: support scope
 		LLVMArgument value = this.builder.getArgument(Node.FieldName); //currently only support argument 
 		this.builder.pushValue(value);
 
@@ -220,13 +195,8 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public void EnterGetter(GetterNode Node) {
-		Local local = this.FindLocalVariable(Node.SourceToken.ParsedText);
-		assert (local != null);
-	}
-
-	@Override
-	public boolean ExitGetter(GetterNode Node) { //TODO: 
+	public boolean VisitGetter(GetterNode Node) { //TODO: 
+		Node.BaseNode.Evaluate(this);
 		// String Expr = Node.TermToken.ParsedText;
 		// push(Expr + "." + Node.TypeInfo.FieldNames.get(Node.Xindex));
 		// push(Expr);
@@ -237,7 +207,7 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	static final String[]	binaryOpList	= { "+", "-", "*", "/", "<", "<=", ">", ">=", "==", "!=", "&&", "||", "&", "|",
-											"^", "<<", ">>" };
+			"^", "<<", ">>"				};
 
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
 		String methodName = Node.Method.MethodName;
@@ -250,8 +220,12 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public boolean ExitApply(ApplyNode Node) { //TODO: support unary operator
+	public boolean VisitApply(ApplyNode Node) { //TODO: support unary operator
 		LLVMValue retValue = null;
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		if(this.isMethodBinaryOperator(Node)) {
 			String methodName = Node.Method.MethodName;
 			LLVMValue rightValue = this.builder.popValue();
@@ -271,34 +245,77 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public boolean ExitAnd(AndNode Node) {
+	public boolean VisitOr(OrNode Node) {
+		Node.LeftNode.Evaluate(this);
+
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
+		LLVMValue condition = this.builder.popValue();
+
+		//End Block
+		LLVMBasicBlock endBlock = this.builder.createBasicBlock("orEndBlock");
+
+		//Else Block
+		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("orElseBlock");
+		Node.RightNode.Evaluate(this);
+		LLVMValue ret = this.builder.popValue();
+
+		// create Or
+		this.builder.changeCurrentBBlock(currentBlock);
+		this.builder.createCondLogicalOp(condition, endBlock, elseBlock, false);
+
+		//create Phi Node
+		LLVMType type = this.builder.convertTypeNameToLLVMType("Boolean");
+		LLVMValue[] values = { condition, ret };
+		LLVMBasicBlock[] blocks = { endBlock, elseBlock };
+		LLVMValue orRet = this.builder.createPhiNode(type, "orRet", values, blocks);
+		this.builder.pushValue(orRet);
+
 		return true;
 	}
 
 	@Override
-	public boolean ExitOr(OrNode Node) {
+	public boolean VisitAnd(AndNode Node) {
+		Node.LeftNode.Evaluate(this);
+
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
+		LLVMValue condition = this.builder.popValue();
+
+		//Then Block
+		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("andThenBlock");
+		Node.RightNode.Evaluate(this);
+		LLVMValue ret = this.builder.popValue();
+
+		//End Block
+		LLVMBasicBlock endBlock = this.builder.createBasicBlock("andEndBlock");
+
+		// create And 
+		this.builder.changeCurrentBBlock(currentBlock);
+		this.builder.createCondLogicalOp(condition, thenBlock, endBlock, true);
+
+		//create Phi Node
+		LLVMType type = this.builder.convertTypeNameToLLVMType("Boolean");
+		LLVMValue[] values = { ret, condition };
+		LLVMBasicBlock[] blocks = { thenBlock, endBlock };
+		LLVMValue andRet = this.builder.createPhiNode(type, "andRet", values, blocks);
+		this.builder.pushValue(andRet);
 		return true;
 	}
 
 	@Override
-	public void EnterAssign(AssignNode Node) {
+	public boolean VisitAssign(AssignNode Node) { //TODO:
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.SourceToken.ParsedText);
-	}
-
-	@Override
-	public boolean ExitAssign(AssignNode Node) { //TODO:
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
 		//		String Right = this.pop();
 		//		this.push((this.UseLetKeyword ? "let " : "var ") + Node.TermToken.ParsedText + " = " + Right);
 		return true;
 	}
 
 	@Override
-	public void EnterLet(LetNode Node) { //TODO: 
+	public boolean VisitLet(LetNode Node) { //TODO:
+		Node.ValueNode.Evaluate(this);
+		VisitList(Node.BlockNode);
 		//		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.TermToken.ParsedText);
-	}
-
-	@Override
-	public boolean ExitLet(LetNode Node) { //TODO: 
 		//		String Block = this.pop();
 		//		String Right = this.pop();
 		//		this.push(Node.TermToken.ParsedText + " = " + Right + Block);
@@ -306,171 +323,8 @@ public class LLVMCodeGen extends CodeGenerator {
 	}
 
 	@Override
-	public void EnterIf(IfNode Node) {
-	}
-
-	@Override
-	public boolean ExitIf(IfNode Node) {
-		return true;
-	}
-
-	@Override
-	public void EnterSwitch(SwitchNode Node) {
-	}
-
-	@Override
-	public boolean ExitSwitch(SwitchNode Node) {
-		return true;
-	}
-
-	@Override
-	public boolean ExitLoop(LoopNode Node) { //TODO: 
-		//		String LoopBody = this.pop();
-		//		String IterExpr = this.pop();
-		//		String CondExpr = this.pop();
-		//		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
-		return true;
-	}
-
-	@Override
-	public boolean ExitReturn(ReturnNode Node) {
-		this.builder.createReturn(this.builder.popValue());
-		return false;
-	}
-
-	@Override
-	public boolean ExitLabel(LabelNode Node) { //TODO: 
-		//		String Label = Node.Label;
-		//		if(Label.compareTo("continue") == 0) {
-		//			this.push("");
-		//		} else if(Label.compareTo("continue") == 0) {
-		//			this.push("");
-		//		} else {
-		//			this.push(Label + ":");
-		//		}
-		return true;
-	}
-
-	@Override
-	public boolean ExitJump(JumpNode Node) { //TODO: 
-		//		String Label = Node.Label;
-		//		if(Label.compareTo("continue") == 0) {
-		//			this.push("continue;");
-		//		} else if(Label.compareTo("continue") == 0) {
-		//			this.push("break;");
-		//		} else {
-		//			this.push("goto " + Label);
-		//		}
-		return false;
-	}
-
-	@Override
-	public boolean ExitTry(TryNode Node) { //TODO: 
-		//		String FinallyBlock = this.pop();
-		//		String CatchBlocks = "";
-		//		for(int i = 0; i < Node.CatchBlock.size(); i = i + 1) {
-		//			String Block = this.pop();
-		//			CatchBlocks = "catch() " + Block + CatchBlocks;
-		//		}
-		//		String TryBlock = this.pop();
-		//		this.push("try " + TryBlock + "" + CatchBlocks + FinallyBlock);
-		return true;
-	}
-
-	@Override
-	public boolean ExitThrow(ThrowNode Node) { //TODO: 
-		//		String Expr = this.pop();
-		//		this.push("throw " + Expr + ";");
-		return false;
-	}
-
-	@Override
-	public boolean ExitFunction(FunctionNode Node) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public boolean ExitError(ErrorNode Node) { //TODO: 
-		//		String Expr = this.pop();
-		//		this.push("throw new Exception(" + Expr + ";");
-		return false;
-	}
-
-	@Override
-	public void EnterDefine(DefineNode Node) {
-	}
-
-	@Override
-	public void EnterConst(ConstNode Node) {
-	}
-
-	@Override
-	public void EnterNew(NewNode Node) {
-	}
-
-	@Override
-	public void EnterNull(NullNode Node) {
-	}
-
-	@Override
-	public void EnterApply(ApplyNode Node) {
-	}
-
-	@Override
-	public void EnterAnd(AndNode Node) {
-	}
-
-	@Override
-	public void EnterOr(OrNode Node) {
-	}
-
-	@Override
-	public void EnterLoop(LoopNode Node) {
-	}
-
-	@Override
-	public void EnterReturn(ReturnNode Node) {
-	}
-
-	@Override
-	public void EnterLabel(LabelNode Node) {
-	}
-
-	@Override
-	public void EnterJump(JumpNode Node) {
-	}
-
-	@Override
-	public void EnterTry(TryNode Node) {
-	}
-
-	@Override
-	public void EnterThrow(ThrowNode Node) {
-	}
-
-	@Override
-	public void EnterFunction(FunctionNode Node) {
-	}
-
-	@Override
-	public void EnterError(ErrorNode Node) {
-	}
-}
-
-class LLVMIfNodeAcceptor implements IfNodeAcceptor {
-	private final LLVMCodeGen	codeGen;
-	private final LLVMBuilder	builder;
-
-	public LLVMIfNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
-		this.codeGen = codeGen;
-		this.builder = builder;
-	}
-
-	@Override
-	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-		Visitor.EnterIf(Node);
-		Visitor.Visit(Node.CondExpr);
+	public boolean VisitIf(IfNode Node) {
+		Node.CondExpr.Evaluate(this);
 
 		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
 		LLVMBasicBlock endBlock = null;
@@ -479,14 +333,14 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		//Then Block
 		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("thenBlock");
 		if(Node.ThenNode != null) {
-			this.codeGen.VisitBlock(Node.ThenNode);
+			VisitList(Node.ThenNode);
 		}
 		boolean thenBlockHasNotReturnNode = this.hasNotReturnNode(Node.ThenNode);
 
 		//Else Block
 		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("elseBlock");
 		if(Node.ElseNode != null) {
-			this.codeGen.VisitBlock(Node.ElseNode);
+			VisitList(Node.ElseNode);
 		}
 		boolean elseBlockHasNotReturnNode = this.hasNotReturnNode(Node.ElseNode);
 
@@ -511,7 +365,117 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 			this.builder.changeCurrentBBlock(endBlock);
 		}
 
-		return Visitor.ExitIf(Node);
+		return true;
+	}
+
+	@Override
+	public boolean VisitSwitch(SwitchNode Node) {
+		Node.CondExpr.Evaluate(this);
+
+		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
+
+		LLVMValue condition = this.builder.popValue();
+		long caseNum = Node.Blocks.size();
+
+		//create switch
+		LLVMBasicBlock endSwitchBlock = this.builder.createBasicBlock("endSwitchBlock");
+		LLVMBasicBlock defaultBlock = this.builder.createBasicBlock("default");
+		this.builder.createBranch(endSwitchBlock);
+
+		this.builder.changeCurrentBBlock(currentBlock);
+		LLVMSwitchInstruction switchIns = this.builder.createSwitch(condition, defaultBlock, caseNum);
+
+		//add case block	
+		for(int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
+			String labelName = (String) Node.Labels.get(i);
+			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
+			VisitList((TypedNode) Node.Blocks.get(i));
+
+			LLVMValue caseLabel = this.builder.createConstValue("Integer", Integer.parseInt(labelName));
+			switchIns.addCase(caseLabel, caseBlock);
+		}
+
+		this.builder.changeCurrentBBlock(endSwitchBlock);
+		return true;
+	}
+
+	@Override
+	public boolean VisitLoop(LoopNode Node) { //TODO: 
+		Node.CondExpr.Evaluate(this);
+		Node.IterationExpr.Evaluate(this);
+		VisitList(Node.LoopBody);
+
+		//		String LoopBody = this.pop();
+		//		String IterExpr = this.pop();
+		//		String CondExpr = this.pop();
+		//		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		return true;
+	}
+
+	@Override
+	public boolean VisitReturn(ReturnNode Node) {
+		Node.Expr.Evaluate(this);
+		this.builder.createReturn(this.builder.popValue());
+		return false;
+	}
+
+	@Override
+	public boolean VisitLabel(LabelNode Node) { //TODO: 
+		//		String Label = Node.Label;
+		//		if(Label.compareTo("continue") == 0) {
+		//			this.push("");
+		//		} else if(Label.compareTo("continue") == 0) {
+		//			this.push("");
+		//		} else {
+		//			this.push(Label + ":");
+		//		}
+		return true;
+	}
+
+	@Override
+	public boolean VisitJump(JumpNode Node) { //TODO: 
+		//		String Label = Node.Label;
+		//		if(Label.compareTo("continue") == 0) {
+		//			this.push("continue;");
+		//		} else if(Label.compareTo("continue") == 0) {
+		//			this.push("break;");
+		//		} else {
+		//			this.push("goto " + Label);
+		//		}
+		return false;
+	}
+
+	@Override
+	public boolean VisitTry(TryNode Node) { //TODO: 
+		this.VisitList(Node.TryBlock);
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
+			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			this.VisitList(Block);
+		}
+		this.VisitList(Node.FinallyBlock);
+		return true;
+	}
+
+	@Override
+	public boolean VisitThrow(ThrowNode Node) { //TODO: 
+		Node.Expr.Evaluate(this);
+		//		String Expr = this.pop();
+		//		this.push("throw " + Expr + ";");
+		return false;
+	}
+
+	@Override
+	public boolean VisitFunction(FunctionNode Node) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean VisitError(ErrorNode Node) { //TODO: 
+		//		String Expr = this.pop();
+		//		this.push("throw new Exception(" + Expr + ";");
+		return false;
 	}
 
 	private boolean hasNotReturnNode(TypedNode node) { //FIXME
@@ -534,129 +498,6 @@ class LLVMIfNodeAcceptor implements IfNodeAcceptor {
 		}
 
 		return hasNotReturnNode;
-	}
-}
-
-class LLVMSwitchNodeAcceptor implements SwitchNodeAcceptor { //TODO: support break statement
-	private final LLVMCodeGen	codeGen;
-	private final LLVMBuilder	builder;
-
-	public LLVMSwitchNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
-		this.codeGen = codeGen;
-		this.builder = builder;
-	}
-
-	@Override
-	public boolean Invoke(SwitchNode Node, NodeVisitor Visitor) {
-		Visitor.EnterSwitch(Node);
-		Visitor.Visit(Node.CondExpr);
-
-		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
-
-		LLVMValue condition = this.builder.popValue();
-		long caseNum = Node.Blocks.size();
-
-		//create switch
-		LLVMBasicBlock endSwitchBlock = this.builder.createBasicBlock("endSwitchBlock");
-		LLVMBasicBlock defaultBlock = this.builder.createBasicBlock("default");
-		this.builder.createBranch(endSwitchBlock);
-
-		this.builder.changeCurrentBBlock(currentBlock);
-		LLVMSwitchInstruction switchIns = this.builder.createSwitch(condition, defaultBlock, caseNum);
-
-		//add case block	
-		for(int i = 0; i < caseNum; i++) { //FIXME: currently support int type only
-			String labelName = (String) Node.Labels.get(i);
-			LLVMBasicBlock caseBlock = this.builder.createBasicBlock(labelName);
-			this.codeGen.VisitBlock((TypedNode) Node.Blocks.get(i));
-
-			LLVMValue caseLabel = this.builder.createConstValue("Integer", Integer.parseInt(labelName));
-			switchIns.addCase(caseLabel, caseBlock);
-		}
-
-		this.builder.changeCurrentBBlock(endSwitchBlock);
-
-		return Visitor.ExitSwitch(Node);
-	}
-}
-
-class LLVMAndNodeAcceptor implements AndNodeAcceptor {
-	private final LLVMCodeGen	codeGen;
-	private final LLVMBuilder	builder;
-
-	public LLVMAndNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
-		this.codeGen = codeGen;
-		this.builder = builder;
-	}
-
-	@Override
-	public boolean Invoke(AndNode Node, NodeVisitor Visitor) {
-		Visitor.EnterAnd(Node);
-		Visitor.Visit(Node.LeftNode);
-
-		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
-		LLVMValue condition = this.builder.popValue();
-
-		//Then Block
-		LLVMBasicBlock thenBlock = this.builder.createBasicBlock("andThenBlock");
-		this.codeGen.VisitBlock(Node.RightNode);
-		LLVMValue ret = this.builder.popValue();
-
-		//End Block
-		LLVMBasicBlock endBlock = this.builder.createBasicBlock("andEndBlock");
-
-		// create And 
-		this.builder.changeCurrentBBlock(currentBlock);
-		this.builder.createCondLogicalOp(condition, thenBlock, endBlock, true);
-
-		//create Phi Node
-		LLVMType type = this.builder.convertTypeNameToLLVMType("Boolean");
-		LLVMValue[] values = { ret, condition };
-		LLVMBasicBlock[] blocks = { thenBlock, endBlock };
-		LLVMValue andRet = this.builder.createPhiNode(type, "andRet", values, blocks);
-		this.builder.pushValue(andRet);
-
-		return Visitor.ExitAnd(Node);
-	}
-}
-
-class LLVMOrNodeAcceptor implements OrNodeAcceptor {
-	private final LLVMCodeGen	codeGen;
-	private final LLVMBuilder	builder;
-
-	public LLVMOrNodeAcceptor(LLVMCodeGen codeGen, LLVMBuilder builder) {
-		this.codeGen = codeGen;
-		this.builder = builder;
-	}
-
-	@Override
-	public boolean Invoke(OrNode Node, NodeVisitor Visitor) {
-		Visitor.EnterOr(Node);
-		Visitor.Visit(Node.LeftNode);
-
-		LLVMBasicBlock currentBlock = this.builder.getCurrentBBlock();
-		LLVMValue condition = this.builder.popValue();
-
-		//End Block
-		LLVMBasicBlock endBlock = this.builder.createBasicBlock("orEndBlock");
-
-		//Else Block
-		LLVMBasicBlock elseBlock = this.builder.createBasicBlock("orElseBlock");
-		this.codeGen.VisitBlock(Node.RightNode);
-		LLVMValue ret = this.builder.popValue();
-
-		// create Or
-		this.builder.changeCurrentBBlock(currentBlock);
-		this.builder.createCondLogicalOp(condition, endBlock, elseBlock, false);
-
-		//create Phi Node
-		LLVMType type = this.builder.convertTypeNameToLLVMType("Boolean");
-		LLVMValue[] values = { condition, ret };
-		LLVMBasicBlock[] blocks = { endBlock, elseBlock };
-		LLVMValue orRet = this.builder.createPhiNode(type, "orRet", values, blocks);
-		this.builder.pushValue(orRet);
-
-		return Visitor.ExitOr(Node);
 	}
 }
 
@@ -970,9 +811,11 @@ class CmdLauncher { //output stderr stdout separately
 			if(proc.exitValue() != 0) {
 				System.out.println(stderrGetter.getRedirectedStr());
 			}
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new RuntimeException(e);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -1002,7 +845,8 @@ class CmdLauncher { //output stderr stdout separately
 					this.redirectedStr = this.redirectedStr.concat(line + "\n");
 				}
 				this.br.close();
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}

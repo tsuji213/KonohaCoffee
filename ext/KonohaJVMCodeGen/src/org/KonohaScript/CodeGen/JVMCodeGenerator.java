@@ -10,10 +10,10 @@ import java.util.HashMap;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
-import org.KonohaScript.KonohaObject;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -29,8 +29,6 @@ import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
-import org.KonohaScript.SyntaxTree.NodeVisitor.IfNodeAcceptor;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -45,6 +43,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 class CodeGenException extends RuntimeException {
+	private static final long	serialVersionUID	= 1L;
+
 	CodeGenException() {
 		super();
 	}
@@ -52,43 +52,6 @@ class CodeGenException extends RuntimeException {
 	CodeGenException(String msg) {
 		super(msg);
 	}
-}
-
-class JVMIfNodeAcceptor implements IfNodeAcceptor, Opcodes {
-
-	private final JVMBuilder	builder;
-
-	public JVMIfNodeAcceptor(JVMBuilder builder) {
-		this.builder = builder;
-	}
-
-	@Override
-	public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-		Label ELSE = new Label();
-		Label END = new Label();
-		MethodVisitor mv = this.builder.methodVisitor;
-		Visitor.EnterIf(Node);
-		Visitor.Visit(Node.CondExpr);
-		mv.visitJumpInsn(IFEQ, ELSE);
-
-		// Then
-		if(Node.ThenNode != null) {
-			Visitor.Visit(Node.ThenNode);
-		}
-		mv.visitJumpInsn(GOTO, END);
-
-		// Else
-		mv.visitLabel(ELSE);
-		if(Node.ElseNode != null) {
-			Visitor.Visit(Node.ElseNode);
-		}
-
-		// End
-		mv.visitLabel(END);
-
-		return true;
-	}
-
 }
 
 abstract class BinaryOperator {
@@ -396,8 +359,6 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 		ClassWriter defaultClassWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		defaultClassWriter.visit(V1_5, ACC_PUBLIC, "org/KonohaScript/CodeGen/Script", null, "java/lang/Object", null);
 		this.classWriterMap.put("Script", defaultClassWriter);
-
-		this.IfNodeAcceptor = new JVMIfNodeAcceptor(this.builder);
 	}
 
 	public JVMCodeGenerator() {
@@ -457,7 +418,7 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 			// 		...
 			// }
 
-			this.VisitBlock(Block.GetHeadNode());
+			this.VisitList(Block.GetHeadNode());
 
 			int maxStack = this.builder.stack.getMaxStackSize();
 			int maxLocal = this.LocalVals.size();
@@ -470,73 +431,35 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public boolean Visit(TypedNode Node) {
-		return Node.Evaluate(this);
-	}
-
-	public boolean VisitBlock(TypedNode Node) {
-		boolean ret = true;
-		if(Node != null) {
-			ret &= this.Visit(Node);
-			for(TypedNode n = Node.NextNode; ret && n != null; n = n.NextNode) {
-				ret &= this.Visit(n);
-			}
-		}
-		return ret;
-	}
-
-	@Override
-	public void EnterDefine(DefineNode Node) {
-	}
-
-	@Override
-	public boolean ExitDefine(DefineNode Node) {
+	public boolean VisitDefine(DefineNode Node) {
 		return true;
 	}
 
 	@Override
-	public void EnterConst(ConstNode Node) {
-	}
-
-	@Override
-	public boolean ExitConst(ConstNode Node) {
+	public boolean VisitConst(ConstNode Node) {
 		Object constValue = Node.ConstValue;
 		this.builder.LoadConst(constValue);
 		return true;
 	}
 
 	@Override
-	public void EnterNew(NewNode Node) {
+	public boolean VisitNew(NewNode Node) {
 		// TODO Auto-generated method stub
-
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
+		return false;
 	}
 
 	@Override
-	public boolean ExitNew(NewNode Node) {
+	public boolean VisitNull(NullNode Node) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void EnterNull(NullNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitNull(NullNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterLocal(LocalNode Node) {
-		Local local = this.FindLocalVariable(Node.FieldName);
-		assert (local != null);
-	}
-
-	@Override
-	public boolean ExitLocal(LocalNode Node) {
+	public boolean VisitLocal(LocalNode Node) {
 		String FieldName = Node.FieldName;
 		Local local;
 		if((local = this.FindLocalVariable(FieldName)) == null) {
@@ -547,19 +470,10 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public void EnterGetter(GetterNode Node) {
+	public boolean VisitGetter(GetterNode Node) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitGetter(GetterNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterApply(ApplyNode Node) {
+		Node.BaseNode.Evaluate(this);
+		return true;
 	}
 
 	private boolean isMethodBinaryOperator(ApplyNode Node) {
@@ -573,7 +487,11 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public boolean ExitApply(ApplyNode Node) {
+	public boolean VisitApply(ApplyNode Node) {
+		for(int i = 0; i < Node.Params.size(); i++) {
+			TypedNode Param = (TypedNode) Node.Params.get(i);
+			Param.Evaluate(this);
+		}
 		if(this.isMethodBinaryOperator(Node)) {
 			String opName = Node.Method.MethodName;
 			this.builder.BinaryOp(opName);
@@ -586,97 +504,92 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public void EnterAnd(AndNode Node) {
+	public boolean VisitAnd(AndNode Node) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitAnd(AndNode Node) {
-		// TODO Auto-generated method stub
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
 		return false;
 	}
 
 	@Override
-	public void EnterOr(OrNode Node) {
+	public boolean VisitOr(OrNode Node) {
 		// TODO Auto-generated method stub
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
 
-	}
-
-	@Override
-	public boolean ExitOr(OrNode Node) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void EnterAssign(AssignNode Node) {
+	public boolean VisitAssign(AssignNode Node) {
 		// TODO Auto-generated method stub
-
+		Node.LeftNode.Evaluate(this);
+		Node.RightNode.Evaluate(this);
+		return true;
 	}
 
 	@Override
-	public boolean ExitAssign(AssignNode Node) {
+	public boolean VisitLet(LetNode Node) {
 		// TODO Auto-generated method stub
-		return false;
+		Node.ValueNode.Evaluate(this);
+		VisitList(Node.BlockNode);
+
+		return true;
 	}
 
 	@Override
-	public void EnterLet(LetNode Node) {
+	public boolean VisitIf(IfNode Node) {
+		Label ELSE = new Label();
+		Label END = new Label();
+		MethodVisitor mv = this.builder.methodVisitor;
+		Node.CondExpr.Evaluate(this);
+		mv.visitJumpInsn(IFEQ, ELSE);
+
+		// Then
+		if(Node.ThenNode != null) {
+			Node.ThenNode.Evaluate(this);
+		}
+		mv.visitJumpInsn(GOTO, END);
+
+		// Else
+		mv.visitLabel(ELSE);
+		if(Node.ElseNode != null) {
+			Node.ElseNode.Evaluate(this);
+		}
+
+		// End
+		mv.visitLabel(END);
+		return true;
+	}
+
+	@Override
+	public boolean VisitSwitch(SwitchNode Node) {
 		// TODO Auto-generated method stub
-
+		Node.CondExpr.Evaluate(this);
+		for(int i = 0; i < Node.Blocks.size(); i++) {
+			TypedNode Block = (TypedNode) Node.Blocks.get(i);
+			this.VisitList(Block);
+		}
+		return true;
 	}
 
 	@Override
-	public boolean ExitLet(LetNode Node) {
+	public boolean VisitLoop(LoopNode Node) {
 		// TODO Auto-generated method stub
-		return false;
+		Node.CondExpr.Evaluate(this);
+		Node.IterationExpr.Evaluate(this);
+		VisitList(Node.LoopBody);
+		return true;
 	}
 
 	@Override
-	public void EnterIf(IfNode Node) {
-		// TODO Auto-generated method stub
+	public boolean VisitReturn(ReturnNode Node) {
+		//FIXME check Node.Expr null check
+		Node.Expr.Evaluate(this);
 
-	}
-
-	@Override
-	public boolean ExitIf(IfNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterSwitch(SwitchNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitSwitch(SwitchNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterLoop(LoopNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitLoop(LoopNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterReturn(ReturnNode Node) {
-	}
-
-	@Override
-	public boolean ExitReturn(ReturnNode Node) {
 		assert (Node.TypeInfo != null);
 
+		//FIXME (ide) check return type
 		MethodVisitor mv = this.builder.methodVisitor;
 		if(Node.TypeInfo.ShortClassName.equals("Void")) {
 			mv.visitInsn(RETURN);
@@ -689,73 +602,46 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 	}
 
 	@Override
-	public void EnterLabel(LabelNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitLabel(LabelNode Node) {
+	public boolean VisitLabel(LabelNode Node) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void EnterJump(JumpNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitJump(JumpNode Node) {
+	public boolean VisitJump(JumpNode Node) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void EnterTry(TryNode Node) {
+	public boolean VisitTry(TryNode Node) {
 		// TODO Auto-generated method stub
+		this.VisitList(Node.TryBlock);
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
+			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			this.VisitList(Block);
+		}
+		this.VisitList(Node.FinallyBlock);
 
+		return true;
 	}
 
 	@Override
-	public boolean ExitTry(TryNode Node) {
+	public boolean VisitThrow(ThrowNode Node) {
+		// TODO Auto-generated method stub
+		Node.Expr.Evaluate(this);
+		return false;
+	}
+
+	@Override
+	public boolean VisitFunction(FunctionNode Node) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void EnterThrow(ThrowNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitThrow(ThrowNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterFunction(FunctionNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitFunction(FunctionNode Node) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void EnterError(ErrorNode Node) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean ExitError(ErrorNode Node) {
+	public boolean VisitError(ErrorNode Node) {
 		// TODO Auto-generated method stub
 		return false;
 	}

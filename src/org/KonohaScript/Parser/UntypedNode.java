@@ -24,10 +24,10 @@
 
 package org.KonohaScript.Parser;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.ErrorNode;
@@ -116,6 +116,11 @@ public class UntypedNode implements KonohaConst {
 		return (UntypedNode) this.NodeList.get(Index);
 	}
 
+	public KonohaToken GetAtToken(int Index) {
+		KonohaToken Token = (KonohaToken) this.NodeList.get(Index);
+		return Token;
+	}
+
 	public final KonohaType GetTokenType(int Index, KonohaType DefType) {
 		KonohaToken Token = (KonohaToken) this.NodeList.get(Index);
 		if(Token != null && Token.ResolvedObject instanceof KonohaType) {
@@ -166,17 +171,21 @@ public class UntypedNode implements KonohaConst {
 		KonohaSyntax Syntax = KeyToken.ResolvedSyntax;
 		while(Syntax != null) {
 			this.Syntax = Syntax;
-			KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
-			int NextIdx = Syntax.InvokeParseFunc(this, TokenList, BeginIdx, EndIdx, ((Syntax.ParentSyntax == null) ? 0
-					: HasNextPattern));
-			if(NextIdx != NoMatch) {
-				KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":" + Syntax.ParseMethod);
-				return NextIdx;
+			if(Syntax.ParseMethod != null) {
+				KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
+				int NextIdx = Syntax.InvokeParseFunc(this, TokenList, BeginIdx, EndIdx, ((Syntax.ParentSyntax == null) ? 0
+						: HasNextPattern));
+				if(NextIdx != NoMatch) {
+					KonohaDebug.P("(^^;) Matched: " + Syntax.SyntaxName + ":" + Syntax.ParseMethod.getName());
+					return NextIdx;
+				}
+				if(this.Syntax == KonohaSyntax.ErrorSyntax) {
+					return EndIdx;
+				}
+				this.NodeList = null;
+			}else{
+				KonohaDebug.P("(^^;) trying matching.. : " + Syntax.SyntaxName + ":null");
 			}
-			if(this.Syntax == KonohaSyntax.ErrorSyntax) {
-				return EndIdx;
-			}
-			this.NodeList = null;
 			Syntax = Syntax.ParentSyntax;
 		}
 		this.ReportError(KeyToken, "undefined syntax: " + KeyToken.ParsedText, 0);

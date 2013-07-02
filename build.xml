@@ -19,8 +19,31 @@
 			<exclude name="**/*TestBase.java" />
 			<exclude name="**/Tester/*.java" />
 		</javac>
+		<mkdir dir="bin/KonohaJVMCodeGen" />
+		<javac srcdir="ext/KonohaJVMCodeGen/" destdir="bin/KonohaJVMCodeGen" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+			<classpath path="ext/KonohaJVMCodeGen/asm-all-4.0.jar" />
+			<classpath path="bin/konoha" />
+		</javac>
+		<mkdir dir="bin/KonohaLLVMCodeGen" />
+		<javac srcdir="ext/KonohaLLVMCodeGen/" destdir="bin/KonohaLLVMCodeGen" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+			<classpath path="ext/KonohaLLVMCodeGen/jllvm.jar" />
+			<classpath path="bin/konoha" />
+		</javac>
 		<mkdir dir="bin/MiniKonoha.Peg" />
 		<javac srcdir="ext/MiniKonoha.Peg/" destdir="bin/MiniKonoha.Peg" debug="on"
+			target="1.6" source="1.6" includeantruntime="false">
+			<include name="**/*.java" />
+			<exclude name="**/*Test.java" />
+			<classpath path="bin/konoha" />
+		</javac>
+		<mkdir dir="bin/Konoha.CGrammar" />
+		<javac srcdir="ext/Konoha.CGrammar/" destdir="bin/Konoha.CGrammar" debug="on"
 			target="1.6" source="1.6" includeantruntime="false">
 			<include name="**/*.java" />
 			<exclude name="**/*Test.java" />
@@ -34,11 +57,23 @@
 	<target name="jar" depends="build">
 		<jar jarfile="konoha.jar">
 			<fileset dir="bin" includes="**/*.class" />
-			<zipfileset src="third-party/asm-all-4.0.jar" />
-			<zipfileset src="third-party/jllvm.jar" />
-			<manifest>				<attribute name="Main-Class" value="org.KonohaScript.KonohaShell" />			</manifest>		</jar>
+			<manifest>
+				<attribute name="Main-Class" value="org.KonohaScript.CommandTool.KonohaShell" />
+			</manifest>
+		</jar>
+		<jar jarfile="KonohaJVMCodeGen.jar">
+			<fileset dir="bin/KonohaJVMCodeGen" includes="**/*.class" />
+			<zipfileset src="ext/KonohaJVMCodeGen/asm-all-4.0.jar" />
+		</jar>
+		<jar jarfile="KonohaLLVMCodeGen.jar">
+			<fileset dir="bin/KonohaLLVMCodeGen" includes="**/*.class" />
+			<zipfileset src="ext/KonohaLLVMCodeGen/jllvm.jar" />
+		</jar>
 		<jar jarfile="MiniKonoha.Peg.jar">
 			<fileset dir="bin/MiniKonoha.Peg" includes="**/*.class" />
+		</jar>
+		<jar jarfile="Konoha.CGrammar.jar">
+			<fileset dir="bin/Konoha.CGrammar" includes="**/*.class" />
 		</jar>
 	</target>
 
@@ -48,7 +83,10 @@
 	<target name="clean">
 		<delete dir="bin" />
 		<delete file="konoha.jar" />
+		<delete file="KonohaJVMCodeGen.jar" />
+		<delete file="KonohaLLVMCodeGen.jar" />
 		<delete file="MiniKonoha.Peg.jar" />
+		<delete file="Konoha.CGrammar" />
 		<delete file="konoha-test.jar" />
 	</target>
 	<!-- ================================== -->
@@ -58,11 +96,12 @@
 		<mkdir dir="bin/test" />
 		<javac srcdir="." destdir="bin/test" debug="on"
 			target="1.6" source="1.6" includeantruntime="false">
-			<classpath path="third-party/asm-all-4.0.jar" />
-			<classpath path="third-party/jllvm.jar" />
 			<classpath path="bin/konoha" />
 			<classpath path="bin/test" />
-		<classpath path="bin/MiniKonoha.Peg" />
+			<classpath path="bin/KonohaJVMCodeGen" />
+			<classpath path="bin/KonohaLLVMCodeGen" />
+			<classpath path="bin/MiniKonoha.Peg" />
+			<classpath path="bin/Konoha.CGrammar" />
 			<include name="**/*Test.java" />
 			<include name="**/*TestBase.java" />
 			<include name="**/Tester/*.java" />
@@ -76,7 +115,10 @@
 		<jar jarfile="konoha-test.jar">
 			<fileset dir="bin/test" includes="**/*.class" />
 			<zipfileset src="konoha.jar" />
-		<zipfileset src="MiniKonoha.Peg.jar" />
+			<zipfileset src="KonohaJVMCodeGen.jar" />
+			<zipfileset src="KonohaLLVMCodeGen.jar" />
+			<zipfileset src="MiniKonoha.Peg.jar" />
+			<zipfileset src="Konoha.CGrammar.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>

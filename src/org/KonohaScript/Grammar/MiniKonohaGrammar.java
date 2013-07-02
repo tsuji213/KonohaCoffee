@@ -24,12 +24,12 @@
 
 package org.KonohaScript.Grammar;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
@@ -42,7 +42,9 @@ import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
@@ -100,16 +102,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public int MemberToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		int start = pos;
-		for(; pos < SourceText.length(); pos++) {
-			char ch = SourceText.charAt(pos);
-			if(!Character.isLetter(ch) && !Character.isDigit(ch) && ch != '_') {
-				break;
-			}
+		int start = pos + 1;
+		pos = this.SymbolToken(ns, SourceText, start, ParsedTokenList);
+		if(pos > start) {
+			KonohaToken Token = ParsedTokenList.get(ParsedTokenList.size() - 1);
+			Token.ResolvedSyntax = KonohaSyntax.MemberSyntax;
 		}
-		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
-		Token.ResolvedSyntax = KonohaSyntax.MemberSyntax;
-		ParsedTokenList.add(Token);
 		return pos;
 	}
 
@@ -134,13 +132,13 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		while(pos < SourceText.length()) {
 			char ch = SourceText.charAt(pos);
 			if(ch == '"' && prev != '\\') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
 				ParsedTokenList.add(token);
 				return pos + 1;
 			}
 			if(ch == '\n') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
+				KonohaToken token = new KonohaToken(SourceText.substring(start, pos));
 				ns.Message(Error, token, "expected \" to close the string literal");
 				ParsedTokenList.add(token);
 				return pos;
@@ -347,16 +345,37 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	MethodCallName		= 1;
 	public final static int	MethodCallParam		= 2;
 
-	// $Symbol [ "." $Symbol ] ()
+	private UntypedNode UNodeFromToken(KonohaNameSpace NS, KonohaToken Token){
+		TokenList globalTokenList = new TokenList();
+		Token.ResolvedSyntax = NS.GetSyntax("$Symbol");
+		globalTokenList.add(Token);
+		return NS.Parser.ParseNewNode(NS, null, globalTokenList, 0, 1, 0);
+	}
+
+	/**
+	 * $Symbol [ "." $Symbol ] () => [(reciever:$Symbol), method@0, (...)]
+	 *
+	 * @return
+	 */
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int ClassIdx = -1;
 		System.out.println(UNode.KeyToken.ParsedText);
-		//ClassIdx = UNode.MatchSyntax(MethodCallBaseClass, "$Type", TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
-		int SymbolIdx = BeginIdx;//ClassIdx + 1;
+		ClassIdx = UNode.MatchSyntax(MethodCallBaseClass, "$Type", TokenList, BeginIdx, BeginIdx + 1, AllowEmpty);
+		int MemberIdx = BeginIdx + 1;
+		boolean isGlobal = false;
 
-		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Member", TokenList, MemberIdx, EndIdx, ParseOption);
+
+		if(ParamIdx == -1) {
+			// Global method call
+			int SymbolIdx = BeginIdx;
+			ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+			isGlobal = true;
+		}
+
 		int NextIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
-		if(NextIdx == -1) {
+
+		if(NextIdx == -1){
 			return -1;
 		}
 
@@ -364,16 +383,22 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
-		if(ClassIdx == -1) {
-			KonohaToken token = new KonohaToken(KonohaNameSpace.GlobalConstName);
-			token.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
-			TokenList globalTokenList = new TokenList();
-			globalTokenList.add(token);
-			KonohaNameSpace NS = UNode.NodeNameSpace;
-			UntypedNode baseNode = NS.Parser.ParseNewNode(NS, null, globalTokenList, 0, 1, 0);
-			SymbolIdx = BeginIdx;
-			UNode.SetAtNode(MethodCallBaseClass, baseNode);
+		KonohaToken ReceiverToken = null;
+		KonohaToken MethodToken = null;
+		if(isGlobal) {
+			ReceiverToken = new KonohaToken(KonohaNameSpace.GlobalConstName);
+			ReceiverToken.ResolvedSyntax = UNode.NodeNameSpace.GetSyntax("$Symbol");
+			MethodToken = TokenList.get(BeginIdx);
+		}else{
+			ReceiverToken = TokenList.get(BeginIdx);
+			MethodToken = TokenList.get(BeginIdx + 1);
 		}
+		
+		UntypedNode baseNode = UNodeFromToken(UNode.NodeNameSpace, ReceiverToken);
+		UNode.SetAtNode(MethodCallBaseClass, baseNode);
+		
+		//UntypedNode methodNode = UNodeFromToken(UNode.NodeNameSpace, MethodToken);
+		//UNode.SetAtNode(MethodCallName, methodNode);
 
 		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
@@ -400,7 +425,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
 		int ParamSize = NodeList.size() - 2;
-		KonohaToken KeyToken = UNode.KeyToken;
+		KonohaToken KeyToken = (KonohaToken)UNode.NodeList.get(1);//UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);
 		if(Method == null) {
@@ -604,6 +629,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return EndIdx;
 	}
 
+	static int	AssignmentLeftOffset	= 1;
+	static int	AssignmentExprOffset	= 2;
+	static int	VarDeclTypeOffset		= 0;
+	static int	VarDeclNameOffset		= 1;
+
 	public int ParseVarDecl(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		//KonohaToken.DumpTokenList(0, "ParseVarDecl", TokenList, BeginIdx, EndIdx);
 		int SymbolIdx = BeginIdx + 1;
@@ -623,8 +653,16 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public TypedNode TypeVarDecl(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		assert (UNode.KeyToken.ResolvedSyntax == KonohaSyntax.TypeSyntax);
-		return null; // TODO
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+		if(VarType.equals(Gamma.VarType)) {
+			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
+		}
+		assert (VarName != null);
+		Gamma.AppendLocalType(VarType, VarName);
+		TypedNode Value = UNode.TypeNodeAt(2, Gamma, VarType, 0);
+		return new LetNode(VarType, VarToken, Value, null);
 	}
 
 	public final static int	MethodDeclReturn	= 0;
@@ -701,10 +739,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-		// If this grammar define toplevel syntax, we need to create own KonohaParser or
-		// call KonohaGrammer.LoadDefaultSyntax().
-		super.LoadDefaultSyntax(NameSpace);
-
+		this.InitGrammarProfile(NameSpace);
 		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
 		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
 		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
@@ -755,7 +790,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
 		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
 		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
-		//NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
+		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
 
 		NameSpace.DefineSyntax("$Const", Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
@@ -766,7 +801,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
 		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
-		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StrngLiteral");
+		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
 
 		NameSpace.DefineSyntax("{}", Statement, this, "Block");
@@ -779,6 +814,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 
-		new KonohaInt().DefineMethod(NameSpace);
+		new KonohaInt().MakeDefinition(NameSpace);
 	}
 }

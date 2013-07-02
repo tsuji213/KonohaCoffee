@@ -51,9 +51,6 @@ public class ASTInterpreterTest extends KTestCase {
 	}
 
 	public static void main(String[] args) {
-		ASTInterpreterTest tester = new ASTInterpreterTest();
-		tester.Init();
-		tester.Test();
-		tester.Exit();
+		new ASTInterpreterTest().Execute();
 	}
 }

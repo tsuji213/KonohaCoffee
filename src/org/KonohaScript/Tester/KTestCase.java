@@ -29,47 +29,51 @@ public abstract class KTestCase implements TestAssert {
 		this.TestName = ClassName;
 	}
 
+	protected void Execute() {
+		new KTestRunnerBase().Run(this);
+	}
+
 	@Override
 	public String GetTestName() {
-		return TestName;
+		return this.TestName;
 	}
 
 	private void Check(boolean Actual, boolean Expected) {
 		if(Actual != Expected) {
-			PrintErrorInfo(4);
+			this.PrintErrorInfo(3);
 		}
 	}
 
 	protected void Assert(boolean Cond) {
-		AssertTrue(Cond);
+		this.AssertTrue(Cond);
 	}
 
 	protected void AssertTrue(boolean Cond) {
-		Check(Cond, true);
+		this.Check(Cond, true);
 	}
 
 	protected void AssertFalse(boolean Cond) {
-		Check(Cond, false);
+		this.Check(Cond, false);
 	}
 
 	protected void AssertEqual(boolean Actual, boolean Expected) {
-		Check(Actual, Expected);
+		this.Check(Actual, Expected);
 	}
 
 	protected void AssertEqual(int Actual, int Expected) {
-		Check(Actual == Expected, true);
+		this.Check(Actual == Expected, true);
 	}
 
 	protected void AssertEqual(float Actual, float Expected, float Delta) {
-		Check(Actual - Expected <= Delta, true);
+		this.Check(Actual - Expected <= Delta, true);
 	}
 
 	protected void AssertEqual(Object Actual, Object Expected) {
-		Check(Actual.equals(Expected), true);
+		this.Check(Actual.equals(Expected), true);
 	}
 
 	protected void Fail() {
-		PrintErrorInfo(2);
+		this.PrintErrorInfo(2);
 	}
 
 	private void PrintErrorInfo(int StackIndex) {

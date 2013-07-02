@@ -39,9 +39,6 @@ public class LLVMCodeGenTest extends CodeGeneratorTester {
 	}
 
 	public static void main(String[] args) {
-		LLVMCodeGenTest tester = new LLVMCodeGenTest();
-		tester.Init();
-		tester.Test();
-		tester.Exit();
+		new LLVMCodeGenTest().Execute();
 	}
 }

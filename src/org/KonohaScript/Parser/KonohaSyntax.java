@@ -27,10 +27,10 @@ package org.KonohaScript.Parser;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaFunc;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -191,7 +191,7 @@ class CommonSyntax {
 
 	public TypedNode TypeValue(TypeEnv Gamma, UntypedNode Node, KonohaType ReqType) {
 		KonohaToken KeyToken = Node.KeyToken;
-		KonohaType TypeInfo = Node.NodeNameSpace.LookupTypeInfo(KeyToken.ResolvedObject.getClass());
+		KonohaType TypeInfo = Node.NodeNameSpace.LookupHostLangType(KeyToken.ResolvedObject.getClass());
 		return new ConstNode(TypeInfo, KeyToken, KeyToken.ResolvedObject);
 	}
 

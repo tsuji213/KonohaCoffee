@@ -1,15 +1,17 @@
 package org.KonohaScript.PegParser;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public abstract class SyntaxTemplate {
+public abstract class SyntaxTemplate extends KonohaGrammar {
 	String		Name;
 	KonohaArray	Childrens;
 
@@ -18,31 +20,31 @@ public abstract class SyntaxTemplate {
 		this.Childrens = null;
 	}
 
-	public void Init(SyntaxModule Module) {
+	public void Init(KonohaNameSpace NameSpace, PegParser Module) {
 	}
 
-	public int Fail(String SyntaxName, SyntaxModule Parser) {
+	public int Fail(String SyntaxName, PegParser Parser) {
 		this.Report("Fail " + SyntaxName);
 		return -1;
 	}
 
-	public int BackTrack(SyntaxModule Parser, int pos0, int thunkpos0, int NodeSize0, String message) {
+	public int BackTrack(PegParser Parser, int pos0, int thunkpos0, int NodeSize0, String message) {
 		Parser.Cursor = pos0;
 		Parser.ThunkPos = thunkpos0;
 		this.Report("BackTrack " + message);
 		return NodeSize0;
 	}
 
-	public int Match(SyntaxModule Parser, TokenList TokenList) {
+	public int Match(PegParser Parser, TokenList TokenList) {
 
 		return -1;
 	}
 
 	public void Report(String Message) {
-		//System.out.println(Message);
+		System.out.println(Message);
 	}
 
-	public TypedNode TypeSyntaxModule(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypePegParser(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		//System.out.println("Syntax : " + this.Name);
 		//System.out.println("Node : " + UNode);
 		SyntaxAcceptor Acceptor = (SyntaxAcceptor) UNode.NodeList.get(SyntaxAcceptor.AcceptorOffset);

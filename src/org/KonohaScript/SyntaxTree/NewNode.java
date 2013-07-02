@@ -1,25 +1,25 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.SyntaxTree.NodeVisitor.NewNodeAcceptor;
+import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.Parser.KonohaToken;
 
-class DefaultNewNodeAcceptor implements NewNodeAcceptor {
-	@Override
-	public boolean Invoke(NewNode Node, NodeVisitor Visitor) {
-		Visitor.EnterNew(Node);
-		return Visitor.ExitNew(Node);
+public class NewNode extends TypedNode implements CallableNode {
+	public KonohaArray	Params; /* [this, arg1, arg2, ...] */
+
+	public NewNode(KonohaType TypeInfo, KonohaToken KeyToken) {
+		super(TypeInfo, KeyToken);
+		this.Params = new KonohaArray();
 	}
-}
 
-public class NewNode extends TypedNode {
-
-	public NewNode(KonohaType TypeInfo) {
-		super(TypeInfo, null/* fixme */);
+	@Override
+	public void Append(TypedNode Expr) {
+		this.Params.add(Expr);
 	}
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.NewNodeAcceptor.Invoke(this, Visitor);
+		return Visitor.VisitNew(this);
 	}
 
 }

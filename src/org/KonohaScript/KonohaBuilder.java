@@ -24,6 +24,7 @@
 
 package org.KonohaScript;
 
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public interface KonohaBuilder {

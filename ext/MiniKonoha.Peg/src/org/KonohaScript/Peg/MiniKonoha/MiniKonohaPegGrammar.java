@@ -1,23 +1,23 @@
 package org.KonohaScript.Peg.MiniKonoha;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.KonohaInt;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.TokenList;
-import org.KonohaScript.Parser.KonohaGrammar;
-import org.KonohaScript.Parser.KonohaParser;
 import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.KonohaIntegerSyntax;
 import org.KonohaScript.PegParser.KonohaSingleSymbolSyntax;
-import org.KonohaScript.PegParser.SyntaxModule;
+import org.KonohaScript.PegParser.KonohaStringSyntax;
+import org.KonohaScript.PegParser.PegGrammar;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-final class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst {
+final class KonohaTypeSyntax extends PegGrammar implements KonohaConst {
 	public int ParseType(UntypedNode node, TokenList tokens, int BeginIdx, int OpIdx, int EndIdx) {
 		return EndIdx;
 	}
@@ -32,7 +32,7 @@ final class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst {
 	}
 }
 
-public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
+public class MiniKonohaPegGrammar extends PegGrammar implements KonohaConst {
 	public int WhiteSpaceToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		for(; pos < SourceText.length(); pos++) {
 			char ch = SourceText.charAt(pos);
@@ -75,30 +75,6 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 		return pos;
 	}
 
-	public int StringLiteralToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
-		int start = pos + 1;
-		char prev = '"';
-		pos = start;
-		while(pos < SourceText.length()) {
-			char ch = SourceText.charAt(pos);
-			if(ch == '"' && prev != '\\') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
-				token.ResolvedSyntax = ns.GetSyntax("$StringLiteral");
-				ParsedTokenList.add(token);
-				return pos + 1;
-			}
-			if(ch == '\n') {
-				KonohaToken token = new KonohaToken(SourceText.substring(start, pos - start));
-				ns.Message(KonohaConst.Error, token, "expected \" to close the string literal");
-				ParsedTokenList.add(token);
-				return pos;
-			}
-			pos = pos + 1;
-			prev = ch;
-		}
-		return pos;
-	}
-
 	public int ParseSymbol(UntypedNode Node, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		return BeginIdx + 1;
 	}
@@ -113,42 +89,25 @@ public class MiniKonohaGrammer extends KonohaGrammar implements KonohaConst {
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
 	}
 
-	class PegParser extends KonohaParser {
-		SyntaxModule	Module;
-
-		public PegParser(SyntaxModule Module) {
-			this.Module = Module;
-		}
-
-		@Override
-		public UntypedNode ParseNewNode(KonohaNameSpace ns, UntypedNode PrevNode, TokenList TokenList, int BeginIdx,
-				int EndIdx, int ParseOption) {
-			UntypedNode UNode = Module.Parse(TokenList, BeginIdx, EndIdx);
-			return UNode;
-		}
-	}
-
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-
+		InitGrammarProfile(NameSpace);
 		// Load Syntax
 		new KonohaTypeSyntax().LoadDefaultSyntax(NameSpace);
 
 		new KonohaSingleSymbolSyntax().LoadDefaultSyntax(NameSpace);
 		NameSpace.AddTokenFunc(" \t\n", this, "WhiteSpaceToken");
 		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
-		NameSpace.AddTokenFunc("\"", this, "StringLiteralToken");
 		NameSpace.DefineSyntax("$Symbol", KonohaConst.Term, this, "Symbol");
 
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
+		new KonohaStringSyntax().LoadDefaultSyntax(NameSpace);
 
-		new KonohaInt().DefineMethod(NameSpace);
+		new KonohaInt().MakeDefinition(NameSpace);
 
-		// Load Syntax Module
-		SyntaxModule Mod = new SyntaxModule(NameSpace);
-		Mod.SetRootSyntax(new SourceCodeSyntax());
-		KonohaParser PegParser = new PegParser(Mod);
-		NameSpace.LoadParser(PegParser);
+		//FIXME
+		PegParser PegParser = (PegParser) NameSpace.Parser;
+		PegParser.AddSyntax(NameSpace, null, new SourceCodeSyntax(), true);
 	}
 
 }

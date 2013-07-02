@@ -11,7 +11,7 @@ public abstract class SyntaxAcceptor {
 	public static final int	AcceptorOffset	= 0;
 	public static final int	ListOffset		= AcceptorOffset + 1;
 
-	public UntypedNode CreateNodeWithSyntax(SyntaxModule Parser, KonohaToken Token, String SyntaxName) {
+	public UntypedNode CreateNodeWithSyntax(PegParser Parser, KonohaToken Token, String SyntaxName) {
 		UntypedNode Node = new UntypedNode(Parser.NameSpace, Token);
 		Node.SetAtNode(AcceptorOffset, null);
 		Node.NodeList.set(AcceptorOffset, this);
@@ -23,7 +23,7 @@ public abstract class SyntaxAcceptor {
 		return KonohaCallExpressionTypeChecker.TypeCheckMethodCall(Gamma, UNode, TypeInfo);
 	}
 
-	public void CreateBinaryOperator(SyntaxModule Parser, int NodeSize, String SyntaxName) {
+	public void CreateBinaryOperator(PegParser Parser, int NodeSize, String SyntaxName) {
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
@@ -44,7 +44,7 @@ public abstract class SyntaxAcceptor {
 		}
 	}
 
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		return -1;
 	}
 
@@ -53,6 +53,6 @@ public abstract class SyntaxAcceptor {
 	}
 
 	public void Report(String Message, int NodeSize) {
-		//System.out.println(Message + " : " + NodeSize);
+		System.out.println(Message + " : " + NodeSize);
 	}
 }

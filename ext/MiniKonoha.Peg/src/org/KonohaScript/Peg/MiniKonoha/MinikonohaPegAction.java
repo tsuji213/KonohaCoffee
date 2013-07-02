@@ -9,19 +9,28 @@ import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.KonohaCallExpressionTypeChecker;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxModule;
+import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
+import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.JumpNode;
+import org.KonohaScript.SyntaxTree.LetNode;
+import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
+import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 // action: <Repeat:<Symbol:$TopLevelDefinition>>
 class SourceCodeSyntax0 extends SyntaxAcceptor {
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 
 		this.Report("SourceCodeSyntax0", NodeSize);
 		int Index = 0;
@@ -42,7 +51,6 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-
 		/* do nothing */
 		return null;
 	}
@@ -52,7 +60,7 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("TopLevelDefinitionSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -69,7 +77,7 @@ class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
 class TopLevelDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("TopLevelDefinitionSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -92,7 +100,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 	static final int	MethodParamOffset		= FunctionSignatureOffset + 3;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("functionSignatureSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionSignature");
 		int Index = 0;
@@ -142,7 +150,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 class functionBodySyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("functionBodySyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -161,7 +169,7 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 	static final int	FunctionBodyOffset		= SyntaxAcceptor.ListOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("functionDefinitionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionDefinition");
@@ -198,7 +206,7 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 class functionDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("functionDefinitionSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -213,7 +221,7 @@ class functionDefinitionSyntax1 extends SyntaxAcceptor {
 // action: <Symbol:"(">, <Symbol:")">
 class ParamDeclListSyntax0 extends SyntaxAcceptor {
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParamDeclListSyntax0", NodeSize);
 		Parser.Push(new KonohaArray());
 		return EndIdx;
@@ -221,6 +229,7 @@ class ParamDeclListSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -229,7 +238,7 @@ class ParamDeclListSyntax0 extends SyntaxAcceptor {
 class ParamDeclListSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParamDeclListSyntax1", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -245,7 +254,7 @@ class ParamDeclListSyntax1 extends SyntaxAcceptor {
 class ParamDeclsSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParamDeclsSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
@@ -267,6 +276,7 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/*do nothing*/
 		return null;
 	}
 }
@@ -275,7 +285,7 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 class ParamDeclSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParamDeclSyntax0", NodeSize);
 		KonohaArray List = new KonohaArray();
 		int Index = 0;
@@ -290,6 +300,7 @@ class ParamDeclSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -298,7 +309,7 @@ class ParamDeclSyntax0 extends SyntaxAcceptor {
 class ParameterListSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParameterListSyntax0", NodeSize);
 		Parser.Push(new KonohaArray());
 		return EndIdx;
@@ -306,6 +317,7 @@ class ParameterListSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -314,13 +326,14 @@ class ParameterListSyntax0 extends SyntaxAcceptor {
 class ParameterListSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParameterListSyntax1", NodeSize);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -329,7 +342,7 @@ class ParameterListSyntax1 extends SyntaxAcceptor {
 class ParametersSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParametersSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
@@ -347,6 +360,7 @@ class ParametersSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -355,13 +369,14 @@ class ParametersSyntax0 extends SyntaxAcceptor {
 class ParameterSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ParameterSyntax0", NodeSize);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -370,7 +385,7 @@ class ParameterSyntax0 extends SyntaxAcceptor {
 class literalSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("literalSyntax0", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
@@ -387,7 +402,7 @@ class literalSyntax0 extends SyntaxAcceptor {
 class literalSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("literalSyntax1", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
@@ -405,7 +420,7 @@ class literalSyntax1 extends SyntaxAcceptor {
 class literalSyntax2 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("literalSyntax2", NodeSize);
 		KonohaToken KeyToken = TokenList.get(BeginIdx);
 		Parser.Push(this.CreateNodeWithSyntax(Parser, KeyToken, "$literal"));
@@ -423,7 +438,7 @@ class literalSyntax2 extends SyntaxAcceptor {
 class literalSyntax3 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("literalSyntax3", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -440,7 +455,7 @@ class literalSyntax3 extends SyntaxAcceptor {
 class literalSyntax4 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("literalSyntax4", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -457,7 +472,7 @@ class literalSyntax4 extends SyntaxAcceptor {
 class typeSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("typeSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
@@ -474,31 +489,26 @@ class typeSyntax0 extends SyntaxAcceptor {
 class typeSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("typeSyntax1", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken BaseTypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		int i = EndIdx;
-		// Type
-		while(i > 0) {
-			KonohaToken Open = TokenList.get(i - 1);
-			KonohaToken Close = TokenList.get(i - 0);
-			if(!(Open.ParsedText.equals("[") && Close.ParsedText.equals("]"))) {
-				break;
-			}
-			// Type = Array of Type
-			i = i - 2;
+		int i = NodeSize;
+		while(NodeSize > 1) {
+			KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
+			//FIXME Create BaseTypeToken[TypeToken] class
+			//BaseTypeToken = ;
+			i = i - 1;
 		}
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
+		Parser.ReAssign(NodeSize, BaseTypeToken);
+
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -507,13 +517,15 @@ class typeSyntax1 extends SyntaxAcceptor {
 class statementSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -522,13 +534,15 @@ class statementSyntax0 extends SyntaxAcceptor {
 class statementSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax1", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -537,13 +551,15 @@ class statementSyntax1 extends SyntaxAcceptor {
 class statementSyntax2 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax2", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -552,13 +568,15 @@ class statementSyntax2 extends SyntaxAcceptor {
 class statementSyntax3 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax3", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -567,13 +585,15 @@ class statementSyntax3 extends SyntaxAcceptor {
 class statementSyntax4 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax4", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -582,13 +602,15 @@ class statementSyntax4 extends SyntaxAcceptor {
 class statementSyntax5 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax5", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -597,13 +619,15 @@ class statementSyntax5 extends SyntaxAcceptor {
 class statementSyntax6 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax6", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -612,13 +636,15 @@ class statementSyntax6 extends SyntaxAcceptor {
 class statementSyntax7 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax7", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -627,13 +653,15 @@ class statementSyntax7 extends SyntaxAcceptor {
 class variableSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -642,70 +670,92 @@ class variableSyntax0 extends SyntaxAcceptor {
 class EQSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("EQSyntax0", NodeSize);
-		KonohaToken KeyToken = TokenList.get(BeginIdx);
+		KonohaToken KeyToken = new KonohaToken("=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:$type>, <Symbol:$identifier>, <Symbol:";">
 class variableDeclarationSyntax0 extends SyntaxAcceptor {
+	static int	VarDeclTypeOffset	= SyntaxAcceptor.ListOffset;
+	static int	VarDeclNameOffset	= VarDeclTypeOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableDeclarationSyntax0", NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$variableDeclaration");
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtToken(Index, VarType);
+		UNode.SetAtToken(Index, VarName);
+		UNode.SetAtToken(Index, null);
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+		if(VarType.equals(Gamma.VarType)) {
+			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
+		}
+		assert (VarName != null);
+		return new LetNode(VarType, VarToken, null, null);
 	}
 }
 
 // action: <Symbol:$type>, <Symbol:$variable>, <Symbol:$EQ>, <Symbol:$expression>, <Symbol:";">
 class variableDeclarationSyntax1 extends SyntaxAcceptor {
+	static int	VarDeclTypeOffset	= SyntaxAcceptor.ListOffset;
+	static int	VarDeclNameOffset	= VarDeclTypeOffset + 1;
+	static int	VarDeclExprOffset	= VarDeclNameOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("variableDeclarationSyntax1", NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$variableDeclaration");
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken VarExpr = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtToken(Index, VarType);
+		UNode.SetAtToken(Index, VarName);
+		UNode.SetAtToken(Index, VarExpr);
+
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		// FIXME (ide)
+		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
+		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
+		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
+
+		TypedNode Expr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
+		if(VarType.equals(Gamma.VarType)) {
+			VarType = Expr.TypeInfo;
+		}
+		assert (VarName != null);
+		return new LetNode(VarType, VarToken, Expr, null);
 	}
 }
 
@@ -713,7 +763,7 @@ class variableDeclarationSyntax1 extends SyntaxAcceptor {
 class statementsSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementsSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
@@ -732,6 +782,7 @@ class statementsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -740,13 +791,14 @@ class statementsSyntax0 extends SyntaxAcceptor {
 class blockSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("blockSyntax0", NodeSize);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -758,7 +810,7 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 	static int	IfElseBlockOffset	= IfConditionOffset + 2;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ifStatementSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
@@ -794,9 +846,12 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 		if(ThenNode.IsError()) {
 			return ThenNode;
 		}
-		TypedNode ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
-		if(ElseNode.IsError()) {
-			return ElseNode;
+		TypedNode ElseNode = null;
+		if(UNode.GetAtNode(IfElseBlockOffset) != null) {
+			ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
+			if(ElseNode.IsError()) {
+				return ElseNode;
+			}
 		}
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
 	}
@@ -810,7 +865,7 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 	static int	IfElseBlockOffset	= IfConditionOffset + 2;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("ifStatementSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
@@ -836,29 +891,31 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 
 // action: <Symbol:"while">, <Symbol:"(">, <Symbol:$expression>, <Symbol:")">, <Symbol:$block>
 class whileStatementSyntax0 extends SyntaxAcceptor {
+	static int	WhileCondOffset	= ListOffset;
+	static int	WhileBodyOffset	= WhileCondOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("whileStatementSyntax0", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$whileStatement");
-		UNode.SetAtNode(0, (UntypedNode) List[0]);
-		UNode.SetAtNode(1, (UntypedNode) List[1]);
+		UntypedNode Cond = (UntypedNode) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
+		UntypedNode Body = (UntypedNode) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
+		UNode.SetAtNode(0, Cond);
+		UNode.SetAtNode(1, Body);
 
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, UNode);
-		}
-		throw new RuntimeException("NotSupported");
-		//return EndIdx;
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode Cond = UNode.TypeNodeAt(WhileCondOffset, Gamma, TypeInfo, 0);
+		// FIXME (ide) push "break" and "continue" label
+		TypedNode Body = UNode.TypeNodeAt(WhileCondOffset, Gamma, TypeInfo, 0);
+		// FIXME (ide) pop "break" and "continue" label
 		return null;
 	}
 }
@@ -867,7 +924,7 @@ class whileStatementSyntax0 extends SyntaxAcceptor {
 class breakStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("breakStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$breakStatement");
 		Parser.ReAssign(NodeSize, UNode);
@@ -876,7 +933,8 @@ class breakStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		// FIXME (ide) find "break" label from parent node to check this expression is valid or not
+		return new JumpNode(TypeInfo, "break");
 	}
 }
 
@@ -884,7 +942,7 @@ class breakStatementSyntax0 extends SyntaxAcceptor {
 class continueStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("continueStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$continueStatement");
 		Parser.ReAssign(NodeSize, UNode);
@@ -893,7 +951,9 @@ class continueStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		// FIXME (ide) find "continue" label from parent node to check this expression is valid or not
+		return new JumpNode(TypeInfo, "break");
+
 	}
 }
 
@@ -903,7 +963,7 @@ class returnStatementSyntax0 extends SyntaxAcceptor {
 	static int	ReturnExpressionOffset	= ListOffset;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("returnStatementSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$returnStatement");
 		UNode.SetAtNode(ReturnExpressionOffset, null);
@@ -923,16 +983,13 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 	static int	ReturnExpressionOffset	= ListOffset;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("returnStatementSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$returnStatement");
 		UNode.SetAtNode(ReturnExpressionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Parser.ReAssign(NodeSize, UNode);
 
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, UNode);
-		}
 		return EndIdx;
 	}
 
@@ -954,41 +1011,49 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 class expressionStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("expressionStatementSyntax0", NodeSize);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:$leftHandSideExpression>, <Symbol:$EQ>, <Symbol:$expression>
 class expressionSyntax0 extends SyntaxAcceptor {
+	static int	AssignmentLeftOffset	= ListOffset;
+	static int	AssignmentExprOffset	= AssignmentLeftOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("expressionSyntax0", NodeSize);
 		int Index = 0;
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$expression");
+
+		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		UntypedNode Expr = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
-		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
-		}
-		throw new RuntimeException();
-		//return EndIdx;
+		UNode.SetAtNode(AssignmentLeftOffset, Left);
+		UNode.SetAtNode(AssignmentExprOffset, Expr);
+		Parser.ReAssign(NodeSize, UNode);
+
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		TypedNode LeftNode = UNode.TypeNodeAt(AssignmentLeftOffset, Gamma, TypeInfo, 0);
+		TypedNode RightNode = UNode.TypeNodeAt(AssignmentExprOffset, Gamma, TypeInfo, 0);
+		if(LeftNode.TypeInfo.equals(RightNode.TypeInfo)) {
+			TypedNode TNode = new AssignNode(TypeInfo, UNode.KeyToken, LeftNode, RightNode);
+			return TNode;
+		}
+		return new ErrorNode(TypeInfo, UNode.KeyToken, "TypeError"); //FIXME
 	}
 }
 
@@ -996,13 +1061,15 @@ class expressionSyntax0 extends SyntaxAcceptor {
 class expressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("expressionSyntax1", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1011,13 +1078,15 @@ class expressionSyntax1 extends SyntaxAcceptor {
 class leftHandSideExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("leftHandSideExpressionSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1026,13 +1095,15 @@ class leftHandSideExpressionSyntax0 extends SyntaxAcceptor {
 class leftHandSideExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("leftHandSideExpressionSyntax1", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1043,7 +1114,7 @@ class callExpressionSyntax0 extends SyntaxAcceptor {
 	static final int	CallParameterOffset		= KonohaCallExpressionTypeChecker.CallParameterOffset;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("callExpressionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$MethodCall"), "$callExpression");
@@ -1072,25 +1143,25 @@ class callExpressionSyntax0 extends SyntaxAcceptor {
 class memberExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("memberExpressionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
+		// (E0 E1 E2 E3) => (E3 (E2 (E1 E0)))
 		while(Index < NodeSize) {
 			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
-			Right.SetAtNode(0, Left);
+			Right.AddParsedNode(Left);
 			Left = Right;
 			Index = Index + 1;
 		}
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, Left);
-		}
+		Parser.ReAssign(NodeSize, Left);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1099,7 +1170,7 @@ class memberExpressionSyntax0 extends SyntaxAcceptor {
 class primarySyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("primarySyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$primary");
 		Parser.Push(UNode);
@@ -1108,36 +1179,40 @@ class primarySyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		return new LocalNode(Gamma.ThisType, UNode.KeyToken, "this");
+	}
+}
+
+//action: <Symbol:$literal>
+class primarySyntax1 extends SyntaxAcceptor {
+
+	@Override
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+		this.Report("primarySyntax1", NodeSize);
+		/* do nothing */
+		return EndIdx;
+	}
+
+	@Override
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:$identifier>
-class primarySyntax1 extends SyntaxAcceptor {
-
-	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		this.Report("primarySyntax1", NodeSize);
-		return EndIdx;
-	}
-
-	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
-	}
-}
-
-// action: <Symbol:$literal>
 class primarySyntax2 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("primarySyntax2", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1146,59 +1221,86 @@ class primarySyntax2 extends SyntaxAcceptor {
 class primarySyntax3 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("primarySyntax3", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:"[">, <Symbol:$expression>, <Symbol:"]">
 class selectorSyntax0 extends SyntaxAcceptor {
+	static int	ArrayIndexExprOffset	= ListOffset;
+	static int	ArrayBaseExprOffset		= ArrayIndexExprOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("selectorSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$ArrayAccessor"), "$selector");
-		UNode.SetAtNode(1, (UntypedNode) Parser.Get(Index, NodeSize));
+		UNode.SetAtNode(ArrayIndexExprOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, UNode);
-		}
+		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		TypedNode BaseExpr = UNode.TypeNodeAt(ArrayBaseExprOffset, Gamma, TypeInfo, 0);
+		TypedNode IndexExpr = UNode.TypeNodeAt(ArrayIndexExprOffset, Gamma, Gamma.IntType, 0);
+		if(BaseExpr.IsError()) {
+			return BaseExpr;
+		}
+		if(IndexExpr.IsError()) {
+			return IndexExpr;
+		}
+		//FIXME need check BaseExpr.Typeinfo is subclass of Array
+		KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod("get", 1);
+		ApplyNode TNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+		TNode.Append(BaseExpr);
+		TNode.Append(IndexExpr);
+		return TNode;
 	}
 }
 
 // action: <Symbol:".">, <Symbol:$identifier>
 class selectorSyntax1 extends SyntaxAcceptor {
+	static int	MemberIndexExprOffset	= ListOffset;
+	static int	MemberBaseExprOffset	= MemberIndexExprOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("selectorSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, new KonohaToken("$Selector"), "$selector");
-		UNode.SetAtNode(0, (UntypedNode) Parser.Get(Index, NodeSize));
+		UNode.SetAtNode(MemberIndexExprOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, UNode);
-		}
-
+		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		TypedNode BaseExpr = UNode.TypeNodeAt(MemberBaseExprOffset, Gamma, TypeInfo, 0);
+		TypedNode IndexExpr = UNode.TypeNodeAt(MemberIndexExprOffset, Gamma, Gamma.IntType, 0);
+		if(BaseExpr.IsError()) {
+			return BaseExpr;
+		}
+		if(IndexExpr.IsError()) {
+			return IndexExpr;
+		}
+		//FIXME need check BaseExpr.Typeinfo is subclass of Array
+		KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod("get", 1);
+		ApplyNode TNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+		TNode.Append(BaseExpr);
+		TNode.Append(IndexExpr);
+		return TNode;
 	}
 }
 
@@ -1206,49 +1308,61 @@ class selectorSyntax1 extends SyntaxAcceptor {
 class newExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("newExpressionSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
 
 // action: <Symbol:"new">, <Symbol:$type>, <Symbol:$ParameterList>
 class newExpressionSyntax1 extends SyntaxAcceptor {
+	static int	NewTypeOffset	= ListOffset;
+	static int	NewParamOffset	= KonohaCallExpressionTypeChecker.CallParameterOffset;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("newExpressionSyntax1", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$newExpression");
-		Object[] List = new Object[NodeSize];
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		List[Index] = Parser.Get(Index, NodeSize);
+		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtNode(0, (UntypedNode) List[0]);
-		if(NodeSize > 0) {
-			Parser.ReAssign(NodeSize, List[0]);
+		UNode.SetAtToken(NewTypeOffset, TypeToken);
+		for(int i = 0; i < ParamList.size(); i++) {
+			UntypedNode Param = (UntypedNode) ParamList.get(i);
+			UNode.SetAtNode(NewParamOffset + i, Param);
 		}
-		throw new RuntimeException();
-		//return EndIdx;
+		Parser.ReAssign(NodeSize, UNode);
+		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		KonohaType BaseType = UNode.GetTokenType(NewTypeOffset, null);
+		NewNode Node = new NewNode(BaseType, UNode.KeyToken);
+		int ParamSize = UNode.NodeList.size() - NewParamOffset;
+		KonohaMethod Method = BaseType.LookupMethod("new", ParamSize);
+		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+		CallNode.Append(Node);
+		return KonohaCallExpressionTypeChecker.TypeMethodEachParam(Gamma, BaseType, CallNode, UNode.NodeList, ParamSize);
 	}
 }
 
 // action: <Symbol:$logicalAndExpression>, <Repeat:<Group:<Symbol:"||"> <Symbol:$logicalAndExpression> >>
 class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
+	static int	OrLeftExprOffset	= ListOffset;
+	static int	OrRightExprOffset	= OrLeftExprOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("logicalOrExpressionSyntax0", NodeSize);
 		KonohaToken OperatorToken = new KonohaToken("||");
 		int Index = 0;
@@ -1270,15 +1384,24 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		TypedNode LeftNode = UNode.TypeNodeAt(OrLeftExprOffset, Gamma, Gamma.BooleanType, 0);
+		if(LeftNode.IsError())
+			return LeftNode;
+		TypedNode RightNode = UNode.TypeNodeAt(OrRightExprOffset, Gamma, Gamma.BooleanType, 0);
+		if(RightNode.IsError())
+			return RightNode;
+
+		return new OrNode(RightNode.TypeInfo, UNode.KeyToken, LeftNode, RightNode);
 	}
 }
 
 // action: <Symbol:$relationExpression>, <Repeat:<Group:<Symbol:"&&"> <Symbol:$relationExpression> >>
 class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
+	static int	AndLeftExprOffset	= ListOffset;
+	static int	AndRightExprOffset	= AndLeftExprOffset + 1;
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("logicalAndExpressionSyntax0", NodeSize);
 		KonohaToken OperatorToken = new KonohaToken("&&");
 		int Index = 0;
@@ -1300,7 +1423,15 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		TypedNode LeftNode = UNode.TypeNodeAt(AndLeftExprOffset, Gamma, Gamma.BooleanType, 0);
+		if(LeftNode.IsError())
+			return LeftNode;
+		TypedNode RightNode = UNode.TypeNodeAt(AndRightExprOffset, Gamma, Gamma.BooleanType, 0);
+		if(RightNode.IsError())
+			return RightNode;
+
+		return new AndNode(RightNode.TypeInfo, UNode.KeyToken, LeftNode, RightNode);
+
 	}
 }
 
@@ -1308,7 +1439,7 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 class relationExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$relationExpression");
 		return EndIdx;
@@ -1324,14 +1455,15 @@ class relationExpressionSyntax0 extends SyntaxAcceptor {
 class relationExpressionSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationExpressionSyntax1", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
 
@@ -1339,7 +1471,7 @@ class relationExpressionSyntax1 extends SyntaxAcceptor {
 class relationOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("==", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1348,6 +1480,7 @@ class relationOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1356,7 +1489,7 @@ class relationOperatorSyntax0 extends SyntaxAcceptor {
 class relationOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("!=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1365,6 +1498,7 @@ class relationOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1373,7 +1507,7 @@ class relationOperatorSyntax1 extends SyntaxAcceptor {
 class relationOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax2", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1382,6 +1516,7 @@ class relationOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1390,7 +1525,7 @@ class relationOperatorSyntax2 extends SyntaxAcceptor {
 class relationOperatorSyntax3 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax3", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1399,6 +1534,7 @@ class relationOperatorSyntax3 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1407,7 +1543,7 @@ class relationOperatorSyntax3 extends SyntaxAcceptor {
 class relationOperatorSyntax4 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax4", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<=", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1416,6 +1552,7 @@ class relationOperatorSyntax4 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1424,7 +1561,7 @@ class relationOperatorSyntax4 extends SyntaxAcceptor {
 class relationOperatorSyntax5 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("relationOperatorSyntax5", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1433,6 +1570,7 @@ class relationOperatorSyntax5 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1441,7 +1579,7 @@ class relationOperatorSyntax5 extends SyntaxAcceptor {
 class shiftOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("shiftOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("<<", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1450,6 +1588,7 @@ class shiftOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1458,7 +1597,7 @@ class shiftOperatorSyntax0 extends SyntaxAcceptor {
 class shiftOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("shiftOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken(">>", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1467,6 +1606,7 @@ class shiftOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1475,7 +1615,7 @@ class shiftOperatorSyntax1 extends SyntaxAcceptor {
 class additiveOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("additiveOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("+", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1484,6 +1624,7 @@ class additiveOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1492,7 +1633,7 @@ class additiveOperatorSyntax0 extends SyntaxAcceptor {
 class additiveOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("additiveOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("-", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1501,6 +1642,7 @@ class additiveOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1509,7 +1651,7 @@ class additiveOperatorSyntax1 extends SyntaxAcceptor {
 class multiplicativeOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("multiplicativeOperatorSyntax0", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("*", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1518,6 +1660,7 @@ class multiplicativeOperatorSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1526,7 +1669,7 @@ class multiplicativeOperatorSyntax0 extends SyntaxAcceptor {
 class multiplicativeOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("multiplicativeOperatorSyntax1", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("/", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1535,6 +1678,7 @@ class multiplicativeOperatorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1543,7 +1687,7 @@ class multiplicativeOperatorSyntax1 extends SyntaxAcceptor {
 class multiplicativeOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("multiplicativeOperatorSyntax2", NodeSize);
 		KonohaToken KeyToken = new KonohaToken("%", TokenList.get(BeginIdx).uline);
 		Parser.Push(KeyToken);
@@ -1552,6 +1696,7 @@ class multiplicativeOperatorSyntax2 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1560,7 +1705,7 @@ class multiplicativeOperatorSyntax2 extends SyntaxAcceptor {
 class additiveExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("additiveExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$additiveExpression");
 		return EndIdx;
@@ -1576,7 +1721,7 @@ class additiveExpressionSyntax0 extends SyntaxAcceptor {
 class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("multiplicativeExpressionSyntax0", NodeSize);
 		this.CreateBinaryOperator(Parser, NodeSize, "$multiplicativeExpression");
 		return EndIdx;
@@ -1584,7 +1729,7 @@ class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		return null;
+		return this.TypeBinaryOperator(Gamma, UNode, TypeInfo);
 	}
 }
 
@@ -1592,13 +1737,15 @@ class multiplicativeExpressionSyntax0 extends SyntaxAcceptor {
 class unaryExpressionSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("unaryExpressionSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }
@@ -1607,13 +1754,15 @@ class unaryExpressionSyntax0 extends SyntaxAcceptor {
 class identifierSyntax0 extends SyntaxAcceptor {
 
 	@Override
-	public int Parse(SyntaxModule Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("identifierSyntax0", NodeSize);
+		/* do nothing */
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
 		return null;
 	}
 }

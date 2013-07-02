@@ -1,15 +1,6 @@
 package org.KonohaScript.SyntaxTree;
 
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.SyntaxTree.NodeVisitor.JumpNodeAcceptor;
-
-class DefaultJumpNodeAcceptor implements JumpNodeAcceptor {
-	@Override
-	public boolean Invoke(JumpNode Node, NodeVisitor Visitor) {
-		Visitor.EnterJump(Node);
-		return Visitor.ExitJump(Node);
-	}
-}
 
 public class JumpNode extends TypedNode {
 	public String		Label;
@@ -24,6 +15,6 @@ public class JumpNode extends TypedNode {
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {
-		return Visitor.JumpNodeAcceptor.Invoke(this, Visitor);
+		return Visitor.VisitJump(this);
 	}
 }

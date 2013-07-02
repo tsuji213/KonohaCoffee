@@ -24,9 +24,11 @@
 
 package org.KonohaScript;
 
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.Parser.KonohaChar;
 import org.KonohaScript.Parser.KonohaParser;
 import org.KonohaScript.Parser.KonohaSyntax;
@@ -38,16 +40,15 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
 
-	public Konoha						KonohaContext;
-	KonohaNameSpace						ParentNameSpace;
-	KonohaArray							ImportedNameSpaceList;
-	public KonohaParser					Parser;
-	public static final KonohaParser	DefaultParser	= new KonohaParser();
+	public Konoha		KonohaContext;
+	KonohaNameSpace		ParentNameSpace;
+	KonohaArray			ImportedNameSpaceList;
+	public KonohaParser	Parser;
 
-	public KonohaNameSpace(Konoha konoha, KonohaNameSpace ParentNameSpace) {
-		this.KonohaContext = konoha;
+	public KonohaNameSpace(Konoha KonohaContext, KonohaNameSpace ParentNameSpace) {
+		this.KonohaContext = KonohaContext;
 		this.ParentNameSpace = ParentNameSpace;
-		this.Parser = DefaultParser;
+		this.Parser = null;
 
 		if(ParentNameSpace != null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
@@ -64,9 +65,10 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	// class
+	@Deprecated
 	public final KonohaType LookupTypeInfo(String ClassName) {
 		try {
-			return this.KonohaContext.LookupTypeInfo(Class.forName(ClassName));
+			return this.KonohaContext.LookupHostLangType(Class.forName(ClassName));
 
 		}
 		catch (ClassNotFoundException e) {
@@ -74,8 +76,8 @@ public final class KonohaNameSpace implements KonohaConst {
 		return null;
 	}
 
-	public final KonohaType LookupTypeInfo(Class<?> ClassInfo) {
-		return this.KonohaContext.LookupTypeInfo(ClassInfo);
+	public final KonohaType LookupHostLangType(Class<?> ClassInfo) {
+		return this.KonohaContext.LookupHostLangType(ClassInfo);
 	}
 
 	KonohaFunc MergeFunc(KonohaFunc f, KonohaFunc f2) {
@@ -132,14 +134,6 @@ public final class KonohaNameSpace implements KonohaConst {
 	static final String	MacroPrefix		= "@$"; // FIXME: use different symbol tables
 	static final String	TopLevelPrefix	= "#";
 
-	// KFunc GetDefinedMacroFunc(String Symbol) {
-	// if(DefinedSymbolTable != null) {
-	// Object object = DefinedSymbolTable.get(MacroPrefix + Symbol);
-	// return (object instanceof KFunc) ? (KFunc)object : null;
-	// }
-	// return null;
-	// }
-
 	public KonohaFunc GetMacro(String Symbol, boolean TopLevel) {
 		if(TopLevel) {
 			Object o = this.GetSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol);
@@ -157,9 +151,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-				Callee,
-				MethodName,
-				null));
+			Callee,
+			MethodName,
+			null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -230,7 +224,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	public KonohaObject GetGlobalObject() {
 		Object GlobalObject = this.GetDefinedSymbol(KonohaConst.GlobalConstName);
 		if(GlobalObject == null || !(GlobalObject instanceof KonohaObject)) {
-			GlobalObject = this.CreateGlobalObject(KonohaConst.SingletonClass, "*GlobalType*");
+			GlobalObject = this.CreateGlobalObject(KonohaConst.SingletonClass, "global");
 			this.DefineSymbol(KonohaConst.GlobalConstName, GlobalObject);
 		}
 		return (KonohaObject) GlobalObject;
@@ -259,7 +253,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-				.Do(tokenList, BeginIdx, EndIdx, BufferList);
+		.Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -301,7 +295,6 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	// Builder
-
 	private KonohaBuilder	Builder;
 
 	public KonohaBuilder GetBuilder() {
@@ -314,9 +307,9 @@ public final class KonohaNameSpace implements KonohaConst {
 		return this.Builder;
 	}
 
-	private Object LoadClass(String Name) {
+	private Object LoadClass(String ClassName) {
 		try {
-			Class<?> ClassInfo = Class.forName(Name);
+			Class<?> ClassInfo = Class.forName(ClassName);
 			return ClassInfo.newInstance();
 		}
 		catch (ClassNotFoundException e1) {

@@ -2,24 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KLib.KonohaArray;
-import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
-import org.KonohaScript.SyntaxTree.ConstNode;
-import org.KonohaScript.SyntaxTree.DefineNode;
-import org.KonohaScript.SyntaxTree.ErrorNode;
-import org.KonohaScript.SyntaxTree.FunctionNode;
-import org.KonohaScript.SyntaxTree.IfNode;
-import org.KonohaScript.SyntaxTree.JumpNode;
-import org.KonohaScript.SyntaxTree.LabelNode;
-import org.KonohaScript.SyntaxTree.LoopNode;
-import org.KonohaScript.SyntaxTree.NewNode;
-import org.KonohaScript.SyntaxTree.NodeVisitor;
-import org.KonohaScript.SyntaxTree.NullNode;
-import org.KonohaScript.SyntaxTree.OrNode;
-import org.KonohaScript.SyntaxTree.ReturnNode;
-import org.KonohaScript.SyntaxTree.SwitchNode;
-import org.KonohaScript.SyntaxTree.ThrowNode;
-import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 class IndentGenerator {
@@ -87,18 +70,6 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		super(MethodInfo);
 		this.Program = new KonohaArray();
 		this.CurrentProgramSize = new KonohaArray();
-
-		this.IfNodeAcceptor = new IfNodeAcceptor() {
-			@Override
-			public boolean Invoke(IfNode Node, NodeVisitor Visitor) {
-				SourceCodeGen Gen = (SourceCodeGen) Visitor;
-				Gen.EnterIf(Node);
-				Gen.Visit(Node.CondExpr);
-				Gen.VisitBlock(Node.ThenNode);
-				Gen.VisitBlock(Node.ElseNode);
-				return Gen.ExitIf(Node);
-			}
-		};
 	}
 
 	protected boolean isMethodBinaryOperator(ApplyNode Node) {
@@ -224,98 +195,7 @@ public abstract class SourceCodeGen extends CodeGenerator {
 		this.CurrentProgramSize.add(this.Program.size());
 	}
 
-	@Override
-	public boolean Visit(TypedNode Node) {
-		return Node.Evaluate(this);
-	}
-
 	protected boolean VisitBlock(TypedNode Node) {
-		return Node.Evaluate(this);
+		return this.VisitList(Node);
 	}
-
-	@Override
-	public void EnterDefine(DefineNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterConst(ConstNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterNew(NewNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterNull(NullNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterApply(ApplyNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterAnd(AndNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterOr(OrNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterIf(IfNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterSwitch(SwitchNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterLoop(LoopNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterReturn(ReturnNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterLabel(LabelNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterJump(JumpNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterTry(TryNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterThrow(ThrowNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterFunction(FunctionNode Node) {
-		/* do nothing */
-	}
-
-	@Override
-	public void EnterError(ErrorNode Node) {
-		/* do nothing */
-	}
-
 }

@@ -1,10 +1,10 @@
 package org.KonohaScript.Parser;
 
-import org.KonohaScript.KonohaConst;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -48,9 +48,11 @@ public class TypeEnv implements KonohaConst {
 
 	public KonohaMethod	Method;
 	public KonohaType	ReturnType;
+	public KonohaType	ThisType;
 
 	void InitMethod(KonohaMethod Method) {
 		this.ReturnType = Method.GetReturnType(Method.ClassInfo);
+		this.ThisType = Method.ClassInfo;
 		if(!Method.Is(StaticMethod)) {
 			this.AppendLocalType(Method.ClassInfo, "this");
 			KonohaParam Param = Method.Param;

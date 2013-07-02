@@ -1,20 +1,21 @@
 package org.KonohaScript.Grammar;
 
-import org.KonohaScript.KonohaConst;
-import org.KonohaScript.KonohaDebug;
+import org.KonohaScript.KonohaDef;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.Parser.KonohaGrammar;
+import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 
-public class KonohaInt extends KonohaGrammar implements KonohaConst {
+public class KonohaInt extends KonohaDef implements KonohaConst {
 
 	public KonohaInt() {
 	}
 
-	public void DefineMethod(KonohaNameSpace ns) {
-		KonohaType BaseClass = ns.LookupTypeInfo(Integer.class);
+	@Override
+	public void MakeDefinition(KonohaNameSpace ns) {
+		KonohaType BaseClass = ns.LookupHostLangType(Integer.class);
 		KonohaParam BinaryParam = KonohaParam.ParseOf(ns, "int int x");
 		KonohaParam UniaryParam = KonohaParam.ParseOf(ns, "int");
 
@@ -28,6 +29,11 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 
 		KonohaParam RelationParam = KonohaParam.ParseOf(ns, "boolean int x");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "<", RelationParam, this, "IntLtInt");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "<=", RelationParam, this, "IntLeInt");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, ">", RelationParam, this, "IntGtInt");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, ">=", RelationParam, this, "IntGeInt");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "==", RelationParam, this, "IntEqInt");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "!=", RelationParam, this, "IntNeInt");
 
 		if(KonohaDebug.UseBuiltInTest) {
 			assert (BaseClass.LookupMethod("+", 0) != null);
@@ -71,5 +77,25 @@ public class KonohaInt extends KonohaGrammar implements KonohaConst {
 
 	public static boolean IntLtInt(int x, int y) {
 		return x < y;
+	}
+
+	public static boolean IntLeInt(int x, int y) {
+		return x <= y;
+	}
+
+	public static boolean IntGtInt(int x, int y) {
+		return x > y;
+	}
+
+	public static boolean IntGeInt(int x, int y) {
+		return x >= y;
+	}
+
+	public static boolean IntEqInt(int x, int y) {
+		return x == y;
+	}
+
+	public static boolean IntNeInt(int x, int y) {
+		return x != y;
 	}
 }
