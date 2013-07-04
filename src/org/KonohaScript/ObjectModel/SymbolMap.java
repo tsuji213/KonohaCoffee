@@ -1,4 +1,4 @@
-package org.KonohaScript.KLib;
+package org.KonohaScript.ObjectModel;
 
 class Entry {
 	int key;
